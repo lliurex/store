@@ -1,3 +1,9 @@
+appsedu (1.0.1) jammy; urgency=medium
+
+  * Packages must have a valid release id
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 25 Jun 2024 17:07:12 +0200
+
 appsedu (1.0) jammy; urgency=medium
 
   * GUI splitted from rebost
