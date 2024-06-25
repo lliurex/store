@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Encoding=UTF-8
-Name=AppsEDU
+Name=AppsEdu
 Comment=Software center
 Exec=/usr/bin/appsedu %U
 Icon=appsedu

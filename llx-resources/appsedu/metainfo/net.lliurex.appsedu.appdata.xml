@@ -2,14 +2,14 @@
 <component type="desktop-application">
 <id>net.lliurex.appsedu</id>
 <metadata_license>CC0-1.0</metadata_license>
-<name>AppsEDU</name>
+<name>AppsEdu</name>
 <summary>Software center for Lliurex</summary>
 <summary xml:lang="es">Centro de aplicaciones para Lliurex</summary>
 <summary xml:lang="ca">Centre d'aplicacions per a Lliurex</summary>
 <description>
-<p>AppsEDU is a software center capable of manage zomandos and install software approved and reviewed published at AppsEdu (https://portal.edu.gva.es/appsedu).</p>
-<p xml:lang="ca">AppsEDU es un centre de aplicacions per al programari publicat a AppsEdu (https://portal.edu.gva.es/appsedu).</p>
-<p xml:lang="es">AppsEDU es un centro de aplicaciones para el software publicado en AppsEdu (https://portal.edu.gva.es/appsedu).</p>
+<p>AppsEdu is a software center capable of manage zomandos and install software approved and reviewed published at AppsEdu (https://portal.edu.gva.es/appsedu).</p>
+<p xml:lang="ca">AppsEdu es un centre de aplicacions per al programari publicat a AppsEdu (https://portal.edu.gva.es/appsedu).</p>
+<p xml:lang="es">AppsEdu es un centro de aplicaciones para el software publicado en AppsEdu (https://portal.edu.gva.es/appsedu).</p>
 </description>
 <categories>
 <category>System</category>
