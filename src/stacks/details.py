@@ -605,6 +605,7 @@ class details(QStackedWindowItem):
 			version=version.split("+")[0]
 			if version=="":
 				version="lliurex23"
+				continue
 			release=QListWidgetItem("{} {}".format(version,i))
 			if i in priority:
 				idx=priority.index(i)
@@ -630,8 +631,8 @@ class details(QStackedWindowItem):
 		for bundle in bundles.keys():
 			state=self.app.get("state",{}).get(bundle,1)
 			if bundle=="zomando":
-				if "package" in bundles.keys():
-					continue
+				#if "package" in bundles.keys():
+				#	continue
 				if os.path.isfile(bundles[bundle]):
 					state="0"
 			if state.isdigit()==False:
