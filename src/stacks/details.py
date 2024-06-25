@@ -163,13 +163,13 @@ class details(QStackedWindowItem):
 	#def __init__
 
 	def _return(self):
-		self.parent.setWindowTitle("LliureX Rebost")
+		self.parent.setWindowTitle("AppsEdu")
 		self.parent.setCurrentStack(1,parms={"refresh":True,"app":self.app})
 	#def _return
 
 	def _tagNav(self,*args):
 		cat=args[0][0].replace("#","")
-		self.parent.setWindowTitle("LliureX Rebost - {}".format(cat))
+		self.parent.setWindowTitle("AppsEdu - {}".format(cat))
 		self.parent.setCurrentStack(1,parms={"refresh":True,"cat":cat})
 
 	def _processStreams(self,args):
@@ -228,7 +228,7 @@ class details(QStackedWindowItem):
 			self.stream=""
 			self.updateScreen()
 		if len(self.app)>0:
-			self.parent.setWindowTitle("LliureX Rebost - {}".format(self.app.get("name","")))
+			self.parent.setWindowTitle("AppsEdu - {}".format(self.app.get("name","")))
 			for bundle,name in (self.app.get('bundle',{}).items()):
 				if bundle=='package':
 					continue
@@ -469,7 +469,7 @@ class details(QStackedWindowItem):
 		self._debug("Error detected")
 		qpal=QtGui.QPalette()
 		color=qpal.color(qpal.Dark)
-		self.parent.setWindowTitle("LliureX Rebost - {}".format("ERROR"))
+		self.parent.setWindowTitle("AppsEdu - {}".format("ERROR"))
 		#self.wdgSplash.setVisible(True)
 		if "FORBIDDEN" not in self.app.get("categories",[]):
 			self.app["categories"]=["FORBIDDEN"]
