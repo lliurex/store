@@ -12,7 +12,7 @@ import time
 gettext.textdomain('appsedu')
 _ = gettext.gettext
 
-app=QApplication(["AppsEdu"])
+app=QApplication(["AppsEdu Store"])
 mw=QStackedWindow()
 icn=QtGui.QIcon.fromTheme("appsedu")
 mw.disableNavBar(True)
