@@ -254,6 +254,7 @@ class details(QStackedWindowItem):
 	def _runApp(self):
 		bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
 		cmd=self.helper.getCmdForLauncher(self.app,bundle)
+		print(cmd)
 		self.runapp.setArgs(self.app,cmd,bundle)
 		self.runapp.epiEnded.connect(self._getRunappResults)
 		self.runapp.start()
@@ -269,8 +270,8 @@ class details(QStackedWindowItem):
 				self.runapp.epiEnded.connect(self._getRunappResults)
 				pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
 			else:
-				pkgname=app["pkgname"].split("-")[0]
-			self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname.replace("-","."))],"package")
+				pkgname=app["pkgname"].split(".")[-1]
+			self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname)],"package")
 			self.runapp.start()
 			cont+=1
 	#def _getEpiResults
