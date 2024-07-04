@@ -423,8 +423,13 @@ class details(QStackedWindowItem):
 			self.lblHomepage.setText(text)
 		self.lblDesc.label.setOpenExternalLinks(False)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
-		if "FORBIDDEN" in self.app.get("categories",[]):
-			description="<h2>{0}</h2>{1} <a href={2}>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description)
+		if "Forbidden" in self.app.get("categories",[]):
+			forbReason=""
+			if self.app.get("summary","").endswith(")"):
+				forbReason=": {}".format(self.app["summary"].split("(")[-1].replace(")",""))
+				if forbReason.lower().startswith(": no ")==True:
+					forbReason=""
+			description="<h2>{0}{4}</h2>{1} <a href={2}>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
 			self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setText(description)
 
@@ -487,8 +492,8 @@ class details(QStackedWindowItem):
 		color=qpal.color(qpal.Dark)
 		self.parent.setWindowTitle("AppsEdu - {}".format("ERROR"))
 		#self.wdgSplash.setVisible(True)
-		if "FORBIDDEN" not in self.app.get("categories",[]):
-			self.app["categories"]=["FORBIDDEN"]
+		if "Forbidden" not in self.app.get("categories",[]):
+			self.app["categories"]=["Forbidden"]
 		#self.lstInfo.setVisible(False)
 		#self.btnInstall.setVisible(False)
 		#self.btnRemove.setVisible(False)
@@ -515,7 +520,7 @@ class details(QStackedWindowItem):
 		item=self.lstInfo.currentItem()
 		if item==None:
 			print("Err: This app has not install option")
-			self._onError()
+			#self._onError()
 			bundles=self.app.get("bundle",{})
 			if len(bundles)>0:
 				bundle=bundles.popitem()[1]
@@ -537,7 +542,7 @@ class details(QStackedWindowItem):
 		self.btnInstall.setToolTip("{0}: {1}\n{2}".format(i18n.get("RELEASE"),release,bundle.capitalize()))
 		self.btnRemove.setToolTip(tooltip)
 		self.btnLaunch.setToolTip(tooltip)
-		if "FORBIDDEN" in self.app.get("categories",[]) or "eduapp" in bundle:
+		if "Forbidden" in self.app.get("categories",[]) or "eduapp" in bundle:
 			self.btnInstall.setEnabled(False)
 			self.btnRemove.setEnabled(False)
 			self.btnLaunch.setEnabled(False)
@@ -622,7 +627,8 @@ class details(QStackedWindowItem):
 			version=version.split("+")[0]
 			if version=="":
 				version="lliurex23"
-				continue
+				if not("eduapp" in bundles.keys() and len(bundles.keys())==1):
+					continue
 			release=QListWidgetItem("{} {}".format(version,i))
 			if i in priority:
 				idx=priority.index(i)

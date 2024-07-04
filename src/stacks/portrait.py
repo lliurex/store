@@ -95,7 +95,7 @@ class QPushButtonRebostApp(QPushButton):
 		if "0" not in str(self.app.get('state',1)):
 			#self.setStyleSheet("""QPushButton{background-color: rgba(140, 255, 0, 70);}""")
 			self._applyDecoration()
-		if "FORBIDDEN" in self.app.get("categories",[]):
+		if "Forbidden" in self.app.get("categories",[]):
 			self._applyDecoration(forbidden=True)
 	#def loadImg
 
@@ -147,7 +147,7 @@ class QPushButtonRebostApp(QPushButton):
 
 class portrait(QStackedWindowItem):
 	def __init_stack__(self):
-		self.dbg=False
+		self.dbg=True
 		self.enabled=True
 		self._debug("portrait load")
 		self.setProps(shortDesc=i18n.get("DESC"),
@@ -174,6 +174,11 @@ class portrait(QStackedWindowItem):
 		self.level='system'
 		self.oldcursor=self.cursor()
 	#def __init__
+
+	def _debug(self,msg):
+		if self.dbg==True:
+			print("Portrait: {}".format(msg))
+	#def _debug
 
 	def __initScreen__(self):
 		self.config=self.appconfig.getConfig()
@@ -281,6 +286,10 @@ class portrait(QStackedWindowItem):
 			categories=[]
 			for i18ncat,cat in self.i18nCat.items():
 				categories.append("\"{}\"".format(cat))
+			if not "Lliurex" in categories:
+				categories.append("\"Lliurex\"")
+			if not "Forbidden" in categories:
+				categories.append("\"Forbidden\"")
 			categories=",".join(categories)
 			apps.extend(json.loads(self.rc.execute('list',"({})".format(categories))))
 		self.appsRaw=apps
@@ -543,7 +552,7 @@ class portrait(QStackedWindowItem):
 				self.cmbCategories.setCurrentText(self.catI18n.get(cat,cat))
 				self._loadCategory()
 			else:
-				if "FORBIDDEN" in app.get("categories",[]):
+				if "Forbidden" in app.get("categories",[]):
 					self.referrer._applyDecoration(forbidden=True)
 				elif "0" not in str(app.get('state',1)):
 					#self.setStyleSheet("""QPushButton{background-color: rgba(140, 255, 0, 70);}""")
