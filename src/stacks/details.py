@@ -267,10 +267,10 @@ class details(QStackedWindowItem):
 			if app.get("relaunch",False)==False:
 				app["relaunch"]=True
 				self.runapp.epiEnded.connect(self._getRunappResults)
+				pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
 			else:
-				app["pkgname"]=app["pkgname"].split("-")[0]
-			
-			self.runapp.setArgs(app,["gtk-launch","net.lliurex.{}".format(app["pkgname"].replace("-","."))],"package")
+				pkgname=app["pkgname"].split("-")[0]
+			self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname.replace("-","."))],"package")
 			self.runapp.start()
 			cont+=1
 	#def _getEpiResults
