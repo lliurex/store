@@ -1,6 +1,7 @@
-appsedu (1.1) jammy; urgency=medium
+appsedu (1.1.1) jammy; urgency=medium
 
   * Enable eduapps stuff
+  * Improve launcher
 
  -- Juanma1980 <juanma1980@gmail.com>  Thu, 04 Jul 2024 09:17:38 +0200
 
