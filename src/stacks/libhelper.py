@@ -93,18 +93,29 @@ class helper():
 	#	dlg.exec()
 	#def _zmdNotFound(self,zmd):
 
-	def runApp(self,app,bundle,launcher=""): #TODO: QTHREAD
+	def getCmdForLauncher(self,app,bundle,launcher=""):
 		if len(launcher)>0:
 			cmd=["gtk-launch",launcher]
 		#bundle=self.cmbOpen.currentText().lower().split(" ")[0]
 		elif bundle=="package":
-			cmd=["gtk-launch",app.get("id",'')]
+			appid=app.get("id","")
+			if appid.startswith("gva.appsedu"):
+				appid=appid.split(".")[-1]
+			if appid=="":
+				appid=app.get("bundle",{}).get("package","")
+			cmd=["gtk-launch",appid]
 		elif bundle=="flatpak":
 			cmd=["flatpak","run",app.get("bundle",{}).get("flatpak","")]
 		elif bundle=="snap":
 			cmd=["snap","run",app.get("bundle",{}).get("snap","")]
 		elif bundle=="appimage":
 			cmd=["gtk-launch","{}-appimage".format(app.get("name",''))]
+		return(cmd)
+	#def getCmdForLauncher
+
+
+	def runApp(self,app,bundle,launcher=""): #TODO: QTHREAD
+		cmd=self.getCmdForLauncher(app,bundle,launcher)
 		proc=subprocess.run(cmd)
 		if proc.returncode!=0:
 			cmd=["gtk-launch",app.get("name",'')]

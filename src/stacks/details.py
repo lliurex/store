@@ -32,6 +32,7 @@ i18n={
 	"INFO":_("For more info go to"),
 	"INSTALL":_("Install"),
 	"MENU":_("Show application detail"),
+	"OPENING":_("Opening"),
 	"RELEASE":_("Release"),
 	"REMOVE":_("Remove"),
 	"RUN":_("Open"),
@@ -64,7 +65,7 @@ class waitCursor(QThread):
 #class waitCursor
 
 class epiClass(QThread):
-	epiEnded=Signal("PyObject")
+	epiEnded=Signal("PyObject","PyObject")
 	def __init__(self,parent=None):
 		QThread.__init__(self, parent)
 		self.app={}
@@ -90,7 +91,7 @@ class epiClass(QThread):
 				subprocess.run(["xhost","-"])
 			except Exception as e:
 				print(e)
-			self.epiEnded.emit(self.app)
+			self.epiEnded.emit(self.app,proc)
 			launched=True
 		return launched
 	#def run
@@ -156,6 +157,7 @@ class details(QStackedWindowItem):
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
 		self.helper=libhelper.helper()
 		self.epi=epiClass()
+		self.runapp=epiClass()
 		self.oldcursor=self.cursor()
 		self.appmenu=app2menu.app2menu()
 		self.stream=""
@@ -251,13 +253,27 @@ class details(QStackedWindowItem):
 
 	def _runApp(self):
 		bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
-		proc=self.helper.runApp(self.app,bundle)
-		if proc.returncode!=0:
-			launcher=self._getLauncherForApp()
-			proc=self.helper.runApp(self.app,bundle,launcher=launcher)
-			if proc.returncode!=0:
-				self.showMsg("{} {}".format(i18n.get("ERRLAUNCH"),self.app["name"]))
+		cmd=self.helper.getCmdForLauncher(self.app,bundle)
+		self.runapp.setArgs(self.app,cmd,bundle)
+		self.runapp.epiEnded.connect(self._getRunappResults)
+		self.runapp.start()
+		self.showMsg("{} {}".format(i18n.get("OPENING"),self.app["name"]))
+		return
 	#def _runApp
+
+	def _getRunappResults(self,app,proc):
+		cont=0
+		if proc.returncode!=0 and "gtk-launch" in proc.stderr:
+			if app.get("relaunch",False)==False:
+				app["relaunch"]=True
+				self.runapp.epiEnded.connect(self._getRunappResults)
+			else:
+				app["pkgname"]=app["pkgname"].split("-")[0]
+			
+			self.runapp.setArgs(app,["gtk-launch","net.lliurex.{}".format(app["pkgname"].replace("-","."))],"package")
+			self.runapp.start()
+			cont+=1
+	#def _getEpiResults
 
 	def _genericEpiInstall(self):
 		bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
@@ -287,7 +303,7 @@ class details(QStackedWindowItem):
 			self.epi.start()
 	#def _genericEpiInstall
 	
-	def _getEpiResults(self,app):
+	def _getEpiResults(self,app,*args):
 		if app.get('name','')!=self.app.get('name',''):
 			return
 		self.app=json.loads(self.rc.showApp(app.get('name','')))[0]
@@ -539,6 +555,7 @@ class details(QStackedWindowItem):
 				if "zomando" in item.text():
 					self.btnRemove.setVisible(False)
 				else:
+					self.btnLaunch.setVisible(True)
 					self.btnRemove.setVisible(True)
 			else:
 				self.btnRemove.setVisible(True)
