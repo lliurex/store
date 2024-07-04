@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-16 10:10+0200\n"
-"PO-Revision-Date: 2024-04-16 10:18+0200\n"
+"POT-Creation-Date: 2024-07-04 13:19+0200\n"
+"PO-Revision-Date: 2024-07-04 13:21+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Generator: Poedit 3.0.1\n"
 "X-Poedit-Basepath: .\n"
 
-#: ../rebostGui/stacks/details.py:24
+#: ../src/stacks/details.py:24
 msgid ""
 "The app could not be loaded. Until included in LliureX catalogue it can't be "
 "installed"
@@ -23,144 +23,148 @@ msgstr ""
 "catálogo de appsedu no estará disponible. Más información en https://portal."
 "edu.gva.es/appsedu/aplicacions-lliurex"
 
-#: ../rebostGui/stacks/details.py:25
+#: ../src/stacks/details.py:25
 msgid "Choose"
 msgstr "Seleccionar"
 
-#: ../rebostGui/stacks/details.py:26 ../rebostGui/stacks/details.py:38
+#: ../src/stacks/details.py:26 ../src/stacks/details.py:39
 msgid "Details"
 msgstr "Detalles"
 
-#: ../rebostGui/stacks/details.py:27 ../rebostGui/stacks/portrait.py:21
+#: ../src/stacks/details.py:27 ../src/stacks/portrait.py:21
 msgid "Navigate through all applications"
 msgstr "Mostrar todas las aplicaciones"
 
-#: ../rebostGui/stacks/details.py:28
+#: ../src/stacks/details.py:28
 msgid "Error opening"
 msgstr "Error al cargar"
 
-#: ../rebostGui/stacks/details.py:29
+#: ../src/stacks/details.py:29
 msgid "Unknown error"
 msgstr "Error desconocido"
 
-#: ../rebostGui/stacks/details.py:30
+#: ../src/stacks/details.py:30
 msgid "App unauthorized"
 msgstr "App no autorizada"
 
-#: ../rebostGui/stacks/details.py:31
+#: ../src/stacks/details.py:31
 msgid "Format"
 msgstr "Formato"
 
-#: ../rebostGui/stacks/details.py:32
+#: ../src/stacks/details.py:32
 msgid "For more info go to"
 msgstr "Para más información ir a"
 
-#: ../rebostGui/stacks/details.py:33
+#: ../src/stacks/details.py:33
 msgid "Install"
 msgstr "Instala"
 
-#: ../rebostGui/stacks/details.py:34
+#: ../src/stacks/details.py:34
 msgid "Show application detail"
 msgstr "Mostrar información"
 
-#: ../rebostGui/stacks/details.py:35
+#: ../src/stacks/details.py:35
+msgid "Opening"
+msgstr "Abriendo"
+
+#: ../src/stacks/details.py:36
 msgid "Release"
 msgstr "Versión"
 
-#: ../rebostGui/stacks/details.py:36
+#: ../src/stacks/details.py:37
 msgid "Remove"
 msgstr "Elimina"
 
-#: ../rebostGui/stacks/details.py:37
+#: ../src/stacks/details.py:38
 msgid "Open"
 msgstr "Abre"
 
-#: ../rebostGui/stacks/details.py:39
+#: ../src/stacks/details.py:40
 msgid "Upgrade"
 msgstr "Actualiza"
 
-#: ../rebostGui/stacks/details.py:40
+#: ../src/stacks/details.py:41
 msgid "Zommand not found. Open Zero-Center?"
 msgstr "No encontrado. ¿Abrir el Zero-Center?"
 
-#: ../rebostGui/stacks/portrait.py:18
+#: ../src/stacks/portrait.py:18
 msgid "All"
 msgstr "Todo"
 
-#: ../rebostGui/stacks/portrait.py:19
+#: ../src/stacks/portrait.py:19
 msgid "Available"
 msgstr "Disponible"
 
-#: ../rebostGui/stacks/portrait.py:20 ../rebostGui/stacks/portrait.py:27
+#: ../src/stacks/portrait.py:20 ../src/stacks/portrait.py:27
 msgid "Portrait"
 msgstr "Portada"
 
-#: ../rebostGui/stacks/portrait.py:22
+#: ../src/stacks/portrait.py:22
 msgid "Filters"
 msgstr "Filtros"
 
-#: ../rebostGui/stacks/portrait.py:23
+#: ../src/stacks/portrait.py:23
 msgid "Installed"
 msgstr "Instalado"
 
-#: ../rebostGui/stacks/portrait.py:24
+#: ../src/stacks/portrait.py:24
 msgid "Launch LliurexUp"
 msgstr "LliurexUp"
 
-#: ../rebostGui/stacks/portrait.py:25
+#: ../src/stacks/portrait.py:25
 msgid "Show applications"
 msgstr "Mostrar aplicaciones"
 
-#: ../rebostGui/stacks/portrait.py:26
+#: ../src/stacks/portrait.py:26
 msgid "Search"
 msgstr "Busca"
 
-#: ../rebostGui/stacks/portrait.py:28
+#: ../src/stacks/portrait.py:28
 msgid "Upgradables"
 msgstr "Actualizables"
 
-#: ../rebostGui/stacks/portrait.py:29
+#: ../src/stacks/portrait.py:29
 msgid "There're upgrades available"
 msgstr "Hay actualizaciones pendientes"
 
-#: ../rebostGui/stacks/sources.py:18
+#: ../src/stacks/sources.py:18
 msgid "Clear cache"
 msgstr "Limpiar caché"
 
-#: ../rebostGui/stacks/sources.py:19
+#: ../src/stacks/sources.py:19
 msgid ""
 "Remove all files from cache, as per exemple icons or another related stuff"
 msgstr "Elimina los ficheros de la caché, como puedan ser iconos o imágenes"
 
-#: ../rebostGui/stacks/sources.py:20
+#: ../src/stacks/sources.py:20
 msgid "Sources"
 msgstr "Orígenes"
 
-#: ../rebostGui/stacks/sources.py:21
+#: ../src/stacks/sources.py:21
 msgid "Show software sources"
 msgstr "Ver orígenes del software"
 
-#: ../rebostGui/stacks/sources.py:22
+#: ../src/stacks/sources.py:22
 msgid "Configure software sources"
 msgstr "Configurar orígenes"
 
-#: ../rebostGui/stacks/sources.py:23
+#: ../src/stacks/sources.py:23
 msgid "Configuring software sources"
 msgstr "Configurar orígenes"
 
-#: ../rebostGui/stacks/sources.py:24
+#: ../src/stacks/sources.py:24
 msgid "Reload catalogues"
 msgstr "Recargar"
 
-#: ../rebostGui/stacks/sources.py:25
+#: ../src/stacks/sources.py:25
 msgid "Reload info from sources"
 msgstr "Recarga la información del catálogo"
 
-#: ../rebostGui/stacks/sources.py:26
+#: ../src/stacks/sources.py:26
 msgid "Restart database"
 msgstr "Reinicializa el catálogo"
 
-#: ../rebostGui/stacks/sources.py:27
+#: ../src/stacks/sources.py:27
 msgid ""
 "Forces a refresh of all the info from sources resetting all previous stored "
 "information"
@@ -168,27 +172,27 @@ msgstr ""
 "Recarga toda la información desde los proveedores de aplicaciones, "
 "eliminando toda la información almacenada"
 
-#: ../rebostGui/stacks/sources.py:28
+#: ../src/stacks/sources.py:28
 msgid "Service could not be reloaded. Check credentials"
 msgstr "No se puede recargar. Verifica credenciales"
 
-#: ../rebostGui/stacks/sources.py:29
+#: ../src/stacks/sources.py:29
 msgid "Include appimages"
 msgstr "Incluir appimages"
 
-#: ../rebostGui/stacks/sources.py:30
+#: ../src/stacks/sources.py:30
 msgid "Include flatpaks"
 msgstr "Incluir flatpaks"
 
-#: ../rebostGui/stacks/sources.py:31
+#: ../src/stacks/sources.py:31
 msgid "Include native packages"
 msgstr "Incluir paquetes nativos"
 
-#: ../rebostGui/stacks/sources.py:32
+#: ../src/stacks/sources.py:32
 msgid "Include snaps"
 msgstr "Incluir snaps"
 
-#: ../rebostGui/stacks/sources.py:33
+#: ../src/stacks/sources.py:33
 msgid "Configuration"
 msgstr "Configuración"
 
@@ -267,9 +271,6 @@ msgstr "Emuladores"
 msgid "Engineering"
 msgstr "Ingeniería"
 
-msgid "FORBIDDEN"
-msgstr "Bloqueadas"
-
 msgid "FP"
 msgstr "FP"
 
@@ -287,6 +288,9 @@ msgstr "Ficheros"
 
 msgid "Finance"
 msgstr "Finanzas"
+
+msgid "Forbidden"
+msgstr "Bloqueadas"
 
 msgid "Game"
 msgstr "Juego"
@@ -381,6 +385,9 @@ msgstr "Grabadoras"
 msgid "RemoteAccess"
 msgstr "Acceso remoto"
 
+msgid "Resources"
+msgstr "Recursos"
+
 msgid "RevisionControl"
 msgstr "Control de versiones"
 
@@ -428,12 +435,6 @@ msgstr "Visores"
 
 msgid "WebBrowser"
 msgstr "Navegadores"
-
-msgid "X-Lliurex"
-msgstr "LliureX"
-
-msgid "X-Utilities"
-msgstr "Utilidades"
 
 msgid "Zomando"
 msgstr "Zomando"
@@ -503,6 +504,15 @@ msgstr "sistema"
 
 msgid "unknown"
 msgstr "desconocido"
+
+#~ msgid "FORBIDDEN"
+#~ msgstr "Bloqueadas"
+
+#~ msgid "X-Lliurex"
+#~ msgstr "LliureX"
+
+#~ msgid "X-Utilities"
+#~ msgstr "Utilidades"
 
 #~ msgid "Internet"
 #~ msgstr "Internet"
