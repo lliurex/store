@@ -625,12 +625,12 @@ class details(QStackedWindowItem):
 		priority=["zomando","snap","flatpak","appimage","package","eduapp"]
 		for i in installed+uninstalled:
 			version=self.app.get('versions',{}).get(i,'')
-			version=version.split("+")[0]
 			if version=="":
 				version="lliurex23"
 				if not("eduapp" in bundles.keys() and len(bundles.keys())==1):
 					continue
-			release=QListWidgetItem("{} {}".format(version,i))
+			fversion=version.split("+")[0]
+			release=QListWidgetItem("{} {}".format(fversion,i))
 			if i in priority:
 				idx=priority.index(i)
 				if i in uninstalled:
@@ -639,6 +639,7 @@ class details(QStackedWindowItem):
 					#bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.AlternateBase))
 					bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Dark))
 					release.setBackground(bcolor)
+				release.setToolTip(version)
 				self.lstInfo.insertItem(idx,release)
 		if "eduapp" in bundles.keys():
 			bundles.pop("eduapp")
