@@ -291,7 +291,7 @@ class portrait(QStackedWindowItem):
 			if len(cat)>1:
 				apps.extend(json.loads(self.rc.execute('list',"({})".format(categories))))
 			else:
-				apps.extend(json.loads(self.rc.execute('list',"{}".format(categories))))
+				apps.extend(json.loads(self.rc.execute('list',"{}".format(categories),1000)))
 			self._debug("Loading cat {}".format(",".join(cat)))
 		else:
 			categories=[]
