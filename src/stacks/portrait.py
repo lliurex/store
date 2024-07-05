@@ -338,6 +338,8 @@ class portrait(QStackedWindowItem):
 			filters['package']=True
 		if filters.get("lliurex",False)==True:
 			self.apps=self._getAppList(["\"Lliurex\"","\"Lliurex-Administration\"","\"Lliurex-Infantil\""])
+		if filters.get("zomando",False)==True:
+			self.apps=self._getAppList(["Zomando"])
 		self.apps=self._applyFilters(filters)
 		self.updateScreen()
 	#def _filterView
@@ -360,6 +362,7 @@ class portrait(QStackedWindowItem):
 				japp=json.loads(app)
 				#Filter bundles
 				flterList=False
+				print(filters)
 				for bund in ["appimage","flatpak","snap","zomando"]:
 					if bund  in filters.keys():
 						filterList=True
