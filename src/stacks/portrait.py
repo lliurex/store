@@ -56,13 +56,13 @@ class QPushButtonRebostApp(QPushButton):
 		self.label=QLabel(text)
 		self.label.setWordWrap(True)
 		img=self.app.get('icon','')
-		self.icon=QLabel()
+		self.iconUri=QLabel()
 		self.iconSize=kwargs.get("iconSize",128)
 		self.loadImg(self.app)
 		self.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		lay=QHBoxLayout()
 		lay.addStretch()
-		lay.addWidget(self.icon,0)
+		lay.addWidget(self.iconUri,0)
 		lay.addWidget(self.label,1)
 		self.referrer=None
 		self.setDefault(True)
@@ -92,7 +92,7 @@ class QPushButtonRebostApp(QPushButton):
 			wsize=self.iconSize
 			if "/usr/share/banners/lliurex-neu" in img:
 				wsize*=2
-			self.icon.setPixmap(icn.scaled(wsize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
+			self.iconUri.setPixmap(icn.scaled(wsize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 		elif img.startswith('http'):
 			self.scr.start()
 			self.scr.imageLoaded.connect(self.load)
@@ -123,15 +123,16 @@ class QPushButtonRebostApp(QPushButton):
 			border-color: rgb(%s); 
 			border-width: 1px; 
 			border-radius: 2px;}"""%(rgbColor,rgbBcolor))
+	#def _applyDecoration
 
 	def _removeDecoration(self):
 		self.setObjectName("")
 		self.setStyleSheet("")
-
+	#def _removeDecoration
 	
 	def load(self,*args):
 		img=args[0]
-		self.icon.setPixmap(img.scaled(self.iconSize,self.iconSize))
+		self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
 	#def load
 	
 	def activate(self):
@@ -362,7 +363,6 @@ class portrait(QStackedWindowItem):
 				japp=json.loads(app)
 				#Filter bundles
 				flterList=False
-				print(filters)
 				for bund in ["appimage","flatpak","snap","zomando"]:
 					if bund  in filters.keys():
 						filterList=True
@@ -520,17 +520,21 @@ class portrait(QStackedWindowItem):
 	#def _loadData
 
 	def _loadDetails(self,*args,**kwargs):
+		icn=""
+		if isinstance(args[0],QPushButtonRebostApp):
+			icn=args[0].iconUri.pixmap()
+
 		c=waitCursor(self)
-		c.finished.connect(lambda:self._endLoadDetails(*args))
+		c.finished.connect(lambda:self._endLoadDetails(icn,*args))
 		c.start()
 	#def _loadDetails(self,*args,**kwargs):
 
-	def _endLoadDetails(self,*args):
+	def _endLoadDetails(self,icn,*args):
 #		self.stack.gotoStack(idx=3,parms=(args))
 		#Refresh all pkg info
 		self.referrer=args[0]
 		self.setChanged(False)
-		self.parent.setCurrentStack(idx=3,parms=args[-1].get("name",""))
+		self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
 	#def _loadDetails
 
 	def _gotoSettings(self):

@@ -47,13 +47,16 @@ class waitCursor(QThread):
 		self.parent=parent
 		self.widget=widget
 		self.pixmap=None
-		if len(icon)>0:
+		if isinstance(icon,QtGui.QPixmap):
+			self.pixmap=icon
+		elif len(icon)>0:
 			if os.path.isfile(icon):
 				self.pixmap=QtGui.QPixmap(icon)
 		if not self.pixmap:
-			self.pixmap=QtGui.QIcon.fromTheme("rebost").pixmap(128,128)
+			self.pixmap=QtGui.QIcon.fromTheme("appsedu").pixmap(128,128)
 		self.widget.wdgSplash.setMaximumWidth(1000)
-		self.widget.wdgSplash.setPixmap(self.pixmap.scaled(int(self.parent.width()/3.2),int(self.parent.height()/3.2),Qt.AspectRatioMode.IgnoreAspectRatio,Qt.SmoothTransformation))
+		#self.widget.wdgSplash.setPixmap(self.pixmap.scaled(int(self.parent.width()/3.2),int(self.parent.height()/3.2),Qt.AspectRatioMode.IgnoreAspectRatio,Qt.SmoothTransformation))
+		self.widget.wdgSplash.setPixmap(self.pixmap.scaled(int(self.parent.width()),int(self.parent.height()),Qt.AspectRatioMode.IgnoreAspectRatio,Qt.SmoothTransformation))
 	
 	def run(self):
 		if self.pixmap:
@@ -199,12 +202,18 @@ class details(QStackedWindowItem):
 	#def _processStreams
 
 	def setParms(self,*args):
+		print(args)
 		self.wdgSplash.setVisible(True)
 		self.stream=""
-		if "://" in args[-1]:
+		pxm=""
+		name=args[-1]
+		if isinstance(args[0],dict):
+			name=args[0].get("name","")
+			pxm=args[0].get("icon","")
+		elif "://" in args[-1]:
 			self.stream=args[-1]
-		else:
-			app=self.rc.showApp(args[-1])
+		if name!="":
+			app=self.rc.showApp(name)
 			try:
 				self.app=json.loads(app)
 			except Exception as e:
@@ -217,7 +226,10 @@ class details(QStackedWindowItem):
 						print(e)
 		icon=""
 		if self.stream=="":
-			icon=self.app.get("icon","")
+			if isinstance(pxm,QtGui.QPixmap):
+				icon=pxm
+			else:
+				icon=self.app.get("icon","")
 		c=waitCursor(self.parent,self,icon)
 		c.finished.connect(self._endSetParms)
 		c.start()
