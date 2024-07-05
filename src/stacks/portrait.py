@@ -215,6 +215,7 @@ class portrait(QStackedWindowItem):
 		icn=QtGui.QIcon.fromTheme("sort-name")
 		self.btnSort.setIcon(icn)
 		self.btnSort.clicked.connect(self._sortApps)
+		self.btnSort.setToolTip(i18n["SORTDSC"])
 		self.box.addWidget(self.btnSort,0,1,1,1,Qt.AlignLeft)
 		self.searchBox=QSearchBox()
 		self.searchBox.setToolTip(i18n["SEARCH"])
