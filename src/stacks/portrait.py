@@ -17,13 +17,17 @@ QString=type("")
 i18n={
 	"ALL":_("All"),
 	"AVAILABLE":_("Available"),
+	"CATEGORIESDSC":_("Filter by category"),
 	"CONFIG":_("Portrait"),
 	"DESC":_("Navigate through all applications"),
 	"FILTERS":_("Filters"),
+	"FILTERSDSC":_("Filter by formats and states"),
+	"HOMEDSC":_("Main page"),
 	"INSTALLED":_("Installed"),
 	"LLXUP":_("Launch LliurexUp"),
 	"MENU":_("Show applications"),
 	"SEARCH":_("Search"),
+	"SORTDSC":_("Sort alphabetically"),
 	"TOOLTIP":_("Portrait"),
 	"UPGRADABLE":_("Upgradables"),
 	"UPGRADES":_("There're upgrades available")
@@ -52,13 +56,13 @@ class QPushButtonRebostApp(QPushButton):
 		self.label=QLabel(text)
 		self.label.setWordWrap(True)
 		img=self.app.get('icon','')
-		self.icon=QLabel()
+		self.iconUri=QLabel()
 		self.iconSize=kwargs.get("iconSize",128)
 		self.loadImg(self.app)
 		self.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		lay=QHBoxLayout()
 		lay.addStretch()
-		lay.addWidget(self.icon,0)
+		lay.addWidget(self.iconUri,0)
 		lay.addWidget(self.label,1)
 		self.referrer=None
 		self.setDefault(True)
@@ -88,7 +92,7 @@ class QPushButtonRebostApp(QPushButton):
 			wsize=self.iconSize
 			if "/usr/share/banners/lliurex-neu" in img:
 				wsize*=2
-			self.icon.setPixmap(icn.scaled(wsize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
+			self.iconUri.setPixmap(icn.scaled(wsize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 		elif img.startswith('http'):
 			self.scr.start()
 			self.scr.imageLoaded.connect(self.load)
@@ -119,15 +123,16 @@ class QPushButtonRebostApp(QPushButton):
 			border-color: rgb(%s); 
 			border-width: 1px; 
 			border-radius: 2px;}"""%(rgbColor,rgbBcolor))
+	#def _applyDecoration
 
 	def _removeDecoration(self):
 		self.setObjectName("")
 		self.setStyleSheet("")
-
+	#def _removeDecoration
 	
 	def load(self,*args):
 		img=args[0]
-		self.icon.setPixmap(img.scaled(self.iconSize,self.iconSize))
+		self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
 	#def load
 	
 	def activate(self):
@@ -184,6 +189,7 @@ class portrait(QStackedWindowItem):
 		self.config=self.appconfig.getConfig()
 		self.box=QGridLayout()
 		self.setLayout(self.box)
+		self.sortAsc=False
 		wdg=QWidget()
 		hbox=QHBoxLayout()
 		btnHome=QPushButton()
@@ -205,10 +211,15 @@ class portrait(QStackedWindowItem):
 		hbox.addWidget(self.btnFilters)
 		wdg.setLayout(hbox)
 		self.box.addWidget(wdg,0,0,1,1,Qt.AlignLeft)
+		self.btnSort=QPushButton()
+		icn=QtGui.QIcon.fromTheme("sort-name")
+		self.btnSort.setIcon(icn)
+		self.btnSort.clicked.connect(self._sortApps)
+		self.box.addWidget(self.btnSort,0,1,1,1,Qt.AlignLeft)
 		self.searchBox=QSearchBox()
 		self.searchBox.setToolTip(i18n["SEARCH"])
 		self.searchBox.setPlaceholderText(i18n["SEARCH"])
-		self.box.addWidget(self.searchBox,0,1,1,1,Qt.AlignRight)
+		self.box.addWidget(self.searchBox,0,2,1,1,Qt.AlignRight)
 		self.searchBox.returnPressed.connect(self._searchApps)
 		self.searchBox.textChanged.connect(self._resetSearchBtnIcon)
 		self.searchBox.clicked.connect(self._searchAppsBtn)
@@ -222,12 +233,12 @@ class portrait(QStackedWindowItem):
 		#self.table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		self.resetScreen()
-		self.box.addWidget(self.table,1,0,1,2)
+		self.box.addWidget(self.table,1,0,1,self.box.columnCount())
 		btnSettings=QPushButton()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		btnSettings.setIcon(icn)
 		btnSettings.clicked.connect(self._gotoSettings)
-		self.box.addWidget(btnSettings,2,1,1,1,Qt.Alignment(-1))
+		self.box.addWidget(btnSettings,2,self.box.columnCount()-1,1,1,Qt.Alignment(-1))
 		self.lblInfo=QInfoLabel()
 		self.lblInfo.setActionText(i18n.get("LLXUP"))
 		self.lblInfo.setActionIcon("lliurex-up")
@@ -280,7 +291,9 @@ class portrait(QStackedWindowItem):
 			if len(cat)>1:
 				apps.extend(json.loads(self.rc.execute('list',"({})".format(categories))))
 			else:
-				apps.extend(json.loads(self.rc.execute('list',"{}".format(categories))))
+				#If max rows is defined rebost tries to return as many apps as possible
+				#getting categories from raw data (deep search)
+				apps.extend(json.loads(self.rc.execute('list',"{}".format(categories),1000)))
 			self._debug("Loading cat {}".format(",".join(cat)))
 		else:
 			categories=[]
@@ -308,6 +321,7 @@ class portrait(QStackedWindowItem):
 	#def _shuffleApps
 
 	def _goHome(self):
+		self.sortAsc=False
 		self.searchBox.setText("")
 		self._loadFilters()
 		self.apps=self._getAppList()
@@ -327,6 +341,8 @@ class portrait(QStackedWindowItem):
 			filters['package']=True
 		if filters.get("lliurex",False)==True:
 			self.apps=self._getAppList(["\"Lliurex\"","\"Lliurex-Administration\"","\"Lliurex-Infantil\""])
+		if filters.get("zomando",False)==True:
+			self.apps=self._getAppList(["Zomando"])
 		self.apps=self._applyFilters(filters)
 		self.updateScreen()
 	#def _filterView
@@ -410,6 +426,14 @@ class portrait(QStackedWindowItem):
 			icn=QtGui.QIcon.fromTheme("search")
 		self.searchBox.btnSearch.setIcon(icn)
 	#def _resetSearchBtnIcon
+
+	def _sortApps(self):
+		self.apps.sort()
+		self.sortAsc=not(self.sortAsc)
+		if self.sortAsc==False:
+			self.apps.reverse()
+		self.appsRaw=self.apps.copy()
+		self._filterView(getApps=False)
 
 	def _searchApps(self):
 		self.cmbCategories.setCurrentText(i18n.get("ALL"))
@@ -498,17 +522,21 @@ class portrait(QStackedWindowItem):
 	#def _loadData
 
 	def _loadDetails(self,*args,**kwargs):
+		icn=""
+		if isinstance(args[0],QPushButtonRebostApp):
+			icn=args[0].iconUri.pixmap()
+
 		c=waitCursor(self)
-		c.finished.connect(lambda:self._endLoadDetails(*args))
+		c.finished.connect(lambda:self._endLoadDetails(icn,*args))
 		c.start()
 	#def _loadDetails(self,*args,**kwargs):
 
-	def _endLoadDetails(self,*args):
+	def _endLoadDetails(self,icn,*args):
 #		self.stack.gotoStack(idx=3,parms=(args))
 		#Refresh all pkg info
 		self.referrer=args[0]
 		self.setChanged(False)
-		self.parent.setCurrentStack(idx=3,parms=args[-1].get("name",""))
+		self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
 	#def _loadDetails
 
 	def _gotoSettings(self):
