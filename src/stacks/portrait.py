@@ -17,13 +17,17 @@ QString=type("")
 i18n={
 	"ALL":_("All"),
 	"AVAILABLE":_("Available"),
+	"CATEGORIESDSC":_("Filter by category"),
 	"CONFIG":_("Portrait"),
 	"DESC":_("Navigate through all applications"),
 	"FILTERS":_("Filters"),
+	"FILTERSDSC":_("Filter by formats and states"),
+	"HOMEDSC":_("Main page"),
 	"INSTALLED":_("Installed"),
 	"LLXUP":_("Launch LliurexUp"),
 	"MENU":_("Show applications"),
 	"SEARCH":_("Search"),
+	"SORTDSC":_("Sort alphabetically"),
 	"TOOLTIP":_("Portrait"),
 	"UPGRADABLE":_("Upgradables"),
 	"UPGRADES":_("There're upgrades available")
@@ -184,6 +188,7 @@ class portrait(QStackedWindowItem):
 		self.config=self.appconfig.getConfig()
 		self.box=QGridLayout()
 		self.setLayout(self.box)
+		self.sortAsc=False
 		wdg=QWidget()
 		hbox=QHBoxLayout()
 		btnHome=QPushButton()
@@ -205,10 +210,15 @@ class portrait(QStackedWindowItem):
 		hbox.addWidget(self.btnFilters)
 		wdg.setLayout(hbox)
 		self.box.addWidget(wdg,0,0,1,1,Qt.AlignLeft)
+		self.btnSort=QPushButton()
+		icn=QtGui.QIcon.fromTheme("sort-name")
+		self.btnSort.setIcon(icn)
+		self.btnSort.clicked.connect(self._sortApps)
+		self.box.addWidget(self.btnSort,0,1,1,1,Qt.AlignLeft)
 		self.searchBox=QSearchBox()
 		self.searchBox.setToolTip(i18n["SEARCH"])
 		self.searchBox.setPlaceholderText(i18n["SEARCH"])
-		self.box.addWidget(self.searchBox,0,1,1,1,Qt.AlignRight)
+		self.box.addWidget(self.searchBox,0,2,1,1,Qt.AlignRight)
 		self.searchBox.returnPressed.connect(self._searchApps)
 		self.searchBox.textChanged.connect(self._resetSearchBtnIcon)
 		self.searchBox.clicked.connect(self._searchAppsBtn)
@@ -222,7 +232,7 @@ class portrait(QStackedWindowItem):
 		#self.table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		self.resetScreen()
-		self.box.addWidget(self.table,1,0,1,2)
+		self.box.addWidget(self.table,1,0,1,self.box.columnCount())
 		btnSettings=QPushButton()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		btnSettings.setIcon(icn)
@@ -308,6 +318,7 @@ class portrait(QStackedWindowItem):
 	#def _shuffleApps
 
 	def _goHome(self):
+		self.sortAsc=False
 		self.searchBox.setText("")
 		self._loadFilters()
 		self.apps=self._getAppList()
@@ -410,6 +421,13 @@ class portrait(QStackedWindowItem):
 			icn=QtGui.QIcon.fromTheme("search")
 		self.searchBox.btnSearch.setIcon(icn)
 	#def _resetSearchBtnIcon
+
+	def _sortApps(self):
+		self.apps.sort()
+		self.sortAsc=not(self.sortAsc)
+		if self.sortAsc==False:
+			self.apps.reverse()
+		self._filterView(getApps=False)
 
 	def _searchApps(self):
 		self.cmbCategories.setCurrentText(i18n.get("ALL"))
