@@ -237,7 +237,7 @@ class portrait(QStackedWindowItem):
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		btnSettings.setIcon(icn)
 		btnSettings.clicked.connect(self._gotoSettings)
-		self.box.addWidget(btnSettings,2,1,1,1,Qt.Alignment(-1))
+		self.box.addWidget(btnSettings,2,self.box.columnCount()-1,1,1,Qt.Alignment(-1))
 		self.lblInfo=QInfoLabel()
 		self.lblInfo.setActionText(i18n.get("LLXUP"))
 		self.lblInfo.setActionIcon("lliurex-up")
@@ -427,6 +427,7 @@ class portrait(QStackedWindowItem):
 		self.sortAsc=not(self.sortAsc)
 		if self.sortAsc==False:
 			self.apps.reverse()
+		self.appsRaw=self.apps.copy()
 		self._filterView(getApps=False)
 
 	def _searchApps(self):
