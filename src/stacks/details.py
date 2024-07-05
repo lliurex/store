@@ -641,7 +641,7 @@ class details(QStackedWindowItem):
 				version="lliurex23"
 				if not("eduapp" in bundles.keys() and len(bundles.keys())==1):
 					continue
-			fversion=version.split("+")[0]
+			fversion=version.split("+")[0][0:10]
 			release=QListWidgetItem("{} {}".format(fversion,i))
 			if i in priority:
 				idx=priority.index(i)
