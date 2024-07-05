@@ -56,7 +56,7 @@ class waitCursor(QThread):
 			self.pixmap=QtGui.QIcon.fromTheme("appsedu").pixmap(128,128)
 		self.widget.wdgSplash.setMaximumWidth(1000)
 		#self.widget.wdgSplash.setPixmap(self.pixmap.scaled(int(self.parent.width()/3.2),int(self.parent.height()/3.2),Qt.AspectRatioMode.IgnoreAspectRatio,Qt.SmoothTransformation))
-		self.widget.wdgSplash.setPixmap(self.pixmap.scaled(int(self.parent.width()),int(self.parent.height()),Qt.AspectRatioMode.IgnoreAspectRatio,Qt.SmoothTransformation))
+		self.widget.wdgSplash.setPixmap(self.pixmap.scaled(int(self.parent.width()/1.1),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatio,Qt.SmoothTransformation))
 	
 	def run(self):
 		if self.pixmap:
