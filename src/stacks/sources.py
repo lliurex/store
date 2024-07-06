@@ -45,8 +45,8 @@ class thWriteConfig(QThread):
 	#def __init__
 
 	def run(self):
-		self.appconfig.level="system"
-		self.appconfig.saveChanges('config','system',level='system')
+		self.appconfig.level="user"
+		self.appconfig.saveChanges('config','user',level='user')
 		for wdg in [self.chkSnap,self.chkFlatpak,self.chkApt,self.chkImage]:
 			key=""
 			if wdg==self.chkApt:
@@ -123,10 +123,11 @@ class sources(QStackedWindowItem):
 		self.rc=store.client()
 		self.appconfig=appConfig.appConfig()
 		self.appconfig.setConfig(confDirs={'system':os.path.join('/usr/share',"rebost"),'user':os.path.join(os.environ['HOME'],'.config',"rebost")},confFile="store.json")
+		self.hideControlButtons()
 		self.changed=[]
 		self.config={}
 		self.app={}
-		self.level='system'
+		self.level='user'
 		self.oldcursor=self.cursor()
 		self.proc=""
 	#def __init__
@@ -159,7 +160,7 @@ class sources(QStackedWindowItem):
 		btnReload=QPushButton(i18n.get("RELOAD"))
 		btnReload.setToolTip(i18n.get("RELOAD_TOOLTIP"))
 		btnReload.clicked.connect(self._reload)
-		self.box.addWidget(btnReload,2,2,1,1)
+		#self.box.addWidget(btnReload,2,2,1,1)
 		btnReset=QPushButton(i18n.get("RESET"))
 		btnReset.setToolTip(i18n.get("RESET_TOOLTIP"))
 		btnReset.clicked.connect(lambda x:self._resetDB(True))
