@@ -338,23 +338,31 @@ class portrait(QStackedWindowItem):
 		self.apps=self.appsRaw
 		self.resetScreen()
 		filters=self._readFilters()
-		if len(filters)==0:
-			filters['package']=True
-		if filters.get("lliurex",False)==True:
-			self.apps=self._getAppList(["\"Lliurex\"","\"Lliurex-Administration\"","\"Lliurex-Infantil\""])
-		if filters.get("zomando",False)==True:
-			self.apps=self._getAppList(["Zomando"])
+		if getApps==True:
+			if len(filters)==0:
+				filters['package']=True
+			if filters.get("lliurex",False)==True:
+				self.apps=self._getAppList(["\"Lliurex\"","\"Lliurex-Administration\"","\"Lliurex-Infantil\""])
+			if filters.get("zomando",False)==True:
+				self.apps=self._getAppList(["Zomando"])
 		self.apps=self._applyFilters(filters)
 		self.updateScreen()
 	#def _filterView
 
 	def _readFilters(self):
 		filters={}
+		desc=[]
 		for item in self.btnFilters.getItems():
 			if item.checkState()==Qt.Checked:
 				filters[item.text().lower()]=True
+				desc.append(item.text())
 		if len(filters)>1:
 			filters[i18n.get("ALL").lower()]=False
+		if len(desc)==0:
+			item=self.btnFilters.model().item(1)
+			item.setCheckState(Qt.Checked)
+			desc.append(item.text())
+		self.btnFilters.setText(",".join(desc)[0:20])
 		return(filters)
 	#def _readFilters
 
@@ -435,6 +443,7 @@ class portrait(QStackedWindowItem):
 			self.apps.reverse()
 		self.appsRaw=self.apps.copy()
 		self._filterView(getApps=False)
+	#def _sortApps
 
 	def _searchApps(self):
 		self.cmbCategories.setCurrentText(i18n.get("ALL"))
@@ -452,7 +461,7 @@ class portrait(QStackedWindowItem):
 		else:
 			icn=QtGui.QIcon.fromTheme("dialog-cancel")
 			self.apps=json.loads(self.rc.execute('search',txt))
-			self.appsRaw=self.apps
+			self.appsRaw=self.apps.copy()
 		self.searchBox.btnSearch.setIcon(icn)
 		self._filterView(getApps=False)
 	#def _searchApps
