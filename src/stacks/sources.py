@@ -142,6 +142,8 @@ class sources(QStackedWindowItem):
 		self.btnBack.setFixedSize(QSize(64,64))
 		self.box.addWidget(self.btnBack,0,0,1,1,Qt.AlignTop)
 		self.chkApt=QCheckBox(i18n.get("SOURCE_PK"))
+		self.chkApt.setChecked(True)
+		self.chkApt.setEnabled(False)
 		self.box.addWidget(self.chkApt,4,1,1,1,Qt.AlignLeft)
 		self.chkSnap=QCheckBox(i18n.get("SOURCE_SN"))
 		if shutil.which("snap")==None:
@@ -277,7 +279,8 @@ class sources(QStackedWindowItem):
 		self.chkImage.setChecked(True)
 		for key,value in self.config.get(self.level,{}).items():
 			if key=="packageKit":
-				self.chkApt.setChecked(value)
+				#self.chkApt.setChecked(value)
+				self.chkApt.setChecked(True)
 			if key=="snap":
 				self.chkSnap.setChecked(value)
 			if key=="flatpak":
