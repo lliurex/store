@@ -176,7 +176,7 @@ class portrait(QStackedWindowItem):
 		self.rc=store.client()
 		self.hideControlButtons()
 		self.changed=[]
-		self.level='system'
+		self.level='user'
 		self.oldcursor=self.cursor()
 	#def __init__
 
