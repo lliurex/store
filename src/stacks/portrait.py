@@ -570,6 +570,12 @@ class portrait(QStackedWindowItem):
 	#def resetScreen
 
 	def setParms(self,*args,**kwargs):
+		#For some reason setParms is launching N times
+		#referrer will be only fulfilled when details stack
+		#fires events, when is a repeated call to setParms
+		#referrer will be none so function can exit. This must be investigated
+		if self.referrer==None:
+			return()
 		for arg in args:
 			if isinstance(arg,dict):
 				for key,item in arg.items():
@@ -597,6 +603,7 @@ class portrait(QStackedWindowItem):
 					self.referrer._applyDecoration()
 				elif self.referrer!=None:
 					self.referrer._removeDecoration()
+		self.referrer=None
 	#def setParms
 
 	def _updateConfig(self,key):

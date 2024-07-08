@@ -176,6 +176,7 @@ class details(QStackedWindowItem):
 		cat=args[0][0].replace("#","")
 		self.parent.setWindowTitle("AppsEdu - {}".format(cat))
 		self.parent.setCurrentStack(1,parms={"refresh":True,"cat":cat})
+	#def _tagNav(self,*args)
 
 	def _processStreams(self,args):
 		self.app={}
@@ -202,7 +203,6 @@ class details(QStackedWindowItem):
 	#def _processStreams
 
 	def setParms(self,*args):
-		print(args)
 		self.wdgSplash.setVisible(True)
 		self.stream=""
 		pxm=""
