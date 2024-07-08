@@ -1,6 +1,7 @@
 appsedu (1.1.3) jammy; urgency=medium
 
   * Better app filtering
+  * Optimized link navigation 
   * Improve load time for filters
   * Minor look&feel changes
 
