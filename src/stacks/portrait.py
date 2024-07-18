@@ -574,6 +574,8 @@ class portrait(QStackedWindowItem):
 		#referrer will be only fulfilled when details stack
 		#fires events, when is a repeated call to setParms
 		#referrer will be none so function can exit. This must be investigated
+		if not hasattr(self,"referrer"):
+			return()
 		if self.referrer==None:
 			return()
 		for arg in args:
