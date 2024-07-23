@@ -14,6 +14,8 @@ import gettext
 _ = gettext.gettext
 QString=type("")
 
+MINTIME=0.2
+
 i18n={
 	"ALL":_("All"),
 	"AVAILABLE":_("Available"),
@@ -71,7 +73,6 @@ class QPushButtonRebostApp(QPushButton):
 	#def __init__
 
 	def loadImg(self,app):
-		return
 		img=app.get('icon','')
 		self.aux=QScreenShotContainer()
 		self.scr=self.aux.loadScreenShot(img,self.cacheDir)
@@ -157,6 +158,8 @@ class QPushButtonRebostApp(QPushButton):
 class portrait(QStackedWindowItem):
 	def __init_stack__(self):
 		self.aux=[]
+		self.minTime=1
+		self.oldTime=int(time.time())
 		self.dbg=True
 		self.enabled=True
 		self._debug("portrait load")
@@ -169,6 +172,7 @@ class portrait(QStackedWindowItem):
 		self.appconfig=appConfig.appConfig()
 		self.appconfig.setConfig(confDirs={'system':'/usr/share/rebost','user':os.path.join(os.environ['HOME'],'.config/rebost')},confFile="store.json")
 		self.i18nCat={}
+		self.oldCat=""
 		self.catI18n={}
 		self.config={}
 		self.index=1
@@ -353,7 +357,6 @@ class portrait(QStackedWindowItem):
 				self.apps=self._getAppList(["Zomando"])
 		self.apps=self._applyFilters(filters)
 		self.updateScreen()
-		time.sleep(0.1)
 	#def _filterView
 
 	def _readFilters(self):
@@ -486,34 +489,40 @@ class portrait(QStackedWindowItem):
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.searchBox.setText("")
+		if time.time()-self.oldTime<MINTIME:
+			self.cmbCategories.setCurrentText(self.oldCat)
+			return
 		self.resetScreen()
 		i18ncat=self.cmbCategories.currentText()
-		self.grabKeyboard()
+		if self.oldCat!=i18ncat:
+			self.oldCat=i18ncat
 		cat=self.i18nCat.get(i18ncat,i18ncat)
 		if cat==i18n.get("ALL"):
 			cat=""
 		self.apps=self._getAppList(cat)
 		self._filterView(getApps=False)
+		self.releaseKeyboard()
+		self.oldTime=time.time()
 	#def _loadCategory
 
 	def _getMoreData(self):
 		if (self.table.verticalScrollBar().value()==self.table.verticalScrollBar().maximum()) and self.appsLoaded!=len(self.apps):
 			self._loadData(self.appsLoaded,self.appsLoaded+self.appsToLoad)
+			for wdg in self.wdgs:
+				self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
 	#def _getMoreData
 
 	def _loadData(self,idx,idx2,applist=None):
-		print("TOTAL: {}".format(len(self.apps)))
-		print("FROM: {} TO: {}".format(idx,idx2))
 		if applist==None:
 			apps=self.apps[idx:idx2]
 		else:
 			apps=applist[idx:idx2]
 		col=0
-		print("REMAINDER:  {}".format(len(apps)))
 		#self.table.setRowHeight(self.table.rowCount()-1,btn.iconSize+int(btn.iconSize/16))
 		colspan=random.randint(1,3)
 		span=colspan
 		btn=None
+		self.wdgs=[]
 		for strapp in apps:
 			jsonapp=json.loads(strapp)
 			if jsonapp.get('name','') in self.appsSeen:
@@ -523,7 +532,7 @@ class portrait(QStackedWindowItem):
 			row=self.table.rowCount()-1
 			btn=QPushButtonRebostApp(strapp)
 			btn.clicked.connect(self._loadDetails)
-			self.table.setCellWidget(row,col,btn)
+			self.wdgs.append((row,col,btn))
 			col+=1
 			span=span-1
 			if span==0:
@@ -539,12 +548,10 @@ class portrait(QStackedWindowItem):
 				self.table.setRowCount(self.table.rowCount()+1)
 				col=0
 			self.appsLoaded+=1
+
 		if btn!=None:
 			self.table.setRowHeight(self.table.rowCount()-1,btn.iconSize+int(btn.iconSize/16))
-		print("STATS")
-		print("Loaded: {}".format(self.appsLoaded))
-		print("Loading: {}".format(self.appsToLoad))
-		print("New value Loaded: {}".format(self.appsLoaded))
+		return(self.wdgs)
 	#def _loadData
 
 	def _loadDetails(self,*args,**kwargs):
@@ -586,10 +593,11 @@ class portrait(QStackedWindowItem):
 	def updateScreen(self):
 		self.cleanAux()
 		self._loadData(self.appsLoaded,self.appsToLoad)
+		for wdg in self.wdgs:
+			self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
 		#self.table.show()
 		self.cleanAux()
 		self.setCursor(self.oldcursor)
-		self.releaseKeyboard()
 	#def _udpate_screen
 
 	def resetScreen(self):
