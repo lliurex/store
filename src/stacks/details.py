@@ -42,33 +42,17 @@ i18n={
 	}
 	
 class waitCursor(QThread):
-	def __init__(self,parent,widget,icon=""):
+	def __init__(self,parent,widget):
 		QThread.__init__(self, parent)
 		self.parent=parent
 		self.widget=widget
-		self.pixmap=None
-		if isinstance(icon,QtGui.QPixmap):
-			self.pixmap=icon
-		elif len(icon)>0:
-			if os.path.isfile(icon):
-				self.pixmap=QtGui.QPixmap(icon)
-		if not self.pixmap:
-			self.pixmap=QtGui.QIcon.fromTheme("appsedu").pixmap(128,128)
-		self.widget.wdgSplash.setMaximumWidth(1000)
-		#self.widget.wdgSplash.setPixmap(self.pixmap.scaled(int(self.parent.width()/3.2),int(self.parent.height()/3.2),Qt.AspectRatioMode.IgnoreAspectRatio,Qt.SmoothTransformation))
-		self.widget.wdgSplash.setPixmap(self.pixmap.scaled(int(self.parent.width()/1.1),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatio,Qt.SmoothTransformation))
 	
 	def run(self):
-		if self.pixmap:
-			qpal=QtGui.QPalette()
-			color=qpal.color(qpal.Dark)
-			self.widget.wdgSplash.setStyleSheet("background-color:rgba(%s,%s,%s,0.5);"%(color.red(),color.green(),color.blue()))
-		self.parent.setCursor(Qt.WaitCursor)
 		self.widget.setCursor(Qt.WaitCursor)
 #class waitCursor
 
-class epiClass(QThread):
-	epiEnded=Signal("PyObject","PyObject")
+class runClass(QThread):
+	runEnded=Signal("PyObject","PyObject")
 	def __init__(self,parent=None):
 		QThread.__init__(self, parent)
 		self.app={}
@@ -82,23 +66,36 @@ class epiClass(QThread):
 			oldBundle=self.app.get('bundle')
 			newBundle={bundle:oldBundle.get(bundle)}
 			self.app['bundle']=newBundle
-
 	#def setArgs
 
 	def run(self):
-		launched=False
 		if self.app and self.args:
 			try:
-				subprocess.run(["xhost","+"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 				proc=subprocess.run(self.args,stderr=subprocess.PIPE,universal_newlines=True)
-				subprocess.run(["xhost","-"])
 			except Exception as e:
 				print(e)
-			self.epiEnded.emit(self.app,proc)
-			launched=True
-		return launched
+			self.runEnded.emit(self.app,proc)
 	#def run
-#class epiClass
+#class runClass
+
+class thShowApp(QThread):
+	showEnded=Signal("PyObject")
+	def __init__(self,parent=None):
+		QThread.__init__(self, parent)
+		self.rc=store.client()
+		self.app=""
+	#def __init__
+
+	def setArgs(self,*args):
+		self.app=args[0]
+	#def setArgs(self:
+
+	def run(self):
+		if self.app!="":
+			app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
+			self.showEnded.emit(json.loads(app))
+	#def run
+#class thShowApp
 
 class QLabelRebostApp(QLabel):
 	clicked=Signal("PyObject")
@@ -159,8 +156,9 @@ class details(QStackedWindowItem):
 		self.hideControlButtons()
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
 		self.helper=libhelper.helper()
-		self.epi=epiClass()
-		self.runapp=epiClass()
+		self.epi=runClass()
+		self.runapp=runClass()
+		self.thShow=thShowApp()
 		self.oldcursor=self.cursor()
 		self.appmenu=app2menu.app2menu()
 		self.stream=""
@@ -177,6 +175,24 @@ class details(QStackedWindowItem):
 		self.parent.setWindowTitle("AppsEdu - {}".format(cat))
 		self.parent.setCurrentStack(1,parms={"refresh":True,"cat":cat})
 	#def _tagNav(self,*args)
+
+	def _showSplash(self,icon):
+		pxm=None
+		if isinstance(icon,QtGui.QPixmap):
+			pxm=icon
+		elif len(icon)>0:
+			if os.path.isfile(icon):
+				pxm=QtGui.QPixmap(icon)
+		if not pxm:
+			pxm=QtGui.QIcon.fromTheme("appsedu").pixmap(128,128)
+		if isinstance(pxm,QtGui.QPixmap):
+			qpal=QtGui.QPalette()
+			color=qpal.color(qpal.Dark)
+			self.wdgSplash.setPixmap(pxm.scaled(int(self.parent.width()/1.1),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatio,Qt.SmoothTransformation))
+		self.wdgSplash.setMaximumWidth(1000)
+		self.wdgSplash.setStyleSheet("background-color:rgba(%s,%s,%s,0.5);"%(color.red(),color.green(),color.blue()))
+		self.wdgSplash.setVisible(True)
+	#def _showSplash
 
 	def _processStreams(self,args):
 		self.app={}
@@ -203,7 +219,6 @@ class details(QStackedWindowItem):
 	#def _processStreams
 
 	def setParms(self,*args):
-		self.wdgSplash.setVisible(True)
 		self.stream=""
 		pxm=""
 		name=args[-1]
@@ -212,6 +227,7 @@ class details(QStackedWindowItem):
 			pxm=args[0].get("icon","")
 		elif "://" in args[-1]:
 			self.stream=args[-1]
+		self.screenShot.clear()
 		if name!="":
 			app=self.rc.showApp(name)
 			try:
@@ -230,7 +246,8 @@ class details(QStackedWindowItem):
 				icon=pxm
 			else:
 				icon=self.app.get("icon","")
-		c=waitCursor(self.parent,self,icon)
+		self._showSplash(icon)
+		c=waitCursor(self.parent,self)
 		c.finished.connect(self._endSetParms)
 		c.start()
 	#def setParms
@@ -247,9 +264,9 @@ class details(QStackedWindowItem):
 				if bundle=='package':
 					continue
 				name=self.app.get('name','')
-				if name!='':
-					status=self.rc.getAppStatus(name,bundle)
-					self.app['state'][bundle]=str(status)
+			#	if name!='':
+			#		status=self.rc.getAppStatus(name,bundle)
+			#		self.app['state'][bundle]=str(status)
 		self.setCursor(self.oldcursor)
 		self.anim = QPropertyAnimation(self.wdgSplash, b"maximumWidth",parent=self)
 
@@ -266,24 +283,27 @@ class details(QStackedWindowItem):
 	def _runApp(self):
 		bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
 		cmd=self.helper.getCmdForLauncher(self.app,bundle)
-		print(cmd)
 		self.runapp.setArgs(self.app,cmd,bundle)
-		self.runapp.epiEnded.connect(self._getRunappResults)
+		self.runapp.runEnded.connect(self._getRunappResults)
 		self.runapp.start()
 		self.showMsg("{} {}".format(i18n.get("OPENING"),self.app["name"]))
-		return
 	#def _runApp
 
 	def _getRunappResults(self,app,proc):
 		cont=0
 		if proc.returncode!=0 and "gtk-launch" in proc.stderr:
+			pkgname=app["pkgname"].split(".")[-1]
+			bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
 			if app.get("relaunch",False)==False:
 				app["relaunch"]=True
-				self.runapp.epiEnded.connect(self._getRunappResults)
-				pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
+				self.runapp.runEnded.connect(self._getRunappResults)
 			else:
-				pkgname=app["pkgname"].split(".")[-1]
-			self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname)],"package")
+				if bundle.lower()=="appimage":
+					pkgname=app["pkgname"]+"-appimage"
+				else:
+					pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
+				pkgname=pkgname.replace("org.packagekit.","")
+			self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname)],bundle)
 			self.runapp.start()
 			cont+=1
 	#def _getEpiResults
@@ -312,25 +332,32 @@ class details(QStackedWindowItem):
 		else:
 			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
 			self.epi.setArgs(self.app,cmd,bundle)
-			self.epi.epiEnded.connect(self._getEpiResults)
+			self.epi.runEnded.connect(self._getEpiResults)
 			self.epi.start()
 	#def _genericEpiInstall
 	
 	def _getEpiResults(self,app,*args):
+		cursor=QtGui.QCursor(Qt.WaitCursor)
+		self.setCursor(cursor)
 		if app.get('name','')!=self.app.get('name',''):
+			print(app.get('name',''))
+			print(self.app.get('name',''))
+			print("ERROR!!!!!")
+
 			return
-		self.app=json.loads(self.rc.showApp(app.get('name','')))[0]
+		self.thShow.setArgs(app)
+		self.thShow.showEnded.connect(self._endGetEpiResults)
+		self.thShow.start()
+	#def _getEpiResults
+
+	def _endGetEpiResults(self,app):
+		self.thShow.wait()
+		self.app=app
 		bundle=list(app.get('bundle').keys())[0]
 		state=app.get('state',{}).get(bundle,1)
 		self.rc.commitInstall(app.get('name'),bundle,state)
-		if isinstance(self.app,str):
-			try:
-				self.app=json.loads(self.app)
-			except Exception as e:
-				print(e)
-				self.app={}
 		self.updateScreen()
-	#def _getEpiResults
+	 #def _endGetEpiResults
 
 	def __initScreen__(self):
 		self.box=QGridLayout()
@@ -456,6 +483,7 @@ class details(QStackedWindowItem):
 		scrs=self.app.get('screenshots',[])
 		if isinstance(scrs,list)==False:
 			scrs=[]
+		self.screenShot.clear()
 		if len(scrs)==0:
 			self.screenShot.setVisible(False)
 		else:
