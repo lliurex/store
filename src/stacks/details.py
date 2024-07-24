@@ -42,28 +42,12 @@ i18n={
 	}
 	
 class waitCursor(QThread):
-	def __init__(self,parent,widget,icon=""):
+	def __init__(self,parent,widget):
 		QThread.__init__(self, parent)
 		self.parent=parent
 		self.widget=widget
-		self.pixmap=None
-		if isinstance(icon,QtGui.QPixmap):
-			self.pixmap=icon
-		elif len(icon)>0:
-			if os.path.isfile(icon):
-				self.pixmap=QtGui.QPixmap(icon)
-		if not self.pixmap:
-			self.pixmap=QtGui.QIcon.fromTheme("appsedu").pixmap(128,128)
-		self.widget.wdgSplash.setMaximumWidth(1000)
-		#self.widget.wdgSplash.setPixmap(self.pixmap.scaled(int(self.parent.width()/3.2),int(self.parent.height()/3.2),Qt.AspectRatioMode.IgnoreAspectRatio,Qt.SmoothTransformation))
-		self.widget.wdgSplash.setPixmap(self.pixmap.scaled(int(self.parent.width()/1.1),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatio,Qt.SmoothTransformation))
 	
 	def run(self):
-		if self.pixmap:
-			qpal=QtGui.QPalette()
-			color=qpal.color(qpal.Dark)
-			self.widget.wdgSplash.setStyleSheet("background-color:rgba(%s,%s,%s,0.5);"%(color.red(),color.green(),color.blue()))
-		self.parent.setCursor(Qt.WaitCursor)
 		self.widget.setCursor(Qt.WaitCursor)
 #class waitCursor
 
@@ -82,7 +66,6 @@ class epiClass(QThread):
 			oldBundle=self.app.get('bundle')
 			newBundle={bundle:oldBundle.get(bundle)}
 			self.app['bundle']=newBundle
-
 	#def setArgs
 
 	def run(self):
@@ -178,6 +161,24 @@ class details(QStackedWindowItem):
 		self.parent.setCurrentStack(1,parms={"refresh":True,"cat":cat})
 	#def _tagNav(self,*args)
 
+	def _showSplash(self,icon):
+		pxm=None
+		if isinstance(icon,QtGui.QPixmap):
+			pxm=icon
+		elif len(icon)>0:
+			if os.path.isfile(icon):
+				pxm=QtGui.QPixmap(icon)
+		if not pxm:
+			pxm=QtGui.QIcon.fromTheme("appsedu").pixmap(128,128)
+		if isinstance(pxm,QtGui.QPixmap):
+			qpal=QtGui.QPalette()
+			color=qpal.color(qpal.Dark)
+			self.wdgSplash.setPixmap(pxm.scaled(int(self.parent.width()/1.1),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatio,Qt.SmoothTransformation))
+		self.wdgSplash.setMaximumWidth(1000)
+		self.wdgSplash.setStyleSheet("background-color:rgba(%s,%s,%s,0.5);"%(color.red(),color.green(),color.blue()))
+		self.wdgSplash.setVisible(True)
+	#def _showSplash
+
 	def _processStreams(self,args):
 		self.app={}
 		if isinstance(args,str):
@@ -203,7 +204,6 @@ class details(QStackedWindowItem):
 	#def _processStreams
 
 	def setParms(self,*args):
-		self.wdgSplash.setVisible(True)
 		self.stream=""
 		pxm=""
 		name=args[-1]
@@ -212,6 +212,7 @@ class details(QStackedWindowItem):
 			pxm=args[0].get("icon","")
 		elif "://" in args[-1]:
 			self.stream=args[-1]
+		self.screenShot.clear()
 		if name!="":
 			app=self.rc.showApp(name)
 			try:
@@ -230,7 +231,10 @@ class details(QStackedWindowItem):
 				icon=pxm
 			else:
 				icon=self.app.get("icon","")
-		c=waitCursor(self.parent,self,icon)
+		self._showSplash(icon)
+		cursor=QtGui.QCursor(Qt.WaitCursor)
+		self.setCursor(cursor)
+		c=waitCursor(self.parent,self)
 		c.finished.connect(self._endSetParms)
 		c.start()
 	#def setParms
@@ -456,6 +460,7 @@ class details(QStackedWindowItem):
 		scrs=self.app.get('screenshots',[])
 		if isinstance(scrs,list)==False:
 			scrs=[]
+		self.screenShot.clear()
 		if len(scrs)==0:
 			self.screenShot.setVisible(False)
 		else:
