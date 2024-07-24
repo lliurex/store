@@ -115,10 +115,10 @@ class QPushButtonRebostApp(QPushButton):
 			self.scr.imageLoaded.connect(self.load)
 		installed=False
 		forbidden=False
-		if "0"  in str(self.app.get('state',1)):
+		if "0"  in str(app.get('state',1)):
 			#self.setStyleSheet("""QPushButton{background-color: rgba(140, 255, 0, 70);}""")
 			installed=True
-		if "Forbidden" in self.app.get("categories",[]):
+		if "Forbidden" in app.get("categories",[]):
 			forbidden=True
 		self._applyDecoration(forbidden,installed)
 	#def loadImg
@@ -682,6 +682,10 @@ class portrait(QStackedWindowItem):
 			if len(cat)>0:
 				self.cmbCategories.setCurrentText(self.catI18n.get(cat,cat))
 				self._loadCategory()
+			elif len(app)>0:
+				self._searchApps()
+			else:
+				self.updateScreen()
 		self.referrer=None
 	#def setParms
 
