@@ -619,7 +619,6 @@ class portrait(QStackedWindowItem):
 			for w in self.aux:
 				if hasattr(w,"finished"):
 					print("Finish {}".format(w))
-					w.finished.connect(self._thTERM)
 					w.terminate()
 					w.wait()
 					self.aux.remove(w)
