@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import sys,time
 import os
+from lliurex import lliurexup
 from PySide2.QtWidgets import QApplication, QLabel, QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread
@@ -35,14 +36,23 @@ i18n={
 	"UPGRADES":_("There're upgrades available")
 	}
 
-class waitCursor(QThread):
-	def __init__(self,parent):
-		QThread.__init__(self, parent)
-		self.parent=parent
+class chkUpgrades(QThread):
+	chkEnded=Signal("PyObject")
+	def __init__(self,rc):
+		QThread.__init__(self, None)
+		self.rc=rc
+		self.upgrades=False
 	
 	def run(self):
-		self.parent.setCursor(Qt.WaitCursor)
-#class waitCursor
+		apps=json.loads(self.rc.getUpgradableApps())
+		if len(apps)>0:
+			self.upgrades=True
+		else:
+			llxup=lliurexup.LliurexUpCore()
+			if len(llxup.getPackagesToUpdate())>0:
+				self.upgrades=True
+		self.chkEnded.emit(self.upgrades)
+#class chkUpgrades
 
 class QPushButtonRebostApp(QPushButton):
 	clicked=Signal("PyObject","PyObject")
@@ -100,22 +110,26 @@ class QPushButtonRebostApp(QPushButton):
 		elif img.startswith('http'):
 			self.scr.start()
 			self.scr.imageLoaded.connect(self.load)
-		if "0" not in str(self.app.get('state',1)):
+		installed=False
+		forbidden=False
+		if "0"  in str(self.app.get('state',1)):
 			#self.setStyleSheet("""QPushButton{background-color: rgba(140, 255, 0, 70);}""")
-			self._applyDecoration()
+			installed=True
 		if "Forbidden" in self.app.get("categories",[]):
-			self._applyDecoration(forbidden=True)
+			forbidden=True
+		self._applyDecoration(forbidden,installed)
 	#def loadImg
 
-	def _applyDecoration(self,forbidden=False):
+	def _applyDecoration(self,forbidden=False,installed=False):
 		self.setObjectName("rebostapp")
 		self.setAttribute(Qt.WA_StyledBackground, True)
-		if forbidden==False:
-			bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Mid))
-			color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
-		else:
-			bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Light))
+		color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
+		bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Dark))
+		if forbidden==True:
+			bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Base))
 			color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Dark))
+		elif installed==True:
+			color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Highlight))
 		self.setAutoFillBackground(True)
 		pal=self.palette()
 		#pal.setColor(QPalette.Window,bcolor)
@@ -126,7 +140,10 @@ class QPushButtonRebostApp(QPushButton):
 			border-style: solid; 
 			border-color: rgb(%s); 
 			border-width: 1px; 
-			border-radius: 2px;}"""%(rgbColor,rgbBcolor))
+			border-radius: 2px;}
+			QPushButton:hover {
+    			background-color: rgb(0, 0, 0);     
+			}"""%(rgbColor,rgbBcolor))
 	#def _applyDecoration
 
 	def _removeDecoration(self):
@@ -320,11 +337,18 @@ class portrait(QStackedWindowItem):
 		return(apps)
 	#def _getAppList
 
+	def _endGetUpgradables(self,*args):
+		print(args)
+		if args[0]==True:
+			self.lblInfo.setVisible(True)
+		self.th.wait()
+	#def _endGetUpgradables(self,*args):
+
 	def _getUpgradables(self):
 		self.lblInfo.setVisible(False)
-		apps=json.loads(self.rc.getUpgradableApps())
-		if len(apps)>0:
-			self.lblInfo.setVisible(True)
+		self.th=chkUpgrades(self.rc)
+		self.th.chkEnded.connect(self._endGetUpgradables)
+		self.th.start()
 	#def _getUpgradables
 
 	def _shuffleApps(self):
@@ -332,6 +356,9 @@ class portrait(QStackedWindowItem):
 	#def _shuffleApps
 
 	def _goHome(self):
+		if time.time()-self.oldTime<MINTIME*2:
+			return
+		self.oldTime=time.time()
 		self.sortAsc=False
 		self.searchBox.setText("")
 		self._loadFilters()
@@ -486,12 +513,12 @@ class portrait(QStackedWindowItem):
 	#def _searchAppsBtn
 
 	def _loadCategory(self):
-		cursor=QtGui.QCursor(Qt.WaitCursor)
-		self.setCursor(cursor)
-		self.searchBox.setText("")
 		if time.time()-self.oldTime<MINTIME:
 			self.cmbCategories.setCurrentText(self.oldCat)
 			return
+		cursor=QtGui.QCursor(Qt.WaitCursor)
+		self.setCursor(cursor)
+		self.searchBox.setText("")
 		self.resetScreen()
 		i18ncat=self.cmbCategories.currentText()
 		if self.oldCat!=i18ncat:
@@ -556,12 +583,11 @@ class portrait(QStackedWindowItem):
 
 	def _loadDetails(self,*args,**kwargs):
 		icn=""
+		cursor=QtGui.QCursor(Qt.WaitCursor)
+		self.setCursor(cursor)
 		if isinstance(args[0],QPushButtonRebostApp):
 			icn=args[0].iconUri.pixmap()
-
-		c=waitCursor(self)
-		c.finished.connect(lambda:self._endLoadDetails(icn,*args))
-		c.start()
+		self._endLoadDetails(icn,*args)
 	#def _loadDetails(self,*args,**kwargs):
 
 	def _endLoadDetails(self,icn,*args):
@@ -583,11 +609,18 @@ class portrait(QStackedWindowItem):
 	#def _thTERM
 
 	def cleanAux(self,*args):
-		for w in self.aux:
-			w.finished.connect(self._thTERM)
-			w.wait()
-		self.aux=[]
+		print("Cleaning")
+		if isinstance(self.aux,list):
+			for w in self.aux:
+				if hasattr(w,"finished"):
+					print("Finish {}".format(w))
+					w.finished.connect(self._thTERM)
+					w.terminate()
+					w.wait()
+					self.aux.remove(w)
+					print("Removed {}".format(w))
 		self._debug("Caching: {}".format(len(self.aux)))
+		print("Cleaned")
 	#def cleanAux
 
 	def updateScreen(self):
