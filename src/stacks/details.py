@@ -52,7 +52,7 @@ class waitCursor(QThread):
 #class waitCursor
 
 class runClass(QThread):
-	epiEnded=Signal("PyObject","PyObject")
+	runEnded=Signal("PyObject","PyObject")
 	def __init__(self,parent=None):
 		QThread.__init__(self, parent)
 		self.app={}
@@ -74,9 +74,28 @@ class runClass(QThread):
 				proc=subprocess.run(self.args,stderr=subprocess.PIPE,universal_newlines=True)
 			except Exception as e:
 				print(e)
-			self.epiEnded.emit(self.app,proc)
+			self.runEnded.emit(self.app,proc)
 	#def run
 #class runClass
+
+class thShowApp(QThread):
+	showEnded=Signal("PyObject")
+	def __init__(self,parent=None):
+		QThread.__init__(self, parent)
+		self.rc=store.client()
+		self.app=""
+	#def __init__
+
+	def setArgs(self,*args):
+		self.app=args[0]
+	#def setArgs(self:
+
+	def run(self):
+		if self.app!="":
+			app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
+			self.showEnded.emit(json.loads(app))
+	#def run
+#class thShowApp
 
 class QLabelRebostApp(QLabel):
 	clicked=Signal("PyObject")
@@ -139,6 +158,7 @@ class details(QStackedWindowItem):
 		self.helper=libhelper.helper()
 		self.epi=runClass()
 		self.runapp=runClass()
+		self.thShow=thShowApp()
 		self.oldcursor=self.cursor()
 		self.appmenu=app2menu.app2menu()
 		self.stream=""
@@ -263,12 +283,10 @@ class details(QStackedWindowItem):
 	def _runApp(self):
 		bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
 		cmd=self.helper.getCmdForLauncher(self.app,bundle)
-		print(cmd)
 		self.runapp.setArgs(self.app,cmd,bundle)
-		self.runapp.epiEnded.connect(self._getRunappResults)
+		self.runapp.runEnded.connect(self._getRunappResults)
 		self.runapp.start()
 		self.showMsg("{} {}".format(i18n.get("OPENING"),self.app["name"]))
-		return
 	#def _runApp
 
 	def _getRunappResults(self,app,proc):
@@ -278,7 +296,7 @@ class details(QStackedWindowItem):
 			bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
 			if app.get("relaunch",False)==False:
 				app["relaunch"]=True
-				self.runapp.epiEnded.connect(self._getRunappResults)
+				self.runapp.runEnded.connect(self._getRunappResults)
 			else:
 				if bundle.lower()=="appimage":
 					pkgname=app["pkgname"]+"-appimage"
@@ -314,29 +332,32 @@ class details(QStackedWindowItem):
 		else:
 			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
 			self.epi.setArgs(self.app,cmd,bundle)
-			self.epi.epiEnded.connect(self._getEpiResults)
+			self.epi.runEnded.connect(self._getEpiResults)
 			self.epi.start()
 	#def _genericEpiInstall
 	
 	def _getEpiResults(self,app,*args):
+		cursor=QtGui.QCursor(Qt.WaitCursor)
+		self.setCursor(cursor)
 		if app.get('name','')!=self.app.get('name',''):
 			print(app.get('name',''))
 			print(self.app.get('name',''))
 			print("ERROR!!!!!")
 
 			return
-		self.app=json.loads(self.rc.showApp(app.get('name','')))[0]
+		self.thShow.setArgs(app)
+		self.thShow.showEnded.connect(self._endGetEpiResults)
+		self.thShow.start()
+	#def _getEpiResults
+
+	def _endGetEpiResults(self,app):
+		self.thShow.wait()
+		self.app=app
 		bundle=list(app.get('bundle').keys())[0]
 		state=app.get('state',{}).get(bundle,1)
 		self.rc.commitInstall(app.get('name'),bundle,state)
-		if isinstance(self.app,str):
-			try:
-				self.app=json.loads(self.app)
-			except Exception as e:
-				print(e)
-				self.app={}
 		self.updateScreen()
-	#def _getEpiResults
+	 #def _endGetEpiResults
 
 	def __initScreen__(self):
 		self.box=QGridLayout()
