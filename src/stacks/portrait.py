@@ -82,6 +82,9 @@ class QPushButtonRebostApp(QPushButton):
 		self.setLayout(lay)
 	#def __init__
 
+	def enterEvent(self,*args):
+		self.setFocus()
+
 	def loadImg(self,app):
 		img=app.get('icon','')
 		self.aux=QScreenShotContainer()
@@ -141,9 +144,11 @@ class QPushButtonRebostApp(QPushButton):
 			border-color: rgb(%s); 
 			border-width: 1px; 
 			border-radius: 2px;}
-			QPushButton:hover {
-    			background-color: rgb(0, 0, 0);     
-			}"""%(rgbColor,rgbBcolor))
+			#rebostapp:focus:!pressed {
+				border-width:3px;
+				}
+			"""%(rgbColor,rgbBcolor))
+
 	#def _applyDecoration
 
 	def _removeDecoration(self):
@@ -678,14 +683,6 @@ class portrait(QStackedWindowItem):
 			if len(cat)>0:
 				self.cmbCategories.setCurrentText(self.catI18n.get(cat,cat))
 				self._loadCategory()
-			else:
-				if "Forbidden" in app.get("categories",[]):
-					self.referrer._applyDecoration(forbidden=True)
-				elif "0" not in str(app.get('state',1)):
-					#self.setStyleSheet("""QPushButton{background-color: rgba(140, 255, 0, 70);}""")
-					self.referrer._applyDecoration()
-				elif self.referrer!=None:
-					self.referrer._removeDecoration()
 		self.referrer=None
 	#def setParms
 
