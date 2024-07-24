@@ -339,6 +339,7 @@ class details(QStackedWindowItem):
 	def _getEpiResults(self,app,*args):
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
+		self.setEnabled(False)
 		if app.get('name','')!=self.app.get('name',''):
 			print(app.get('name',''))
 			print(self.app.get('name',''))
@@ -356,6 +357,7 @@ class details(QStackedWindowItem):
 		bundle=list(app.get('bundle').keys())[0]
 		state=app.get('state',{}).get(bundle,1)
 		self.rc.commitInstall(app.get('name'),bundle,state)
+		self.setEnabled(True)
 		self.updateScreen()
 	 #def _endGetEpiResults
 
