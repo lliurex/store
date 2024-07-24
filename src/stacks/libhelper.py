@@ -96,12 +96,12 @@ class helper():
 			cmd=["gtk-launch",launcher]
 		#bundle=self.cmbOpen.currentText().lower().split(" ")[0]
 		elif bundle=="package":
-			appid=app.get("id","")
-			if appid.startswith("gva.appsedu"):
-				appid=appid.split(".")[-1]
-			if appid=="":
-				appid=app.get("bundle",{}).get("package","")
-			cmd=["gtk-launch",appid]
+			pkgname=app.get("id","")
+			if pkgname.startswith("gva.appsedu") or pkgname.startswith("org.packagekit"):
+				pkgname=pkgname.split(".")[-1]
+			if pkgname=="":
+				pkgname=app.get("bundle",{}).get("package","")
+			cmd=["gtk-launch",pkgname]
 		elif bundle=="flatpak":
 			cmd=["flatpak","run",app.get("bundle",{}).get("flatpak","")]
 		elif bundle=="snap":
