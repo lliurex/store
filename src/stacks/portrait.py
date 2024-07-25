@@ -145,7 +145,7 @@ class QPushButtonRebostApp(QPushButton):
 			border-width: 1px; 
 			border-radius: 2px;}
 			#rebostapp:focus:!pressed {
-				border-width:3px;
+				border-width:6px;
 				}
 			"""%(rgbColor,rgbBcolor))
 
@@ -173,6 +173,7 @@ class QPushButtonRebostApp(QPushButton):
 	#def keyPressEvent(self,ev):
 
 	def mousePressEvent(self,*args):
+		self.setEnabled(False)
 		self.clicked.emit(self,self.app)
 	#def mousePressEvent
 #class QPushButtonRebostApp
@@ -343,7 +344,6 @@ class portrait(QStackedWindowItem):
 	#def _getAppList
 
 	def _endGetUpgradables(self,*args):
-		print(args)
 		if args[0]==True:
 			self.lblInfo.setVisible(True)
 		self.th.wait()
@@ -614,17 +614,18 @@ class portrait(QStackedWindowItem):
 	#def _thTERM
 
 	def cleanAux(self,*args):
-		print("Cleaning")
+		self._debug("Cleaning")
 		if isinstance(self.aux,list):
 			for w in self.aux:
 				if hasattr(w,"finished"):
-					print("Finish {}".format(w))
+					self._debug("Finish {}".format(w))
 					w.terminate()
 					w.wait()
-					self.aux.remove(w)
-					print("Removed {}".format(w))
+					if w.isRunning()==False:
+						self.aux.remove(w)
+						self._debug("Removed {}".format(w))
 		self._debug("Caching: {}".format(len(self.aux)))
-		print("Cleaned")
+		self._debug("Cleaned")
 	#def cleanAux
 
 	def updateScreen(self):
