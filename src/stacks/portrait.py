@@ -10,6 +10,9 @@ from rebost import store
 from appconfig import appConfig
 import subprocess
 import json
+import dbus
+import dbus.service
+import dbus.mainloop.glib
 import random
 import gettext
 _ = gettext.gettext
@@ -210,6 +213,7 @@ class portrait(QStackedWindowItem):
 		self.changed=[]
 		self.level='user'
 		self.oldcursor=self.cursor()
+		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 	#def __init__
 
 	def _debug(self,msg):
@@ -279,6 +283,9 @@ class portrait(QStackedWindowItem):
 		self.lblInfo.clicked.connect(self._launchLlxUp)
 		self.box.addWidget(self.lblInfo,2,0,1,1)
 		self._getUpgradables()
+		bus=dbus.SessionBus()
+		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
+		objbus.connect_to_signal("updated",self._goHome,dbus_interface="net.lliurex.rebost")
 	#def _load_screen
 
 	def _launchLlxUp(self):
@@ -359,7 +366,7 @@ class portrait(QStackedWindowItem):
 		random.shuffle(self.apps)
 	#def _shuffleApps
 
-	def _goHome(self):
+	def _goHome(self,*args,**kwargs):
 		if time.time()-self.oldTime<MINTIME*2:
 			return
 		self.oldTime=time.time()
