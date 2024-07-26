@@ -288,7 +288,7 @@ class portrait(QStackedWindowItem):
 		self.btnFilters.clear()
 		self.btnFilters.setText(i18n.get("FILTERS"))
 		self.btnFilters.addItem(i18n.get("ALL"))
-		items=[i18n.get("INSTALLED"),"Lliurex","Snap","Appimage","Flatpak","Zomando"]
+		items=[i18n.get("INSTALLED"),"Snap","Appimage","Flatpak","Zomando"]
 		for item in items:
 			self.btnFilters.addItem(item,state=False)
 	#def _loadFilters
@@ -310,8 +310,6 @@ class portrait(QStackedWindowItem):
 			self.i18nCat[_(cat)]=cat
 			self.catI18n[cat]=_(cat)
 		translatedCategories.sort()
-
-		print("POPULATING")
 		for cat in translatedCategories:
 			self.cmbCategories.addItem(cat)
 	#def _populateCategories
