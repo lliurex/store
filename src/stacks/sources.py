@@ -8,6 +8,9 @@ from PySide2.QtCore import Qt,QSignalMapper,QSize,QThread,Signal
 from appconfig import appConfig
 from QtExtraWidgets import QStackedWindowItem
 from rebost import store
+import dbus
+import dbus.service
+import dbus.mainloop.glib
 import json
 import random
 import gettext
@@ -130,6 +133,7 @@ class sources(QStackedWindowItem):
 		self.level='user'
 		self.oldcursor=self.cursor()
 		self.proc=""
+		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 	#def __init__
 
 	def __initScreen__(self):
@@ -175,6 +179,10 @@ class sources(QStackedWindowItem):
 		self.progress.setVisible(False)
 		self.setLayout(self.box)
 		self.btnAccept.clicked.connect(self.writeConfig)
+		#bus=dbus.SessionBus()
+
+		#objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
+		#objbus.connect_to_signal("updated",self._endReloadCatalogue,dbus_interface="net.lliurex.rebost")
 	#def _load_screen
 
 	def _createProgressWidget(self):
@@ -234,32 +242,33 @@ class sources(QStackedWindowItem):
 	#def _reload
 		
 	def _reloadCatalogue(self,force=False):
+		#### REM
+		#self.progress.setMode(True)
+		self.progress.setEnabled(True)
+		self.progress.setVisible(True)
 		self.proc=reloadCatalogue(self.rc,force)
-		self.procp=progressBar(self,self.progress)
+		#### REM
 		self.proc.finished.connect(self._endReloadCatalogue)
-		self.proc.started.connect(self._beginReloadCatalogue)
 		self.proc.start()
 	#def _reloadCatalogue
 
 	def _beginReloadCatalogue(self):
-		self.procp.start()
+		self.progress.setVisible(self.visible)
 		#if self.changes:
 		#	self.writeConfig()
 
-	def _endReloadCatalogue(self):
-		self.proc.wait()
-		self.rc=None
-		try:
-			self.rc=store.client()
-		except:
-			time.sleep(1)
-			try:
-				self.rc=store.client()
-			except:
-				print("UNKNOWN ERROR")
-		self.procp.setMode(False)
-		self.procp.start()
+	def _endReloadCatalogue(self,*args,**kwargs):
+#		self.rc=None
+#		try:
+#			self.rc=store.client()
+#		except:
+#			time.sleep(1)
+#			try:
+#				self.rc=store.client()
+#			except:
+#				print("UNKNOWN ERROR")
 		self.updateScreen()
+		self.progress.setVisible(False)
 	#def _endreloadCatalogue
 
 	def _return(self):
