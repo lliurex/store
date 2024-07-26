@@ -418,7 +418,7 @@ class details(QStackedWindowItem):
 		resources=QWidget()
 		layResources=QVBoxLayout()
 		resources.setLayout(layResources)
-		self.lblHomepage=QLabel('<a href="http://lliurex.net">Homepage: lliurex.net</a>')
+		self.lblHomepage=QLabel('<a href="http://lliurex.net">More info: lliurex.net</a>')
 		self.lblHomepage.setOpenExternalLinks(True)
 		self.screenShot=QScreenShotContainer()
 		self.screenShot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -461,7 +461,7 @@ class details(QStackedWindowItem):
 			desc=homepage
 			if len(homepage)>30:
 				desc="{}...".format(homepage[0:30])
-			text='<a href={0}>Homepage: {1}</a> '.format(homepage,desc)
+			text='<a href={0}>More info: {1}</a> '.format(homepage,desc)
 			self.lblHomepage.setText(text)
 		self.lblDesc.label.setOpenExternalLinks(False)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
@@ -502,7 +502,6 @@ class details(QStackedWindowItem):
 				continue
 			icat=_(cat)
 			if icat not in tags:
-				print(icat)
 				tags+="<a href=\"#{0}\">{0}</a> ".format(icat)
 		self.lblTags.setText(tags)
 	#def _updateScreen

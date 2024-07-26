@@ -173,7 +173,7 @@ class QPushButtonRebostApp(QPushButton):
 	#def keyPressEvent(self,ev):
 
 	def mousePressEvent(self,*args):
-		self.setEnabled(False)
+		self.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		self.clicked.emit(self,self.app)
 	#def mousePressEvent
 #class QPushButtonRebostApp
@@ -288,7 +288,7 @@ class portrait(QStackedWindowItem):
 		self.btnFilters.clear()
 		self.btnFilters.setText(i18n.get("FILTERS"))
 		self.btnFilters.addItem(i18n.get("ALL"))
-		items=[i18n.get("INSTALLED"),"Lliurex","Snap","Appimage","Flatpak","Zomando"]
+		items=[i18n.get("INSTALLED"),"Snap","Appimage","Flatpak","Zomando"]
 		for item in items:
 			self.btnFilters.addItem(item,state=False)
 	#def _loadFilters
@@ -310,7 +310,6 @@ class portrait(QStackedWindowItem):
 			self.i18nCat[_(cat)]=cat
 			self.catI18n[cat]=_(cat)
 		translatedCategories.sort()
-
 		for cat in translatedCategories:
 			self.cmbCategories.addItem(cat)
 	#def _populateCategories
@@ -346,7 +345,7 @@ class portrait(QStackedWindowItem):
 	def _endGetUpgradables(self,*args):
 		if args[0]==True:
 			self.lblInfo.setVisible(True)
-		self.th.wait()
+		self.th.terminate()
 	#def _endGetUpgradables(self,*args):
 
 	def _getUpgradables(self):
@@ -656,10 +655,9 @@ class portrait(QStackedWindowItem):
 	#def resetScreen
 
 	def setParms(self,*args,**kwargs):
-		#For some reason setParms is launching N times
 		#referrer will be only fulfilled when details stack
-		#fires events, when is a repeated call to setParms
-		#referrer will be none so function can exit. This must be investigated
+		#fires events, if there's a repeated call to setParms
+		#referrer will be none so function can exit. This must not happen.
 		if not hasattr(self,"referrer"):
 			return()
 		if self.referrer==None:
@@ -676,15 +674,13 @@ class portrait(QStackedWindowItem):
 				self.oldSearch=""
 				self._searchApps()
 		else:
-			if hasattr(self,"referrer")==False:
-				return()
 			app=kwargs.get("app",{})
 			cat=kwargs.get("cat",{})
 			if len(cat)>0:
 				self.cmbCategories.setCurrentText(self.catI18n.get(cat,cat))
 				self._loadCategory()
-			elif len(app)>0:
-				self._searchApps()
+			#elif len(app)>0:
+			#	self._searchApps()
 			else:
 				self.updateScreen()
 		self.referrer=None
