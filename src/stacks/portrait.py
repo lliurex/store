@@ -222,6 +222,9 @@ class portrait(QStackedWindowItem):
 	#def _debug
 
 	def __initScreen__(self):
+		bus=dbus.SessionBus()
+		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
+		objbus.connect_to_signal("storeUpdated",self._goHome,dbus_interface="net.lliurex.rebost")
 		self.config=self.appconfig.getConfig()
 		self.box=QGridLayout()
 		self.setLayout(self.box)
@@ -283,9 +286,6 @@ class portrait(QStackedWindowItem):
 		self.lblInfo.clicked.connect(self._launchLlxUp)
 		self.box.addWidget(self.lblInfo,2,0,1,1)
 		self._getUpgradables()
-		bus=dbus.SessionBus()
-		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
-		objbus.connect_to_signal("updated",self._goHome,dbus_interface="net.lliurex.rebost")
 	#def _load_screen
 
 	def _launchLlxUp(self):

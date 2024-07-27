@@ -95,18 +95,14 @@ class progressBar(QThread):
 #class progressBar(QThread):
 
 class reloadCatalogue(QThread):
-	def __init__(self,rc,force,parent=None):
+	def __init__(self,force,parent=None):
 		QThread.__init__(self,parent)
-		self.rc=rc
+		self.rc=store.client()
 		self.force=force
 	#def __init__
 
 	def run(self):
-		try:
-			self.rc.update(force=self.force)
-		except:
-			time.sleep(1)
-			self.rc.update(force=self.force)
+		self.rc.update(force=self.force)
 	#def run
 #class reloadCatalogue
 
@@ -179,10 +175,9 @@ class sources(QStackedWindowItem):
 		self.progress.setVisible(False)
 		self.setLayout(self.box)
 		self.btnAccept.clicked.connect(self.writeConfig)
-		#bus=dbus.SessionBus()
-
-		#objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
-		#objbus.connect_to_signal("updated",self._endReloadCatalogue,dbus_interface="net.lliurex.rebost")
+		bus=dbus.SessionBus()
+		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
+		objbus.connect_to_signal("storeUpdated",self._setEnabled,dbus_interface="net.lliurex.rebost")
 	#def _load_screen
 
 	def _createProgressWidget(self):
@@ -210,17 +205,21 @@ class sources(QStackedWindowItem):
 		self._setEnabled(True)
 	#def _clearCache
 
-	def _setEnabled(self,state):
+	def _setEnabled(self,state=True):
 		if state==False:
 			cursor=QtGui.QCursor(Qt.WaitCursor)
 			self.setCursor(cursor)
+			self.progress.setEnabled(True)
+			self.progress.setVisible(True)
 		else:
 			self.setCursor(self.oldcursor)
+			self.progress.setEnabled(False)
+			self.progress.setVisible(False)
 		for wdg in self.findChildren(QPushButton):
 			wdg.setEnabled(state)
 		for wdg in self.findChildren(QCheckBox):
 			wdg.setEnabled(state)
-		QApplication.processEvents()
+		#QApplication.processEvents()
 	#def _setEnabled
 
 	def _resetDB(self,refresh=False):
@@ -230,8 +229,8 @@ class sources(QStackedWindowItem):
 		self.btnBack.clicked.connect(self.btnBack.text)
 		self.changes=False
 		self._setEnabled(False)
+		QApplication.processEvents()
 		self._reloadCatalogue(True)
-		self._setEnabled(True)
 	#def _resetDB
 
 	def _reload(self):
@@ -244,10 +243,8 @@ class sources(QStackedWindowItem):
 	def _reloadCatalogue(self,force=False):
 		#### REM
 		#self.progress.setMode(True)
-		self.progress.setEnabled(True)
-		self.progress.setVisible(True)
-		self.proc=reloadCatalogue(self.rc,force)
 		#### REM
+		self.proc=reloadCatalogue(force)
 		self.proc.finished.connect(self._endReloadCatalogue)
 		self.proc.start()
 	#def _reloadCatalogue
