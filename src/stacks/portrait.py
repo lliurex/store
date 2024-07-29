@@ -193,7 +193,6 @@ class QPushButtonRebostApp(QPushButton):
 	#def keyPressEvent(self,ev):
 
 	def mousePressEvent(self,*args):
-		self.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		self.clicked.emit(self,self.app)
 	#def mousePressEvent
 #class QPushButtonRebostApp
@@ -390,6 +389,8 @@ class portrait(QStackedWindowItem):
 	#def _getUpgradables
 
 	def _beginUpdate(self):
+		cursor=QtGui.QCursor(Qt.WaitCursor)
+		self.setCursor(cursor)
 		self.progress.setVisible(True)
 		self.lblProgress.setVisible(True)
 	#def _beginUpdate
@@ -544,6 +545,9 @@ class portrait(QStackedWindowItem):
 			self.apps=json.loads(self.rc.execute('search',txt))
 			self.appsRaw=self.apps.copy()
 		self.searchBox.btnSearch.setIcon(icn)
+		self.refresh=True
+		if len(self.apps)==0:
+			self.refresh=False
 		self._filterView(getApps=False)
 	#def _searchApps
 
@@ -634,8 +638,6 @@ class portrait(QStackedWindowItem):
 	#def _loadDetails(self,*args,**kwargs):
 
 	def _endLoadDetails(self,icn,*args):
-#		self.stack.gotoStack(idx=3,parms=(args))
-		#Refresh all pkg info
 		self.referrer=args[0]
 		self.setChanged(False)
 		self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
@@ -681,10 +683,11 @@ class portrait(QStackedWindowItem):
 			else:
 				for wdg in self.wdgs:
 					self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
+				self.setCursor(self.oldcursor)
 			self.cleanAux()
 		else:
 			self.refresh=True
-		self.setCursor(self.oldcursor)
+			self.setCursor(self.oldcursor)
 	#def _udpateScreen
 
 	def resetScreen(self):
