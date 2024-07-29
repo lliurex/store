@@ -23,6 +23,7 @@ i18n={
 	"CONFIG":_("Sources"),
 	"DESC":_("Show software sources"),
 	"MENU":_("Configure software sources"),
+	"NEWDATA":_("Updating info"),
 	"PROGRESS":_("Configuring software sources"),
 	"RELOAD":_("Reload catalogues"),
 	"RELOAD_TOOLTIP":_("Reload info from sources"),
@@ -65,34 +66,6 @@ class thWriteConfig(QThread):
 				self.appconfig.saveChanges(key,data,level=self.appconfig.level)
 	#def run
 #class thWriteConfig
-	
-class progressBar(QThread):
-	def __init__(self,parent,progress):
-		QThread.__init__(self,parent)
-		self.parent=parent
-		self.progress=progress
-		self.visible=True
-	#def __init__
-
-	def setMode(self,state):
-		self.visible=state
-	#def setMode
-
-	def run(self):
-		lay=self.parent.layout()
-		for x in range(lay.rowCount()):
-			for y in range(lay.columnCount()):
-				wdg=lay.itemAtPosition(x,y)
-				if wdg:
-					wdg=wdg.widget()
-					if wdg:
-						wdg.setEnabled(not self.visible)
-		self.parent.btnAccept.setVisible(not self.visible)
-		self.parent.btnCancel.setVisible(not self.visible)
-		self.progress.setEnabled(self.visible)
-		self.progress.setVisible(self.visible)
-	#def run
-#class progressBar(QThread):
 
 class reloadCatalogue(QThread):
 	def __init__(self,force,parent=None):
@@ -128,7 +101,8 @@ class sources(QStackedWindowItem):
 		self.app={}
 		self.level='user'
 		self.oldcursor=self.cursor()
-		self.proc=""
+		self.proc=None
+		self.conf=None
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 	#def __init__
 
@@ -161,23 +135,27 @@ class sources(QStackedWindowItem):
 		self.box.addWidget(btnClear,1,2,1,1)
 		btnReload=QPushButton(i18n.get("RELOAD"))
 		btnReload.setToolTip(i18n.get("RELOAD_TOOLTIP"))
-		btnReload.clicked.connect(self._reload)
+		btnReload.clicked.connect(self._reloadCatalogue)
 		#self.box.addWidget(btnReload,2,2,1,1)
 		btnReset=QPushButton(i18n.get("RESET"))
 		btnReset.setToolTip(i18n.get("RESET_TOOLTIP"))
 		btnReset.clicked.connect(lambda x:self._resetDB(True))
 		self.box.addWidget(btnReset,3,2,1,1)
-		self.progressWidget=QWidget()
-		lay=QGridLayout()
-		self.progress=self._createProgressWidget()
-		self.box.setRowStretch(self.box.rowCount(), 1)
+		self.lblProgress=QLabel(i18n["NEWDATA"])
+		self.lblProgress.setVisible(False)
+		self.box.addWidget(self.lblProgress,self.box.rowCount(),1,1,2,Qt.AlignCenter|Qt.AlignBottom)
+		self.progress=QProgressBar()
+		self.progress.setMinimum(0)
+		self.progress.setMaximum(0)
+		self.box.setRowStretch(self.box.rowCount()-1, 1)
 		self.box.addWidget(self.progress,self.box.rowCount(),1,1,2)
 		self.progress.setVisible(False)
 		self.setLayout(self.box)
 		self.btnAccept.clicked.connect(self.writeConfig)
 		bus=dbus.SessionBus()
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
-		objbus.connect_to_signal("storeUpdated",self._setEnabled,dbus_interface="net.lliurex.rebost")
+		objbus.connect_to_signal("updatedSignal",self._endReloadCatalogue,dbus_interface="net.lliurex.rebost")
+		objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 	#def _load_screen
 
 	def _createProgressWidget(self):
@@ -209,12 +187,12 @@ class sources(QStackedWindowItem):
 		if state==False:
 			cursor=QtGui.QCursor(Qt.WaitCursor)
 			self.setCursor(cursor)
-			self.progress.setEnabled(True)
 			self.progress.setVisible(True)
+			self.lblProgress.setVisible(True)
 		else:
 			self.setCursor(self.oldcursor)
-			self.progress.setEnabled(False)
 			self.progress.setVisible(False)
+			self.lblProgress.setVisible(False)
 		for wdg in self.findChildren(QPushButton):
 			wdg.setEnabled(state)
 		for wdg in self.findChildren(QCheckBox):
@@ -233,28 +211,23 @@ class sources(QStackedWindowItem):
 		self._reloadCatalogue(True)
 	#def _resetDB
 
-	def _reload(self):
-		self.btnBack.clicked.connect(self.btnBack.text)
+	def _beginUpdate(self):
 		self._setEnabled(False)
-		self._reloadCatalogue(False)
-		self._setEnabled(True)
-	#def _reload
+	#def _beginUpdate
 		
 	def _reloadCatalogue(self,force=False):
-		#### REM
-		#self.progress.setMode(True)
-		#### REM
+		self.btnBack.clicked.connect(self.btnBack.text)
 		self.proc=reloadCatalogue(force)
-		self.proc.finished.connect(self._endReloadCatalogue)
 		self.proc.start()
 	#def _reloadCatalogue
 
-	def _beginReloadCatalogue(self):
-		self.progress.setVisible(self.visible)
-		#if self.changes:
-		#	self.writeConfig()
-
 	def _endReloadCatalogue(self,*args,**kwargs):
+		if self.proc!=None:
+			if self.proc.isRunning():
+				self.proc.wait()
+		if self.conf!=None:
+			if self.conf.isRunning():
+				self.config.wait()
 #		self.rc=None
 #		try:
 #			self.rc=store.client()
@@ -264,8 +237,10 @@ class sources(QStackedWindowItem):
 #				self.rc=store.client()
 #			except:
 #				print("UNKNOWN ERROR")
+		self._setEnabled(True)
 		self.updateScreen()
 		self.progress.setVisible(False)
+		self.lblProgress.setVisible(False)
 	#def _endreloadCatalogue
 
 	def _return(self):
@@ -299,11 +274,11 @@ class sources(QStackedWindowItem):
 		pass
 
 	def writeConfig(self):
-		self.config=thWriteConfig(self,self.appconfig,self.chkSnap,self.chkFlatpak,self.chkApt,self.chkImage)
-		self.config.finished.connect(self._endWriteConfig)
-		self.config.start()
+		self.conf=thWriteConfig(self,self.appconfig,self.chkSnap,self.chkFlatpak,self.chkApt,self.chkImage)
+		self.conf.finished.connect(self._endWriteConfig)
+		self.conf.start()
 	#def writeConfig
 
 	def _endWriteConfig(self):
-		self.config.wait()
+		self.conf.wait()
 
