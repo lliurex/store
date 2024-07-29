@@ -225,6 +225,8 @@ class portrait(QStackedWindowItem):
 		self.appsRaw=[]
 		self.oldSearch=""
 		self.rc=store.client()
+		self.chkRebost=chkRebost()
+		self.th=chkUpgrades(self.rc)
 		self.hideControlButtons()
 		self.level='user'
 		self.oldcursor=self.cursor()
@@ -383,7 +385,6 @@ class portrait(QStackedWindowItem):
 
 	def _getUpgradables(self):
 		self.lblInfo.setVisible(False)
-		self.th=chkUpgrades(self.rc)
 		self.th.chkEnded.connect(self._endGetUpgradables)
 		self.th.start()
 	#def _getUpgradables
@@ -677,9 +678,8 @@ class portrait(QStackedWindowItem):
 			self._loadData(self.appsLoaded,self.appsToLoad)
 			if self.appsLoaded==0:
 				self._beginUpdate()
-				self.a=chkRebost()
-				self.a.start()
-				self.a.finished.connect(self._goHome)
+				self.chkRebost.start()
+				self.chkRebost.finished.connect(self._goHome)
 			else:
 				for wdg in self.wdgs:
 					self.table.setCellWidget(wdg[0],wdg[1],wdg[2])

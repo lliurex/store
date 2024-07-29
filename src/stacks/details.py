@@ -96,8 +96,6 @@ class QLabelRebostApp(QLabel):
 
 	def loadImg(self,app):
 		img=app.get('icon','')
-		aux=QScreenShotContainer()
-		self.scr=aux.loadScreenShot(img,self.cacheDir)
 		icn=''
 		if os.path.isfile(img):
 			icn=QtGui.QPixmap.fromImage(img)
@@ -110,6 +108,8 @@ class QLabelRebostApp(QLabel):
 				wsize=235
 			self.setPixmap(icn.scaled(wsize,128,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 		elif img.startswith('http'):
+			aux=QScreenShotContainer()
+			self.scr=aux.loadScreenShot(img,self.cacheDir)
 			self.scr.start()
 			self.scr.imageLoaded.connect(self.load)
 			self.scr.wait()
@@ -148,6 +148,7 @@ class details(QStackedWindowItem):
 		self.helper=libhelper.helper()
 		self.epi=runClass()
 		self.runapp=runClass()
+		self.runapp.runEnded.connect(self._getRunappResults)
 		self.thShow=thShowApp()
 		self.thShow.showEnded.connect(self._endGetEpiResults)
 		self.thParmShow=thShowApp()
@@ -179,11 +180,9 @@ class details(QStackedWindowItem):
 		if not pxm:
 			pxm=QtGui.QIcon.fromTheme("appsedu").pixmap(128,128)
 		if isinstance(pxm,QtGui.QPixmap):
-			qpal=QtGui.QPalette()
-			color=qpal.color(qpal.Dark)
+			color=QtGui.QPalette().color(QtGui.QPalette().Dark)
 			self.wdgSplash.setPixmap(pxm.scaled(int(self.parent.width()),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
 		self.wdgSplash.setMaximumWidth(1000)
-		self.wdgSplash.setStyleSheet("background-color:rgba(%s,%s,%s,0.5);"%(color.red(),color.green(),color.blue()))
 		self.wdgSplash.setVisible(True)
 	#def _showSplash
 
@@ -214,23 +213,24 @@ class details(QStackedWindowItem):
 	def setParms(self,*args):
 		self.stream=""
 		pxm=""
-		name=args[-1]
-		if isinstance(args[0],dict):
-			name=args[0].get("name","")
-			pxm=args[0].get("icon","")
-		elif "://" in args[-1]:
-			self.stream=args[-1]
-		self.screenShot.clear()
-		if name!="":
-			self._resetScreen(name)
-			self.thParmShow.setArgs(args[0])
-			self.thParmShow.start()
-		icon=""
-		if self.stream=="":
-			if isinstance(pxm,QtGui.QPixmap):
-				icon=pxm
-			else:
-				icon=self.app.get("icon","")
+		if len(args)>0:
+			name=args[-1]
+			if isinstance(args[0],dict):
+				name=args[0].get("name","")
+				pxm=args[0].get("icon","")
+			elif "://" in args[-1]:
+				self.stream=args[-1]
+			self.screenShot.clear()
+			if name!="":
+				self._resetScreen(name)
+				self.thParmShow.setArgs(args[0])
+				self.thParmShow.start()
+			icon=""
+			if self.stream=="":
+				if isinstance(pxm,QtGui.QPixmap):
+					icon=pxm
+				else:
+					icon=self.app.get("icon","")
 		self._showSplash(icon)
 	#def setParms
 
@@ -259,10 +259,6 @@ class details(QStackedWindowItem):
 				#		status=self.rc.getAppStatus(name,bundle)
 				#		self.app['state'][bundle]=str(status)
 		self.setCursor(self.oldcursor)
-		self.anim = QPropertyAnimation(self.wdgSplash, b"maximumWidth",parent=self)
-		self.anim.setStartValue(1000)
-		self.anim.setEndValue(0)
-		self.anim.setDuration(100)
 		self.anim.start()
 		self.updateScreen()
 	#def _endSetParms
@@ -275,7 +271,6 @@ class details(QStackedWindowItem):
 		bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
 		cmd=self.helper.getCmdForLauncher(self.app,bundle)
 		self.runapp.setArgs(self.app,cmd,bundle)
-		self.runapp.runEnded.connect(self._getRunappResults)
 		self.runapp.start()
 		self.showMsg("{} {}".format(i18n.get("OPENING"),self.app["name"]))
 	#def _runApp
@@ -287,7 +282,6 @@ class details(QStackedWindowItem):
 			bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
 			if app.get("relaunch",False)==False:
 				app["relaunch"]=True
-				self.runapp.runEnded.connect(self._getRunappResults)
 			else:
 				if bundle.lower()=="appimage":
 					pkgname=app["pkgname"]+"-appimage"
@@ -431,9 +425,15 @@ class details(QStackedWindowItem):
 		self.wdgSplash=QLabel()
 		errorLay=QGridLayout()
 		self.wdgSplash.setLayout(errorLay)
+		color=QtGui.QPalette().color(QtGui.QPalette().Dark)
+		self.wdgSplash.setStyleSheet("background-color:rgba(%s,%s,%s,0.5);"%(color.red(),color.green(),color.blue()))
 		self.lblBkg=QLabel()
 		errorLay.addWidget(self.lblBkg,0,0,1,1)
 		self.box.addWidget(self.wdgSplash,1,0,self.box.rowCount()-1,self.box.columnCount(),Qt.AlignCenter)
+		self.anim = QPropertyAnimation(self.wdgSplash, b"maximumWidth",parent=self)
+		self.anim.setStartValue(1000)
+		self.anim.setEndValue(0)
+		self.anim.setDuration(100)
 	#def _load_screen
 
 	def updateScreen(self):
@@ -490,14 +490,7 @@ class details(QStackedWindowItem):
 			except Exception as e:
 				print(e)
 		self._setLauncherOptions()
-		tags=""
-		for cat in self.app.get("categories",[]):
-			if cat.strip().islower() or len(cat)==0:
-				continue
-			icat=_(cat)
-			if icat not in tags:
-				tags+="<a href=\"#{0}\">{0}</a> ".format(icat)
-		self.lblTags.setText(tags)
+		self.lblTags.setText(self._generateTags())
 	#def _updateScreen
 
 	def _getLauncherForApp(self):
@@ -522,6 +515,17 @@ class details(QStackedWindowItem):
 				break
 		return(launcher)
 	#def _getLauncherForApp
+
+	def _generateTags(self):
+		tags=""
+		for cat in self.app.get("categories",[]):
+			if cat.strip().islower() or len(cat)==0:
+				continue
+			icat=_(cat)
+			if icat not in tags:
+				tags+="<a href=\"#{0}\">{0}</a> ".format(icat)
+		return(tags)
+	#def _generateTags
 
 	def _resetScreen(self,name):
 		self.parent.setWindowTitle("AppsEdu")
