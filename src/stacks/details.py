@@ -149,7 +149,7 @@ class details(QStackedWindowItem):
 		self.visible=False
 		self.enabled=True
 		self.rc=store.client()
-		self.changed=[]
+		self.refresh=False
 		self.level='user'
 		self.config={}
 		self.app={}
@@ -167,7 +167,7 @@ class details(QStackedWindowItem):
 
 	def _return(self):
 		self.parent.setWindowTitle("AppsEdu")
-		self.parent.setCurrentStack(1,parms={"refresh":True,"app":self.app})
+		self.parent.setCurrentStack(1,parms={"refresh":self.refresh,"app":self.app})
 	#def _return
 
 	def _tagNav(self,*args):
@@ -331,6 +331,7 @@ class details(QStackedWindowItem):
 			self.updateScreen()
 		else:
 			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
+			self.refresh=True
 			self.epi.setArgs(self.app,cmd,bundle)
 			self.epi.runEnded.connect(self._getEpiResults)
 			self.epi.start()
