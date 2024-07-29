@@ -149,7 +149,7 @@ class details(QStackedWindowItem):
 		self.visible=False
 		self.enabled=True
 		self.rc=store.client()
-		self.changed=[]
+		self.refresh=False
 		self.level='user'
 		self.config={}
 		self.app={}
@@ -167,7 +167,7 @@ class details(QStackedWindowItem):
 
 	def _return(self):
 		self.parent.setWindowTitle("AppsEdu")
-		self.parent.setCurrentStack(1,parms={"refresh":True,"app":self.app})
+		self.parent.setCurrentStack(1,parms={"refresh":self.refresh,"app":self.app})
 	#def _return
 
 	def _tagNav(self,*args):
@@ -300,11 +300,14 @@ class details(QStackedWindowItem):
 			else:
 				if bundle.lower()=="appimage":
 					pkgname=app["pkgname"]+"-appimage"
-				else:
+				elif "zero-lliurex" not in pkgname:
 					pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
 				pkgname=pkgname.replace("org.packagekit.","")
-			self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname)],bundle)
-			self.runapp.start()
+			if "zero-lliurex" in pkgname:
+				self._runZomando()
+			else:
+				self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname)],bundle)
+				self.runapp.start()
 			cont+=1
 	#def _getEpiResults
 
@@ -331,6 +334,7 @@ class details(QStackedWindowItem):
 			self.updateScreen()
 		else:
 			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
+			self.refresh=True
 			self.epi.setArgs(self.app,cmd,bundle)
 			self.epi.runEnded.connect(self._getEpiResults)
 			self.epi.start()
