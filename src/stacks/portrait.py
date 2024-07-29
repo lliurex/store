@@ -58,6 +58,17 @@ class chkUpgrades(QThread):
 		self.chkEnded.emit(self.upgrades)
 #class chkUpgrades
 
+class chkRebost(QThread):
+	chkRebost=Signal("PyObject")
+	def __init__(self):
+		QThread.__init__(self, None)
+		self.rc=store.client()
+	
+	def run(self):
+		self.rc.execute("enablegui",args=[{"enabled":True}])
+		self.chkRebost.emit(True)
+#class chkRebost
+
 class QPushButtonRebostApp(QPushButton):
 	clicked=Signal("PyObject","PyObject")
 	def __init__(self,strapp,parent=None,**kwargs):
@@ -85,6 +96,10 @@ class QPushButtonRebostApp(QPushButton):
 		self.setDefault(True)
 		self.setLayout(lay)
 	#def __init__
+
+	def updateScreen(self):
+		self._applyDecoration(self.app)
+	#def updateScreen
 
 	def enterEvent(self,*args):
 		self.setFocus()
@@ -117,6 +132,10 @@ class QPushButtonRebostApp(QPushButton):
 		elif img.startswith('http'):
 			self.scr.start()
 			self.scr.imageLoaded.connect(self.load)
+		self._applyDecoration(app)
+	#def loadImg
+
+	def _applyDecoration(self,app,forbidden=False,installed=False):
 		installed=False
 		forbidden=False
 		if "0"  in str(app.get('state',1)):
@@ -124,10 +143,6 @@ class QPushButtonRebostApp(QPushButton):
 			installed=True
 		if "Forbidden" in app.get("categories",[]):
 			forbidden=True
-		self._applyDecoration(forbidden,installed)
-	#def loadImg
-
-	def _applyDecoration(self,forbidden=False,installed=False):
 		self.setObjectName("rebostapp")
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
@@ -185,8 +200,9 @@ class QPushButtonRebostApp(QPushButton):
 class portrait(QStackedWindowItem):
 	def __init_stack__(self):
 		self.aux=[]
+		self.init=True
 		self.minTime=1
-		self.oldTime=int(time.time())
+		self.oldTime=0
 		self.dbg=True
 		self.enabled=True
 		self._debug("portrait load")
@@ -208,12 +224,11 @@ class portrait(QStackedWindowItem):
 		self.appsSeen=[]
 		self.appsRaw=[]
 		self.oldSearch=""
-		self.defaultRepos={}
 		self.rc=store.client()
 		self.hideControlButtons()
-		self.changed=[]
 		self.level='user'
 		self.oldcursor=self.cursor()
+		self.refresh=True
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 	#def __init__
 
@@ -241,9 +256,7 @@ class portrait(QStackedWindowItem):
 		self.cmbCategories=QComboBox()
 		self.cmbCategories.activated.connect(self._loadCategory)
 		hbox.addWidget(self.cmbCategories)
-		self._populateCategories()
-		self.apps=self._getAppList()
-		self._shuffleApps()
+		self.apps=[]
 		self.btnFilters=QCheckableComboBox()
 		#self.btnFilters.clicked.connect(self._filterView)
 		self.btnFilters.activated.connect(self._selectFilters)
@@ -300,6 +313,7 @@ class portrait(QStackedWindowItem):
 
 	def _launchLlxUp(self):
 		subprocess.run(["pkexec","lliurex-up"])
+	#def _launchLlxUp
 
 	def _loadFilters(self):
 		self.btnFilters.clear()
@@ -312,6 +326,7 @@ class portrait(QStackedWindowItem):
 
 	def _populateCategories(self): 
 		self.cmbCategories.clear()
+		self.cmbCategories.setSizeAdjustPolicy(self.cmbCategories.SizeAdjustPolicy.AdjustToContents)
 		self.i18nCat={}
 		self.catI18n={}
 		catList=json.loads(self.rc.execute('getCategories'))
@@ -329,6 +344,7 @@ class portrait(QStackedWindowItem):
 		translatedCategories.sort()
 		for cat in translatedCategories:
 			self.cmbCategories.addItem(cat)
+		self.cmbCategories.view().setMinimumWidth(self.cmbCategories.minimumSizeHint().width())
 	#def _populateCategories
 
 	def _getAppList(self,cat=[]):
@@ -389,6 +405,7 @@ class portrait(QStackedWindowItem):
 		self.searchBox.setText("")
 		self._loadFilters()
 		self.apps=self._getAppList()
+		self._populateCategories()
 		self._shuffleApps()
 		self.resetScreen()
 		self.cmbCategories.setCurrentIndex(0)
@@ -409,7 +426,7 @@ class portrait(QStackedWindowItem):
 			if filters.get("zomando",False)==True:
 				self.apps=self._getAppList(["Zomando"])
 		self.apps=self._applyFilters(filters)
-		self.updateScreen()
+		#self.updateScreen()
 	#def _filterView
 
 	def _readFilters(self):
@@ -601,7 +618,6 @@ class portrait(QStackedWindowItem):
 				self.table.setRowCount(self.table.rowCount()+1)
 				col=0
 			self.appsLoaded+=1
-
 		if btn!=None:
 			self.table.setRowHeight(self.table.rowCount()-1,btn.iconSize+int(btn.iconSize/16))
 		return(self.wdgs)
@@ -611,7 +627,6 @@ class portrait(QStackedWindowItem):
 		icn=""
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
-		self.setEnabled(False)
 		if isinstance(args[0],QPushButtonRebostApp):
 			icn=args[0].iconUri.pixmap()
 		self._endLoadDetails(icn,*args)
@@ -629,7 +644,6 @@ class portrait(QStackedWindowItem):
 		self.cleanAux()
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
-		self.setEnabled(False)
 		self.parent.setCurrentStack(idx=2,parms="")
 	#def _gotoSettings
 
@@ -644,10 +658,10 @@ class portrait(QStackedWindowItem):
 			for w in self.aux:
 				if hasattr(w,"finished"):
 					self._debug("Finish {}".format(w))
-					w.terminate()
-					w.wait()
-					i+=1
 					if w.isRunning()==False:
+						w.terminate()
+						w.wait()
+						i+=1
 						self._debug("Removing {}".format(w))
 						self.aux.remove(w)
 		self._debug("Caching: {}".format(len(self.aux)))
@@ -655,16 +669,20 @@ class portrait(QStackedWindowItem):
 	#def cleanAux
 
 	def updateScreen(self):
-		self.cleanAux()
-		self._loadData(self.appsLoaded,self.appsToLoad)
-		if self.appsLoaded==0:
-			self.progress.setVisible(True)
-			self.lblProgress.setVisible(True)
+		if self.refresh==True:
+			self.cleanAux()
+			self._loadData(self.appsLoaded,self.appsToLoad)
+			if self.appsLoaded==0:
+				self._beginUpdate()
+				self.a=chkRebost()
+				self.a.start()
+				self.a.finished.connect(self._goHome)
+			else:
+				for wdg in self.wdgs:
+					self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
+			self.cleanAux()
 		else:
-			for wdg in self.wdgs:
-				self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
-		#self.table.show()
-		self.cleanAux()
+			self.refresh=True
 		self.setCursor(self.oldcursor)
 	#def _udpateScreen
 
@@ -691,7 +709,6 @@ class portrait(QStackedWindowItem):
 		#referrer will be only fulfilled when details stack
 		#fires events, if there's a repeated call to setParms
 		#referrer will be none so function can exit. This must not happen.
-		self.setEnabled(True)
 		if not hasattr(self,"referrer"):
 			return()
 		if self.referrer==None:
@@ -700,22 +717,26 @@ class portrait(QStackedWindowItem):
 			if isinstance(arg,dict):
 				for key,item in arg.items():
 					kwargs[key]=item
-		if kwargs.get("refresh",False)==False:
+		self.refresh=kwargs.get("refresh",False)
+		if self.refresh==False:
 			cursor=QtGui.QCursor(Qt.WaitCursor)
 			self.setCursor(cursor)
-			if len(args)>=1:
-				self._populateCategories()
-				self.oldSearch=""
-				self._searchApps()
+			if len(self.searchBox.text())>1:
+					self._populateCategories()
+					self.oldSearch=""
+					self._searchApps()
 		else:
 			app=kwargs.get("app",{})
+			self.referrer.app=app
+			self.referrer.updateScreen()
 			cat=kwargs.get("cat",{})
 			if len(cat)>0:
 				self.cmbCategories.setCurrentText(self.catI18n.get(cat,cat))
 				self._loadCategory()
-			#elif len(app)>0:
-			#	self._searchApps()
 			else:
+				self.oldSearch=""
+				#self._populateCategories()
+				#self.refresh=False
 				self.updateScreen()
 		self.referrer=None
 	#def setParms
