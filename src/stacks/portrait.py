@@ -2,7 +2,7 @@
 import sys,time
 import os
 from lliurex import lliurexup
-from PySide2.QtWidgets import QApplication, QLabel, QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu
+from PySide2.QtWidgets import QApplication, QLabel, QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread
 from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QScreenShotContainer,QStackedWindowItem,QInfoLabel
@@ -32,6 +32,7 @@ i18n={
 	"INSTALLED":_("Installed"),
 	"LLXUP":_("Launch LliurexUp"),
 	"MENU":_("Show applications"),
+	"NEWDATA":_("Updating info"),
 	"SEARCH":_("Search"),
 	"SORTDSC":_("Sort alphabetically"),
 	"TOOLTIP":_("Portrait"),
@@ -224,7 +225,8 @@ class portrait(QStackedWindowItem):
 	def __initScreen__(self):
 		bus=dbus.SessionBus()
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
-		objbus.connect_to_signal("storeUpdated",self._goHome,dbus_interface="net.lliurex.rebost")
+		objbus.connect_to_signal("updatedSignal",self._goHome,dbus_interface="net.lliurex.rebost")
+		objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 		self.config=self.appconfig.getConfig()
 		self.box=QGridLayout()
 		self.setLayout(self.box)
@@ -272,19 +274,27 @@ class portrait(QStackedWindowItem):
 		self.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
 		#self.table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-		self.resetScreen()
 		self.box.addWidget(self.table,1,0,1,self.box.columnCount())
-		btnSettings=QPushButton()
-		icn=QtGui.QIcon.fromTheme("settings-configure")
-		btnSettings.setIcon(icn)
-		btnSettings.clicked.connect(self._gotoSettings)
-		self.box.addWidget(btnSettings,2,self.box.columnCount()-1,1,1,Qt.Alignment(-1))
 		self.lblInfo=QInfoLabel()
 		self.lblInfo.setActionText(i18n.get("LLXUP"))
 		self.lblInfo.setActionIcon("lliurex-up")
 		self.lblInfo.setText(i18n.get("UPGRADES"))
 		self.lblInfo.clicked.connect(self._launchLlxUp)
-		self.box.addWidget(self.lblInfo,2,0,1,1)
+		self.box.addWidget(self.lblInfo,2,0,2,1)
+		self.lblProgress=QLabel(i18n["NEWDATA"])
+		self.lblProgress.setVisible(False)
+		self.box.addWidget(self.lblProgress,2,1,1,1,Qt.AlignCenter|Qt.AlignBottom)
+		self.progress=QProgressBar()
+		self.progress.setVisible(False)
+		self.progress.setMinimum(0)
+		self.progress.setMaximum(0)
+		self.box.addWidget(self.progress,3,1,1,1)
+		btnSettings=QPushButton()
+		icn=QtGui.QIcon.fromTheme("settings-configure")
+		btnSettings.setIcon(icn)
+		btnSettings.clicked.connect(self._gotoSettings)
+		self.box.addWidget(btnSettings,self.box.rowCount()-1,self.box.columnCount()-1,1,1,Qt.Alignment(-1))
+		self.resetScreen()
 		self._getUpgradables()
 	#def _load_screen
 
@@ -361,6 +371,11 @@ class portrait(QStackedWindowItem):
 		self.th.chkEnded.connect(self._endGetUpgradables)
 		self.th.start()
 	#def _getUpgradables
+
+	def _beginUpdate(self):
+		self.progress.setVisible(True)
+		self.lblProgress.setVisible(True)
+	#def _beginUpdate
 
 	def _shuffleApps(self):
 		random.shuffle(self.apps)
@@ -596,6 +611,7 @@ class portrait(QStackedWindowItem):
 		icn=""
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
+		self.setEnabled(False)
 		if isinstance(args[0],QPushButtonRebostApp):
 			icn=args[0].iconUri.pixmap()
 		self._endLoadDetails(icn,*args)
@@ -610,8 +626,10 @@ class portrait(QStackedWindowItem):
 	#def _loadDetails
 
 	def _gotoSettings(self):
+		self.cleanAux()
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
+		self.setEnabled(False)
 		self.parent.setCurrentStack(idx=2,parms="")
 	#def _gotoSettings
 
@@ -621,28 +639,34 @@ class portrait(QStackedWindowItem):
 
 	def cleanAux(self,*args):
 		self._debug("Cleaning")
+		i=0
 		if isinstance(self.aux,list):
 			for w in self.aux:
 				if hasattr(w,"finished"):
 					self._debug("Finish {}".format(w))
 					w.terminate()
 					w.wait()
+					i+=1
 					if w.isRunning()==False:
+						self._debug("Removing {}".format(w))
 						self.aux.remove(w)
-						self._debug("Removed {}".format(w))
 		self._debug("Caching: {}".format(len(self.aux)))
-		self._debug("Cleaned")
+		self._debug("Cleaned: {}".format(i))
 	#def cleanAux
 
 	def updateScreen(self):
 		self.cleanAux()
 		self._loadData(self.appsLoaded,self.appsToLoad)
-		for wdg in self.wdgs:
-			self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
+		if self.appsLoaded==0:
+			self.progress.setVisible(True)
+			self.lblProgress.setVisible(True)
+		else:
+			for wdg in self.wdgs:
+				self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
 		#self.table.show()
 		self.cleanAux()
 		self.setCursor(self.oldcursor)
-	#def _udpate_screen
+	#def _udpateScreen
 
 	def resetScreen(self):
 		for x in range(self.table.rowCount()):
@@ -656,6 +680,8 @@ class portrait(QStackedWindowItem):
 				self.table.removeCellWidget(x,y)
 		self.table.setRowCount(0)
 		self.table.setRowCount(1)
+		self.progress.setVisible(False)
+		self.lblProgress.setVisible(False)
 		self.appsLoaded=0
 		self.oldSearch=""
 		self.appsSeen=[]
@@ -665,6 +691,7 @@ class portrait(QStackedWindowItem):
 		#referrer will be only fulfilled when details stack
 		#fires events, if there's a repeated call to setParms
 		#referrer will be none so function can exit. This must not happen.
+		self.setEnabled(True)
 		if not hasattr(self,"referrer"):
 			return()
 		if self.referrer==None:
