@@ -41,16 +41,6 @@ i18n={
 	"ZMDNOTFOUND":_("Zommand not found. Open Zero-Center?"),
 	}
 	
-class waitCursor(QThread):
-	def __init__(self,parent,widget):
-		QThread.__init__(self, parent)
-		self.parent=parent
-		self.widget=widget
-	
-	def run(self):
-		self.widget.setCursor(Qt.WaitCursor)
-#class waitCursor
-
 class runClass(QThread):
 	runEnded=Signal("PyObject","PyObject")
 	def __init__(self,parent=None):
@@ -91,7 +81,7 @@ class thShowApp(QThread):
 	#def setArgs(self:
 
 	def run(self):
-		if self.app!="":
+		if len(self.app.keys())>0:
 			app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
 			self.showEnded.emit(json.loads(app))
 	#def run
@@ -159,6 +149,9 @@ class details(QStackedWindowItem):
 		self.epi=runClass()
 		self.runapp=runClass()
 		self.thShow=thShowApp()
+		self.thShow.showEnded.connect(self._endGetEpiResults)
+		self.thParmShow=thShowApp()
+		self.thParmShow.showEnded.connect(self._endSetParms)
 		self.oldcursor=self.cursor()
 		self.appmenu=app2menu.app2menu()
 		self.stream=""
@@ -188,7 +181,7 @@ class details(QStackedWindowItem):
 		if isinstance(pxm,QtGui.QPixmap):
 			qpal=QtGui.QPalette()
 			color=qpal.color(qpal.Dark)
-			self.wdgSplash.setPixmap(pxm.scaled(int(self.parent.width()/1.1),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatio,Qt.SmoothTransformation))
+			self.wdgSplash.setPixmap(pxm.scaled(int(self.parent.width()),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
 		self.wdgSplash.setMaximumWidth(1000)
 		self.wdgSplash.setStyleSheet("background-color:rgba(%s,%s,%s,0.5);"%(color.red(),color.green(),color.blue()))
 		self.wdgSplash.setVisible(True)
@@ -229,17 +222,9 @@ class details(QStackedWindowItem):
 			self.stream=args[-1]
 		self.screenShot.clear()
 		if name!="":
-			app=self.rc.showApp(name)
-			try:
-				self.app=json.loads(app)
-			except Exception as e:
-				print(e)
-			if len(self.app)>0:
-				if isinstance(self.app[0],str):
-					try:
-						self.app=json.loads(self.app[0])
-					except Exception as e:
-						print(e)
+			self._resetScreen(name)
+			self.thParmShow.setArgs(args[0])
+			self.thParmShow.start()
 		icon=""
 		if self.stream=="":
 			if isinstance(pxm,QtGui.QPixmap):
@@ -247,33 +232,39 @@ class details(QStackedWindowItem):
 			else:
 				icon=self.app.get("icon","")
 		self._showSplash(icon)
-		c=waitCursor(self.parent,self)
-		c.finished.connect(self._endSetParms)
-		c.start()
 	#def setParms
 
-	def _endSetParms(self):
+	def _endSetParms(self,*args):
+		if len(args)>0:
+			app=args[0]
+			if isinstance(app,dict):
+				self.app=app
+			else:
+				try:
+					self.app=json.loads(app)
+				except Exception as e:
+					print(e)
 		swErr=False
 		if self.stream!="":
 			self._processStreams(self.stream)
 			self.stream=""
-			self.updateScreen()
-		if len(self.app)>0:
-			self.parent.setWindowTitle("AppsEdu - {}".format(self.app.get("name","")))
-			for bundle,name in (self.app.get('bundle',{}).items()):
-				if bundle=='package':
-					continue
-				name=self.app.get('name','')
-			#	if name!='':
-			#		status=self.rc.getAppStatus(name,bundle)
-			#		self.app['state'][bundle]=str(status)
+		else:
+			if len(self.app)>0:
+				self.parent.setWindowTitle("AppsEdu - {}".format(self.app.get("name","")))
+				for bundle,name in (self.app.get('bundle',{}).items()):
+					if bundle=='package':
+						continue
+					name=self.app.get('name','')
+				#	if name!='':
+				#		status=self.rc.getAppStatus(name,bundle)
+				#		self.app['state'][bundle]=str(status)
 		self.setCursor(self.oldcursor)
 		self.anim = QPropertyAnimation(self.wdgSplash, b"maximumWidth",parent=self)
-
 		self.anim.setStartValue(1000)
 		self.anim.setEndValue(0)
 		self.anim.setDuration(100)
 		self.anim.start()
+		self.updateScreen()
 	#def _endSetParms
 
 	def _runZomando(self):
@@ -351,7 +342,6 @@ class details(QStackedWindowItem):
 
 			return
 		self.thShow.setArgs(app)
-		self.thShow.showEnded.connect(self._endGetEpiResults)
 		self.thShow.start()
 	#def _getEpiResults
 
@@ -532,6 +522,15 @@ class details(QStackedWindowItem):
 				break
 		return(launcher)
 	#def _getLauncherForApp
+
+	def _resetScreen(self,name):
+		self.parent.setWindowTitle("AppsEdu")
+		self.app={}
+		self.app["name"]=name
+		self.app["summary"]=""
+		self.app["pkgname"]=""
+		self.app["description"]=""
+	#def _resetScreen(self):
 
 	def _onError(self):
 		self._debug("Error detected")
