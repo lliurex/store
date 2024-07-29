@@ -103,6 +103,7 @@ class QPushButtonRebostApp(QPushButton):
 
 	def enterEvent(self,*args):
 		self.setFocus()
+	#def enterEvent
 
 	def loadImg(self,app):
 		img=app.get('icon','')
@@ -426,7 +427,7 @@ class portrait(QStackedWindowItem):
 			if filters.get("zomando",False)==True:
 				self.apps=self._getAppList(["Zomando"])
 		self.apps=self._applyFilters(filters)
-		#self.updateScreen()
+		self.updateScreen()
 	#def _filterView
 
 	def _readFilters(self):

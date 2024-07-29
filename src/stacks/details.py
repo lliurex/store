@@ -300,11 +300,14 @@ class details(QStackedWindowItem):
 			else:
 				if bundle.lower()=="appimage":
 					pkgname=app["pkgname"]+"-appimage"
-				else:
+				elif "zero-lliurex" not in pkgname:
 					pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
 				pkgname=pkgname.replace("org.packagekit.","")
-			self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname)],bundle)
-			self.runapp.start()
+			if "zero-lliurex" in pkgname:
+				self._runZomando()
+			else:
+				self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname)],bundle)
+				self.runapp.start()
 			cont+=1
 	#def _getEpiResults
 
