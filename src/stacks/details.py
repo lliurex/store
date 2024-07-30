@@ -84,6 +84,7 @@ class thShowApp(QThread):
 		if len(self.app.keys())>0:
 			app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
 			self.showEnded.emit(json.loads(app))
+		return True
 	#def run
 #class thShowApp
 
