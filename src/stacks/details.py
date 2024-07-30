@@ -220,7 +220,6 @@ class details(QStackedWindowItem):
 				pxm=args[0].get("icon","")
 			elif "://" in args[-1]:
 				self.stream=args[-1]
-			self.screenShot.clear()
 			if name!="":
 				self._resetScreen(name)
 				self.thParmShow.setArgs(args[0])
@@ -668,6 +667,9 @@ class details(QStackedWindowItem):
 
 	def _setReleasesInfo(self):
 		bundles=self.app.get('bundle',[])
+		for i in range(self.lstInfo.count()):
+			item=self.lstInfo.item(i)
+			self.lstInfo.removeItemWidget(item)
 		self.lstInfo.clear()
 		if isinstance(bundles,dict)==False:
 			return()

@@ -682,11 +682,9 @@ class portrait(QStackedWindowItem):
 				if hasattr(w,"finished"):
 					self._debug("Finish {}".format(w))
 					if w.isRunning()==False:
-						w.terminate()
 						w.wait()
 						i+=1
 						self._debug("Removing {}".format(w))
-						self.aux.remove(w)
 		self._debug("Caching: {}".format(len(self.aux)))
 		self._debug("Cleaned: {}".format(i))
 	#def cleanAux
