@@ -71,6 +71,7 @@ class chkRebost(QThread):
 
 class QPushButtonRebostApp(QPushButton):
 	clicked=Signal("PyObject","PyObject")
+	keypress=Signal()
 	def __init__(self,strapp,parent=None,**kwargs):
 		QPushButton.__init__(self, parent)
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
@@ -102,7 +103,7 @@ class QPushButtonRebostApp(QPushButton):
 	#def updateScreen
 
 	def enterEvent(self,*args):
-		self.setFocus()
+	   self.setFocus()
 	#def enterEvent
 
 	def loadImg(self,app):
@@ -189,7 +190,10 @@ class QPushButtonRebostApp(QPushButton):
 	def keyPressEvent(self,ev):
 		if ev.key() in [Qt.Key_Return,Qt.Key_Enter,Qt.Key_Space]:
 			self.clicked.emit(self,self.app)
-		ev.ignore()
+		else:
+			self.keypress.emit()
+			ev.ignore()
+		return True
 	#def keyPressEvent(self,ev):
 
 	def mousePressEvent(self,*args):
@@ -281,6 +285,8 @@ class portrait(QStackedWindowItem):
 		self.searchBox.textChanged.connect(self._resetSearchBtnIcon)
 		self.searchBox.clicked.connect(self._searchAppsBtn)
 		self.table=QTableTouchWidget()
+		self.table.setAutoScroll(False)
+		self.table.leaveEvent=self.tableLeaveEvent
 		self.table.setAttribute(Qt.WA_AcceptTouchEvents)
 		self.table.setColumnCount(3)
 		self.table.setShowGrid(False)
@@ -312,6 +318,18 @@ class portrait(QStackedWindowItem):
 		self.resetScreen()
 		self._getUpgradables()
 	#def _load_screen
+
+	def tableLeaveEvent(self,*args):
+		self.table.setAutoScroll(False)
+		return(False)
+	#def enterEvent
+
+	def tableKeyPressEvent(self,*args):
+		if self.table.doAutoScroll()==None:
+			self.table.setAutoScroll(True)
+		return(False)
+	#def tableKeyPressEvent
+
 
 	def _launchLlxUp(self):
 		subprocess.run(["pkexec","lliurex-up"])
@@ -608,6 +626,7 @@ class portrait(QStackedWindowItem):
 			row=self.table.rowCount()-1
 			btn=QPushButtonRebostApp(strapp)
 			btn.clicked.connect(self._loadDetails)
+			btn.keypress.connect(self.tableKeyPressEvent)
 			self.wdgs.append((row,col,btn))
 			col+=1
 			span=span-1
