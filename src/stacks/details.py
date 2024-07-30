@@ -584,7 +584,8 @@ class details(QStackedWindowItem):
 				bundle=bundles.popitem()[1]
 			else:
 				bundle="package"
-			self.lstInfo.insertItem(0,bundle)
+			bitem=QListWidgetItem("{}".format(bundle))
+			self.lstInfo.insertItem(0,bitem)
 			item=self.lstInfo.item(0)
 		bundle=item.text().lower().split(" ")[-1]
 		release=item.text().lower().split(" ")[0]
