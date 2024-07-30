@@ -436,6 +436,12 @@ class details(QStackedWindowItem):
 		self.anim.setDuration(100)
 	#def _load_screen
 
+	def keyPressEvent(self,*args):
+		if args[0].key() in [Qt.Key_Escape]:
+			self._return()
+	#def keyPressEvent
+
+
 	def updateScreen(self):
 		if self.stream!="":
 			return
@@ -569,8 +575,7 @@ class details(QStackedWindowItem):
 		tooltip=""
 		item=self.lstInfo.currentItem()
 		if item==None:
-			print("Err: This app has not install option")
-			#self._onError()
+			self._debug("This app has not install option. Waiting data")
 			bundles=self.app.get("bundle",{})
 			if len(bundles)>0:
 				bundle=bundles.popitem()[1]
@@ -578,7 +583,6 @@ class details(QStackedWindowItem):
 				bundle="package"
 			self.lstInfo.insertItem(0,bundle)
 			item=self.lstInfo.item(0)
-			#return()
 		bundle=item.text().lower().split(" ")[-1]
 		release=item.text().lower().split(" ")[0]
 		tooltip=item.text()
@@ -623,9 +627,6 @@ class details(QStackedWindowItem):
 			else:
 				self._onError()
 				return()
-	#		if pkgState==1 and self.app.get("bundle",{}).get("zomando","")!="":
-		#		self.btnInstall.setText("{}".format(i18n.get("INSTALL")))
-	#			self.lstInfo.setCurrentRow(1)
 			self.lstInfo.setStyleSheet("")
 			self.btnInstall.setVisible(True)
 			self.btnRemove.setVisible(False)
