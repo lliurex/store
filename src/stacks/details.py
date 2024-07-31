@@ -449,6 +449,8 @@ class details(QStackedWindowItem):
 		if self.stream!="":
 			return
 		self._initScreen()
+		if self.app.get("bundle",None)==None:
+			return
 		self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
 		icn=self._getIconFromApp(self.app)
 		self.lblIcon.setPixmap(icn.scaled(128,128))
@@ -671,12 +673,12 @@ class details(QStackedWindowItem):
 	#def _updateScreenControls
 
 	def _setReleasesInfo(self):
-		bundles=self.app.get('bundle',[])
+		bundles=self.app.get('bundle',{})
 		for i in range(self.lstInfo.count()):
 			item=self.lstInfo.item(i)
 			self.lstInfo.removeItemWidget(item)
 		self.lstInfo.clear()
-		if isinstance(bundles,dict)==False:
+		if len(bundles)<=0:
 			return()
 		(installed,uninstalled)=self._classifyBundles(bundles)
 		priority=["zomando","snap","flatpak","appimage","package","eduapp"]
