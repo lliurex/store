@@ -1,4 +1,4 @@
-appsedu (1.2.0+0lliurex23) jammy; urgency=medium
+appsedu (1.2.1+0lliurex23) jammy; urgency=medium
 
   * Improve memory footprint
   * Cursor fixes
