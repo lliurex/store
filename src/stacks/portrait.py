@@ -114,7 +114,7 @@ class QPushButtonRebostApp(QPushButton):
 		if os.path.isfile(img):
 			icn=QtGui.QPixmap.fromImage(img)
 		elif img=='':
-			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon("/usr/share/qml-module-lliurex-ui/media/01.png"))
+			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
 			print("333###############33")
 			print(icn2)
 			print("333###############33")
