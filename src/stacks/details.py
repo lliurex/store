@@ -224,16 +224,16 @@ class details(QStackedWindowItem):
 				pxm=args[0].get("icon","")
 			elif "://" in args[-1]:
 				self.stream=args[-1]
-			if name!="":
-				self._resetScreen(name)
-				self.thParmShow.setArgs(args[0])
-				self.thParmShow.start()
 			icon=""
 			if self.stream=="":
 				if isinstance(pxm,QtGui.QPixmap):
 					icon=pxm
 				else:
 					icon=self.app.get("icon","")
+			if name!="":
+				self._resetScreen(name,icon)
+				self.thParmShow.setArgs(args[0])
+				self.thParmShow.start()
 		self._showSplash(icon)
 	#def setParms
 
@@ -257,7 +257,7 @@ class details(QStackedWindowItem):
 				for bundle,name in (self.app.get('bundle',{}).items()):
 					if bundle=='package':
 						continue
-					name=self.app.get('name','')
+				#	name=self.app.get('name','')
 				#	if name!='':
 				#		status=self.rc.getAppStatus(name,bundle)
 				#		self.app['state'][bundle]=str(status)
@@ -450,6 +450,12 @@ class details(QStackedWindowItem):
 			return
 		self._initScreen()
 		if self.app.get("bundle",None)==None:
+			if self.app.get("name","")!="":
+				self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+				icn=self.app.get("icon")
+				self.lblIcon.setPixmap(icn.scaled(128,128))
+				self.lblSummary.setText("")
+				#self.lblIcon.loadImg(self.app)
 			return
 		self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
 		icn=self._getIconFromApp(self.app)
@@ -535,10 +541,11 @@ class details(QStackedWindowItem):
 		return(tags)
 	#def _generateTags
 
-	def _resetScreen(self,name):
+	def _resetScreen(self,name,icon):
 		self.parent.setWindowTitle("AppsEdu")
 		self.app={}
 		self.app["name"]=name
+		self.app["icon"]=icon
 		self.app["summary"]=""
 		self.app["pkgname"]=""
 		self.app["description"]=""
