@@ -1,9 +1,10 @@
-appsedu (1.2.1+0lliurex23) jammy; urgency=medium
+appsedu (1.2.2+0lliurex23) jammy; urgency=medium
 
   * Improve memory footprint
   * Cursor fixes
   * Threaded app
   * Integration with rebost D-Bus
+  * Add generic icon for unknowed icons
 
  -- Juanma1980 <juanma1980@gmail.com>  Wed, 24 Jul 2024 13:56:13 +0200
 
