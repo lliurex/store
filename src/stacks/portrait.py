@@ -114,7 +114,10 @@ class QPushButtonRebostApp(QPushButton):
 		if os.path.isfile(img):
 			icn=QtGui.QPixmap.fromImage(img)
 		elif img=='':
-			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'))
+			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon("/usr/share/qml-module-lliurex-ui/media/01.png"))
+			print("333###############33")
+			print(icn2)
+			print("333###############33")
 			icn=icn2.pixmap(self.iconSize,self.iconSize)
 		elif "flathub" in img:
 			tmp=img.split("/")

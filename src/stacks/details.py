@@ -104,7 +104,7 @@ class QLabelRebostApp(QLabel):
 		if os.path.isfile(img):
 			icn=QtGui.QPixmap.fromImage(img)
 		elif img=='':
-			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'))
+			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
 			icn=icn2.pixmap(128,128)
 		if icn:
 			wsize=128
