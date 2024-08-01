@@ -460,7 +460,6 @@ class details(QStackedWindowItem):
 		bundles=list(self.app.get('bundle',{}).keys())
 		if "eduapp" in bundles:
 			self.app["description"]=i18n.get("APPUNKNOWN")
-		text=''
 		if homepage:
 			homepage=homepage.rstrip("/")
 			desc=homepage
@@ -479,13 +478,11 @@ class details(QStackedWindowItem):
 			description="<h2>{0}{4}</h2>{1} <a href={2}>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
 			self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setText(description)
-
-		versions=self.app.get('versions',{})
 		self._updateScreenControls(bundles)
-		text=''
+		#preliminary license support, not supported
 		applicense=self.app.get('license','')
 		if applicense:
-			text+="<strong>{}</strong>".format(applicense)
+			text="<strong>{}</strong>".format(applicense)
 		
 		scrs=self.app.get('screenshots',[])
 		if isinstance(scrs,list)==False:
@@ -581,7 +578,7 @@ class details(QStackedWindowItem):
 		item=self.lstInfo.currentItem()
 		if item==None:
 			self._debug("This app has not install option. Waiting data")
-			bundles=self.app.get("bundle",{})
+			bundles=self.app.get("bundle",{}).copy()
 			if len(bundles)>0:
 				bundle=bundles.popitem()[1]
 			else:
