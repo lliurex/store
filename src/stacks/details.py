@@ -52,10 +52,10 @@ class runClass(QThread):
 	def setArgs(self,app,args,bundle=""):
 		self.app=app
 		self.args=args
-		if bundle:
-			oldBundle=self.app.get('bundle')
-			newBundle={bundle:oldBundle.get(bundle)}
-			self.app['bundle']=newBundle
+		#if bundle:
+		#	oldBundle=self.app.get('bundle')
+		#	newBundle={bundle:oldBundle.get(bundle)}
+		#	self.app['bundle']=newBundle
 	#def setArgs
 
 	def run(self):
@@ -279,25 +279,28 @@ class details(QStackedWindowItem):
 	#def _runApp
 
 	def _getRunappResults(self,app,proc):
-		cont=0
+		self.launchAttempts=app.get("relaunch",0)
+		if self.launchAttempts>9:
+			self.showMsg("{0} {1}".format(i18n.get("ERRLAUNCH"),app.get("name")))
+			return
 		if proc.returncode!=0 and "gtk-launch" in proc.stderr:
+			self.launchAttempts+=1
+			app["relaunch"]=self.launchAttempts
 			pkgname=app["pkgname"].split(".")[-1]
 			bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
-			if app.get("relaunch",False)==False:
-				app["relaunch"]=True
-			else:
-				if bundle.lower()=="appimage":
-					pkgname=app["pkgname"]+"-appimage"
-				elif "zero-lliurex" not in pkgname:
-					pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
-				pkgname=pkgname.replace("org.packagekit.","")
+			if bundle.lower()=="appimage":
+				pkgname=app["pkgname"]+"-appimage"
+			elif "zero-lliurex" not in pkgname:
+				pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
+				if self.launchAttempts==2:
+					pkgname="net.lliurex.{}".format(app["pkgname"])
+			pkgname=pkgname.replace("org.packagekit.","")
 			if "zero-lliurex" in pkgname:
 				self._runZomando()
 			else:
 				self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname)],bundle)
 				self.runapp.start()
-			cont+=1
-	#def _getEpiResults
+	#def _getRunappResults
 
 	def _genericEpiInstall(self):
 		bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
