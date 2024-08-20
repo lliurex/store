@@ -65,7 +65,7 @@ class chkRebost(QThread):
 		self.rc=store.client()
 	
 	def run(self):
-		self.rc.execute("enablegui",args=[{"enabled":True}])
+		self.rc.execute("list","office")
 		self.chkRebost.emit(True)
 #class chkRebost
 
@@ -230,7 +230,7 @@ class portrait(QStackedWindowItem):
 		self.oldSearch=""
 		self.rc=store.client()
 		self.chkRebost=chkRebost()
-		self.th=chkUpgrades(self.rc)
+		self.thUpgrades=chkUpgrades(self.rc)
 		self.hideControlButtons()
 		self.level='user'
 		self.oldcursor=self.cursor()
@@ -301,6 +301,7 @@ class portrait(QStackedWindowItem):
 		self.lblInfo.setActionIcon("lliurex-up")
 		self.lblInfo.setText(i18n.get("UPGRADES"))
 		self.lblInfo.clicked.connect(self._launchLlxUp)
+		self.lblInfo.setVisible(False)
 		self.box.addWidget(self.lblInfo,2,0,2,1)
 		self.lblProgress=QLabel(i18n["NEWDATA"])
 		self.lblProgress.setVisible(False)
@@ -398,13 +399,13 @@ class portrait(QStackedWindowItem):
 	def _endGetUpgradables(self,*args):
 		if args[0]==True:
 			self.lblInfo.setVisible(True)
-		self.th.terminate()
+		self.thUpgrades.terminate()
 	#def _endGetUpgradables(self,*args):
 
 	def _getUpgradables(self):
 		self.lblInfo.setVisible(False)
-		self.th.chkEnded.connect(self._endGetUpgradables)
-		self.th.start()
+		self.thUpgrades.chkEnded.connect(self._endGetUpgradables)
+		self.thUpgrades.start()
 	#def _getUpgradables
 
 	def _beginUpdate(self):
