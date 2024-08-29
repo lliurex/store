@@ -150,10 +150,10 @@ class QPushButtonRebostApp(QPushButton):
 		color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
 		bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Dark))
 		if forbidden==True:
-			bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Base))
-			color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Dark))
+			bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Base))
+			color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Dark))
 		elif installed==True:
-			color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Highlight))
+			color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Highlight))
 		self.setAutoFillBackground(True)
 		pal=self.palette()
 		#pal.setColor(QPalette.Window,bcolor)
@@ -317,7 +317,6 @@ class portrait(QStackedWindowItem):
 		btnSettings.clicked.connect(self._gotoSettings)
 		self.box.addWidget(btnSettings,self.box.rowCount()-1,self.box.columnCount()-1,1,1,Qt.Alignment(-1))
 		self.resetScreen()
-		self._getUpgradables()
 	#def _load_screen
 
 	def tableLeaveEvent(self,*args):
@@ -422,6 +421,8 @@ class portrait(QStackedWindowItem):
 	def _goHome(self,*args,**kwargs):
 		if time.time()-self.oldTime<MINTIME*2:
 			return
+		if self.thUpgrades.isFinished()==False and self.thUpgrades.isRunning()==False:
+			self._getUpgradables()
 		self.oldTime=time.time()
 		self.sortAsc=False
 		self.searchBox.setText("")

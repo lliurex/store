@@ -19,6 +19,7 @@ R=140
 G=255
 B=0
 A=70
+ICON_SIZE=128
 
 i18n={
 	"APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
@@ -41,7 +42,7 @@ i18n={
 	"ZMDNOTFOUND":_("Zommand not found. Open Zero-Center?"),
 	}
 	
-class runClass(QThread):
+class appLauncher(QThread):
 	runEnded=Signal("PyObject","PyObject")
 	def __init__(self,parent=None):
 		QThread.__init__(self, parent)
@@ -60,13 +61,17 @@ class runClass(QThread):
 
 	def run(self):
 		if self.app and self.args:
+			if "attempted" not in self.app.keys():
+				self.app["attempted"]=[]
+			if " ".join(self.args[1:]) not in self.app["attempted"]:
+				self.app["attempted"].append(" ".join(self.args[1:]))
 			try:
 				proc=subprocess.run(self.args,stderr=subprocess.PIPE,universal_newlines=True)
 			except Exception as e:
 				print(e)
 			self.runEnded.emit(self.app,proc)
 	#def run
-#class runClass
+#class appLauncher
 
 class thShowApp(QThread):
 	showEnded=Signal("PyObject")
@@ -105,12 +110,12 @@ class QLabelRebostApp(QLabel):
 			icn=QtGui.QPixmap.fromImage(img)
 		elif img=='':
 			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
-			icn=icn2.pixmap(128,128)
+			icn=icn2.pixmap(ICON_SIZE,ICON_SIZE)
 		if icn:
-			wsize=128
+			wsize=ICON_SIZE
 			if "/usr/share/banners/lliurex-neu" in img:
 				wsize=235
-			self.setPixmap(icn.scaled(wsize,128,Qt.KeepAspectRatio,Qt.SmoothTransformation))
+			self.setPixmap(icn.scaled(wsize,ICON_SIZE,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 		elif img.startswith('http'):
 			aux=QScreenShotContainer()
 			self.scr=aux.loadScreenShot(img,self.cacheDir)
@@ -121,7 +126,7 @@ class QLabelRebostApp(QLabel):
 	
 	def load(self,*args):
 		img=args[0]
-		self.setPixmap(img.scaled(128,128))
+		self.setPixmap(img.scaled(ICON_SIZE,ICON_SIZE))
 	#def load
 #class QLabelRebostApp
 
@@ -150,11 +155,11 @@ class details(QStackedWindowItem):
 		self.hideControlButtons()
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
 		self.helper=libhelper.helper()
-		self.epi=runClass()
-		self.runapp=runClass()
+		self.epi=appLauncher()
+		self.runapp=appLauncher()
 		self.runapp.runEnded.connect(self._getRunappResults)
-		self.thShow=thShowApp()
-		self.thShow.showEnded.connect(self._endGetEpiResults)
+		self.thEpiShow=thShowApp()
+		self.thEpiShow.showEnded.connect(self._endGetEpiResults)
 		self.thParmShow=thShowApp()
 		self.thParmShow.showEnded.connect(self._endSetParms)
 		self.oldcursor=self.cursor()
@@ -182,7 +187,8 @@ class details(QStackedWindowItem):
 			if os.path.isfile(icon):
 				pxm=QtGui.QPixmap(icon)
 		if not pxm:
-			pxm=QtGui.QIcon.fromTheme("appsedu").pixmap(128,128)
+			icn=QtGui.QIcon.fromTheme("appedu-generic")
+			pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
 		if isinstance(pxm,QtGui.QPixmap):
 			color=QtGui.QPalette().color(QtGui.QPalette().Dark)
 			self.wdgSplash.setPixmap(pxm.scaled(int(self.parent.width()),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
@@ -272,34 +278,46 @@ class details(QStackedWindowItem):
 
 	def _runApp(self):
 		bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
-		cmd=self.helper.getCmdForLauncher(self.app,bundle)
-		self.runapp.setArgs(self.app,cmd,bundle)
+		self.runapp.setArgs(self.app,["gtk-launch","{}".format(self.app["pkgname"])],bundle)
 		self.runapp.start()
 		self.showMsg("{} {}".format(i18n.get("OPENING"),self.app["name"]))
 	#def _runApp
 
 	def _getRunappResults(self,app,proc):
-		self.launchAttempts=app.get("relaunch",0)
-		if self.launchAttempts>9:
-			self.showMsg("{0} {1}".format(i18n.get("ERRLAUNCH"),app.get("name")))
-			return
-		if proc.returncode!=0 and "gtk-launch" in proc.stderr:
-			self.launchAttempts+=1
-			app["relaunch"]=self.launchAttempts
-			pkgname=app["pkgname"].split(".")[-1]
+		if "attempted" not in app.keys():
+			app["attempted"]=[]
+		if proc.returncode!=0 or len(proc.stderr.strip())>0:
 			bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
-			if bundle.lower()=="appimage":
+			if app["pkgname"].split(".")[-1] not in app["attempted"]:
+				pkgname=app["pkgname"].split(".")[-1]
+			elif app["pkgname"]+"-appimage" not in app["attempted"]:
 				pkgname=app["pkgname"]+"-appimage"
-			elif "zero-lliurex" not in pkgname:
-				pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
-				if self.launchAttempts==2:
+			elif "zero-lliurex" not in app["pkgname"]:
+				pkgname="net.lliurex.{}".format(app["pkgname"])
+				if pkgname in app["attempted"]:
+					pkgname=" ".join(self.helper.getCmdForLauncher(self.app,bundle,self.app["pkgname"])[1:],)
+				if pkgname in app["attempted"]:
+					pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
+				if pkgname in app["attempted"]:
 					pkgname="net.lliurex.{}".format(app["pkgname"])
+				if pkgname in app["attempted"]:
+					pkgname=" ".join(self.helper.getCmdForLauncher(self.app,bundle)[1:],)
 			pkgname=pkgname.replace("org.packagekit.","")
-			if "zero-lliurex" in pkgname:
-				self._runZomando()
+			if pkgname not in app["attempted"]:
+				app["attempted"].append(pkgname)
+				if "zero-lliurex" in pkgname:
+					self._runZomando()
+				else:
+					self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname)],bundle)
+					self.runapp.start()
+			elif app["attempted"][-1]!="getLastAttempt":
+					self._debug("Last attempt")
+					app["attempted"].append("getLastAttempt")
+					self.runapp.setArgs(app,["/bin/bash","exec {}".format(app["pkgname"])],bundle)
+					self.runapp.start()
 			else:
-				self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname)],bundle)
-				self.runapp.start()
+				print("ERROR")
+				self.showMsg("{0} {1}".format(i18n.get("ERRLAUNCH"),app.get("name")))
 	#def _getRunappResults
 
 	def _genericEpiInstall(self):
@@ -341,12 +359,12 @@ class details(QStackedWindowItem):
 			print("ERROR!!!!!")
 
 			return
-		self.thShow.setArgs(app)
-		self.thShow.start()
+		self.thEpiShow.setArgs(app)
+		self.thEpiShow.start()
 	#def _getEpiResults
 
 	def _endGetEpiResults(self,app):
-		self.thShow.wait()
+		self.thEpiShow.wait()
 		self.app=app
 		bundle=list(app.get('bundle').keys())[0]
 		state=app.get('state',{}).get(bundle,1)
@@ -456,13 +474,23 @@ class details(QStackedWindowItem):
 			if self.app.get("name","")!="":
 				self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
 				icn=self.app.get("icon")
-				self.lblIcon.setPixmap(icn.scaled(128,128))
+				pxm=None
+				if isinstance(icn,QtGui.QPixmap):
+					pxm=icn
+				elif len(icn)>0:
+					if os.path.isfile(icn):
+						pxm=QtGui.QPixmap(icn)
+				if not pxm:
+					icn=QtGui.QIcon.fromTheme(self.app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
+					pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
+				if pxm:
+					self.lblIcon.setPixmap(pxm.scaled(ICON_SIZE,ICON_SIZE))
 				self.lblSummary.setText("")
 				#self.lblIcon.loadImg(self.app)
 			return
 		self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
 		icn=self._getIconFromApp(self.app)
-		self.lblIcon.setPixmap(icn.scaled(128,128))
+		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
 		self.lblIcon.loadImg(self.app)
 		self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
 		homepage=self.app.get('homepage','')
@@ -651,7 +679,7 @@ class details(QStackedWindowItem):
 		if icn.depth()==0:
 		#something went wrong. Perhaps img it's gzipped
 			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'))
-			icn=icn2.pixmap(128,128)
+			icn=icn2.pixmap(ICON_SIZE,ICON_SIZE)
 		return(icn)
 	#def _getIconFromApp
 
