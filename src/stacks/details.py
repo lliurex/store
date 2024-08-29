@@ -182,7 +182,8 @@ class details(QStackedWindowItem):
 			if os.path.isfile(icon):
 				pxm=QtGui.QPixmap(icon)
 		if not pxm:
-			pxm=QtGui.QIcon.fromTheme("appsedu").pixmap(128,128)
+			icn=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
+			pxm=icn.pixmap(128,128)
 		if isinstance(pxm,QtGui.QPixmap):
 			color=QtGui.QPalette().color(QtGui.QPalette().Dark)
 			self.wdgSplash.setPixmap(pxm.scaled(int(self.parent.width()),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
@@ -456,7 +457,17 @@ class details(QStackedWindowItem):
 			if self.app.get("name","")!="":
 				self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
 				icn=self.app.get("icon")
-				self.lblIcon.setPixmap(icn.scaled(128,128))
+				pxm=None
+				if isinstance(icn,QtGui.QPixmap):
+					pxm=icn
+				elif len(icn)>0:
+					if os.path.isfile(icn):
+						pxm=QtGui.QPixmap(icn)
+				if not pxm:
+					icn=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
+					pxm=icn.pixmap(128,128)
+				if pxm:
+					self.lblIcon.setPixmap(pxm.scaled(128,128))
 				self.lblSummary.setText("")
 				#self.lblIcon.loadImg(self.app)
 			return
