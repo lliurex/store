@@ -93,6 +93,31 @@ class helper():
 
 	def getCmdForLauncher(self,app,bundle,launcher=""):
 		if len(launcher)>0:
+			if os.path.exists(launcher)==False:
+				dPaths=["/usr/share/applications",os.path.join(os.environ["HOME"],".local/share/applications")]
+				dFile=""
+				for path in dPaths:
+					if os.path.isdir(path):
+						for f in os.scandir(path):
+							if "{}.desktop".format(launcher.lower()) in f.name.lower():
+								dFile=f.name
+								break
+					if dFile!="":
+						break
+				if dFile!="":
+					launcher=dFile
+				else:
+					for path in dPaths:
+						if os.path.isdir(path):
+							for f in os.scandir(path):
+								with open(f.path,"r") as fcontent:
+									if launcher in "\n".join(fcontent.readlines()):
+										dFile=f.name
+										break
+						if dFile!="":
+							break
+				if dFile!="":
+					launcher=dFile
 			cmd=["gtk-launch",launcher]
 		#bundle=self.cmbOpen.currentText().lower().split(" ")[0]
 		elif bundle=="package":
