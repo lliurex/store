@@ -134,14 +134,25 @@ class helper():
 
 	def getCmdForLauncher(self,app,bundle="",launcher=""):
 		cmd=[]
+		appname=""
 		if len(launcher)>0:
 			if os.path.exists(launcher)==True:
 				cmd=["gtk-launch",os.path.basename(launcher)]
 		if len(cmd)<=0:
 			if bundle!="":
-				cmd=self.getLauncherForBundle(app,bundle)
+				appname=app["bundle"].get(bundle,"")
+				if len(appname)>0:
+					cmd=self.getLauncherForBundle(app,bundle)
 		if len(cmd)<=0:
-			cmd=self.getDesktopForCommand(app["pkgname"])
+			if appname=="":
+				appname=app["pkgname"]
+			cmd=self.getDesktopForCommand(appname)
+			if len(cmd)==0:
+				for char in (".","-","_"):
+					name=appname.split("char")[-1]
+					cmd=self.getDesktopForCommand(name)
+					if len(cmd)>0:
+						break
 		return(cmd)
 	#def getCmdForLauncher
 
