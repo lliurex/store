@@ -147,28 +147,35 @@ class QPushButtonRebostApp(QPushButton):
 			forbidden=True
 		self.setObjectName("rebostapp")
 		self.setAttribute(Qt.WA_StyledBackground, True)
-		color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
-		bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Dark))
+		bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
+		bordercolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Dark))
+		fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Text))
 		if forbidden==True:
-			bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Base))
-			color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Dark))
+			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Dark))
+			bordercolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Mid))
+			fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.BrightText))
 		elif installed==True:
-			color=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Highlight))
+			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Highlight))
 		self.setAutoFillBackground(True)
 		pal=self.palette()
 		#pal.setColor(QPalette.Window,bcolor)
-		rgbColor="{0},{1},{2}".format(color.red(),color.green(),color.blue())
-		rgbBcolor="{0},{1},{2}".format(bcolor.red(),bcolor.green(),bcolor.blue())
+		rgbBkgColor="{0},{1},{2}".format(bkgcolor.red(),bkgcolor.green(),bkgcolor.blue())
+		rgbBorderColor="{0},{1},{2}".format(bordercolor.red(),bordercolor.green(),bordercolor.blue())
+		rgbFColor="{0},{1},{2}".format(fcolor.red(),fcolor.green(),fcolor.blue())
 		self.setStyleSheet("""#rebostapp {
 			background-color: rgb(%s); 
 			border-style: solid; 
 			border-color: rgb(%s); 
 			border-width: 1px; 
-			border-radius: 2px;}
+			border-radius: 2px;
+			}
 			#rebostapp:focus:!pressed {
 				border-width:6px;
 				}
-			"""%(rgbColor,rgbBcolor))
+			QLabel{
+				color: rgb(%s);
+			}
+			"""%(rgbBkgColor,rgbBorderColor,rgbFColor))
 
 	#def _applyDecoration
 
