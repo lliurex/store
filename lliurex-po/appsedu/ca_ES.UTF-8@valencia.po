@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-04 13:19+0200\n"
-"PO-Revision-Date: 2024-07-04 13:23+0200\n"
+"POT-Creation-Date: 2024-08-30 11:13+0200\n"
+"PO-Revision-Date: 2024-08-30 11:34+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.0.1\n"
 
-#: ../src/stacks/details.py:24
+#: ../src/stacks/details.py:25
 msgid ""
 "The app could not be loaded. Until included in LliureX catalogue it can't be "
 "installed"
@@ -27,148 +27,172 @@ msgstr ""
 "disponible. Mès informació a https://portal.edu.gva.es/appsedu/aplicacions-"
 "lliurex"
 
-#: ../src/stacks/details.py:25
+#: ../src/stacks/details.py:26
 msgid "Choose"
 msgstr "Triar"
 
-#: ../src/stacks/details.py:26 ../src/stacks/details.py:39
+#: ../src/stacks/details.py:27 ../src/stacks/details.py:41
 msgid "Details"
 msgstr "Detalls"
 
-#: ../src/stacks/details.py:27 ../src/stacks/portrait.py:21
+#: ../src/stacks/details.py:28 ../src/stacks/portrait.py:28
 msgid "Navigate through all applications"
 msgstr "Mostra totes les aplicacions"
 
-#: ../src/stacks/details.py:28
+#: ../src/stacks/details.py:29
+msgid "Could not open"
+msgstr "No s'ha pogut obrir"
+
+#: ../src/stacks/details.py:30
 msgid "Error opening"
 msgstr "Error carregant"
 
-#: ../src/stacks/details.py:29
+#: ../src/stacks/details.py:31
 msgid "Unknown error"
 msgstr "Error desconegut"
 
-#: ../src/stacks/details.py:30
+#: ../src/stacks/details.py:32
 msgid "App unauthorized"
 msgstr "App no autoritzada"
 
-#: ../src/stacks/details.py:31
+#: ../src/stacks/details.py:33
 msgid "Format"
 msgstr "Format"
 
-#: ../src/stacks/details.py:32
+#: ../src/stacks/details.py:34
 msgid "For more info go to"
 msgstr "Per a més informació anar a"
 
-#: ../src/stacks/details.py:33
+#: ../src/stacks/details.py:35
 msgid "Install"
 msgstr "Instal·la"
 
-#: ../src/stacks/details.py:34
+#: ../src/stacks/details.py:36
 msgid "Show application detail"
 msgstr "Mostra els detalls"
 
-#: ../src/stacks/details.py:35
+#: ../src/stacks/details.py:37
 msgid "Opening"
 msgstr "Obrint"
 
-#: ../src/stacks/details.py:36
+#: ../src/stacks/details.py:38
 msgid "Release"
 msgstr "Versió"
 
-#: ../src/stacks/details.py:37
+#: ../src/stacks/details.py:39
 msgid "Remove"
 msgstr "Elimina"
 
-#: ../src/stacks/details.py:38
+#: ../src/stacks/details.py:40
 msgid "Open"
 msgstr "Obri"
 
-#: ../src/stacks/details.py:40
+#: ../src/stacks/details.py:42
 msgid "Upgrade"
 msgstr "Actualitza"
 
-#: ../src/stacks/details.py:41
+#: ../src/stacks/details.py:43
 msgid "Zommand not found. Open Zero-Center?"
 msgstr "No trobat. Obrir el Zero-Center?"
 
-#: ../src/stacks/portrait.py:18
+#: ../src/stacks/portrait.py:24
 msgid "All"
 msgstr "Tot"
 
-#: ../src/stacks/portrait.py:19
+#: ../src/stacks/portrait.py:25
 msgid "Available"
 msgstr "Disponibles"
 
-#: ../src/stacks/portrait.py:20 ../src/stacks/portrait.py:27
+#: ../src/stacks/portrait.py:26
+msgid "Filter by category"
+msgstr "Filtrar per categoría"
+
+#: ../src/stacks/portrait.py:27 ../src/stacks/portrait.py:38
 msgid "Portrait"
 msgstr "Portada"
 
-#: ../src/stacks/portrait.py:22
+#: ../src/stacks/portrait.py:29
 msgid "Filters"
 msgstr "Filtres"
 
-#: ../src/stacks/portrait.py:23
+#: ../src/stacks/portrait.py:30
+msgid "Filter by formats and states"
+msgstr "Filtrar per formats i estats"
+
+#: ../src/stacks/portrait.py:31
+msgid "Main page"
+msgstr "Pàgina principal"
+
+#: ../src/stacks/portrait.py:32
 msgid "Installed"
 msgstr "Instal·lats"
 
-#: ../src/stacks/portrait.py:24
+#: ../src/stacks/portrait.py:33
 msgid "Launch LliurexUp"
 msgstr "LliurexUp"
 
-#: ../src/stacks/portrait.py:25
+#: ../src/stacks/portrait.py:34
 msgid "Show applications"
 msgstr "Mostra les aplicacions"
 
-#: ../src/stacks/portrait.py:26
+#: ../src/stacks/portrait.py:35 ../src/stacks/sources.py:26
+msgid "Updating info"
+msgstr "Actualitzant dades"
+
+#: ../src/stacks/portrait.py:36
 msgid "Search"
 msgstr "Cerca"
 
-#: ../src/stacks/portrait.py:28
+#: ../src/stacks/portrait.py:37
+msgid "Sort alphabetically"
+msgstr "Ordre alfabètic"
+
+#: ../src/stacks/portrait.py:39
 msgid "Upgradables"
 msgstr "Actualitzables"
 
-#: ../src/stacks/portrait.py:29
+#: ../src/stacks/portrait.py:40
 msgid "There're upgrades available"
 msgstr "Hi han actualitzacions pendents"
 
-#: ../src/stacks/sources.py:18
+#: ../src/stacks/sources.py:21
 msgid "Clear cache"
 msgstr "Neteja cau"
 
-#: ../src/stacks/sources.py:19
+#: ../src/stacks/sources.py:22
 msgid ""
 "Remove all files from cache, as per exemple icons or another related stuff"
 msgstr "Elimina tots els fitxers de la memoria cau, com icones i semblants"
 
-#: ../src/stacks/sources.py:20
+#: ../src/stacks/sources.py:23
 msgid "Sources"
 msgstr "Origens"
 
-#: ../src/stacks/sources.py:21
+#: ../src/stacks/sources.py:24
 msgid "Show software sources"
 msgstr "Mostra els origens del programari"
 
-#: ../src/stacks/sources.py:22
+#: ../src/stacks/sources.py:25
 msgid "Configure software sources"
 msgstr "Configura els origens"
 
-#: ../src/stacks/sources.py:23
+#: ../src/stacks/sources.py:27
 msgid "Configuring software sources"
 msgstr "Configura els origens"
 
-#: ../src/stacks/sources.py:24
+#: ../src/stacks/sources.py:28
 msgid "Reload catalogues"
 msgstr "Carrega els catàlegs"
 
-#: ../src/stacks/sources.py:25
+#: ../src/stacks/sources.py:29
 msgid "Reload info from sources"
 msgstr "Recarrega la informació del catàleg"
 
-#: ../src/stacks/sources.py:26
+#: ../src/stacks/sources.py:30
 msgid "Restart database"
 msgstr "Reinicialitzar catàleg"
 
-#: ../src/stacks/sources.py:27
+#: ../src/stacks/sources.py:31
 msgid ""
 "Forces a refresh of all the info from sources resetting all previous stored "
 "information"
@@ -176,27 +200,27 @@ msgstr ""
 "Refresca la informació desde els proveïdors esborrant la informació "
 "emmagatzemada"
 
-#: ../src/stacks/sources.py:28
+#: ../src/stacks/sources.py:32
 msgid "Service could not be reloaded. Check credentials"
 msgstr "El servei no pot recarregar-se. Comprove les credencials"
 
-#: ../src/stacks/sources.py:29
+#: ../src/stacks/sources.py:33
 msgid "Include appimages"
 msgstr "Incloure appimages"
 
-#: ../src/stacks/sources.py:30
+#: ../src/stacks/sources.py:34
 msgid "Include flatpaks"
 msgstr "Incloure flatpaks"
 
-#: ../src/stacks/sources.py:31
+#: ../src/stacks/sources.py:35
 msgid "Include native packages"
 msgstr "Incloure paqueteria nadiua"
 
-#: ../src/stacks/sources.py:32
+#: ../src/stacks/sources.py:36
 msgid "Include snaps"
 msgstr "Incloure snaps"
 
-#: ../src/stacks/sources.py:33
+#: ../src/stacks/sources.py:37
 msgid "Configuration"
 msgstr "Configuració"
 
@@ -211,6 +235,9 @@ msgstr "Accesibilitat"
 
 msgid "Administration"
 msgstr "Administració"
+
+msgid "Application"
+msgstr "Aplicació"
 
 msgid "ArcadeGame"
 msgstr "Jocs arcade"
@@ -236,8 +263,14 @@ msgstr "Edició de só i video"
 msgid "Calculator"
 msgstr "Cálcul"
 
+msgid "Calendar"
+msgstr "Calendari"
+
 msgid "Chart"
 msgstr "Gràfiques"
+
+msgid "Chat"
+msgstr "Xat"
 
 msgid "Chemistry"
 msgstr "Química"
@@ -251,14 +284,20 @@ msgstr "Ciencia computacional"
 msgid "ConsoleOnly"
 msgstr "Consola"
 
-msgid "Debugger"
-msgstr "Debug"
+msgid "ContactManagement"
+msgstr "Gestió de contactes"
+
+msgid "Core"
+msgstr "Sistema"
 
 msgid "Development"
 msgstr "Desenvolupament"
 
 msgid "DiscBurning"
 msgstr "Grabació de discs"
+
+msgid "Documentation"
+msgstr "Documentació"
 
 msgid "Education"
 msgstr "Educació"
@@ -269,6 +308,9 @@ msgstr "Electricitat"
 msgid "Electronics"
 msgstr "Electrónica"
 
+msgid "Email"
+msgstr "Email"
+
 msgid "Emulator"
 msgstr "Emuladors"
 
@@ -277,6 +319,9 @@ msgstr "Enginyeria"
 
 msgid "FP"
 msgstr "FP"
+
+msgid "Feed"
+msgstr "Orígen"
 
 msgid "FileManager"
 msgstr "Gestió de fitxers"
@@ -310,6 +355,15 @@ msgstr "Gràfics"
 
 msgid "IDE"
 msgstr "IDE"
+
+msgid "IRCClient"
+msgstr "IRC"
+
+msgid "InstantMessaging"
+msgstr "Missatgeria instantànea"
+
+msgid "Internet"
+msgstr "Internet"
 
 msgid "KidsGame"
 msgstr "Jocs infantils"
@@ -355,6 +409,9 @@ msgstr "Música"
 
 msgid "Network"
 msgstr "Xarxes"
+
+msgid "News"
+msgstr "Noticies"
 
 msgid "OCR"
 msgstr "OCR"
@@ -425,6 +482,9 @@ msgstr "Emuladors de terminal"
 msgid "TextEditor"
 msgstr "Editors de text"
 
+msgid "Utilities"
+msgstr "Utilitats"
+
 msgid "Utility"
 msgstr "Utilitat"
 
@@ -439,6 +499,12 @@ msgstr "Visors"
 
 msgid "WebBrowser"
 msgstr "Fullejadors web"
+
+msgid "X-Lliurex"
+msgstr "LliureX"
+
+msgid "X-Utilities"
+msgstr "Utilitats"
 
 msgid "Zomando"
 msgstr "Zomandament"
@@ -479,6 +545,9 @@ msgstr "gràfics"
 msgid "internet"
 msgstr "internet"
 
+msgid "legacy"
+msgstr "antics"
+
 msgid "multimedia"
 msgstr "multimèdia"
 
@@ -509,17 +578,11 @@ msgstr "sistema"
 msgid "unknown"
 msgstr "desconegut"
 
+#~ msgid "Debugger"
+#~ msgstr "Debug"
+
 #~ msgid "FORBIDDEN"
 #~ msgstr "Bloquejada"
-
-#~ msgid "X-Lliurex"
-#~ msgstr "LliureX"
-
-#~ msgid "X-Utilities"
-#~ msgstr "Utilitats"
-
-#~ msgid "Internet"
-#~ msgstr "Internet"
 
 #~ msgid "desktop-other"
 #~ msgstr "escriptori altres"
@@ -530,14 +593,8 @@ msgstr "desconegut"
 #~ msgid "Biology"
 #~ msgstr "Biologia"
 
-#~ msgid "Calendar"
-#~ msgstr "Calendari"
-
 #~ msgid "Clock"
 #~ msgstr "Rellotge"
-
-#~ msgid "Core"
-#~ msgstr "Sistema"
 
 #~ msgid "DataVisualization"
 #~ msgstr "Visualització de dades"
@@ -547,9 +604,6 @@ msgstr "desconegut"
 
 #~ msgid "Dictionary"
 #~ msgstr "Diccionari"
-
-#~ msgid "Documentation"
-#~ msgstr "Documentació"
 
 #~ msgid "Economy"
 #~ msgstr "Economia"
@@ -641,9 +695,6 @@ msgstr "desconegut"
 #~ msgid "Amusement"
 #~ msgstr "Entreteniment"
 
-#~ msgid "Application"
-#~ msgstr "Aplicació"
-
 #~ msgid "ArtificialIntelligence"
 #~ msgstr "Inteligencia artificial"
 
@@ -659,9 +710,6 @@ msgstr "desconegut"
 #~ msgid "CardGame"
 #~ msgstr "Jocs de cartes"
 
-#~ msgid "Chat"
-#~ msgstr "Xat"
-
 #~ msgid "Communication"
 #~ msgstr "Comunicació"
 
@@ -671,26 +719,17 @@ msgstr "desconegut"
 #~ msgid "Construction"
 #~ msgstr "Construció"
 
-#~ msgid "ContactManagement"
-#~ msgstr "Gestió de contactes"
-
 #~ msgid "DesktopSettings"
 #~ msgstr "Configuració de l'escriptori"
 
 #~ msgid "Developer Tools"
 #~ msgstr "Eines de desenvolupament"
 
-#~ msgid "Email"
-#~ msgstr "Email"
-
 #~ msgid "Emulation"
 #~ msgstr "Emulació"
 
 #~ msgid "Fantasy"
 #~ msgstr "Fantasia"
-
-#~ msgid "Feed"
-#~ msgstr "Orígen"
 
 #~ msgid "Feeds"
 #~ msgstr "Orígens"
@@ -710,12 +749,6 @@ msgstr "desconegut"
 #~ msgid "HardwareSettings"
 #~ msgstr "Maquinari"
 
-#~ msgid "IRCClient"
-#~ msgstr "IRC"
-
-#~ msgid "InstantMessaging"
-#~ msgstr "Missatgeria instantànea"
-
 #~ msgid "Java"
 #~ msgstr "Java"
 
@@ -730,9 +763,6 @@ msgstr "desconegut"
 
 #~ msgid "Motif"
 #~ msgstr "Motif"
-
-#~ msgid "News"
-#~ msgstr "Noticies"
 
 #~ msgid "ParallelComputing"
 #~ msgstr "Computació paralela"
@@ -802,9 +832,6 @@ msgstr "desconegut"
 
 #~ msgid "documentation"
 #~ msgstr "documentació"
-
-#~ msgid "legacy"
-#~ msgstr "antics"
 
 #~ msgid "servers"
 #~ msgstr "servidors"

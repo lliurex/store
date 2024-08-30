@@ -26,6 +26,7 @@ i18n={
 	"CHOOSE":_("Choose"),
 	"CONFIG":_("Details"),
 	"DESC":_("Navigate through all applications"),
+	"ERRNOTFOUND":_("Could not open"),
 	"ERRLAUNCH":_("Error opening"),
 	"ERRUNKNOWN":_("Unknown error"),
 	"FORBIDDEN":_("App unauthorized"),
@@ -281,12 +282,15 @@ class details(QStackedWindowItem):
 		bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
 		launchCmd=self.helper.getCmdForLauncher(self.app,bundle)
 		self._debug("Opening {0} with {1}".format(self.app["name"],launchCmd))
-		self.runapp.setArgs(self.app,launchCmd,bundle)
-		self.runapp.start()
+		notifySummary=i18n.get("ERRNOTFOUND","")
+		if len(launchCmd)>0:
+			self.runapp.setArgs(self.app,launchCmd,bundle)
+			self.runapp.start()
+			notifySummary=i18n.get("OPENNING","")
 		notifyIcon=None
 		if os.path.exists(self.app["icon"]):
 			notifyIcon=self.app["icon"]
-		self.showMsg(title="AppsEdu Store",summary=i18n.get("OPENING",""),text=self.app["name"],icon=notifyIcon,timeout=2000)
+		self.showMsg(title="AppsEdu Store",summary=notifySummary,text=self.app["name"],icon=notifyIcon,timeout=2000)
 	#def _runApp
 
 	def _getRunappResults(self,app,proc):
