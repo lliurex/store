@@ -1,4 +1,4 @@
-appsedu (1.2.5+0lliurex23) jammy; urgency=medium
+appsedu (1.2.5+1lliurex23) jammy; urgency=medium
 
   * Improve app launch
   * Fix: icon empty and path used as icon in details
