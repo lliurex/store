@@ -91,48 +91,57 @@ class helper():
 	#	dlg.exec()
 	#def _zmdNotFound(self,zmd):
 
-	def getCmdForLauncher(self,app,bundle,launcher=""):
-		if len(launcher)>0:
-			if os.path.exists(launcher)==False:
-				dPaths=["/usr/share/applications",os.path.join(os.environ["HOME"],".local/share/applications")]
-				dFile=""
-				for path in dPaths:
-					if os.path.isdir(path):
-						for f in os.scandir(path):
-							if "{}.desktop".format(launcher.lower()) in f.name.lower():
-								dFile=f.name
-								break
-					if dFile!="":
-						break
-				if dFile!="":
-					launcher=dFile
-				else:
-					for path in dPaths:
-						if os.path.isdir(path):
-							for f in os.scandir(path):
-								with open(f.path,"r") as fcontent:
-									if launcher in "\n".join(fcontent.readlines()):
-										dFile=f.name
-										break
-						if dFile!="":
+	def getLauncherForBundle(self,app,bundle):
+		launchers={"flatpak":["flatpak","run"],"snap":["snap","run"]}
+		cmd=[]
+		if bundle in launchers.keys():
+			cmd=launchers[bundle]
+			cmd.append(app["bundle"].get(bundle,""))
+		return(cmd)
+	#def getLauncherForBundle
+
+	def getDesktopForCommand(self,command):
+		cmd=[]
+		dPaths=["/usr/share/applications",os.path.join(os.environ["HOME"],".local/share/applications")]
+		dFile=""
+		for path in dPaths:
+			if os.path.isdir(path):
+				for f in os.scandir(path):
+					if "{}.desktop".format(command.lower()) in f.name.lower():
+						if f.name.endswith(".desktop"):
+							dFile=f.name
 							break
+			if dFile!="":
+				break
+		if dFile=="":
+			#Deeper search
+			for path in dPaths:
+				if os.path.isdir(path):
+					for f in os.scandir(path):
+						if f.is_file()==False:
+							continue
+						if f.name.endswith(".desktop"):
+							with open(f.path,"r") as fcontent:
+								if command in "\n".join(fcontent.readlines()):
+									dFile=f.name
+									break
 				if dFile!="":
-					launcher=dFile
-			cmd=["gtk-launch",launcher]
-		#bundle=self.cmbOpen.currentText().lower().split(" ")[0]
-		elif bundle=="package":
-			pkgname=app.get("id","")
-			if pkgname.startswith("gva.appsedu") or pkgname.startswith("org.packagekit"):
-				pkgname=pkgname.split(".")[-1]
-			if pkgname=="":
-				pkgname=app.get("bundle",{}).get("package","")
-			cmd=["gtk-launch",pkgname]
-		elif bundle=="flatpak":
-			cmd=["flatpak","run",app.get("bundle",{}).get("flatpak","")]
-		elif bundle=="snap":
-			cmd=["snap","run",app.get("bundle",{}).get("snap","")]
-		elif bundle=="appimage":
-			cmd=["gtk-launch","{}-appimage".format(app.get("name",''))]
+					break
+		if dFile!="":
+			cmd=["gtk-launch",dFile]
+		return(cmd)
+	#def getDesktopForLauncher
+
+	def getCmdForLauncher(self,app,bundle="",launcher=""):
+		cmd=[]
+		if len(launcher)>0:
+			if os.path.exists(launcher)==True:
+				cmd=["gtk-launch",os.path.basename(launcher)]
+		if len(cmd)<=0:
+			if bundle!="":
+				cmd=self.getLauncherForBundle(app,bundle)
+		if len(cmd)<=0:
+			cmd=self.getDesktopForCommand(app["pkgname"])
 		return(cmd)
 	#def getCmdForLauncher
 
