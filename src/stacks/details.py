@@ -61,6 +61,7 @@ class appLauncher(QThread):
 
 	def run(self):
 		if self.app and self.args:
+			proc=None
 			if "attempted" not in self.app.keys():
 				self.app["attempted"]=[]
 			if " ".join(self.args[1:]) not in self.app["attempted"]:
@@ -132,7 +133,7 @@ class QLabelRebostApp(QLabel):
 
 class details(QStackedWindowItem):
 	def __init_stack__(self):
-		self.dbg=False
+		self.dbg=True
 		self._debug("details load")
 		self.setProps(shortDesc=i18n.get("MENU"),
 			longDesc=i18n.get("DESC"),
@@ -278,46 +279,63 @@ class details(QStackedWindowItem):
 
 	def _runApp(self):
 		bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
-		self.runapp.setArgs(self.app,["gtk-launch","{}".format(self.app["pkgname"])],bundle)
+		launchCmd=self.helper.getCmdForLauncher(self.app,bundle)
+		self._debug("Opening {0} with {1}".format(self.app["name"],launchCmd))
+		self.runapp.setArgs(self.app,launchCmd,bundle)
 		self.runapp.start()
-		self.showMsg("{} {}".format(i18n.get("OPENING"),self.app["name"]))
+		notifyIcon=None
+		if os.path.exists(self.app["icon"]):
+			notifyIcon=self.app["icon"]
+		self.showMsg(title="AppsEdu Store",summary=i18n.get("OPENING",""),text=self.app["name"],icon=notifyIcon,timeout=2000)
 	#def _runApp
 
 	def _getRunappResults(self,app,proc):
+		print(app)
+		print(proc)
 		if "attempted" not in app.keys():
 			app["attempted"]=[]
 		if proc.returncode!=0 or len(proc.stderr.strip())>0:
+			pkgname=""
 			bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
-			if app["pkgname"].split(".")[-1] not in app["attempted"]:
-				pkgname=app["pkgname"].split(".")[-1]
-			elif app["pkgname"]+"-appimage" not in app["attempted"]:
-				pkgname=app["pkgname"]+"-appimage"
-			elif "zero-lliurex" not in app["pkgname"]:
-				pkgname="net.lliurex.{}".format(app["pkgname"])
-				if pkgname in app["attempted"]:
-					pkgname=" ".join(self.helper.getCmdForLauncher(self.app,bundle,self.app["pkgname"])[1:],)
-				if pkgname in app["attempted"]:
-					pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
-				if pkgname in app["attempted"]:
+			if bundle not in ["flatpak","snap"]:
+				cmd=["gtk-launch"]
+			else:
+				pkgname=" ".join(self.helper.getCmdForLauncher(self.app,bundle)[2:])
+				cmd=[bundle,"run"]
+			if pkgname in app["attempted"]:
+				if app["pkgname"].split(".")[-1] not in app["attempted"]:
+					pkgname=app["pkgname"].split(".")[-1]
+				elif app["pkgname"]+"-appimage" not in app["attempted"]:
+					pkgname=app["pkgname"]+"-appimage"
+				elif "zero-lliurex" not in app["pkgname"]:
 					pkgname="net.lliurex.{}".format(app["pkgname"])
-				if pkgname in app["attempted"]:
-					pkgname=" ".join(self.helper.getCmdForLauncher(self.app,bundle)[1:],)
+					if pkgname in app["attempted"]:
+						pkgname=" ".join(self.helper.getCmdForLauncher(self.app,bundle,self.app["pkgname"])[1:],)
+					if pkgname in app["attempted"]:
+						pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
+					if pkgname in app["attempted"]:
+						pkgname="net.lliurex.{}".format(app["pkgname"])
+					if pkgname in app["attempted"]:
+						pkgname=" ".join(self.helper.getCmdForLauncher(self.app,bundle)[1:],)
 			pkgname=pkgname.replace("org.packagekit.","")
 			if pkgname not in app["attempted"]:
 				app["attempted"].append(pkgname)
 				if "zero-lliurex" in pkgname:
 					self._runZomando()
 				else:
-					self.runapp.setArgs(app,["gtk-launch","{}".format(pkgname)],bundle)
+					self.runapp.setArgs(app,cmd.extend("{}".format(pkgname)))
 					self.runapp.start()
 			elif app["attempted"][-1]!="getLastAttempt":
-					self._debug("Last attempt")
-					app["attempted"].append("getLastAttempt")
-					self.runapp.setArgs(app,["/bin/bash","exec {}".format(app["pkgname"])],bundle)
-					self.runapp.start()
+				self._debug("Last attempt")
+				app["attempted"].append("getLastAttempt")
+				self.runapp.setArgs(app,["{}".format(app["pkgname"])])
+				self.runapp.start()
 			else:
-				print("ERROR")
-				self.showMsg("{0} {1}".format(i18n.get("ERRLAUNCH"),app.get("name")))
+				try:
+					self.showMsg(summary=i18n.get("ERRLAUNCH",""),msg="{}".format(self.app["name"]))
+				except Exception as e:
+					print("Warning: {}".format(e))
+					pass
 	#def _getRunappResults
 
 	def _genericEpiInstall(self):
@@ -339,7 +357,7 @@ class details(QStackedWindowItem):
 				res={}
 		epi=res.get('epi')
 		if epi==None:
-			self.showMsg("{}".format(res.get('msg',i18n["ERRUNKNOWN"])))
+			self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]))
 			self.updateScreen()
 		else:
 			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
