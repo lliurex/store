@@ -526,7 +526,7 @@ class portrait(QStackedWindowItem):
 			init=2
 		else:
 			state=Qt.Checked
-			init=4
+			init=3
 		if idx==1:
 			for i in (range(init,self.btnFilters.count())):
 				item=self.btnFilters.model().item(i)
