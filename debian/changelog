@@ -1,7 +1,14 @@
+appsedu (1.2.6+0lliurex23) jammy; urgency=medium
+
+  * Fixes: 
+  *   filter selection if all disabled and none enabled
+  *   icon empty and path used as icon in details
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 03 Sep 2024 09:29:31 +0200
+
 appsedu (1.2.5+1lliurex23) jammy; urgency=medium
 
   * Improve app launch
-  * Fix: icon empty and path used as icon in details
 
  -- Juanma1980 <juanma1980@gmail.com>  Thu, 29 Aug 2024 14:25:06 +0200
 
