@@ -472,7 +472,7 @@ class portrait(QStackedWindowItem):
 			item=self.btnFilters.model().item(1)
 			item.setCheckState(Qt.Checked)
 			desc.append(item.text())
-		self.btnFilters.setText(",".join(desc)[0:20])
+		self.btnFilters.setText(",".join(desc))
 		return(filters)
 	#def _readFilters
 
@@ -526,7 +526,7 @@ class portrait(QStackedWindowItem):
 			init=2
 		else:
 			state=Qt.Checked
-			init=4
+			init=3
 		if idx==1:
 			for i in (range(init,self.btnFilters.count())):
 				item=self.btnFilters.model().item(i)
@@ -699,10 +699,11 @@ class portrait(QStackedWindowItem):
 	#def cleanAux
 
 	def updateScreen(self):
+		self.btnFilters.setMaximumWidth(self.btnFilters.sizeHint().width())
 		if self.refresh==True:
 			self.cleanAux()
 			self._loadData(self.appsLoaded,self.appsToLoad)
-			if self.appsLoaded==0:
+			if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
 				self._beginUpdate()
 				self.chkRebost.start()
 				self.chkRebost.finished.connect(self._goHome)
