@@ -93,7 +93,7 @@ class QPushButtonRebostApp(QPushButton):
 		lay.addStretch()
 		lay.addWidget(self.iconUri,0)
 		lay.addWidget(self.label,1)
-		self.referrer=None
+		self.refererApp=None
 		self.setDefault(True)
 		self.setLayout(lay)
 	#def __init__
@@ -206,6 +206,9 @@ class QPushButtonRebostApp(QPushButton):
 	def mousePressEvent(self,*args):
 		self.clicked.emit(self,self.app)
 	#def mousePressEvent
+
+	def setApp(self,app):
+		self.app=app
 #class QPushButtonRebostApp
 
 class portrait(QStackedWindowItem):
@@ -667,7 +670,7 @@ class portrait(QStackedWindowItem):
 	#def _loadDetails(self,*args,**kwargs):
 
 	def _endLoadDetails(self,icn,*args):
-		self.referrer=args[0]
+		self.refererApp=args[0]
 		self.setChanged(False)
 		self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
 	#def _loadDetails
@@ -737,12 +740,12 @@ class portrait(QStackedWindowItem):
 	#def resetScreen
 
 	def setParms(self,*args,**kwargs):
-		#referrer will be only fulfilled when details stack
+		#referer will be only fulfilled when details stack
 		#fires events, if there's a repeated call to setParms
-		#referrer will be none so function can exit. This must not happen.
-		if not hasattr(self,"referrer"):
+		#referer will be none so function can exit. This must not happen.
+		if not hasattr(self.parent,"referer"):
 			return()
-		if self.referrer==None:
+		if self.parent.referer==None:
 			return()
 		for arg in args:
 			if isinstance(arg,dict):
@@ -758,8 +761,8 @@ class portrait(QStackedWindowItem):
 					self._searchApps()
 		else:
 			app=kwargs.get("app",{})
-			self.referrer.app=app
-			self.referrer.updateScreen()
+			self.refererApp.setApp(app)
+			self.refererApp.updateScreen()
 			cat=kwargs.get("cat",{})
 			if len(cat)>0:
 				self.cmbCategories.setCurrentText(self.catI18n.get(cat,cat))
@@ -767,9 +770,9 @@ class portrait(QStackedWindowItem):
 			else:
 				self.oldSearch=""
 				#self._populateCategories()
-				#self.refresh=False
+				self.refresh=False
 				self.updateScreen()
-		self.referrer=None
+		self.refererApp=None
 	#def setParms
 
 	def _updateConfig(self,key):
