@@ -100,7 +100,7 @@ class thShowApp(QThread):
 			try:
 				app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
 			except:
-				self._debug("Error")
+				print("Error")
 				app=self.app.copy()
 			finally:
 				if isinstance(app,str):
