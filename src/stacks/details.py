@@ -52,7 +52,11 @@ class appLauncher(QThread):
 	#def __init__
 
 	def setArgs(self,app,args,bundle=""):
-		self.app=app
+		if isinstance(app,str):
+			self.app={}
+			self.app["name"]=app
+		else:
+			self.app=app
 		self.args=args
 		#if bundle:
 		#	oldBundle=self.app.get('bundle')
@@ -80,11 +84,15 @@ class thShowApp(QThread):
 	def __init__(self,parent=None):
 		QThread.__init__(self, parent)
 		self.rc=store.client()
-		self.app=""
+		self.app={}
 	#def __init__
 
 	def setArgs(self,*args):
-		self.app=args[0]
+		if isinstance(args[0],str):
+			self.app={}
+			self.app["name"]=args[0]
+		else:
+			self.app=args[0]
 	#def setArgs(self:
 
 	def run(self):
@@ -92,8 +100,12 @@ class thShowApp(QThread):
 			try:
 				app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
 			except:
+				self._debug("Error")
 				app=self.app.copy()
-			self.showEnded.emit(json.loads(app))
+			finally:
+				if isinstance(app,str):
+					app=json.loads(app)
+				self.showEnded.emit(app)
 		return True
 	#def run
 #class thShowApp
@@ -156,6 +168,7 @@ class details(QStackedWindowItem):
 		self.app={}
 		self.hideControlButtons()
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
+		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
 		self.helper=libhelper.helper()
 		self.epi=appLauncher()
 		self.runapp=appLauncher()
@@ -169,6 +182,11 @@ class details(QStackedWindowItem):
 		self.stream=""
 		self.launcher=""
 	#def __init__
+
+	def _debug(self,msg):
+		if self.dbg==True:
+			print("Details: {}".format(msg))
+	#def _debug
 
 	def _return(self):
 		self.parent.setWindowTitle("AppsEdu")
@@ -220,6 +238,19 @@ class details(QStackedWindowItem):
 				if len(app)>2:
 					self.app=json.loads(app)[0]
 					self.app=json.loads(self.app)
+				else: #look for an aliases mapped from virtual app
+					if os.path.exists(self.mapFile):
+						fcontent={}
+						with open(self.mapFile,"r") as f:
+							fcontent=f.read()
+						jcontent=json.loads(fcontent)
+						vname=jcontent.get(name,"")
+						self._debug("Find virtual pkg {0} for  {1}".format(vname,name))
+						if len(vname)>0:
+							app=self.rc.showApp(vname)
+							if len(app)>2:
+								self.app=json.loads(app)[0]
+								self.app=json.loads(self.app)
 	#def _processStreams
 
 	def setParms(self,*args):
@@ -294,8 +325,6 @@ class details(QStackedWindowItem):
 	#def _runApp
 
 	def _getRunappResults(self,app,proc):
-		print(app)
-		print(proc)
 		if "attempted" not in app.keys():
 			app["attempted"]=[]
 		if proc.returncode!=0 or len(proc.stderr.strip())>0:
@@ -365,7 +394,6 @@ class details(QStackedWindowItem):
 			self.updateScreen()
 		else:
 			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
-			self.refresh=True
 			self.epi.setArgs(self.app,cmd,bundle)
 			self.epi.runEnded.connect(self._getEpiResults)
 			self.epi.start()
@@ -375,6 +403,7 @@ class details(QStackedWindowItem):
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.setEnabled(False)
+		self.refresh=False
 		if app.get('name','')!=self.app.get('name',''):
 			print(app.get('name',''))
 			print(self.app.get('name',''))
@@ -387,10 +416,12 @@ class details(QStackedWindowItem):
 
 	def _endGetEpiResults(self,app):
 		self.thEpiShow.wait()
-		self.app=app
 		bundle=list(app.get('bundle').keys())[0]
 		state=app.get('state',{}).get(bundle,1)
-		self.rc.commitInstall(app.get('name'),bundle,state)
+		if state!=self.app.get("state",{}).get(bundle,1):
+			self.rc.commitInstall(app.get('name'),bundle,state)
+			self.refresh=True
+		self.app=app
 		self.setEnabled(True)
 		self.updateScreen()
 	 #def _endGetEpiResults
@@ -495,7 +526,7 @@ class details(QStackedWindowItem):
 		if self.app.get("bundle",None)==None:
 			if self.app.get("name","")!="":
 				self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
-				icn=self.app.get("icon")
+				icn=self.app.get("icon","")
 				pxm=None
 				if isinstance(icn,QtGui.QPixmap):
 					pxm=icn
