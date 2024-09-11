@@ -743,9 +743,9 @@ class portrait(QStackedWindowItem):
 		#referer will be only fulfilled when details stack
 		#fires events, if there's a repeated call to setParms
 		#referer will be none so function can exit. This must not happen.
-		if not hasattr(self.parent,"referer"):
+		if not hasattr(self,"refererApp"):
 			return()
-		if self.parent.referer==None:
+		if self.refererApp==None:
 			return()
 		for arg in args:
 			if isinstance(arg,dict):
