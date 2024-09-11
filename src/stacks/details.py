@@ -52,7 +52,11 @@ class appLauncher(QThread):
 	#def __init__
 
 	def setArgs(self,app,args,bundle=""):
-		self.app=app
+		if isinstance(app,str):
+			self.app={}
+			self.app["name"]=app
+		else:
+			self.app=app
 		self.args=args
 		#if bundle:
 		#	oldBundle=self.app.get('bundle')
@@ -80,20 +84,25 @@ class thShowApp(QThread):
 	def __init__(self,parent=None):
 		QThread.__init__(self, parent)
 		self.rc=store.client()
-		self.app=""
+		self.app={}
 	#def __init__
 
 	def setArgs(self,*args):
-		self.app=args[0]
+		if isinstance(args[0],str):
+			self.app={}
+			self.app["name"]=args[0]
+		else:
+			self.app=args[0]
 	#def setArgs(self:
 
 	def run(self):
 		if len(self.app.keys())>0:
 			try:
 				app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
+				print(app)
 			except:
 				app=self.app.copy()
-			self.showEnded.emit(json.loads(app))
+			self.showEnded.emit(app)
 		return True
 	#def run
 #class thShowApp
@@ -240,6 +249,9 @@ class details(QStackedWindowItem):
 					icon=self.app.get("icon","")
 			if name!="":
 				self._resetScreen(name,icon)
+				print(args)
+				for i in args:
+					print(type(i))
 				self.thParmShow.setArgs(args[0])
 				self.thParmShow.start()
 		self._showSplash(icon)
@@ -495,7 +507,7 @@ class details(QStackedWindowItem):
 		if self.app.get("bundle",None)==None:
 			if self.app.get("name","")!="":
 				self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
-				icn=self.app.get("icon")
+				icn=self.app.get("icon","")
 				pxm=None
 				if isinstance(icn,QtGui.QPixmap):
 					pxm=icn
