@@ -15,10 +15,6 @@ import gettext
 from . import libhelper
 _ = gettext.gettext
 QString=type("")
-R=140
-G=255
-B=0
-A=70
 ICON_SIZE=128
 
 i18n={
@@ -31,6 +27,7 @@ i18n={
 	"ERRUNKNOWN":_("Unknown error"),
 	"FORBIDDEN":_("App unauthorized"),
 	"FORMAT":_("Format"),
+	"HOMEPAGE":_("Info"),
 	"INFO":_("For more info go to"),
 	"INSTALL":_("Install"),
 	"MENU":_("Show application detail"),
@@ -317,7 +314,7 @@ class details(QStackedWindowItem):
 		if len(launchCmd)>0:
 			self.runapp.setArgs(self.app,launchCmd,bundle)
 			self.runapp.start()
-			notifySummary=i18n.get("OPENNING","")
+			notifySummary=i18n.get("OPENING","")
 		notifyIcon=None
 		if os.path.exists(self.app["icon"]):
 			notifyIcon=self.app["icon"]
@@ -431,8 +428,8 @@ class details(QStackedWindowItem):
 		self.btnBack=QPushButton()
 		self.btnBack.setIcon(QtGui.QIcon.fromTheme("go-previous"))
 		self.btnBack.clicked.connect(self._return)
-		self.btnBack.setIconSize(QSize(48,48))
-		self.btnBack.setFixedSize(QSize(64,64))
+		self.btnBack.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
+		self.btnBack.setIconSize(self.btnBack.sizeHint())
 		self.box.addWidget(self.btnBack,0,0,1,1)
 		self.lblIcon=QLabelRebostApp()		 
 		self.box.addWidget(self.lblIcon,0,1,2,1,Qt.AlignTop|Qt.AlignLeft)
@@ -447,21 +444,30 @@ class details(QStackedWindowItem):
 		lay=QHBoxLayout()
 		self.btnInstall=QPushButton(i18n.get("INSTALL"))
 		self.btnInstall.clicked.connect(self._genericEpiInstall)
+		self.btnInstall.setMinimumHeight(int(ICON_SIZE/3))
+		self.btnInstall.setMaximumHeight(int(ICON_SIZE/3))
 		lay.addWidget(self.btnInstall,Qt.AlignLeft)
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
 		self.btnRemove.clicked.connect(self._genericEpiInstall)
+		self.btnRemove.setMinimumHeight(int(ICON_SIZE/3))
+		self.btnRemove.setMaximumHeight(int(ICON_SIZE/3))
 		lay.addWidget(self.btnRemove,Qt.AlignLeft)
 
-		self.btnZomando=QPushButton("{} zomando".format(i18n.get("RUN")))
+		self.btnZomando=QPushButton(" {} zomando ".format(i18n.get("RUN")))
 		self.btnZomando.clicked.connect(self._runZomando)
+		self.btnZomando.setMinimumHeight(int(ICON_SIZE/3))
 		self.btnZomando.setVisible(False)
 		lay.addWidget(self.btnZomando,Qt.AlignLeft)
 
 		self.btnLaunch=QPushButton(i18n.get("RUN"))
 		self.btnLaunch.clicked.connect(self._runApp)
+		self.btnLaunch.setMinimumHeight(int(ICON_SIZE/3))
+		self.btnLaunch.setMaximumHeight(int(ICON_SIZE/3))
 		lay.addWidget(self.btnLaunch,Qt.AlignLeft)
 		launchers.setLayout(lay)
 		self.box.addWidget(launchers,2,0,1,3,Qt.AlignTop|Qt.AlignLeft)
+		for i in [self.btnInstall,self.btnRemove,self.btnLaunch,self.btnZomando]:
+			i.setMinimumWidth(self.btnZomando.sizeHint().width()+(4*i.font().pointSize()))
 
 		info=QWidget()
 		layInfo=QGridLayout()
@@ -483,7 +489,8 @@ class details(QStackedWindowItem):
 		resources=QWidget()
 		layResources=QVBoxLayout()
 		resources.setLayout(layResources)
-		self.lblHomepage=QLabel('<a href="http://lliurex.net">More info: lliurex.net</a>')
+		self.lblHomepage=QLabel('{0}: <a href="http://lliurex.net">lliurex.net</a>'.format(i18n.get("HOMEPAGE")))
+		self.lblHomepage.setToolTip("http://lliurex.net")
 		self.lblHomepage.setOpenExternalLinks(True)
 		self.screenShot=QScreenShotContainer()
 		self.screenShot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -518,62 +525,34 @@ class details(QStackedWindowItem):
 			self._return()
 	#def keyPressEvent
 
-
-	def updateScreen(self):
-		if self.stream!="":
-			return
-		self._initScreen()
-		if self.app.get("bundle",None)==None:
-			if self.app.get("name","")!="":
-				self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
-				icn=self.app.get("icon","")
-				pxm=None
-				if isinstance(icn,QtGui.QPixmap):
-					pxm=icn
-				elif len(icn)>0:
-					if os.path.isfile(icn):
-						pxm=QtGui.QPixmap(icn)
-				if not pxm:
-					icn=QtGui.QIcon.fromTheme(self.app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
-					pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
-				if pxm:
-					self.lblIcon.setPixmap(pxm.scaled(ICON_SIZE,ICON_SIZE))
-				self.lblSummary.setText("")
-				#self.lblIcon.loadImg(self.app)
-			return
-		self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
-		icn=self._getIconFromApp(self.app)
-		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
-		self.lblIcon.loadImg(self.app)
-		self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
-		homepage=self.app.get('homepage','')
-		bundles=list(self.app.get('bundle',{}).keys())
-		if "eduapp" in bundles:
-			self.app["description"]=i18n.get("APPUNKNOWN")
-		if homepage:
-			homepage=homepage.rstrip("/")
-			desc=homepage
-			if len(homepage)>30:
-				desc="{}...".format(homepage[0:30])
-			text='<a href={0}>More info: {1}</a> '.format(homepage,desc)
-			self.lblHomepage.setText(text)
-		self.lblDesc.label.setOpenExternalLinks(False)
-		description=html.unescape(self.app.get('description','').replace("***","\n"))
-		if "Forbidden" in self.app.get("categories",[]):
-			forbReason=""
-			if self.app.get("summary","").endswith(")"):
-				forbReason=": {}".format(self.app["summary"].split("(")[-1].replace(")",""))
-				if forbReason.lower().startswith(": no ")==True:
-					forbReason=""
-			description="<h2>{0}{4}</h2>{1} <a href={2}>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
+	def _setUnknownAppInfo(self):
+		if self.app.get("name","")!="":
+			self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+			icn=self.app.get("icon","")
+			pxm=None
+			if isinstance(icn,QtGui.QPixmap):
+				pxm=icn
+			elif len(icn)>0:
+				if os.path.isfile(icn):
+					pxm=QtGui.QPixmap(icn)
+			if not pxm:
+				icn=QtGui.QIcon.fromTheme(self.app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
+				pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
+			if pxm:
+				self.lblIcon.setPixmap(pxm.scaled(ICON_SIZE,ICON_SIZE))
+			self.lblSummary.setText(self.app.get("summary",""))
+			self.lblDesc.setText("<hr><p>{}</p><hr>".format(i18n.get("APPUNKNOWN")))
 			self.lblDesc.label.setOpenExternalLinks(True)
-		self.lblDesc.setText(description)
-		self._updateScreenControls(bundles)
-		#preliminary license support, not supported
-		applicense=self.app.get('license','')
-		if applicense:
-			text="<strong>{}</strong>".format(applicense)
-		
+			homepage="https://portal.edu.gva.es/appsedu/"
+			text='{1}: <a href="{0}">Appsedu</a>'.format(homepage,i18n.get("HOMEPAGE"))
+			self.lblHomepage.setText(text)
+			self.lblHomepage.setToolTip(homepage)
+			#self.lblIcon.loadImg(self.app)
+			self.lstInfo.setMaximumWidth(self.lblDesc.width()/2)
+			self.lblTags.setMaximumWidth(self.lblDesc.width()/2)
+	#def _setUnknownAppInfo
+
+	def _loadScreenshots(self):
 		scrs=self.app.get('screenshots',[])
 		if isinstance(scrs,list)==False:
 			scrs=[]
@@ -587,6 +566,49 @@ class details(QStackedWindowItem):
 				self.screenShot.addImage(icn)
 			except Exception as e:
 				print(e)
+	#def _loadScreenshots
+
+	def updateScreen(self):
+		if self.stream!="":
+			return
+		self._initScreen()
+		if self.app.get("bundle",None)==None:
+			self._setUnknownAppInfo()
+			return
+		self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+		icn=self._getIconFromApp(self.app)
+		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
+		self.lblIcon.loadImg(self.app)
+		self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
+		bundles=list(self.app.get('bundle',{}).keys())
+		if "eduapp" in bundles:
+			self.app["description"]=i18n.get("APPUNKNOWN")
+		homepage=self.app.get('homepage','')
+		if homepage:
+			homepage=homepage.rstrip("/")
+			desc=homepage
+			if len(homepage)>30:
+				desc="{}...".format(homepage[0:30])
+			text='{2}: <a href="{0}">{1}</a> '.format(homepage,desc,i18n.get("HOMEPAGE"))
+			self.lblHomepage.setText(text)
+			self.lblHomepage.setToolTip(homepage)
+		self.lblDesc.label.setOpenExternalLinks(False)
+		description=html.unescape(self.app.get('description','').replace("***","\n"))
+		if "Forbidden" in self.app.get("categories",[]):
+			forbReason=""
+			if self.app.get("summary","").endswith(")"):
+				forbReason=": {}".format(self.app["summary"].split("(")[-1].replace(")",""))
+				if forbReason.lower().startswith(": no ")==True:
+					forbReason=""
+			description='<h2>{0}{4}</h2>{1} <a href="{2}">{2}</a><hr>\n{3}'.format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
+			self.lblDesc.label.setOpenExternalLinks(True)
+		self.lblDesc.setText(description)
+		self._updateScreenControls(bundles)
+		#preliminary license support, not supported
+		applicense=self.app.get('license','')
+		if applicense:
+			text="<strong>{}</strong>".format(applicense)
+		self._loadScreenshots()	
 		self._setLauncherOptions()
 		self.lblTags.setText(self._generateTags())
 	#def _updateScreen
@@ -621,7 +643,7 @@ class details(QStackedWindowItem):
 				continue
 			icat=_(cat)
 			if icat not in tags:
-				tags+="<a href=\"#{0}\">{0}</a> ".format(icat)
+				tags+="<a href=\"#{0}\"><strong>{0}</strong></a> ".format(icat)
 		return(tags)
 	#def _generateTags
 
@@ -643,12 +665,12 @@ class details(QStackedWindowItem):
 		#self.wdgSplash.setVisible(True)
 		if "Forbidden" not in self.app.get("categories",[]):
 			self.app["categories"]=["Forbidden"]
-		#self.lstInfo.setVisible(False)
-		#self.btnInstall.setVisible(False)
-		#self.btnRemove.setVisible(False)
-		#self.btnLaunch.setVisible(False)
+		self.lstInfo.setEnabled(False)
+		self.btnInstall.setEnabled(False)
+		self.btnRemove.setEnabled(False)
+		self.btnLaunch.setEnabled(False)
 		self.blur=QGraphicsBlurEffect() 
-		self.blur.setBlurRadius(15) 
+		self.blur.setBlurRadius(55) 
 		self.opacity=QGraphicsOpacityEffect()
 		self.lblBkg.setGraphicsEffect(self.blur)
 		self.lblBkg.setStyleSheet("QLabel{background-color:rgba(%s,%s,%s,0.7);}"%(color.red(),color.green(),color.blue()))
@@ -659,6 +681,7 @@ class details(QStackedWindowItem):
 	#def _onError
 
 	def _setLauncherOptions(self):
+		self.lstInfo.setEnabled(True)
 		self.btnInstall.setEnabled(True)
 		self.btnRemove.setEnabled(True)
 		self.btnLaunch.setEnabled(True)
@@ -677,7 +700,7 @@ class details(QStackedWindowItem):
 			bitem=QListWidgetItem("{}".format(bundle))
 			self.lstInfo.insertItem(0,bitem)
 			item=self.lstInfo.item(0)
-		bundle=item.text().lower().split(" ")[-1]
+		bundle=item.text().lower().split(" ")[-1].strip()
 		release=item.text().lower().split(" ")[0]
 		tooltip=item.text()
 		self._setListState(item)
@@ -713,7 +736,7 @@ class details(QStackedWindowItem):
 			else:
 				self.btnRemove.setVisible(True)
 				self.btnLaunch.setVisible(True)
-			self.lstInfo.setStyleSheet("selection-color:grey;selection-background-color:rgba({0},{1},{2},0.5)".format(rgb[0],rgb[1],rgb[2]))
+			self.lstInfo.setStyleSheet("selection-color:grey;selection-background-color:rgba({0},{1},{2},0.5);".format(rgb[0],rgb[1],rgb[2]))
 		else:
 			pkgState=self.app.get('state',{}).get("package",'1')
 			if pkgState.isdigit()==True:
@@ -776,9 +799,9 @@ class details(QStackedWindowItem):
 				version="lliurex23"
 				if not("eduapp" in bundles.keys() and len(bundles.keys())==1):
 					continue
-			fversion=version.split("+")[0][0:10]
-			release=QListWidgetItem("{} {}".format(fversion,i))
 			if i in priority:
+				fversion=version.split("+")[0][0:10]
+				release=QListWidgetItem("{} {}\n".format(fversion,i))
 				idx=priority.index(i)
 				if i in uninstalled:
 					idx+=len(installed)
