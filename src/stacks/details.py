@@ -428,8 +428,8 @@ class details(QStackedWindowItem):
 		self.btnBack=QPushButton()
 		self.btnBack.setIcon(QtGui.QIcon.fromTheme("go-previous"))
 		self.btnBack.clicked.connect(self._return)
-		self.btnBack.setIconSize(QSize(48,48))
-		self.btnBack.setFixedSize(QSize(64,64))
+		self.btnBack.setIconSize(QSize(int(ICON_SIZE/1.3),int(ICON_SIZE/1.3)))
+		self.btnBack.setFixedSize(QSize(int(ICON_SIZE/1.2),int(ICON_SIZE/1.2)))
 		self.box.addWidget(self.btnBack,0,0,1,1)
 		self.lblIcon=QLabelRebostApp()		 
 		self.box.addWidget(self.lblIcon,0,1,2,1,Qt.AlignTop|Qt.AlignLeft)
@@ -444,21 +444,30 @@ class details(QStackedWindowItem):
 		lay=QHBoxLayout()
 		self.btnInstall=QPushButton(i18n.get("INSTALL"))
 		self.btnInstall.clicked.connect(self._genericEpiInstall)
+		self.btnInstall.setMinimumHeight(int(ICON_SIZE/3))
+		self.btnInstall.setMaximumHeight(int(ICON_SIZE/3))
 		lay.addWidget(self.btnInstall,Qt.AlignLeft)
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
 		self.btnRemove.clicked.connect(self._genericEpiInstall)
+		self.btnRemove.setMinimumHeight(int(ICON_SIZE/3))
+		self.btnRemove.setMaximumHeight(int(ICON_SIZE/3))
 		lay.addWidget(self.btnRemove,Qt.AlignLeft)
 
-		self.btnZomando=QPushButton("{} zomando".format(i18n.get("RUN")))
+		self.btnZomando=QPushButton(" {} zomando ".format(i18n.get("RUN")))
 		self.btnZomando.clicked.connect(self._runZomando)
+		self.btnZomando.setMinimumHeight(int(ICON_SIZE/3))
 		self.btnZomando.setVisible(False)
 		lay.addWidget(self.btnZomando,Qt.AlignLeft)
 
 		self.btnLaunch=QPushButton(i18n.get("RUN"))
 		self.btnLaunch.clicked.connect(self._runApp)
+		self.btnLaunch.setMinimumHeight(int(ICON_SIZE/3))
+		self.btnLaunch.setMaximumHeight(int(ICON_SIZE/3))
 		lay.addWidget(self.btnLaunch,Qt.AlignLeft)
 		launchers.setLayout(lay)
 		self.box.addWidget(launchers,2,0,1,3,Qt.AlignTop|Qt.AlignLeft)
+		for i in [self.btnInstall,self.btnRemove,self.btnLaunch,self.btnZomando]:
+			i.setMinimumWidth(self.btnZomando.sizeHint().width()+(4*i.font().pointSize()))
 
 		info=QWidget()
 		layInfo=QGridLayout()
@@ -691,7 +700,7 @@ class details(QStackedWindowItem):
 			bitem=QListWidgetItem("{}".format(bundle))
 			self.lstInfo.insertItem(0,bitem)
 			item=self.lstInfo.item(0)
-		bundle=item.text().lower().split(" ")[-1]
+		bundle=item.text().lower().split(" ")[-1].strip()
 		release=item.text().lower().split(" ")[0]
 		tooltip=item.text()
 		self._setListState(item)
@@ -727,7 +736,7 @@ class details(QStackedWindowItem):
 			else:
 				self.btnRemove.setVisible(True)
 				self.btnLaunch.setVisible(True)
-			self.lstInfo.setStyleSheet("selection-color:grey;selection-background-color:rgba({0},{1},{2},0.5)".format(rgb[0],rgb[1],rgb[2]))
+			self.lstInfo.setStyleSheet("selection-color:grey;selection-background-color:rgba({0},{1},{2},0.5);".format(rgb[0],rgb[1],rgb[2]))
 		else:
 			pkgState=self.app.get('state',{}).get("package",'1')
 			if pkgState.isdigit()==True:
@@ -790,9 +799,9 @@ class details(QStackedWindowItem):
 				version="lliurex23"
 				if not("eduapp" in bundles.keys() and len(bundles.keys())==1):
 					continue
-			fversion=version.split("+")[0][0:10]
-			release=QListWidgetItem("{} {}".format(fversion,i))
 			if i in priority:
+				fversion=version.split("+")[0][0:10]
+				release=QListWidgetItem("{} {}\n".format(fversion,i))
 				idx=priority.index(i)
 				if i in uninstalled:
 					idx+=len(installed)
