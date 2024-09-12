@@ -15,10 +15,6 @@ import gettext
 from . import libhelper
 _ = gettext.gettext
 QString=type("")
-R=140
-G=255
-B=0
-A=70
 ICON_SIZE=128
 
 i18n={
