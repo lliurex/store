@@ -79,8 +79,9 @@ class QPushButtonRebostApp(QPushButton):
 			os.makedirs(self.cacheDir)
 		self.setObjectName("rebostapp")
 		self.setAttribute(Qt.WA_StyledBackground, True)
-		self.app=json.loads(strapp)
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
+		self.setAutoFillBackground(True)
+		self.app=json.loads(strapp)
 		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
 		text="<strong>{0}</strong> - {1}".format(self.app.get('name',''),self.app.get('summary'),'')
 		self.label=QLabel(text)
@@ -137,8 +138,6 @@ class QPushButtonRebostApp(QPushButton):
 	#def loadImg
 
 	def _getStats(self,app):
-		installed=False
-		forbidden=False
 		stats={}
 		for bundle,state in app.get("state",{}).items():
 			if bundle=="zomando":
@@ -164,9 +163,13 @@ class QPushButtonRebostApp(QPushButton):
 			bordercolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Mid))
 			fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.BrightText))
 		elif stats.get("installed",False)==True:
-			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Highlight))
+			if hasattr(QtGui.QPalette,"Accent"):
+				bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Accent))
+			else:
+				bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Highlight))
+			bordercolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Shadow))
 		elif stats.get("zomando",False)==True:
-			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Highlight))
+			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.AlternateBase))
 		style["bkgColor"]="{0},{1},{2}".format(bkgcolor.red(),bkgcolor.green(),bkgcolor.blue())
 		style["brdColor"]="{0},{1},{2}".format(bordercolor.red(),bordercolor.green(),bordercolor.blue())
 		style["frgColor"]="{0},{1},{2}".format(fcolor.red(),fcolor.green(),fcolor.blue())
@@ -176,7 +179,6 @@ class QPushButtonRebostApp(QPushButton):
 
 	def _applyDecoration(self,app,forbidden=False,installed=False):
 		style=self._getStyle(app)
-		self.setAutoFillBackground(True)
 		pal=self.palette()
 		#pal.setColor(QPalette.Window,bcolor)
 		self.setStyleSheet("""#rebostapp {
