@@ -156,22 +156,24 @@ class QPushButtonRebostApp(QPushButton):
 			"brdColor":"",
 			"frgColor":""}
 		bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
-		bordercolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Dark))
 		fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Text))
 		if stats.get("forbidden",False)==True:
 			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Dark))
-			bordercolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Mid))
 			fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.BrightText))
 		elif stats.get("installed",False)==True:
 			if hasattr(QtGui.QPalette,"Accent"):
 				bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Accent))
 			else:
 				bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Highlight))
-			bordercolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Shadow))
 		elif stats.get("zomando",False)==True:
 			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.AlternateBase))
 		style["bkgColor"]="{0},{1},{2}".format(bkgcolor.red(),bkgcolor.green(),bkgcolor.blue())
-		style["brdColor"]="{0},{1},{2}".format(bordercolor.red(),bordercolor.green(),bordercolor.blue())
+		mod=0.5
+		bordercolor=bkgcolor.toHsl()
+		l=bordercolor.lightness()*mod
+		if l>255:
+			l=255
+		style["brdColor"]="{0},{1},{2}".format(bordercolor.hue(),bordercolor.saturation(),l)
 		style["frgColor"]="{0},{1},{2}".format(fcolor.red(),fcolor.green(),fcolor.blue())
 		style.update(stats)
 		return(style)
@@ -184,7 +186,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.setStyleSheet("""#rebostapp {
 			background-color: rgb(%s); 
 			border-style: solid; 
-			border-color: rgb(%s); 
+			border-color: hsl(%s); 
 			border-width: 1px; 
 			border-radius: 2px;
 			}

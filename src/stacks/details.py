@@ -31,6 +31,7 @@ i18n={
 	"ERRUNKNOWN":_("Unknown error"),
 	"FORBIDDEN":_("App unauthorized"),
 	"FORMAT":_("Format"),
+	"HOMEPAGE":_("Info"),
 	"INFO":_("For more info go to"),
 	"INSTALL":_("Install"),
 	"MENU":_("Show application detail"),
@@ -317,7 +318,7 @@ class details(QStackedWindowItem):
 		if len(launchCmd)>0:
 			self.runapp.setArgs(self.app,launchCmd,bundle)
 			self.runapp.start()
-			notifySummary=i18n.get("OPENNING","")
+			notifySummary=i18n.get("OPENING","")
 		notifyIcon=None
 		if os.path.exists(self.app["icon"]):
 			notifyIcon=self.app["icon"]
@@ -483,7 +484,7 @@ class details(QStackedWindowItem):
 		resources=QWidget()
 		layResources=QVBoxLayout()
 		resources.setLayout(layResources)
-		self.lblHomepage=QLabel('<a href="http://lliurex.net">More info: lliurex.net</a>')
+		self.lblHomepage=QLabel('{0}: <a href="http://lliurex.net">lliurex.net</a>'.format(i18n.get("HOMEPAGE")))
 		self.lblHomepage.setOpenExternalLinks(True)
 		self.screenShot=QScreenShotContainer()
 		self.screenShot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -518,62 +519,34 @@ class details(QStackedWindowItem):
 			self._return()
 	#def keyPressEvent
 
-
-	def updateScreen(self):
-		if self.stream!="":
-			return
-		self._initScreen()
-		if self.app.get("bundle",None)==None:
-			if self.app.get("name","")!="":
-				self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
-				icn=self.app.get("icon","")
-				pxm=None
-				if isinstance(icn,QtGui.QPixmap):
-					pxm=icn
-				elif len(icn)>0:
-					if os.path.isfile(icn):
-						pxm=QtGui.QPixmap(icn)
-				if not pxm:
-					icn=QtGui.QIcon.fromTheme(self.app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
-					pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
-				if pxm:
-					self.lblIcon.setPixmap(pxm.scaled(ICON_SIZE,ICON_SIZE))
-				self.lblSummary.setText("")
-				#self.lblIcon.loadImg(self.app)
-			return
-		self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
-		icn=self._getIconFromApp(self.app)
-		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
-		self.lblIcon.loadImg(self.app)
-		self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
-		homepage=self.app.get('homepage','')
-		bundles=list(self.app.get('bundle',{}).keys())
-		if "eduapp" in bundles:
-			self.app["description"]=i18n.get("APPUNKNOWN")
-		if homepage:
-			homepage=homepage.rstrip("/")
-			desc=homepage
-			if len(homepage)>30:
-				desc="{}...".format(homepage[0:30])
-			text='<a href={0}>More info: {1}</a> '.format(homepage,desc)
-			self.lblHomepage.setText(text)
-		self.lblDesc.label.setOpenExternalLinks(False)
-		description=html.unescape(self.app.get('description','').replace("***","\n"))
-		if "Forbidden" in self.app.get("categories",[]):
-			forbReason=""
-			if self.app.get("summary","").endswith(")"):
-				forbReason=": {}".format(self.app["summary"].split("(")[-1].replace(")",""))
-				if forbReason.lower().startswith(": no ")==True:
-					forbReason=""
-			description="<h2>{0}{4}</h2>{1} <a href={2}>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
+	def _setUnknownAppInfo(self):
+		if self.app.get("name","")!="":
+			self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+			icn=self.app.get("icon","")
+			pxm=None
+			if isinstance(icn,QtGui.QPixmap):
+				pxm=icn
+			elif len(icn)>0:
+				if os.path.isfile(icn):
+					pxm=QtGui.QPixmap(icn)
+			if not pxm:
+				icn=QtGui.QIcon.fromTheme(self.app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
+				pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
+			if pxm:
+				self.lblIcon.setPixmap(pxm.scaled(ICON_SIZE,ICON_SIZE))
+			self.lblSummary.setText(self.app.get("summary",""))
+			self.lblDesc.setText("<hr><p>{}</p><hr>".format(i18n.get("APPUNKNOWN")))
 			self.lblDesc.label.setOpenExternalLinks(True)
-		self.lblDesc.setText(description)
-		self._updateScreenControls(bundles)
-		#preliminary license support, not supported
-		applicense=self.app.get('license','')
-		if applicense:
-			text="<strong>{}</strong>".format(applicense)
-		
+			homepage="https://portal.edu.gva.es/appsedu/es/aplicaciones-lliurex/"
+			text='{1}: <a href="{0}">Appsedu</a>'.format(homepage,i18n.get("HOMEPAGE"))
+			self.lblHomepage.setText(text)
+			self.lblHomepage.setToolTip(homepage)
+			#self.lblIcon.loadImg(self.app)
+			self.lstInfo.setMaximumWidth(self.lblDesc.width()/2)
+			self.lblTags.setMaximumWidth(self.lblDesc.width()/2)
+	#def _setUnknownAppInfo
+
+	def _loadScreenshots(self):
 		scrs=self.app.get('screenshots',[])
 		if isinstance(scrs,list)==False:
 			scrs=[]
@@ -587,6 +560,48 @@ class details(QStackedWindowItem):
 				self.screenShot.addImage(icn)
 			except Exception as e:
 				print(e)
+	#def _loadScreenshots
+
+	def updateScreen(self):
+		if self.stream!="":
+			return
+		self._initScreen()
+		if self.app.get("bundle",None)==None:
+			self._setUnknownAppInfo()
+			return
+		self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+		icn=self._getIconFromApp(self.app)
+		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
+		self.lblIcon.loadImg(self.app)
+		self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
+		bundles=list(self.app.get('bundle',{}).keys())
+		if "eduapp" in bundles:
+			self.app["description"]=i18n.get("APPUNKNOWN")
+		homepage=self.app.get('homepage','')
+		if homepage:
+			homepage=homepage.rstrip("/")
+			desc=homepage
+			if len(homepage)>30:
+				desc="{}...".format(homepage[0:30])
+			text='{2}: <a href="{0}">{1}</a> '.format(homepage,desc,i18n.get("HOMEPAGE"))
+			self.lblHomepage.setText(text)
+		self.lblDesc.label.setOpenExternalLinks(False)
+		description=html.unescape(self.app.get('description','').replace("***","\n"))
+		if "Forbidden" in self.app.get("categories",[]):
+			forbReason=""
+			if self.app.get("summary","").endswith(")"):
+				forbReason=": {}".format(self.app["summary"].split("(")[-1].replace(")",""))
+				if forbReason.lower().startswith(": no ")==True:
+					forbReason=""
+			description='<h2>{0}{4}</h2>{1} <a href="{2}">{2}</a><hr>\n{3}'.format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
+			self.lblDesc.label.setOpenExternalLinks(True)
+		self.lblDesc.setText(description)
+		self._updateScreenControls(bundles)
+		#preliminary license support, not supported
+		applicense=self.app.get('license','')
+		if applicense:
+			text="<strong>{}</strong>".format(applicense)
+		self._loadScreenshots()	
 		self._setLauncherOptions()
 		self.lblTags.setText(self._generateTags())
 	#def _updateScreen
@@ -621,7 +636,7 @@ class details(QStackedWindowItem):
 				continue
 			icat=_(cat)
 			if icat not in tags:
-				tags+="<a href=\"#{0}\">{0}</a> ".format(icat)
+				tags+="<a href=\"#{0}\"><strong>{0}</strong></a> ".format(icat)
 		return(tags)
 	#def _generateTags
 
@@ -643,12 +658,12 @@ class details(QStackedWindowItem):
 		#self.wdgSplash.setVisible(True)
 		if "Forbidden" not in self.app.get("categories",[]):
 			self.app["categories"]=["Forbidden"]
-		#self.lstInfo.setVisible(False)
-		#self.btnInstall.setVisible(False)
-		#self.btnRemove.setVisible(False)
-		#self.btnLaunch.setVisible(False)
+		self.lstInfo.setEnabled(False)
+		self.btnInstall.setEnabled(False)
+		self.btnRemove.setEnabled(False)
+		self.btnLaunch.setEnabled(False)
 		self.blur=QGraphicsBlurEffect() 
-		self.blur.setBlurRadius(15) 
+		self.blur.setBlurRadius(55) 
 		self.opacity=QGraphicsOpacityEffect()
 		self.lblBkg.setGraphicsEffect(self.blur)
 		self.lblBkg.setStyleSheet("QLabel{background-color:rgba(%s,%s,%s,0.7);}"%(color.red(),color.green(),color.blue()))
@@ -659,6 +674,7 @@ class details(QStackedWindowItem):
 	#def _onError
 
 	def _setLauncherOptions(self):
+		self.lstInfo.setEnabled(True)
 		self.btnInstall.setEnabled(True)
 		self.btnRemove.setEnabled(True)
 		self.btnLaunch.setEnabled(True)
