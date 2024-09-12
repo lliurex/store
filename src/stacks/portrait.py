@@ -158,7 +158,7 @@ class QPushButtonRebostApp(QPushButton):
 		bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
 		fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Text))
 		if stats.get("forbidden",False)==True:
-			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Dark))
+			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Mid))
 			fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.BrightText))
 		elif stats.get("installed",False)==True:
 			if hasattr(QtGui.QPalette,"Accent"):
@@ -171,8 +171,6 @@ class QPushButtonRebostApp(QPushButton):
 		mod=0.5
 		bordercolor=bkgcolor.toHsl()
 		l=bordercolor.lightness()*mod
-		if l>255:
-			l=255
 		style["brdColor"]="{0},{1},{2}".format(bordercolor.hue(),bordercolor.saturation(),l)
 		style["frgColor"]="{0},{1},{2}".format(fcolor.red(),fcolor.green(),fcolor.blue())
 		style.update(stats)
