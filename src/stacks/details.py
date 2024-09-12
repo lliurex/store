@@ -485,6 +485,7 @@ class details(QStackedWindowItem):
 		layResources=QVBoxLayout()
 		resources.setLayout(layResources)
 		self.lblHomepage=QLabel('{0}: <a href="http://lliurex.net">lliurex.net</a>'.format(i18n.get("HOMEPAGE")))
+		self.lblHomepage.setToolTip("http://lliurex.net")
 		self.lblHomepage.setOpenExternalLinks(True)
 		self.screenShot=QScreenShotContainer()
 		self.screenShot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -537,7 +538,7 @@ class details(QStackedWindowItem):
 			self.lblSummary.setText(self.app.get("summary",""))
 			self.lblDesc.setText("<hr><p>{}</p><hr>".format(i18n.get("APPUNKNOWN")))
 			self.lblDesc.label.setOpenExternalLinks(True)
-			homepage="https://portal.edu.gva.es/appsedu/es/aplicaciones-lliurex/"
+			homepage="https://portal.edu.gva.es/appsedu/"
 			text='{1}: <a href="{0}">Appsedu</a>'.format(homepage,i18n.get("HOMEPAGE"))
 			self.lblHomepage.setText(text)
 			self.lblHomepage.setToolTip(homepage)
@@ -585,6 +586,7 @@ class details(QStackedWindowItem):
 				desc="{}...".format(homepage[0:30])
 			text='{2}: <a href="{0}">{1}</a> '.format(homepage,desc,i18n.get("HOMEPAGE"))
 			self.lblHomepage.setText(text)
+			self.lblHomepage.setToolTip(homepage)
 		self.lblDesc.label.setOpenExternalLinks(False)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
 		if "Forbidden" in self.app.get("categories",[]):
