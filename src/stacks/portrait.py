@@ -77,7 +77,8 @@ class QPushButtonRebostApp(QPushButton):
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
 		if os.path.exists(self.cacheDir)==False:
 			os.makedirs(self.cacheDir)
-		self.completed=False
+		self.setObjectName("rebostapp")
+		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.app=json.loads(strapp)
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
 		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
@@ -124,44 +125,60 @@ class QPushButtonRebostApp(QPushButton):
 				iconPath=os.path.join("/".join(prefix),"active","/".join(tmp[idx:]))
 				if os.path.isfile(iconPath):
 					icn=QtGui.QPixmap.fromImage(iconPath)
-					self.completed=True
 		if icn:
 			wsize=self.iconSize
 			if "/usr/share/banners/lliurex-neu" in img:
 				wsize*=2
 			self.iconUri.setPixmap(icn.scaled(wsize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
-			self.completed=True
 		elif img.startswith('http'):
 			self.scr.start()
 			self.scr.imageLoaded.connect(self.load)
 		self._applyDecoration(app)
 	#def loadImg
 
-	def _applyDecoration(self,app,forbidden=False,installed=False):
+	def _getStats(self,app):
 		installed=False
 		forbidden=False
-		if "0"  in str(app.get('state',1)):
-			#self.setStyleSheet("""QPushButton{background-color: rgba(140, 255, 0, 70);}""")
-			installed=True
+		stats={}
+		for bundle,state in app.get("state",{}).items():
+			if bundle=="zomando":
+				stats["zomando"]=True
+			if state=="0" and bundle!="zomando":
+				stats["installed"]=True
+			
 		if "Forbidden" in app.get("categories",[]):
-			forbidden=True
-		self.setObjectName("rebostapp")
-		self.setAttribute(Qt.WA_StyledBackground, True)
+			stats["forbidden"]=True
+		return(stats)
+	#def _getStats
+
+	def _getStyle(self,app):
+		stats=self._getStats(app)
+		style={"bkgColor":"",
+			"brdColor":"",
+			"frgColor":""}
 		bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
 		bordercolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Dark))
 		fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Text))
-		if forbidden==True:
+		if stats.get("forbidden",False)==True:
 			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Dark))
 			bordercolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Mid))
 			fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.BrightText))
-		elif installed==True:
+		elif stats.get("installed",False)==True:
 			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Highlight))
+		elif stats.get("zomando",False)==True:
+			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Highlight))
+		style["bkgColor"]="{0},{1},{2}".format(bkgcolor.red(),bkgcolor.green(),bkgcolor.blue())
+		style["brdColor"]="{0},{1},{2}".format(bordercolor.red(),bordercolor.green(),bordercolor.blue())
+		style["frgColor"]="{0},{1},{2}".format(fcolor.red(),fcolor.green(),fcolor.blue())
+		style.update(stats)
+		return(style)
+	#def _getStyle
+
+	def _applyDecoration(self,app,forbidden=False,installed=False):
+		style=self._getStyle(app)
 		self.setAutoFillBackground(True)
 		pal=self.palette()
 		#pal.setColor(QPalette.Window,bcolor)
-		rgbBkgColor="{0},{1},{2}".format(bkgcolor.red(),bkgcolor.green(),bkgcolor.blue())
-		rgbBorderColor="{0},{1},{2}".format(bordercolor.red(),bordercolor.green(),bordercolor.blue())
-		rgbFColor="{0},{1},{2}".format(fcolor.red(),fcolor.green(),fcolor.blue())
 		self.setStyleSheet("""#rebostapp {
 			background-color: rgb(%s); 
 			border-style: solid; 
@@ -175,8 +192,9 @@ class QPushButtonRebostApp(QPushButton):
 			QLabel{
 				color: rgb(%s);
 			}
-			"""%(rgbBkgColor,rgbBorderColor,rgbFColor))
-
+			"""%(style["bkgColor"],style["brdColor"],style["frgColor"]))
+		if style.get("forbidden",False)==True:
+			self.iconUri.setEnabled(False)
 	#def _applyDecoration
 
 	def _removeDecoration(self):
@@ -187,7 +205,6 @@ class QPushButtonRebostApp(QPushButton):
 	def load(self,*args):
 		img=args[0]
 		self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
-		self.completed=True
 	#def load
 	
 	def activate(self):
