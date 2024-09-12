@@ -18,6 +18,7 @@ import gettext
 _ = gettext.gettext
 QString=type("")
 
+ICON_SIZE=128
 MINTIME=0.2
 
 i18n={
@@ -158,7 +159,7 @@ class QPushButtonRebostApp(QPushButton):
 		bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
 		fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Text))
 		if stats.get("forbidden",False)==True:
-			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Dark))
+			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Mid))
 			fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.BrightText))
 		elif stats.get("installed",False)==True:
 			if hasattr(QtGui.QPalette,"Accent"):
@@ -171,8 +172,6 @@ class QPushButtonRebostApp(QPushButton):
 		mod=0.5
 		bordercolor=bkgcolor.toHsl()
 		l=bordercolor.lightness()*mod
-		if l>255:
-			l=255
 		style["brdColor"]="{0},{1},{2}".format(bordercolor.hue(),bordercolor.saturation(),l)
 		style["frgColor"]="{0},{1},{2}".format(fcolor.red(),fcolor.green(),fcolor.blue())
 		style.update(stats)
@@ -289,12 +288,16 @@ class portrait(QStackedWindowItem):
 		icn=QtGui.QIcon.fromTheme("home")
 		btnHome.setIcon(icn)
 		btnHome.clicked.connect(self._goHome)
+		btnHome.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
+		btnHome.setIconSize(btnHome.sizeHint())
 		hbox.addWidget(btnHome)
 		self.cmbCategories=QComboBox()
+		self.cmbCategories.setMinimumHeight(int(ICON_SIZE/3))
 		self.cmbCategories.activated.connect(self._loadCategory)
 		hbox.addWidget(self.cmbCategories)
 		self.apps=[]
 		self.btnFilters=QCheckableComboBox()
+		self.btnFilters.setMaximumHeight(ICON_SIZE/3)
 		#self.btnFilters.clicked.connect(self._filterView)
 		self.btnFilters.activated.connect(self._selectFilters)
 		self._loadFilters()
@@ -305,10 +308,14 @@ class portrait(QStackedWindowItem):
 		self.btnSort=QPushButton()
 		icn=QtGui.QIcon.fromTheme("sort-name")
 		self.btnSort.setIcon(icn)
+		self.btnSort.setMinimumSize(QSize(int(ICON_SIZE/3),int(ICON_SIZE/3)))
+		self.btnSort.setIconSize(self.btnSort.sizeHint())
 		self.btnSort.clicked.connect(self._sortApps)
 		self.btnSort.setToolTip(i18n["SORTDSC"])
 		self.box.addWidget(self.btnSort,0,1,1,1,Qt.AlignLeft)
 		self.searchBox=QSearchBox()
+		self.searchBox.btnSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
+		self.searchBox.txtSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
 		self.searchBox.setToolTip(i18n["SEARCH"])
 		self.searchBox.setPlaceholderText(i18n["SEARCH"])
 		self.box.addWidget(self.searchBox,0,2,1,1,Qt.AlignRight)
