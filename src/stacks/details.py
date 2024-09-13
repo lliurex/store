@@ -16,6 +16,7 @@ from . import libhelper
 _ = gettext.gettext
 QString=type("")
 ICON_SIZE=128
+BKG_COLOR_INSTALLED=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Highlight))
 
 i18n={
 	"APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
@@ -474,13 +475,12 @@ class details(QStackedWindowItem):
 		layInfo=QGridLayout()
 		info.setLayout(layInfo)
 		self.lstInfo=QListWidget()
-		self.lstInfo.setAutoScroll(True)
 		self.lstInfo.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.lstInfo.currentRowChanged.connect(self._setLauncherOptions)	
-		layInfo.addWidget(self.lstInfo,0,0,2,1)
+		layInfo.addWidget(self.lstInfo,0,0,1,1,Qt.AlignTop)
 		self.lblTags=QScrollLabel()
-		self.lblTags.setStyleSheet("margin:0px;padding:0px;border:0px")
-		layInfo.addWidget(self.lblTags,2,0,1,1,Qt.AlignBottom)
+		self.lblTags.setStyleSheet("margin:0px;padding:0px;border:0px;bottom:0px")
+		layInfo.addWidget(self.lblTags,1,0,1,1,Qt.AlignBottom)
 		self.lblDesc=QScrollLabel()
 		self.lblDesc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		self.lblDesc.setWordWrap(True)	  
@@ -614,6 +614,7 @@ class details(QStackedWindowItem):
 		self._loadScreenshots()	
 		self._setLauncherOptions()
 		self.lblTags.setText(self._generateTags())
+		self.lblTags.adjustSize()
 	#def _updateScreen
 
 	def _getLauncherForApp(self):
@@ -647,7 +648,7 @@ class details(QStackedWindowItem):
 			icat=_(cat)
 			if icat not in tags:
 				tags+="<a href=\"#{0}\"><strong>{0}</strong></a> ".format(icat)
-		return(tags)
+		return(tags.strip())
 	#def _generateTags
 
 	def _resetScreen(self,name,icon):
@@ -725,7 +726,7 @@ class details(QStackedWindowItem):
 
 	def _setListState(self,item):
 		bcurrent=item.background().color()
-		bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Dark)).toRgb()
+		bcolor=BKG_COLOR_INSTALLED.toRgb()
 		if bcurrent==bcolor:
 			rgb=bcurrent.getRgb()
 			self.btnInstall.setVisible(False)
@@ -811,7 +812,7 @@ class details(QStackedWindowItem):
 					idx+=len(installed)
 				else:
 					#bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.AlternateBase))
-					bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Dark))
+					bcolor=BKG_COLOR_INSTALLED
 					#bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.AlternateBase))
 					release.setBackground(bcolor)
 				release.setToolTip(version)
@@ -821,7 +822,8 @@ class details(QStackedWindowItem):
 		if len(bundles)<=0:
 			self.btnInstall.setEnabled(False)
 		self.lstInfo.setMaximumWidth(self.lstInfo.sizeHintForColumn(0)+16)
-		self.lstInfo.setMinimumHeight(self.lstInfo.sizeHintForRow(0)*2.1)
+		self.lstInfo.setMinimumHeight(self.lstInfo.sizeHintForRow(0)*4.1)
+		self.lstInfo.setMaximumHeight(self.lstInfo.sizeHintForRow(0)*self.lstInfo.count()-1)
 		self.lstInfo.setCurrentRow(0)
 		self.lblTags.setMaximumWidth(self.lstInfo.sizeHintForColumn(0)+16)
 	#def _setReleasesInfo
