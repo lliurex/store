@@ -16,6 +16,7 @@ from . import libhelper
 _ = gettext.gettext
 QString=type("")
 ICON_SIZE=128
+BKG_COLOR_INSTALLED=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Highlight))
 
 i18n={
 	"APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
@@ -40,6 +41,23 @@ i18n={
 	"ZMDNOTFOUND":_("Zommand not found. Open Zero-Center?"),
 	}
 	
+class zmdLauncher(QThread):
+	def __init__(self,parent=None):
+		QThread.__init__(self, parent)
+		self.helper=libhelper.helper()
+		self.app=None
+	#def __init__
+
+	def setApp(self,app):
+		self.app=app
+	#def setApp
+
+	def run(self):
+		if self.app:
+			self.helper.runZmd(self.app)
+	#def run
+#class zmdLauncher
+
 class appLauncher(QThread):
 	runEnded=Signal("PyObject","PyObject")
 	def __init__(self,parent=None):
@@ -174,6 +192,8 @@ class details(QStackedWindowItem):
 		self.thEpiShow.showEnded.connect(self._endGetEpiResults)
 		self.thParmShow=thShowApp()
 		self.thParmShow.showEnded.connect(self._endSetParms)
+		self.zmdLauncher=zmdLauncher()
+		self.zmdLauncher.finished.connect(self._endRunZomando)
 		self.oldcursor=self.cursor()
 		self.appmenu=app2menu.app2menu()
 		self.stream=""
@@ -209,8 +229,8 @@ class details(QStackedWindowItem):
 		if isinstance(pxm,QtGui.QPixmap):
 			color=QtGui.QPalette().color(QtGui.QPalette().Dark)
 			self.wdgSplash.setPixmap(pxm.scaled(int(self.parent.width()),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
-		self.wdgSplash.setMaximumWidth(self.parent.width()-ICON_SIZE)
-		self.wdgSplash.setMaximumHeight(self.parent.height()-ICON_SIZE)
+		self.wdgSplash.setMaximumWidth(self.parent.width()-ICON_SIZE*1.1)
+		self.wdgSplash.setMaximumHeight(self.parent.height()-ICON_SIZE*1.1)
 		self.wdgSplash.setVisible(True)
 	#def _showSplash
 
@@ -304,8 +324,15 @@ class details(QStackedWindowItem):
 		self.updateScreen()
 	#def _endSetParms
 
+	def _endRunZomando(self):
+		self.thEpiShow.setArgs(self.app["name"])
+		self.thEpiShow.start()
+	#def _endRunZomando
+
 	def _runZomando(self):
-		self.helper.runZmd(self.app)
+		self.zmdLauncher.setApp(self.app)
+		self.zmdLauncher.start()
+		self.setEnabled(False)
 	#def _runZomando
 
 	def _runApp(self):
@@ -394,7 +421,7 @@ class details(QStackedWindowItem):
 		else:
 			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
 			self.epi.setArgs(self.app,cmd,bundle)
-			self.epi.runEnded.connect(self._getEpiResults)
+			self.epi.runEnded.connect(self.ugetEpiResults)
 			self.epi.start()
 	#def _genericEpiInstall
 	
@@ -474,13 +501,12 @@ class details(QStackedWindowItem):
 		layInfo=QGridLayout()
 		info.setLayout(layInfo)
 		self.lstInfo=QListWidget()
-		self.lstInfo.setAutoScroll(True)
 		self.lstInfo.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.lstInfo.currentRowChanged.connect(self._setLauncherOptions)	
-		layInfo.addWidget(self.lstInfo,0,0,2,1)
+		layInfo.addWidget(self.lstInfo,0,0,1,1,Qt.AlignTop)
 		self.lblTags=QScrollLabel()
-		self.lblTags.setStyleSheet("margin:0px;padding:0px;border:0px")
-		layInfo.addWidget(self.lblTags,2,0,1,1,Qt.AlignBottom)
+		self.lblTags.setStyleSheet("margin:0px;padding:0px;border:0px;bottom:0px")
+		layInfo.addWidget(self.lblTags,1,0,1,1,Qt.AlignBottom)
 		self.lblDesc=QScrollLabel()
 		self.lblDesc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		self.lblDesc.setWordWrap(True)	  
@@ -552,7 +578,8 @@ class details(QStackedWindowItem):
 			self.lblHomepage.setToolTip(homepage)
 			#self.lblIcon.loadImg(self.app)
 			self.lstInfo.setMaximumWidth(self.lblDesc.width()/2)
-			self.lblTags.setMaximumWidth(self.lblDesc.width()/2)
+			if self.lblDesc.width()>self.lblTags.width():
+				self.lblTags.setMaximumWidth(self.lblDesc.width()/2)
 	#def _setUnknownAppInfo
 
 	def _loadScreenshots(self):
@@ -614,6 +641,7 @@ class details(QStackedWindowItem):
 		self._loadScreenshots()	
 		self._setLauncherOptions()
 		self.lblTags.setText(self._generateTags())
+		self.lblTags.adjustSize()
 	#def _updateScreen
 
 	def _getLauncherForApp(self):
@@ -647,7 +675,7 @@ class details(QStackedWindowItem):
 			icat=_(cat)
 			if icat not in tags:
 				tags+="<a href=\"#{0}\"><strong>{0}</strong></a> ".format(icat)
-		return(tags)
+		return(tags.strip())
 	#def _generateTags
 
 	def _resetScreen(self,name,icon):
@@ -725,7 +753,7 @@ class details(QStackedWindowItem):
 
 	def _setListState(self,item):
 		bcurrent=item.background().color()
-		bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Dark)).toRgb()
+		bcolor=BKG_COLOR_INSTALLED.toRgb()
 		if bcurrent==bcolor:
 			rgb=bcurrent.getRgb()
 			self.btnInstall.setVisible(False)
@@ -811,7 +839,7 @@ class details(QStackedWindowItem):
 					idx+=len(installed)
 				else:
 					#bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.AlternateBase))
-					bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Dark))
+					bcolor=BKG_COLOR_INSTALLED
 					#bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.AlternateBase))
 					release.setBackground(bcolor)
 				release.setToolTip(version)
@@ -821,7 +849,8 @@ class details(QStackedWindowItem):
 		if len(bundles)<=0:
 			self.btnInstall.setEnabled(False)
 		self.lstInfo.setMaximumWidth(self.lstInfo.sizeHintForColumn(0)+16)
-		self.lstInfo.setMinimumHeight(self.lstInfo.sizeHintForRow(0)*2.1)
+		self.lstInfo.setMinimumHeight(self.lstInfo.sizeHintForRow(0)*4.1)
+		self.lstInfo.setMaximumHeight(self.lstInfo.sizeHintForRow(0)*self.lstInfo.count()-1)
 		self.lstInfo.setCurrentRow(0)
 		self.lblTags.setMaximumWidth(self.lstInfo.sizeHintForColumn(0)+16)
 	#def _setReleasesInfo

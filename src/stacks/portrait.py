@@ -141,9 +141,9 @@ class QPushButtonRebostApp(QPushButton):
 	def _getStats(self,app):
 		stats={}
 		for bundle,state in app.get("state",{}).items():
-			if bundle=="zomando":
+			if bundle=="zomando":# and state=="0":
 				stats["zomando"]=True
-			if state=="0" and bundle!="zomando":
+			elif state=="0":
 				stats["installed"]=True
 			
 		if "Forbidden" in app.get("categories",[]):
@@ -159,17 +159,17 @@ class QPushButtonRebostApp(QPushButton):
 		lightnessMod=1
 		bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
 		if hasattr(QtGui.QPalette,"Accent"):
-			lightcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Accent))
+			bkgAlternateColor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Accent))
 		else:
-			lightcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Highlight))
+			bkgAlternateColor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Highlight))
 		fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Text))
 		if stats.get("forbidden",False)==True:
 			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Mid))
 			fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.BrightText))
 		elif stats.get("installed",False)==True:
-			bkgcolor=lightcolor
+			bkgcolor=bkgAlternateColor
 		elif stats.get("zomando",False)==True:
-			bkgcolor=lightcolor
+			bkgcolor=bkgAlternateColor
 			lightnessMod=50
 		bkgcolorHls=bkgcolor.toHsl()
 		bkglightness=bkgcolorHls.lightness()*(1+lightnessMod/100)
@@ -190,8 +190,6 @@ class QPushButtonRebostApp(QPushButton):
 
 	def _applyDecoration(self,app,forbidden=False,installed=False):
 		style=self._getStyle(app)
-		pal=self.palette()
-		#pal.setColor(QPalette.Window,bcolor)
 		self.setStyleSheet("""#rebostapp {
 			background-color: hsl(%s); 
 			border-color: hsl(%s); 
@@ -790,6 +788,9 @@ class portrait(QStackedWindowItem):
 				for key,item in arg.items():
 					kwargs[key]=item
 		self.refresh=kwargs.get("refresh",False)
+		app=kwargs.get("app",{})
+		self.refererApp.setApp(app)
+		self.refererApp.updateScreen()
 		if self.refresh==False:
 			cursor=QtGui.QCursor(Qt.WaitCursor)
 			self.setCursor(cursor)
@@ -798,9 +799,6 @@ class portrait(QStackedWindowItem):
 					self.oldSearch=""
 					self._searchApps()
 		else:
-			app=kwargs.get("app",{})
-			self.refererApp.setApp(app)
-			self.refererApp.updateScreen()
 			cat=kwargs.get("cat",{})
 			if len(cat)>0:
 				self.cmbCategories.setCurrentText(self.catI18n.get(cat,cat))
