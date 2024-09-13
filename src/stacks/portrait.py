@@ -293,7 +293,7 @@ class portrait(QStackedWindowItem):
 		wdg=QWidget()
 		hbox=QHBoxLayout()
 		btnHome=QPushButton()
-		icn=QtGui.QIcon.fromTheme("home")
+		icn=QtGui.QIcon.fromTheme("view-refresh")
 		btnHome.setIcon(icn)
 		btnHome.clicked.connect(self._goHome)
 		btnHome.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
