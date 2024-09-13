@@ -788,6 +788,9 @@ class portrait(QStackedWindowItem):
 				for key,item in arg.items():
 					kwargs[key]=item
 		self.refresh=kwargs.get("refresh",False)
+		app=kwargs.get("app",{})
+		self.refererApp.setApp(app)
+		self.refererApp.updateScreen()
 		if self.refresh==False:
 			cursor=QtGui.QCursor(Qt.WaitCursor)
 			self.setCursor(cursor)
@@ -796,9 +799,6 @@ class portrait(QStackedWindowItem):
 					self.oldSearch=""
 					self._searchApps()
 		else:
-			app=kwargs.get("app",{})
-			self.refererApp.setApp(app)
-			self.refererApp.updateScreen()
 			cat=kwargs.get("cat",{})
 			if len(cat)>0:
 				self.cmbCategories.setCurrentText(self.catI18n.get(cat,cat))

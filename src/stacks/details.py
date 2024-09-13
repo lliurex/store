@@ -41,6 +41,23 @@ i18n={
 	"ZMDNOTFOUND":_("Zommand not found. Open Zero-Center?"),
 	}
 	
+class zmdLauncher(QThread):
+	def __init__(self,parent=None):
+		QThread.__init__(self, parent)
+		self.helper=libhelper.helper()
+		self.app=None
+	#def __init__
+
+	def setApp(self,app):
+		self.app=app
+	#def setApp
+
+	def run(self):
+		if self.app:
+			self.helper.runZmd(self.app)
+	#def run
+#class zmdLauncher
+
 class appLauncher(QThread):
 	runEnded=Signal("PyObject","PyObject")
 	def __init__(self,parent=None):
@@ -175,6 +192,8 @@ class details(QStackedWindowItem):
 		self.thEpiShow.showEnded.connect(self._endGetEpiResults)
 		self.thParmShow=thShowApp()
 		self.thParmShow.showEnded.connect(self._endSetParms)
+		self.zmdLauncher=zmdLauncher()
+		self.zmdLauncher.finished.connect(self._endRunZomando)
 		self.oldcursor=self.cursor()
 		self.appmenu=app2menu.app2menu()
 		self.stream=""
@@ -210,8 +229,8 @@ class details(QStackedWindowItem):
 		if isinstance(pxm,QtGui.QPixmap):
 			color=QtGui.QPalette().color(QtGui.QPalette().Dark)
 			self.wdgSplash.setPixmap(pxm.scaled(int(self.parent.width()),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
-		self.wdgSplash.setMaximumWidth(self.parent.width()-ICON_SIZE)
-		self.wdgSplash.setMaximumHeight(self.parent.height()-ICON_SIZE)
+		self.wdgSplash.setMaximumWidth(self.parent.width()-ICON_SIZE*1.1)
+		self.wdgSplash.setMaximumHeight(self.parent.height()-ICON_SIZE*1.1)
 		self.wdgSplash.setVisible(True)
 	#def _showSplash
 
@@ -305,8 +324,15 @@ class details(QStackedWindowItem):
 		self.updateScreen()
 	#def _endSetParms
 
+	def _endRunZomando(self):
+		self.thEpiShow.setArgs(self.app["name"])
+		self.thEpiShow.start()
+	#def _endRunZomando
+
 	def _runZomando(self):
-		self.helper.runZmd(self.app)
+		self.zmdLauncher.setApp(self.app)
+		self.zmdLauncher.start()
+		self.setEnabled(False)
 	#def _runZomando
 
 	def _runApp(self):
@@ -395,7 +421,7 @@ class details(QStackedWindowItem):
 		else:
 			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
 			self.epi.setArgs(self.app,cmd,bundle)
-			self.epi.runEnded.connect(self._getEpiResults)
+			self.epi.runEnded.connect(self.ugetEpiResults)
 			self.epi.start()
 	#def _genericEpiInstall
 	
@@ -552,7 +578,8 @@ class details(QStackedWindowItem):
 			self.lblHomepage.setToolTip(homepage)
 			#self.lblIcon.loadImg(self.app)
 			self.lstInfo.setMaximumWidth(self.lblDesc.width()/2)
-			self.lblTags.setMaximumWidth(self.lblDesc.width()/2)
+			if self.lblDesc.width()>self.lblTags.width():
+				self.lblTags.setMaximumWidth(self.lblDesc.width()/2)
 	#def _setUnknownAppInfo
 
 	def _loadScreenshots(self):
