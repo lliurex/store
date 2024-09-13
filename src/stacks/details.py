@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import sys
 import os
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QDialog,QDialogButtonBox,QHBoxLayout,QListWidget,QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QDialog,QDialogButtonBox,QHBoxLayout,QListWidget,QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,QAbstractScrollArea
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation, QPoint, QEasingCurve
 #from appconfig.appConfigStack import appConfigStack as confStack
@@ -209,7 +209,8 @@ class details(QStackedWindowItem):
 		if isinstance(pxm,QtGui.QPixmap):
 			color=QtGui.QPalette().color(QtGui.QPalette().Dark)
 			self.wdgSplash.setPixmap(pxm.scaled(int(self.parent.width()),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
-		self.wdgSplash.setMaximumWidth(1000)
+		self.wdgSplash.setMaximumWidth(self.parent.width()-ICON_SIZE)
+		self.wdgSplash.setMaximumHeight(self.parent.height()-ICON_SIZE)
 		self.wdgSplash.setVisible(True)
 	#def _showSplash
 
@@ -298,7 +299,8 @@ class details(QStackedWindowItem):
 				#		status=self.rc.getAppStatus(name,bundle)
 				#		self.app['state'][bundle]=str(status)
 		self.setCursor(self.oldcursor)
-		self.anim.start()
+		for anim in self.anims:
+			anim.start()
 		self.updateScreen()
 	#def _endSetParms
 
@@ -430,7 +432,7 @@ class details(QStackedWindowItem):
 		self.btnBack.clicked.connect(self._return)
 		self.btnBack.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
 		self.btnBack.setIconSize(self.btnBack.sizeHint())
-		self.box.addWidget(self.btnBack,0,0,1,1)
+		self.box.addWidget(self.btnBack,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
 		self.lblIcon=QLabelRebostApp()		 
 		self.box.addWidget(self.lblIcon,0,1,2,1,Qt.AlignTop|Qt.AlignLeft)
   
@@ -444,25 +446,24 @@ class details(QStackedWindowItem):
 		lay=QHBoxLayout()
 		self.btnInstall=QPushButton(i18n.get("INSTALL"))
 		self.btnInstall.clicked.connect(self._genericEpiInstall)
-		self.btnInstall.setMinimumHeight(int(ICON_SIZE/3))
-		self.btnInstall.setMaximumHeight(int(ICON_SIZE/3))
+		self.btnInstall.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
+		#self.btnInstall.setMinimumHeight(int(ICON_SIZE/3))
+		#self.btnInstall.setMaximumHeight(int(ICON_SIZE/3))
 		lay.addWidget(self.btnInstall,Qt.AlignLeft)
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
 		self.btnRemove.clicked.connect(self._genericEpiInstall)
-		self.btnRemove.setMinimumHeight(int(ICON_SIZE/3))
-		self.btnRemove.setMaximumHeight(int(ICON_SIZE/3))
+		self.btnRemove.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
 		lay.addWidget(self.btnRemove,Qt.AlignLeft)
 
 		self.btnZomando=QPushButton(" {} zomando ".format(i18n.get("RUN")))
 		self.btnZomando.clicked.connect(self._runZomando)
-		self.btnZomando.setMinimumHeight(int(ICON_SIZE/3))
+		self.btnZomando.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
 		self.btnZomando.setVisible(False)
 		lay.addWidget(self.btnZomando,Qt.AlignLeft)
 
 		self.btnLaunch=QPushButton(i18n.get("RUN"))
 		self.btnLaunch.clicked.connect(self._runApp)
-		self.btnLaunch.setMinimumHeight(int(ICON_SIZE/3))
-		self.btnLaunch.setMaximumHeight(int(ICON_SIZE/3))
+		self.btnLaunch.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
 		lay.addWidget(self.btnLaunch,Qt.AlignLeft)
 		launchers.setLayout(lay)
 		self.box.addWidget(launchers,2,0,1,3,Qt.AlignTop|Qt.AlignLeft)
@@ -473,17 +474,17 @@ class details(QStackedWindowItem):
 		layInfo=QGridLayout()
 		info.setLayout(layInfo)
 		self.lstInfo=QListWidget()
-		scr=self.lstInfo.horizontalScrollBar()
-		scr.hide()
+		self.lstInfo.setAutoScroll(True)
+		self.lstInfo.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.lstInfo.currentRowChanged.connect(self._setLauncherOptions)	
-		layInfo.addWidget(self.lstInfo,0,0,1,1)
+		layInfo.addWidget(self.lstInfo,0,0,2,1)
 		self.lblTags=QScrollLabel()
 		self.lblTags.setStyleSheet("margin:0px;padding:0px;border:0px")
-		layInfo.addWidget(self.lblTags,1,0,1,1)
+		layInfo.addWidget(self.lblTags,2,0,1,1,Qt.AlignBottom)
 		self.lblDesc=QScrollLabel()
 		self.lblDesc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		self.lblDesc.setWordWrap(True)	  
-		layInfo.addWidget(self.lblDesc,0,1,2,1)
+		layInfo.addWidget(self.lblDesc,0,1,3,1)
 		self.box.addWidget(info,3,0,1,3)
 
 		resources=QWidget()
@@ -514,10 +515,12 @@ class details(QStackedWindowItem):
 		self.lblBkg=QLabel()
 		errorLay.addWidget(self.lblBkg,0,0,1,1)
 		self.box.addWidget(self.wdgSplash,1,0,self.box.rowCount()-1,self.box.columnCount(),Qt.AlignCenter)
-		self.anim = QPropertyAnimation(self.wdgSplash, b"maximumWidth",parent=self)
-		self.anim.setStartValue(1000)
-		self.anim.setEndValue(0)
-		self.anim.setDuration(100)
+		self.anims = [QPropertyAnimation(self.wdgSplash, b"maximumWidth",parent=self),
+						QPropertyAnimation(self.wdgSplash, b"maximumHeight",parent=self)]
+		#self.anim[0].setStartValue(self.wdgSplash.width())
+		for anim in self.anims:
+			anim.setEndValue(0)
+			anim.setDuration(100)
 	#def _load_screen
 
 	def keyPressEvent(self,*args):
@@ -801,13 +804,15 @@ class details(QStackedWindowItem):
 					continue
 			if i in priority:
 				fversion=version.split("+")[0][0:10]
-				release=QListWidgetItem("{} {}\n".format(fversion,i))
+				release=QListWidgetItem("{} {}".format(fversion,i))
+				release.setSizeHint(QSize(self.lstInfo.sizeHint().width()-50,self.lstInfo.font().pointSize()*3))
 				idx=priority.index(i)
 				if i in uninstalled:
 					idx+=len(installed)
 				else:
 					#bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.AlternateBase))
 					bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Dark))
+					#bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.AlternateBase))
 					release.setBackground(bcolor)
 				release.setToolTip(version)
 				self.lstInfo.insertItem(idx,release)
@@ -816,6 +821,7 @@ class details(QStackedWindowItem):
 		if len(bundles)<=0:
 			self.btnInstall.setEnabled(False)
 		self.lstInfo.setMaximumWidth(self.lstInfo.sizeHintForColumn(0)+16)
+		self.lstInfo.setMinimumHeight(self.lstInfo.sizeHintForRow(0)*2.1)
 		self.lstInfo.setCurrentRow(0)
 		self.lblTags.setMaximumWidth(self.lstInfo.sizeHintForColumn(0)+16)
 	#def _setReleasesInfo

@@ -156,24 +156,34 @@ class QPushButtonRebostApp(QPushButton):
 		style={"bkgColor":"",
 			"brdColor":"",
 			"frgColor":""}
+		lightnessMod=1
 		bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
+		if hasattr(QtGui.QPalette,"Accent"):
+			lightcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Accent))
+		else:
+			lightcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Highlight))
 		fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Text))
 		if stats.get("forbidden",False)==True:
 			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Mid))
 			fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.BrightText))
 		elif stats.get("installed",False)==True:
-			if hasattr(QtGui.QPalette,"Accent"):
-				bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Accent))
-			else:
-				bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Highlight))
+			bkgcolor=lightcolor
 		elif stats.get("zomando",False)==True:
-			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.AlternateBase))
-		style["bkgColor"]="{0},{1},{2}".format(bkgcolor.red(),bkgcolor.green(),bkgcolor.blue())
-		mod=0.5
-		bordercolor=bkgcolor.toHsl()
-		l=bordercolor.lightness()*mod
-		style["brdColor"]="{0},{1},{2}".format(bordercolor.hue(),bordercolor.saturation(),l)
-		style["frgColor"]="{0},{1},{2}".format(fcolor.red(),fcolor.green(),fcolor.blue())
+			bkgcolor=lightcolor
+			lightnessMod=50
+		bkgcolorHls=bkgcolor.toHsl()
+		bkglightness=bkgcolorHls.lightness()*(1+lightnessMod/100)
+		if 255<bkglightness:
+			bkglightness=bkgcolorHls.lightness()/lightnessMod
+		style["bkgColor"]="{0},{1},{2}".format(bkgcolorHls.hue(),
+												bkgcolorHls.saturation(),
+												bkglightness)
+		style["brdColor"]="{0},{1},{2}".format(bkgcolor.hue(),
+												bkgcolor.saturation(),
+												bkgcolor.lightness()/2)
+		style["frgColor"]="{0},{1},{2}".format(fcolor.red(),
+												fcolor.green(),
+												fcolor.blue())
 		style.update(stats)
 		return(style)
 	#def _getStyle
@@ -183,9 +193,9 @@ class QPushButtonRebostApp(QPushButton):
 		pal=self.palette()
 		#pal.setColor(QPalette.Window,bcolor)
 		self.setStyleSheet("""#rebostapp {
-			background-color: rgb(%s); 
-			border-style: solid; 
+			background-color: hsl(%s); 
 			border-color: hsl(%s); 
+			border-style: solid; 
 			border-width: 1px; 
 			border-radius: 2px;
 			}
@@ -308,7 +318,7 @@ class portrait(QStackedWindowItem):
 		self.btnSort=QPushButton()
 		icn=QtGui.QIcon.fromTheme("sort-name")
 		self.btnSort.setIcon(icn)
-		self.btnSort.setMinimumSize(QSize(int(ICON_SIZE/3),int(ICON_SIZE/3)))
+		self.btnSort.setMaximumSize(QSize(int(ICON_SIZE/3),int(ICON_SIZE/3)))
 		self.btnSort.setIconSize(self.btnSort.sizeHint())
 		self.btnSort.clicked.connect(self._sortApps)
 		self.btnSort.setToolTip(i18n["SORTDSC"])
