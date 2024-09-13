@@ -421,7 +421,7 @@ class details(QStackedWindowItem):
 		else:
 			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
 			self.epi.setArgs(self.app,cmd,bundle)
-			self.epi.runEnded.connect(self.ugetEpiResults)
+			self.epi.runEnded.connect(self._getEpiResults)
 			self.epi.start()
 	#def _genericEpiInstall
 	
