@@ -17,6 +17,8 @@ import gettext
 _ = gettext.gettext
 QString=type("")
 
+ICON_SIZE=128
+
 i18n={
 	"CCACHE":_("Clear cache"),
 	"CCACHE_TOOLTIP":_("Remove all files from cache, as per exemple icons or another related stuff"),
@@ -108,13 +110,13 @@ class sources(QStackedWindowItem):
 
 	def __initScreen__(self):
 		self.box=QGridLayout()
-		icn=QtGui.QIcon.fromTheme("go-previous")
 		self.btnBack=QPushButton()
+		icn=QtGui.QIcon.fromTheme("go-previous")
+		self.btnBack.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
 		self.btnBack.setIcon(icn)
+		self.btnBack.setIconSize(self.btnBack.sizeHint())
 		self.btnBack.clicked.connect(self._return)
-		self.btnBack.setIconSize(QSize(48,48))
-		self.btnBack.setFixedSize(QSize(64,64))
-		self.box.addWidget(self.btnBack,0,0,1,1,Qt.AlignTop)
+		self.box.addWidget(self.btnBack,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
 		self.chkApt=QCheckBox(i18n.get("SOURCE_PK"))
 		self.chkApt.setChecked(True)
 		self.chkApt.setEnabled(False)
