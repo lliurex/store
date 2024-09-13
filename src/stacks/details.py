@@ -476,14 +476,14 @@ class details(QStackedWindowItem):
 		scr=self.lstInfo.horizontalScrollBar()
 		scr.hide()
 		self.lstInfo.currentRowChanged.connect(self._setLauncherOptions)	
-		layInfo.addWidget(self.lstInfo,0,0,1,1)
+		layInfo.addWidget(self.lstInfo,0,0,2,1)
 		self.lblTags=QScrollLabel()
 		self.lblTags.setStyleSheet("margin:0px;padding:0px;border:0px")
-		layInfo.addWidget(self.lblTags,1,0,1,1)
+		layInfo.addWidget(self.lblTags,2,0,1,1,Qt.AlignBottom)
 		self.lblDesc=QScrollLabel()
 		self.lblDesc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		self.lblDesc.setWordWrap(True)	  
-		layInfo.addWidget(self.lblDesc,0,1,2,1)
+		layInfo.addWidget(self.lblDesc,0,1,3,1)
 		self.box.addWidget(info,3,0,1,3)
 
 		resources=QWidget()
@@ -801,13 +801,15 @@ class details(QStackedWindowItem):
 					continue
 			if i in priority:
 				fversion=version.split("+")[0][0:10]
-				release=QListWidgetItem("{} {}\n".format(fversion,i))
+				release=QListWidgetItem("{} {}".format(fversion,i))
+				release.setSizeHint(QSize(self.lstInfo.sizeHint().width()-50,self.lstInfo.font().pointSize()*3))
 				idx=priority.index(i)
 				if i in uninstalled:
 					idx+=len(installed)
 				else:
 					#bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.AlternateBase))
 					bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Dark))
+					#bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.AlternateBase))
 					release.setBackground(bcolor)
 				release.setToolTip(version)
 				self.lstInfo.insertItem(idx,release)
@@ -816,6 +818,7 @@ class details(QStackedWindowItem):
 		if len(bundles)<=0:
 			self.btnInstall.setEnabled(False)
 		self.lstInfo.setMaximumWidth(self.lstInfo.sizeHintForColumn(0)+16)
+		self.lstInfo.setMinimumHeight(self.lstInfo.sizeHintForRow(0)*4.1)
 		self.lstInfo.setCurrentRow(0)
 		self.lblTags.setMaximumWidth(self.lstInfo.sizeHintForColumn(0)+16)
 	#def _setReleasesInfo
