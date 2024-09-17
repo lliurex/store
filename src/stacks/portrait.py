@@ -141,13 +141,16 @@ class QPushButtonRebostApp(QPushButton):
 	def _getStats(self,app):
 		stats={}
 		for bundle,state in app.get("state",{}).items():
-			if bundle=="zomando":# and state=="0":
+			if bundle=="zomando" and state=="0":
 				stats["zomando"]=True
 			elif state=="0":
 				stats["installed"]=True
 			
 		if "Forbidden" in app.get("categories",[]):
 			stats["forbidden"]=True
+		if app["name"]==app["pkgname"] and "zomando" in app.get("state",{}):
+			if len(app.get("state",{}))==1:
+				stats["installed"]=False
 		return(stats)
 	#def _getStats
 
@@ -245,7 +248,7 @@ class portrait(QStackedWindowItem):
 		self.init=True
 		self.minTime=1
 		self.oldTime=0
-		self.dbg=True
+		self.dbg=False
 		self.enabled=True
 		self._debug("portrait load")
 		self.setProps(shortDesc=i18n.get("DESC"),
@@ -351,17 +354,17 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(self.lblInfo,2,0,2,1)
 		self.lblProgress=QLabel(i18n["NEWDATA"])
 		self.lblProgress.setVisible(False)
-		self.box.addWidget(self.lblProgress,2,1,1,1,Qt.AlignCenter|Qt.AlignBottom)
+		self.box.addWidget(self.lblProgress,2,0,1,3,Qt.AlignCenter|Qt.AlignBottom)
 		self.progress=QProgressBar()
 		self.progress.setVisible(False)
 		self.progress.setMinimum(0)
 		self.progress.setMaximum(0)
-		self.box.addWidget(self.progress,3,1,1,1)
-		btnSettings=QPushButton()
+		self.box.addWidget(self.progress,3,0,1,3)
+		self.btnSettings=QPushButton()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
-		btnSettings.setIcon(icn)
-		btnSettings.clicked.connect(self._gotoSettings)
-		self.box.addWidget(btnSettings,self.box.rowCount()-1,self.box.columnCount()-1,1,1,Qt.Alignment(-1))
+		self.btnSettings.setIcon(icn)
+		self.btnSettings.clicked.connect(self._gotoSettings)
+		self.box.addWidget(self.btnSettings,self.box.rowCount()-1,self.box.columnCount()-1,1,1,Qt.Alignment(-1))
 		self.resetScreen()
 	#def _load_screen
 
@@ -456,6 +459,7 @@ class portrait(QStackedWindowItem):
 	def _beginUpdate(self):
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
+		self.btnSettings.setVisible(False)
 		self.progress.setVisible(True)
 		self.lblProgress.setVisible(True)
 	#def _beginUpdate
@@ -739,6 +743,7 @@ class portrait(QStackedWindowItem):
 
 	def updateScreen(self):
 		self.btnFilters.setMaximumWidth(self.btnFilters.sizeHint().width())
+		self._debug("Reload data (self.refresh={})".format(self.refresh))
 		if self.refresh==True:
 			self.cleanAux()
 			self._loadData(self.appsLoaded,self.appsToLoad)
@@ -754,7 +759,7 @@ class portrait(QStackedWindowItem):
 		else:
 			self.refresh=True
 			self.setCursor(self.oldcursor)
-	#def _udpateScreen
+	#def _updateScreen
 
 	def resetScreen(self):
 		for x in range(self.table.rowCount()):
@@ -770,6 +775,7 @@ class portrait(QStackedWindowItem):
 		self.table.setRowCount(1)
 		self.progress.setVisible(False)
 		self.lblProgress.setVisible(False)
+		self.btnSettings.setVisible(True)
 		self.appsLoaded=0
 		self.oldSearch=""
 		self.appsSeen=[]
@@ -795,9 +801,9 @@ class portrait(QStackedWindowItem):
 			cursor=QtGui.QCursor(Qt.WaitCursor)
 			self.setCursor(cursor)
 			if len(self.searchBox.text())>1:
-					self._populateCategories()
+		#			self._populateCategories()
 					self.oldSearch=""
-					self._searchApps()
+		#			self._searchApps()
 		else:
 			cat=kwargs.get("cat",{})
 			if len(cat)>0:
