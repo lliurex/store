@@ -1,16 +1,16 @@
 #!/usr/bin/python3
-import sys
+import sys,signal
 import os
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QDialog,QDialogButtonBox,QHBoxLayout,QListWidget,QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,QAbstractScrollArea
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation, QPoint, QEasingCurve
-#from appconfig.appConfigStack import appConfigStack as confStack
-from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QStackedWindowItem
-from app2menu import App2Menu as app2menu
-from rebost import store
 import subprocess
 import json
 import html
+from app2menu import App2Menu as app2menu
+from rebost import store
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,QAbstractScrollArea
+from PySide2 import QtGui
+from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
+#from appconfig.appConfigStack import appConfigStack as confStack
+from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QStackedWindowItem
 import gettext
 from . import libhelper
 _ = gettext.gettext
@@ -440,9 +440,7 @@ class details(QStackedWindowItem):
 		self.setCursor(cursor)
 		self.setEnabled(False)
 		self.refresh=False
-		if app.get('name','')!=self.app.get('name',''):
-			print("ERROR: DIFF 1: \"{}\" 2: \"{}\"".format(app.get("name",""),self.app.get("name","")))
-			return
+		signal.raise_signal(signal.SIGUSR1)
 		self.thEpiShow.setArgs(app)
 		self.thEpiShow.start()
 	#def _getEpiResults
@@ -451,10 +449,14 @@ class details(QStackedWindowItem):
 		self.thEpiShow.wait()
 		bundle=list(app.get('bundle').keys())[0]
 		state=app.get('state',{}).get(bundle,1)
-		if state!=self.app.get("state",{}).get(bundle,1):
+		if app.get('name','')==self.app.get('name',''):
+			if state!=self.app.get("state",{}).get(bundle,1):
+				self.rc.commitInstall(app.get('name'),bundle,state)
+				self.refresh=True
+			self.app=app
+		else:
 			self.rc.commitInstall(app.get('name'),bundle,state)
 			self.refresh=True
-		self.app=app
 		self.setEnabled(True)
 		self.updateScreen()
 	 #def _endGetEpiResults
