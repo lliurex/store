@@ -102,7 +102,7 @@ class QPushButtonRebostApp(QPushButton):
 	#def __init__
 
 	def updateScreen(self):
-		self._applyDecoration(self.app)
+		self._applyDecoration()
 	#def updateScreen
 
 	def enterEvent(self,*args):
@@ -191,7 +191,9 @@ class QPushButtonRebostApp(QPushButton):
 		return(style)
 	#def _getStyle
 
-	def _applyDecoration(self,app,forbidden=False,installed=False):
+	def _applyDecoration(self,app={},forbidden=False,installed=False):
+		if app=={}:
+			app=self.app
 		style=self._getStyle(app)
 		self.setStyleSheet("""#rebostapp {
 			background-color: hsl(%s); 
