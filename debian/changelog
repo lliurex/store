@@ -2,6 +2,7 @@ appsedu (1.3.0+0lliurex23) jammy; urgency=medium
 
   * Use map file as last chance for package match
   * Only commit changes if there're changes at all
+  * Gui improvements 
 
  -- Juanma1980 <juanma1980@gmail.com>  Wed, 11 Sep 2024 17:27:12 +0200
 
