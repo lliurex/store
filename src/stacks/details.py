@@ -25,6 +25,7 @@ i18n={
 	"DESC":_("Navigate through all applications"),
 	"ERRNOTFOUND":_("Could not open"),
 	"ERRLAUNCH":_("Error opening"),
+	"ERRSYSTEMAPP":_("System apps can't be removed"),
 	"ERRUNKNOWN":_("Unknown error"),
 	"FORBIDDEN":_("App unauthorized"),
 	"FORMAT":_("Format"),
@@ -129,11 +130,13 @@ class QLabelRebostApp(QLabel):
 	clicked=Signal("PyObject")
 	def __init__(self,parent=None):
 		QLabel.__init__(self, parent)
+		self.setAlignment(Qt.AlignCenter)
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
 	#def __init__
 
 	def loadImg(self,app):
 		img=app.get('icon','')
+		self.setMinimumWidth(1)
 		icn=''
 		if os.path.isfile(img):
 			icn=QtGui.QPixmap.fromImage(img)
@@ -143,8 +146,9 @@ class QLabelRebostApp(QLabel):
 		if icn:
 			wsize=ICON_SIZE
 			if "/usr/share/banners/lliurex-neu" in img:
-				wsize=235
+				wsize=int(ICON_SIZE*1.8)
 			self.setPixmap(icn.scaled(wsize,ICON_SIZE,Qt.KeepAspectRatio,Qt.SmoothTransformation))
+			self.setMinimumWidth(wsize+10)
 		elif img.startswith('http'):
 			aux=QScreenShotContainer()
 			self.scr=aux.loadScreenShot(img,self.cacheDir)
@@ -161,7 +165,7 @@ class QLabelRebostApp(QLabel):
 
 class details(QStackedWindowItem):
 	def __init_stack__(self):
-		self.dbg=True
+		self.dbg=False
 		self._debug("details load")
 		self.setProps(shortDesc=i18n.get("MENU"),
 			longDesc=i18n.get("DESC"),
@@ -169,21 +173,31 @@ class details(QStackedWindowItem):
 			tooltip=i18n.get("TOOLTIP"),
 			index=3,
 			visible=True)
+		self.hideControlButtons()
+		self.refresh=False
+		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
+		self._connectThreads()
+		self.oldcursor=self.cursor()
+		self.stream=""
+		self.launcher=""
+		self.config={}
+		self.app={}
+		self.appmenu=app2menu.app2menu()
+		self.rc=store.client()
+	#def __init__
+
+	def _legacyProps(self):
 		self.menu_description=i18n.get('MENUDESCRIPTION')
 		self.description=i18n.get('DESCRIPTION')
 		self.icon=('application-x-desktop')
 		self.tooltip=i18n.get('TOOLTIP')
 		self.index=3
 		self.visible=False
-		self.enabled=True
-		self.rc=store.client()
-		self.refresh=False
 		self.level='user'
-		self.config={}
-		self.app={}
-		self.hideControlButtons()
-		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
-		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
+		self.enabled=True
+	#def _legacyProps
+
+	def _connectThreads(self):
 		self.helper=libhelper.helper()
 		self.epi=appLauncher()
 		self.runapp=appLauncher()
@@ -194,11 +208,7 @@ class details(QStackedWindowItem):
 		self.thParmShow.showEnded.connect(self._endSetParms)
 		self.zmdLauncher=zmdLauncher()
 		self.zmdLauncher.finished.connect(self._endRunZomando)
-		self.oldcursor=self.cursor()
-		self.appmenu=app2menu.app2menu()
-		self.stream=""
-		self.launcher=""
-	#def __init__
+	#def _connectThreads
 
 	def _debug(self,msg):
 		if self.dbg==True:
@@ -417,7 +427,10 @@ class details(QStackedWindowItem):
 				res={}
 		epi=res.get('epi')
 		if epi==None:
-			self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]))
+			if res.get("done",0)==1 and "system package" in res.get("msg","").lower():
+				self.showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
+			else:
+				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
 			self.updateScreen()
 		else:
 			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
@@ -432,10 +445,7 @@ class details(QStackedWindowItem):
 		self.setEnabled(False)
 		self.refresh=False
 		if app.get('name','')!=self.app.get('name',''):
-			print(app.get('name',''))
-			print(self.app.get('name',''))
-			print("ERROR!!!!!")
-
+			print("ERROR: DIFF 1: \"{}\" 2: \"{}\"".format(app.get("name",""),self.app.get("name",""))
 			return
 		self.thEpiShow.setArgs(app)
 		self.thEpiShow.start()
@@ -506,6 +516,8 @@ class details(QStackedWindowItem):
 		self.lstInfo.currentRowChanged.connect(self._setLauncherOptions)	
 		layInfo.addWidget(self.lstInfo,0,0,1,1,Qt.AlignTop)
 		self.lblTags=QScrollLabel()
+		self.lblTags.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.lblTags.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.lblTags.setStyleSheet("margin:0px;padding:0px;border:0px;bottom:0px")
 		layInfo.addWidget(self.lblTags,1,0,1,1,Qt.AlignBottom)
 		self.lblDesc=QScrollLabel()
@@ -676,7 +688,7 @@ class details(QStackedWindowItem):
 			icat=_(cat)
 			if icat not in tags:
 				tags+="<a href=\"#{0}\"><strong>{0}</strong></a> ".format(icat)
-		return(tags.strip())
+		return("<hr>{}".format(tags.strip()))
 	#def _generateTags
 
 	def _resetScreen(self,name,icon):
@@ -829,7 +841,8 @@ class details(QStackedWindowItem):
 			version=self.app.get('versions',{}).get(i,'')
 			if version=="":
 				version="lliurex23"
-				if not("eduapp" in bundles.keys() and len(bundles.keys())==1):
+			if not("eduapp" in bundles.keys() and len(bundles.keys())==1 or "zero" not in self.app.get("name")):
+				if "zomando" in bundles and i!="zomando":
 					continue
 			if i in priority:
 				fversion=version.split("+")[0][0:10]
@@ -839,9 +852,7 @@ class details(QStackedWindowItem):
 				if i in uninstalled:
 					idx+=len(installed)
 				else:
-					#bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.AlternateBase))
 					bcolor=BKG_COLOR_INSTALLED
-					#bcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.AlternateBase))
 					release.setBackground(bcolor)
 				release.setToolTip(version)
 				self.lstInfo.insertItem(idx,release)
