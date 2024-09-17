@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys,time
+import sys,time,signal
 import os
 from lliurex import lliurexup
 from PySide2.QtWidgets import QApplication, QLabel, QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar
@@ -100,6 +100,9 @@ class QPushButtonRebostApp(QPushButton):
 		self.setDefault(True)
 		self.setLayout(lay)
 	#def __init__
+
+	def _signals(self,*args):
+		print(self.referers)
 
 	def updateScreen(self):
 		self._applyDecoration()
@@ -275,11 +278,23 @@ class portrait(QStackedWindowItem):
 		self.chkRebost=chkRebost()
 		self.thUpgrades=chkUpgrades(self.rc)
 		self.hideControlButtons()
+		self.referers=[]
 		self.level='user'
 		self.oldcursor=self.cursor()
 		self.refresh=True
+		signal.signal(signal.SIGUSR1,self._signals)
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 	#def __init__
+
+	def _signals(self,*args):
+		while len(self.referers)>0:
+			ref=self.referers.pop()
+			app=json.loads(self.rc.showApp(ref.app.get('name','')))[0]
+			if isinstance(app,str):
+				app=json.loads(app)
+			ref.setApp(app)
+			ref.updateScreen()
+			
 
 	def _debug(self,msg):
 		if self.dbg==True:
@@ -713,6 +728,7 @@ class portrait(QStackedWindowItem):
 
 	def _endLoadDetails(self,icn,*args):
 		self.refererApp=args[0]
+		self.referers.append(self.refererApp)
 		self.setChanged(False)
 		self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
 	#def _loadDetails
