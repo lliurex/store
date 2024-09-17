@@ -160,6 +160,7 @@ class QLabelRebostApp(QLabel):
 	def load(self,*args):
 		img=args[0]
 		self.setPixmap(img.scaled(ICON_SIZE,ICON_SIZE))
+		self.setMinimumWidth(ICON_SIZE+10)
 	#def load
 #class QLabelRebostApp
 
@@ -419,12 +420,7 @@ class details(QStackedWindowItem):
 		try:
 			res=json.loads(res)[0]
 		except:
-			if isinstance(res,str):
-				res=eval(res)[0]
-				res=res[1]
-				res['epi']=None
-			else:
-				res={}
+			res={}
 		epi=res.get('epi')
 		if epi==None:
 			if res.get("done",0)==1 and "system package" in res.get("msg","").lower():
