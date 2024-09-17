@@ -445,7 +445,7 @@ class details(QStackedWindowItem):
 		self.setEnabled(False)
 		self.refresh=False
 		if app.get('name','')!=self.app.get('name',''):
-			print("ERROR: DIFF 1: \"{}\" 2: \"{}\"".format(app.get("name",""),self.app.get("name",""))
+			print("ERROR: DIFF 1: \"{}\" 2: \"{}\"".format(app.get("name",""),self.app.get("name","")))
 			return
 		self.thEpiShow.setArgs(app)
 		self.thEpiShow.start()
