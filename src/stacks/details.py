@@ -201,6 +201,7 @@ class details(QStackedWindowItem):
 	def _connectThreads(self):
 		self.helper=libhelper.helper()
 		self.epi=appLauncher()
+		self.epi.runEnded.connect(self._getEpiResults)
 		self.runapp=appLauncher()
 		self.runapp.runEnded.connect(self._getRunappResults)
 		self.thEpiShow=thShowApp()
@@ -431,7 +432,6 @@ class details(QStackedWindowItem):
 		else:
 			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
 			self.epi.setArgs(self.app,cmd,bundle)
-			self.epi.runEnded.connect(self._getEpiResults)
 			self.epi.start()
 	#def _genericEpiInstall
 	
