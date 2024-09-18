@@ -101,9 +101,6 @@ class QPushButtonRebostApp(QPushButton):
 		self.setLayout(lay)
 	#def __init__
 
-	def _signals(self,*args):
-		print(self.referers)
-
 	def updateScreen(self):
 		self._applyDecoration()
 	#def updateScreen
@@ -278,7 +275,8 @@ class portrait(QStackedWindowItem):
 		self.chkRebost=chkRebost()
 		self.thUpgrades=chkUpgrades(self.rc)
 		self.hideControlButtons()
-		self.referers=[]
+		self.referersHistory={}
+		self.referersShowed={}
 		self.level='user'
 		self.oldcursor=self.cursor()
 		self.refresh=True
@@ -287,14 +285,20 @@ class portrait(QStackedWindowItem):
 	#def __init__
 
 	def _signals(self,*args):
-		while len(self.referers)>0:
-			ref=self.referers.pop()
-			app=json.loads(self.rc.showApp(ref.app.get('name','')))[0]
+		applied={}
+		print("Signal USR1")
+		print(self.referersShowed)
+		for name,ref in self.referersShowed.items():
+			if ref==None:
+				print("DISCARD: {}".format(name))
+				continue
+			print("SELECT: {} ({})".format(name,ref))
+			app=json.loads(self.rc.showApp(name))[0]
 			if isinstance(app,str):
 				app=json.loads(app)
 			ref.setApp(app)
 			ref.updateScreen()
-			
+	#def _signals
 
 	def _debug(self,msg):
 		if self.dbg==True:
@@ -675,11 +679,11 @@ class portrait(QStackedWindowItem):
 				self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
 	#def _getMoreData
 
-	def _loadData(self,idx,idx2,applist=None):
+	def _loadData(self,idx,idxEnd,applist=None):
 		if applist==None:
-			apps=self.apps[idx:idx2]
+			apps=self.apps[idx:idxEnd]
 		else:
-			apps=applist[idx:idx2]
+			apps=applist[idx:idxEnd]
 		col=0
 		#self.table.setRowHeight(self.table.rowCount()-1,btn.iconSize+int(btn.iconSize/16))
 		colspan=random.randint(1,3)
@@ -688,15 +692,19 @@ class portrait(QStackedWindowItem):
 		self.wdgs=[]
 		for strapp in apps:
 			jsonapp=json.loads(strapp)
-			if jsonapp.get('name','') in self.appsSeen:
+			appname=jsonapp.get('name','')
+			if appname in self.appsSeen:
 				self.appsLoaded+=1
 				continue
-			self.appsSeen.append(jsonapp.get('name',''))
+			self.appsSeen.append(appname)
 			row=self.table.rowCount()-1
 			btn=QPushButtonRebostApp(strapp)
 			btn.clicked.connect(self._loadDetails)
 			btn.keypress.connect(self.tableKeyPressEvent)
 			self.wdgs.append((row,col,btn))
+			if appname in self.referersHistory.keys():
+				print("Assign {} to {}".format(btn,appname))
+				self.referersShowed.update({appname:btn})
 			col+=1
 			span=span-1
 			if span==0:
@@ -728,7 +736,8 @@ class portrait(QStackedWindowItem):
 
 	def _endLoadDetails(self,icn,*args):
 		self.refererApp=args[0]
-		self.referers.append(self.refererApp)
+		self.referersHistory.update({self.refererApp.app["name"]:self.refererApp})
+		self.referersShowed.update({self.refererApp.app["name"]:self.refererApp})
 		self.setChanged(False)
 		self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
 	#def _loadDetails
@@ -762,7 +771,10 @@ class portrait(QStackedWindowItem):
 	def updateScreen(self):
 		self.btnFilters.setMaximumWidth(self.btnFilters.sizeHint().width())
 		self._debug("Reload data (self.refresh={})".format(self.refresh))
+		print("Reload data (self.refresh={})".format(self.refresh))
 		if self.refresh==True:
+			for i in self.referersShowed.keys():
+				self.referersShowed[i]=None
 			self.cleanAux()
 			self._loadData(self.appsLoaded,self.appsToLoad)
 			if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
@@ -813,8 +825,12 @@ class portrait(QStackedWindowItem):
 					kwargs[key]=item
 		self.refresh=kwargs.get("refresh",False)
 		app=kwargs.get("app",{})
-		self.refererApp.setApp(app)
-		self.refererApp.updateScreen()
+		if app!={}:
+			#refered btn can be deleted so ensure there's a btn
+			if self.referersShowed.get(app.get("name"))!=None:
+				self.refererApp=self.referersShowed[app["name"]]
+				self.refererApp.setApp(app)
+				self.refererApp.updateScreen()
 		if self.refresh==False:
 			cursor=QtGui.QCursor(Qt.WaitCursor)
 			self.setCursor(cursor)
