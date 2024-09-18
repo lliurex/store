@@ -285,19 +285,19 @@ class portrait(QStackedWindowItem):
 	#def __init__
 
 	def _signals(self,*args):
-		applied={}
-		print("Signal USR1")
-		print(self.referersShowed)
+		applied=[]
 		for name,ref in self.referersShowed.items():
 			if ref==None:
-				print("DISCARD: {}".format(name))
+				applied.append(name)
 				continue
-			print("SELECT: {} ({})".format(name,ref))
 			app=json.loads(self.rc.showApp(name))[0]
 			if isinstance(app,str):
 				app=json.loads(app)
 			ref.setApp(app)
 			ref.updateScreen()
+		for app in applied:
+			if app in self.referersHistory.keys():
+				self.referersHistory.pop(app)
 	#def _signals
 
 	def _debug(self,msg):
@@ -703,7 +703,6 @@ class portrait(QStackedWindowItem):
 			btn.keypress.connect(self.tableKeyPressEvent)
 			self.wdgs.append((row,col,btn))
 			if appname in self.referersHistory.keys():
-				print("Assign {} to {}".format(btn,appname))
 				self.referersShowed.update({appname:btn})
 			col+=1
 			span=span-1
@@ -771,7 +770,6 @@ class portrait(QStackedWindowItem):
 	def updateScreen(self):
 		self.btnFilters.setMaximumWidth(self.btnFilters.sizeHint().width())
 		self._debug("Reload data (self.refresh={})".format(self.refresh))
-		print("Reload data (self.refresh={})".format(self.refresh))
 		if self.refresh==True:
 			for i in self.referersShowed.keys():
 				self.referersShowed[i]=None
