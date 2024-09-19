@@ -16,15 +16,16 @@ app=QApplication(["AppsEdu Store"])
 mw=QStackedWindow()
 icn=QtGui.QIcon.fromTheme("appsedu")
 mw.disableNavBar(True)
-mw.setWindowIcon(icn)
+mw.setIcon(icn)
+
 if os.path.islink(__file__)==True:
 	abspath=os.path.join(os.path.dirname(__file__),os.path.dirname(os.readlink(__file__)))
 else:
 	abspath=os.path.dirname(__file__)
 mw.addStacksFromFolder(os.path.join(abspath,"stacks"))
 mw.show()
-mw.setMinimumWidth(960)
-mw.setMinimumHeight(600)
+#mw.setMinimumWidth(960)
+#mw.setMinimumHeight(600)
 if len(sys.argv)>1:
 	if ("://") in sys.argv[1] or os.path.isfile(sys.argv[1]):
 		mw.setCurrentStack(3,parms=sys.argv[1])
