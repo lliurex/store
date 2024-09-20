@@ -10,7 +10,6 @@ from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread
 from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QScreenShotContainer,QStackedWindowItem,QInfoLabel
 from rebost import store 
-from appconfig import appConfig
 import subprocess
 import json
 import dbus

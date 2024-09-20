@@ -5,7 +5,7 @@ from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLa
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSignalMapper,QSize,QThread,Signal
 #from appconfig.appConfigStack import appConfigStack as confStack
-from appconfig import appConfig
+from appconfig import manager
 from QtExtraWidgets import QStackedWindowItem
 from rebost import store
 import dbus
@@ -51,8 +51,9 @@ class thWriteConfig(QThread):
 	#def __init__
 
 	def run(self):
-		self.appconfig.level="user"
-		self.appconfig.saveChanges('config','user',level='user')
+		#self.appconfig.level="user"
+		#self.appconfig.saveChanges('config','user',level='user')
+		data={}
 		for wdg in [self.chkSnap,self.chkFlatpak,self.chkApt,self.chkImage]:
 			key=""
 			if wdg==self.chkApt:
@@ -63,9 +64,9 @@ class thWriteConfig(QThread):
 				key="appimage"
 			elif wdg==self.chkSnap:
 				key="snap"
-			data=wdg.isChecked()
-			if len(key)>0:
-				self.appconfig.saveChanges(key,data,level=self.appconfig.level)
+			data.update({key:wdg.isChecked()})
+		if len(data)>0:
+			self.appconfig.writeConfig(data)
 	#def run
 #class thWriteConfig
 
@@ -95,8 +96,8 @@ class sources(QStackedWindowItem):
 		self.enabled=True
 		self.visible=False
 		self.rc=store.client()
-		self.appconfig=appConfig.appConfig()
-		self.appconfig.setConfig(confDirs={'system':os.path.join('/usr/share',"rebost"),'user':os.path.join(os.environ['HOME'],'.config',"rebost")},confFile="store.json")
+		self.appconfig=manager.manager(fileformat="json",name="appsedu",relativepath="appsedu")
+		#self.appconfig.setConfig(confDirs={'system':os.path.join('/usr/share',"rebost"),'user':os.path.join(os.environ['HOME'],'.config',"rebost")},confFile="store.json")
 		self.hideControlButtons()
 		self.changed=[]
 		self.config={}
