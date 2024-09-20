@@ -1,13 +1,15 @@
 #!/usr/bin/python3
 import sys,time,signal
 import os
-from lliurex import lliurexup
+try:
+	from lliurex import lliurexup
+except:
+	lliurexup=None
 from PySide2.QtWidgets import QApplication, QLabel, QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread
 from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QScreenShotContainer,QStackedWindowItem,QInfoLabel
 from rebost import store 
-from appconfig import appConfig
 import subprocess
 import json
 import dbus
@@ -53,9 +55,10 @@ class chkUpgrades(QThread):
 		if len(apps)>0:
 			self.upgrades=True
 		else:
-			llxup=lliurexup.LliurexUpCore()
-			if len(llxup.getPackagesToUpdate())>0:
-				self.upgrades=True
+			if lliurexup!=None:
+				llxup=lliurexup.LliurexUpCore()
+				if len(llxup.getPackagesToUpdate())>0:
+					self.upgrades=True
 		self.chkEnded.emit(self.upgrades)
 #class chkUpgrades
 
@@ -259,12 +262,9 @@ class portrait(QStackedWindowItem):
 			tooltip=i18n.get("TOOLTIP"),
 			index=1,
 			visible=True)
-		self.appconfig=appConfig.appConfig()
-		self.appconfig.setConfig(confDirs={'system':'/usr/share/rebost','user':os.path.join(os.environ['HOME'],'.config/rebost')},confFile="store.json")
 		self.i18nCat={}
 		self.oldCat=""
 		self.catI18n={}
-		self.config={}
 		self.index=1
 		self.appsToLoad=50
 		self.appsLoaded=0
@@ -310,7 +310,6 @@ class portrait(QStackedWindowItem):
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
 		objbus.connect_to_signal("updatedSignal",self._goHome,dbus_interface="net.lliurex.rebost")
 		objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
-		self.config=self.appconfig.getConfig()
 		self.box=QGridLayout()
 		self.setLayout(self.box)
 		self.sortAsc=False

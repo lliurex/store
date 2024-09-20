@@ -284,7 +284,7 @@ class details(QStackedWindowItem):
 	#def _processStreams
 
 	def setParms(self,*args):
-		self.hideMsg()
+		#self.hideMsg()
 		self.stream=""
 		pxm=""
 		if len(args)>0:
