@@ -5,9 +5,9 @@ try:
 	from lliurex import lliurexup
 except:
 	lliurexup=None
-from PySide2.QtWidgets import QApplication, QLabel, QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal,QThread
+from PySide6.QtWidgets import QApplication, QLabel, QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal,QThread
 from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QScreenShotContainer,QStackedWindowItem,QInfoLabel
 from rebost import store 
 import subprocess
@@ -118,7 +118,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.scr=self.aux.loadScreenShot(img,self.cacheDir)
 		icn=''
 		if os.path.isfile(img):
-			icn=QtGui.QPixmap.fromImage(img)
+			icn=QtGui.QPixmap.fromImage(QtGui.QImage(img))
 		elif img=='':
 			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
 			icn=icn2.pixmap(self.iconSize,self.iconSize)
