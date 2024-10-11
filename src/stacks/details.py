@@ -423,6 +423,7 @@ class details(QStackedWindowItem):
 		except:
 			res={}
 		epi=res.get('epi')
+		self._debug("Invoking EPI for {}".format(epi))
 		if epi==None:
 			if res.get("done",0)==1 and "system package" in res.get("msg","").lower():
 				self.showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
