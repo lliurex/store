@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import sys
 import os,subprocess,time,shutil
-from PySide2.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QTableWidget,QHeaderView,QHBoxLayout,QCheckBox,QProgressBar
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSignalMapper,QSize,QThread,Signal
+from PySide6.QtWidgets import QApplication, QLabel, QWidget, QPushButton,QGridLayout,QTableWidget,QHeaderView,QHBoxLayout,QCheckBox,QProgressBar
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSignalMapper,QSize,QThread,Signal
 #from appconfig.appConfigStack import appConfigStack as confStack
 from appconfig import manager
 from QtExtraWidgets import QStackedWindowItem

@@ -6,9 +6,9 @@ import json
 import html
 from app2menu import App2Menu as app2menu
 from rebost import store
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,QAbstractScrollArea
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
+from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,QAbstractScrollArea
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
 #from appconfig.appConfigStack import appConfigStack as confStack
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QStackedWindowItem
 import gettext
@@ -139,7 +139,7 @@ class QLabelRebostApp(QLabel):
 		self.setMinimumWidth(1)
 		icn=''
 		if os.path.isfile(img):
-			icn=QtGui.QPixmap.fromImage(img)
+			icn=QtGui.QPixmap.fromImage(QtGui.QImage(img))
 		elif img=='':
 			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
 			icn=icn2.pixmap(ICON_SIZE,ICON_SIZE)
@@ -239,7 +239,7 @@ class details(QStackedWindowItem):
 			icn=QtGui.QIcon.fromTheme("appedu-generic")
 			pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
 		if isinstance(pxm,QtGui.QPixmap):
-			color=QtGui.QPalette().color(QtGui.QPalette().Dark)
+			color=QtGui.QPalette().color(QtGui.QPalette.Dark)
 			self.wdgSplash.setPixmap(pxm.scaled(int(self.parent.width()),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
 		self.wdgSplash.setMaximumWidth(self.parent.width()-ICON_SIZE*1.1)
 		self.wdgSplash.setMaximumHeight(self.parent.height()-ICON_SIZE*1.1)
@@ -547,7 +547,7 @@ class details(QStackedWindowItem):
 		self.wdgSplash=QLabel()
 		errorLay=QGridLayout()
 		self.wdgSplash.setLayout(errorLay)
-		color=QtGui.QPalette().color(QtGui.QPalette().Dark)
+		color=QtGui.QPalette().color(QtGui.QPalette.Dark)
 		self.wdgSplash.setStyleSheet("background-color:rgba(%s,%s,%s,0.5);"%(color.red(),color.green(),color.blue()))
 		self.lblBkg=QLabel()
 		errorLay.addWidget(self.lblBkg,0,0,1,1)
@@ -793,8 +793,10 @@ class details(QStackedWindowItem):
 	#def _setLstState
 
 	def _getIconFromApp(self,app):
-		icn=QtGui.QPixmap.fromImage(app.get('icon',''))
-		if icn.depth()==0:
+		icn=QtGui.QIcon()
+		if os.path.exists(app.get("icon")):
+			icn=QtGui.QPixmap.fromImage(QtGui.QImage(app.get('icon','')))
+		if icn.isNull():
 		#something went wrong. Perhaps img it's gzipped
 			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'))
 			icn=icn2.pixmap(ICON_SIZE,ICON_SIZE)
