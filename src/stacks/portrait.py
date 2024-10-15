@@ -322,7 +322,11 @@ class portrait(QStackedWindowItem):
 		btnHome.setIconSize(btnHome.sizeHint())
 		self.box.addWidget(btnHome,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
 		lbl=QLabel()
-		img=QtGui.QImage("rsrc/banner.png")
+		if os.path.islink(__file__)==True:
+			abspath=os.path.join(os.path.dirname(__file__),os.path.dirname(os.readlink(__file__)))
+		else:
+			abspath=os.path.dirname(__file__)
+		img=QtGui.QImage(os.path.join(os.path.dirname(abspath),"rsrc/banner.png"))
 		lbl.setPixmap(QtGui.QPixmap(img))
 		self.box.addWidget(lbl,0,0,1,3,Qt.AlignTop|Qt.AlignCenter)
 		wdg=QWidget()
