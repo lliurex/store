@@ -1,13 +1,15 @@
 #!/usr/bin/python3
 import sys,time,signal
 import os
-from lliurex import lliurexup
+try:
+	from lliurex import lliurexup
+except:
+	lliurexup=None
 from PySide2.QtWidgets import QApplication, QLabel, QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread
 from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QScreenShotContainer,QStackedWindowItem,QInfoLabel
 from rebost import store 
-from appconfig import appConfig
 import subprocess
 import json
 import dbus
@@ -53,9 +55,10 @@ class chkUpgrades(QThread):
 		if len(apps)>0:
 			self.upgrades=True
 		else:
-			llxup=lliurexup.LliurexUpCore()
-			if len(llxup.getPackagesToUpdate())>0:
-				self.upgrades=True
+			if lliurexup!=None:
+				llxup=lliurexup.LliurexUpCore()
+				if len(llxup.getPackagesToUpdate())>0:
+					self.upgrades=True
 		self.chkEnded.emit(self.upgrades)
 #class chkUpgrades
 
@@ -115,7 +118,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.scr=self.aux.loadScreenShot(img,self.cacheDir)
 		icn=''
 		if os.path.isfile(img):
-			icn=QtGui.QPixmap.fromImage(img)
+			icn=QtGui.QPixmap.fromImage(QtGui.QImage(img))
 		elif img=='':
 			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
 			icn=icn2.pixmap(self.iconSize,self.iconSize)
@@ -250,7 +253,7 @@ class portrait(QStackedWindowItem):
 		self.init=True
 		self.minTime=1
 		self.oldTime=0
-		self.dbg=False
+		self.dbg=True
 		self.enabled=True
 		self._debug("portrait load")
 		self.setProps(shortDesc=i18n.get("DESC"),
@@ -259,13 +262,9 @@ class portrait(QStackedWindowItem):
 			tooltip=i18n.get("TOOLTIP"),
 			index=1,
 			visible=True)
-		self.appconfig=appConfig.appConfig()
-		self.appconfig.setConfig(confDirs={'system':'/usr/share/rebost','user':os.path.join(os.environ['HOME'],'.config/rebost')},confFile="store.json")
 		self.i18nCat={}
 		self.oldCat=""
 		self.catI18n={}
-		self.config={}
-		self.index=1
 		self.appsToLoad=50
 		self.appsLoaded=0
 		self.appsSeen=[]
@@ -306,23 +305,28 @@ class portrait(QStackedWindowItem):
 	#def _debug
 
 	def __initScreen__(self):
+		self._debug("^^^^")
+		self._debug(self.layout())
 		bus=dbus.SessionBus()
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
 		objbus.connect_to_signal("updatedSignal",self._goHome,dbus_interface="net.lliurex.rebost")
 		objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
-		self.config=self.appconfig.getConfig()
 		self.box=QGridLayout()
 		self.setLayout(self.box)
 		self.sortAsc=False
-		wdg=QWidget()
-		hbox=QHBoxLayout()
 		btnHome=QPushButton()
 		icn=QtGui.QIcon.fromTheme("view-refresh")
 		btnHome.setIcon(icn)
 		btnHome.clicked.connect(self._goHome)
 		btnHome.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
 		btnHome.setIconSize(btnHome.sizeHint())
-		hbox.addWidget(btnHome)
+		self.box.addWidget(btnHome,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
+		lbl=QLabel()
+		img=QtGui.QImage("rsrc/banner.png")
+		lbl.setPixmap(QtGui.QPixmap(img))
+		self.box.addWidget(lbl,0,0,1,3,Qt.AlignTop|Qt.AlignCenter)
+		wdg=QWidget()
+		hbox=QHBoxLayout()
 		self.cmbCategories=QComboBox()
 		self.cmbCategories.setMinimumHeight(int(ICON_SIZE/3))
 		self.cmbCategories.activated.connect(self._loadCategory)
@@ -336,7 +340,6 @@ class portrait(QStackedWindowItem):
 		icn=QtGui.QIcon.fromTheme("view-filter")
 		hbox.addWidget(self.btnFilters)
 		wdg.setLayout(hbox)
-		self.box.addWidget(wdg,0,0,1,1,Qt.AlignLeft)
 		self.btnSort=QPushButton()
 		icn=QtGui.QIcon.fromTheme("sort-name")
 		self.btnSort.setIcon(icn)
@@ -344,13 +347,14 @@ class portrait(QStackedWindowItem):
 		self.btnSort.setIconSize(self.btnSort.sizeHint())
 		self.btnSort.clicked.connect(self._sortApps)
 		self.btnSort.setToolTip(i18n["SORTDSC"])
-		self.box.addWidget(self.btnSort,0,1,1,1,Qt.AlignLeft)
+		hbox.addWidget(self.btnSort)
+		self.box.addWidget(wdg,1,0,1,1,Qt.AlignLeft)
 		self.searchBox=QSearchBox()
 		self.searchBox.btnSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
 		self.searchBox.txtSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
 		self.searchBox.setToolTip(i18n["SEARCH"])
 		self.searchBox.setPlaceholderText(i18n["SEARCH"])
-		self.box.addWidget(self.searchBox,0,2,1,1,Qt.AlignRight)
+		self.box.addWidget(self.searchBox,1,2,1,1,Qt.AlignRight)
 		self.searchBox.returnPressed.connect(self._searchApps)
 		self.searchBox.textChanged.connect(self._resetSearchBtnIcon)
 		self.searchBox.clicked.connect(self._searchAppsBtn)
@@ -365,22 +369,22 @@ class portrait(QStackedWindowItem):
 		self.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
 		#self.table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-		self.box.addWidget(self.table,1,0,1,self.box.columnCount())
+		self.box.addWidget(self.table,2,0,1,self.box.columnCount())
 		self.lblInfo=QInfoLabel()
 		self.lblInfo.setActionText(i18n.get("LLXUP"))
 		self.lblInfo.setActionIcon("lliurex-up")
 		self.lblInfo.setText(i18n.get("UPGRADES"))
 		self.lblInfo.clicked.connect(self._launchLlxUp)
 		self.lblInfo.setVisible(False)
-		self.box.addWidget(self.lblInfo,2,0,2,1)
+		self.box.addWidget(self.lblInfo,3,0,2,1)
 		self.lblProgress=QLabel(i18n["NEWDATA"])
 		self.lblProgress.setVisible(False)
-		self.box.addWidget(self.lblProgress,2,0,1,3,Qt.AlignCenter|Qt.AlignBottom)
+		self.box.addWidget(self.lblProgress,3,0,1,3,Qt.AlignCenter|Qt.AlignBottom)
 		self.progress=QProgressBar()
 		self.progress.setVisible(False)
 		self.progress.setMinimum(0)
 		self.progress.setMaximum(0)
-		self.box.addWidget(self.progress,3,0,1,3)
+		self.box.addWidget(self.progress,4,0,1,3)
 		self.btnSettings=QPushButton()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		self.btnSettings.setIcon(icn)

@@ -3,7 +3,7 @@ import sys
 import subprocess
 import os,shutil
 import json
-from PySide2.QtWidgets import QApplication,QDialog,QGridLayout,QLabel,QPushButton,QLayout,QSizePolicy,QDesktopWidget
+from PySide2.QtWidgets import QApplication
 from PySide2.QtCore import Qt
 from PySide2 import QtGui
 from QtExtraWidgets import QStackedWindow
