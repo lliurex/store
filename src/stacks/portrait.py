@@ -212,7 +212,8 @@ class portrait(QStackedWindowItem):
 
 	def _defBanner(self):
 		lbl=QLabel()
-		img=QtGui.QImage("rsrc/banner.png")
+		imgDir=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.png")
+		img=QtGui.QImage(imgDir)
 		lbl.setPixmap(QtGui.QPixmap(img))
 		lbl.setStyleSheet("""QLabel{padding:0px}""")
 		return(lbl)
@@ -248,7 +249,7 @@ class portrait(QStackedWindowItem):
 			vbox=QVBoxLayout()
 		else:
 			vbox=QHBoxLayout()
-		vbox.setContentsMargins(0,0,0,0)
+		vbox.setContentsMargins(0,0,10,0)
 		self.searchBox=QSearchBox()
 		self.searchBox.btnSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
 		self.searchBox.txtSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
