@@ -5,10 +5,10 @@ try:
 	from lliurex import lliurexup
 except:
 	lliurexup=None
-from PySide6.QtWidgets import QApplication, QLabel, QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar
+from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread
-from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QScreenShotContainer,QStackedWindowItem,QInfoLabel
+from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QStackedWindowItem,QInfoLabel
 from rebost import store 
 import subprocess
 import json
@@ -17,11 +17,13 @@ import dbus.service
 import dbus.mainloop.glib
 import random
 import gettext
+from btnRebost import QPushButtonRebostApp
 _ = gettext.gettext
 QString=type("")
 
 ICON_SIZE=128
 MINTIME=0.2
+LAYOUT="appsedu"
 
 i18n={
 	"ALL":_("All"),
@@ -42,6 +44,7 @@ i18n={
 	"UPGRADABLE":_("Upgradables"),
 	"UPGRADES":_("There're upgrades available")
 	}
+
 
 class chkUpgrades(QThread):
 	chkEnded=Signal("PyObject")
@@ -73,179 +76,6 @@ class chkRebost(QThread):
 		self.chkRebost.emit(True)
 #class chkRebost
 
-class QPushButtonRebostApp(QPushButton):
-	clicked=Signal("PyObject","PyObject")
-	keypress=Signal()
-	def __init__(self,strapp,parent=None,**kwargs):
-		QPushButton.__init__(self, parent)
-		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
-		if os.path.exists(self.cacheDir)==False:
-			os.makedirs(self.cacheDir)
-		self.setObjectName("rebostapp")
-		self.setAttribute(Qt.WA_StyledBackground, True)
-		self.setAttribute(Qt.WA_AcceptTouchEvents)
-		self.setAutoFillBackground(True)
-		self.app=json.loads(strapp)
-		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
-		text="<strong>{0}</strong> - {1}".format(self.app.get('name',''),self.app.get('summary'),'')
-		self.label=QLabel(text)
-		self.label.setWordWrap(True)
-		img=self.app.get('icon','')
-		self.iconUri=QLabel()
-		self.iconSize=kwargs.get("iconSize",128)
-		self.loadImg(self.app)
-		self.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
-		lay=QHBoxLayout()
-		lay.addStretch()
-		lay.addWidget(self.iconUri,0)
-		lay.addWidget(self.label,1)
-		self.refererApp=None
-		self.setDefault(True)
-		self.setLayout(lay)
-	#def __init__
-
-	def updateScreen(self):
-		self._applyDecoration()
-	#def updateScreen
-
-	def enterEvent(self,*args):
-	   self.setFocus()
-	#def enterEvent
-
-	def loadImg(self,app):
-		img=app.get('icon','')
-		self.aux=QScreenShotContainer()
-		self.scr=self.aux.loadScreenShot(img,self.cacheDir)
-		icn=''
-		if os.path.isfile(img):
-			icn=QtGui.QPixmap.fromImage(QtGui.QImage(img))
-		elif img=='':
-			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
-			icn=icn2.pixmap(self.iconSize,self.iconSize)
-		elif "flathub" in img:
-			tmp=img.split("/")
-			if "icons" in tmp:
-				idx=tmp.index("icons")
-				prefix=tmp[:idx-1]
-				iconPath=os.path.join("/".join(prefix),"active","/".join(tmp[idx:]))
-				if os.path.isfile(iconPath):
-					icn=QtGui.QPixmap.fromImage(iconPath)
-		if icn:
-			wsize=self.iconSize
-			if "/usr/share/banners/lliurex-neu" in img:
-				wsize*=2
-			self.iconUri.setPixmap(icn.scaled(wsize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
-		elif img.startswith('http'):
-			self.scr.start()
-			self.scr.imageLoaded.connect(self.load)
-		self._applyDecoration(app)
-	#def loadImg
-
-	def _getStats(self,app):
-		stats={}
-		for bundle,state in app.get("state",{}).items():
-			if bundle=="zomando" and state=="0":
-				stats["zomando"]=True
-			elif state=="0":
-				stats["installed"]=True
-			
-		if "Forbidden" in app.get("categories",[]):
-			stats["forbidden"]=True
-		if app["name"]==app["pkgname"] and "zomando" in app.get("state",{}):
-			if len(app.get("state",{}))==1:
-				stats["installed"]=False
-		return(stats)
-	#def _getStats
-
-	def _getStyle(self,app):
-		stats=self._getStats(app)
-		style={"bkgColor":"",
-			"brdColor":"",
-			"frgColor":""}
-		lightnessMod=1
-		bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Base))
-		if hasattr(QtGui.QPalette,"Accent"):
-			bkgAlternateColor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Accent))
-		else:
-			bkgAlternateColor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Highlight))
-		fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Text))
-		if stats.get("forbidden",False)==True:
-			bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.Mid))
-			fcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Disabled,QtGui.QPalette.BrightText))
-		elif stats.get("installed",False)==True:
-			bkgcolor=bkgAlternateColor
-		elif stats.get("zomando",False)==True:
-			bkgcolor=bkgAlternateColor
-			lightnessMod=50
-		bkgcolorHls=bkgcolor.toHsl()
-		bkglightness=bkgcolorHls.lightness()*(1+lightnessMod/100)
-		if 255<bkglightness:
-			bkglightness=bkgcolorHls.lightness()/lightnessMod
-		style["bkgColor"]="{0},{1},{2}".format(bkgcolorHls.hue(),
-												bkgcolorHls.saturation(),
-												bkglightness)
-		style["brdColor"]="{0},{1},{2}".format(bkgcolor.hue(),
-												bkgcolor.saturation(),
-												bkgcolor.lightness()/2)
-		style["frgColor"]="{0},{1},{2}".format(fcolor.red(),
-												fcolor.green(),
-												fcolor.blue())
-		style.update(stats)
-		return(style)
-	#def _getStyle
-
-	def _applyDecoration(self,app={},forbidden=False,installed=False):
-		if app=={}:
-			app=self.app
-		style=self._getStyle(app)
-		self.setStyleSheet("""#rebostapp {
-			background-color: hsl(%s); 
-			border-color: hsl(%s); 
-			border-style: solid; 
-			border-width: 1px; 
-			border-radius: 2px;
-			}
-			#rebostapp:focus:!pressed {
-				border-width:6px;
-				}
-			QLabel{
-				color: rgb(%s);
-			}
-			"""%(style["bkgColor"],style["brdColor"],style["frgColor"]))
-		if style.get("forbidden",False)==True:
-			self.iconUri.setEnabled(False)
-	#def _applyDecoration
-
-	def _removeDecoration(self):
-		self.setObjectName("")
-		self.setStyleSheet("")
-	#def _removeDecoration
-	
-	def load(self,*args):
-		img=args[0]
-		self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
-	#def load
-	
-	def activate(self):
-		self.clicked.emit(self.app)
-	#def activate
-
-	def keyPressEvent(self,ev):
-		if ev.key() in [Qt.Key_Return,Qt.Key_Enter,Qt.Key_Space]:
-			self.clicked.emit(self,self.app)
-		else:
-			self.keypress.emit()
-			ev.ignore()
-		return True
-	#def keyPressEvent(self,ev):
-
-	def mousePressEvent(self,*args):
-		self.clicked.emit(self,self.app)
-	#def mousePressEvent
-
-	def setApp(self,app):
-		self.app=app
-#class QPushButtonRebostApp
 
 class portrait(QStackedWindowItem):
 	def __init_stack__(self):
@@ -265,11 +95,14 @@ class portrait(QStackedWindowItem):
 		self.i18nCat={}
 		self.oldCat=""
 		self.catI18n={}
-		self.appsToLoad=50
+		self.appsToLoad=1000
 		self.appsLoaded=0
 		self.appsSeen=[]
 		self.appsRaw=[]
 		self.oldSearch=""
+		self.maxCol=3
+		if LAYOUT=="appsedu":
+			self.maxCol=1
 		self.rc=store.client()
 		self.chkRebost=chkRebost()
 		self.thUpgrades=chkUpgrades(self.rc)
@@ -305,8 +138,6 @@ class portrait(QStackedWindowItem):
 	#def _debug
 
 	def __initScreen__(self):
-		self._debug("^^^^")
-		self._debug(self.layout())
 		bus=dbus.SessionBus()
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
 		objbus.connect_to_signal("updatedSignal",self._goHome,dbus_interface="net.lliurex.rebost")
@@ -314,23 +145,69 @@ class portrait(QStackedWindowItem):
 		self.box=QGridLayout()
 		self.setLayout(self.box)
 		self.sortAsc=False
+		btnHome=self._defHome()
+		self.box.addWidget(btnHome,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
+		lbl=self._defBanner()
+		lbl.setVisible(False)
+		self.box.addWidget(lbl,0,0,1,2,Qt.AlignTop|Qt.AlignCenter)
+		if LAYOUT=="appsedu":
+			btnHome.setVisible(False)
+			lbl.setVisible(True)
+		topBar=self._defTopBar()
+		if LAYOUT=="appsedu":
+			topBar.setVisible(False)
+		self.box.addWidget(topBar,1,0,1,1,Qt.AlignLeft)
+		navBar=self._defNavBar()
+		if LAYOUT=="appsedu":
+			self.box.addWidget(navBar,1,0,1,1,Qt.AlignLeft)
+		else:
+			self.box.addWidget(navBar,1,1,1,1)
+		self.table=self._defTable()
+		if LAYOUT=="appsedu":
+			tableCol=1
+		else:
+			tableCol=0
+		self.box.addWidget(self.table,2-tableCol,tableCol,1,self.box.columnCount())
+		self.lblInfo=self._defInfo()
+		self.box.addWidget(self.lblInfo,3,0,2,2)
+		self.lblProgress=QLabel(i18n["NEWDATA"])
+		self.lblProgress.setVisible(False)
+		self.box.addWidget(self.lblProgress,3,0,1,2,Qt.AlignCenter|Qt.AlignBottom)
+		self.progress=self._defProgress()
+		self.box.addWidget(self.progress,4,0,1,2)
+		self.btnSettings=QPushButton()
+		icn=QtGui.QIcon.fromTheme("settings-configure")
+		self.btnSettings.setIcon(icn)
+		self.btnSettings.clicked.connect(self._gotoSettings)
+		if LAYOUT=="appsedu":
+			self.btnSettings.setVisible(False)
+		self.box.addWidget(self.btnSettings,self.box.rowCount()-1,self.box.columnCount()-1,1,1,Qt.Alignment(-1))
+		self.box.setColumnStretch(1,1)
+		self.resetScreen()
+	#def _load_screen
+
+	def _defHome(self):
 		btnHome=QPushButton()
 		icn=QtGui.QIcon.fromTheme("view-refresh")
 		btnHome.setIcon(icn)
 		btnHome.clicked.connect(self._goHome)
 		btnHome.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
 		btnHome.setIconSize(btnHome.sizeHint())
-		self.box.addWidget(btnHome,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
+		return(btnHome)
+	#def _defHome
+
+	def _defBanner(self):
 		lbl=QLabel()
 		img=QtGui.QImage("rsrc/banner.png")
 		lbl.setPixmap(QtGui.QPixmap(img))
-		self.box.addWidget(lbl,0,0,1,3,Qt.AlignTop|Qt.AlignCenter)
+		lbl.setStyleSheet("""QLabel{padding:0px}""")
+		return(lbl)
+	#def _defBanner
+
+	def _defTopBar(self):
 		wdg=QWidget()
 		hbox=QHBoxLayout()
-		self.cmbCategories=QComboBox()
-		self.cmbCategories.setMinimumHeight(int(ICON_SIZE/3))
-		self.cmbCategories.activated.connect(self._loadCategory)
-		hbox.addWidget(self.cmbCategories)
+		#hbox.addWidget(self.cmbCategories)
 		self.apps=[]
 		self.btnFilters=QCheckableComboBox()
 		self.btnFilters.setMaximumHeight(ICON_SIZE/3)
@@ -348,50 +225,75 @@ class portrait(QStackedWindowItem):
 		self.btnSort.clicked.connect(self._sortApps)
 		self.btnSort.setToolTip(i18n["SORTDSC"])
 		hbox.addWidget(self.btnSort)
-		self.box.addWidget(wdg,1,0,1,1,Qt.AlignLeft)
+		return(wdg)
+	#def _defTopBar
+
+	def _defNavBar(self):
+		wdg=QWidget()
+		if LAYOUT=="appsedu":
+			vbox=QVBoxLayout()
+		else:
+			vbox=QHBoxLayout()
+		vbox.setContentsMargins(0,0,0,0)
 		self.searchBox=QSearchBox()
 		self.searchBox.btnSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
 		self.searchBox.txtSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
 		self.searchBox.setToolTip(i18n["SEARCH"])
 		self.searchBox.setPlaceholderText(i18n["SEARCH"])
-		self.box.addWidget(self.searchBox,1,2,1,1,Qt.AlignRight)
 		self.searchBox.returnPressed.connect(self._searchApps)
 		self.searchBox.textChanged.connect(self._resetSearchBtnIcon)
 		self.searchBox.clicked.connect(self._searchAppsBtn)
-		self.table=QTableTouchWidget()
-		self.table.setAutoScroll(False)
-		self.table.leaveEvent=self.tableLeaveEvent
-		self.table.setAttribute(Qt.WA_AcceptTouchEvents)
-		self.table.setColumnCount(3)
-		self.table.setShowGrid(False)
-		self.table.verticalHeader().hide()
-		self.table.horizontalHeader().hide()
-		self.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
-		#self.table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
-		self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-		self.box.addWidget(self.table,2,0,1,self.box.columnCount())
-		self.lblInfo=QInfoLabel()
-		self.lblInfo.setActionText(i18n.get("LLXUP"))
-		self.lblInfo.setActionIcon("lliurex-up")
-		self.lblInfo.setText(i18n.get("UPGRADES"))
-		self.lblInfo.clicked.connect(self._launchLlxUp)
-		self.lblInfo.setVisible(False)
-		self.box.addWidget(self.lblInfo,3,0,2,1)
-		self.lblProgress=QLabel(i18n["NEWDATA"])
-		self.lblProgress.setVisible(False)
-		self.box.addWidget(self.lblProgress,3,0,1,3,Qt.AlignCenter|Qt.AlignBottom)
-		self.progress=QProgressBar()
-		self.progress.setVisible(False)
-		self.progress.setMinimum(0)
-		self.progress.setMaximum(0)
-		self.box.addWidget(self.progress,4,0,1,3)
-		self.btnSettings=QPushButton()
-		icn=QtGui.QIcon.fromTheme("settings-configure")
-		self.btnSettings.setIcon(icn)
-		self.btnSettings.clicked.connect(self._gotoSettings)
-		self.box.addWidget(self.btnSettings,self.box.rowCount()-1,self.box.columnCount()-1,1,1,Qt.Alignment(-1))
-		self.resetScreen()
-	#def _load_screen
+		if LAYOUT=="appsedu":
+			self.cmbCategories=QListWidget()
+			vbox.addWidget(self.searchBox)
+			vbox.addWidget(self.cmbCategories)
+		else:
+			self.cmbCategories=QComboBox()
+			vbox.addWidget(self.cmbCategories,Qt.AlignLeft)
+			vbox.addWidget(self.searchBox,Qt.AlignRight)
+		self.cmbCategories.setMinimumHeight(int(ICON_SIZE/3))
+		if isinstance(self.cmbCategories,QListWidget):
+			self.cmbCategories.currentItemChanged.connect(self._loadCategory)
+		elif isinstance(self.cmbCategories,QComboBox):
+			self.cmbCategories.activated.connect(self._loadCategory)
+		wdg.setLayout(vbox)
+		return(wdg)
+	#def _defNavBar
+
+	def _defTable(self):
+		table=QTableTouchWidget()
+		table.setAutoScroll(False)
+		table.leaveEvent=self.tableLeaveEvent
+		table.setAttribute(Qt.WA_AcceptTouchEvents)
+		table.setColumnCount(self.maxCol)
+		table.setShowGrid(False)
+		table.verticalHeader().hide()
+		table.horizontalHeader().hide()
+		table.verticalScrollBar().valueChanged.connect(self._getMoreData)
+		#table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
+		table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+		if LAYOUT=="appsedu":
+			table.setStyleSheet("""QTableWidget::item{padding:12px}""")
+		return(table)
+	#def _defTable
+
+	def _defInfo(self):
+		lblInfo=QInfoLabel()
+		lblInfo.setActionText(i18n.get("LLXUP"))
+		lblInfo.setActionIcon("lliurex-up")
+		lblInfo.setText(i18n.get("UPGRADES"))
+		lblInfo.clicked.connect(self._launchLlxUp)
+		lblInfo.setVisible(False)
+		return(lblInfo)
+	#def _defInfo(self):
+
+	def _defProgress(self):
+		progress=QProgressBar()
+		progress.setVisible(False)
+		progress.setMinimum(0)
+		progress.setMaximum(0)
+		return(progress)
+	#def _defProgress
 
 	def tableLeaveEvent(self,*args):
 		self.table.setAutoScroll(False)
@@ -438,7 +340,7 @@ class portrait(QStackedWindowItem):
 		translatedCategories.sort()
 		for cat in translatedCategories:
 			self.cmbCategories.addItem(cat)
-		self.cmbCategories.view().setMinimumWidth(self.cmbCategories.minimumSizeHint().width())
+		#self.cmbCategories.view().setMinimumWidth(self.cmbCategories.minimumSizeHint().width())
 	#def _populateCategories
 
 	def _getAppList(self,cat=[]):
@@ -490,7 +392,8 @@ class portrait(QStackedWindowItem):
 	#def _beginUpdate
 
 	def _shuffleApps(self):
-		random.shuffle(self.apps)
+		#random.shuffle(self.apps)
+		pass
 	#def _shuffleApps
 
 	def _goHome(self,*args,**kwargs):
@@ -506,7 +409,10 @@ class portrait(QStackedWindowItem):
 		self._populateCategories()
 		self._shuffleApps()
 		self.resetScreen()
-		self.cmbCategories.setCurrentIndex(0)
+		if isinstance(self.cmbCategories,QListWidget):
+			self.cmbCategories.setCurrentRow(0)
+		elif isinstance(self.cmbCategories,QComboBox):
+			self.cmbCategories.setCurrentIndex(0)
 		self.updateScreen()
 	#def _goHome
 
@@ -658,13 +564,13 @@ class portrait(QStackedWindowItem):
 
 	def _loadCategory(self):
 		if time.time()-self.oldTime<MINTIME:
-			self.cmbCategories.setCurrentText(self.oldCat)
+			#self.cmbCategories.setCurrentText(self.oldCat)
 			return
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.searchBox.setText("")
 		self.resetScreen()
-		i18ncat=self.cmbCategories.currentText()
+		i18ncat=self.cmbCategories.currentItem().text()
 		if self.oldCat!=i18ncat:
 			self.oldCat=i18ncat
 		cat=self.i18nCat.get(i18ncat,i18ncat)
@@ -690,10 +596,13 @@ class portrait(QStackedWindowItem):
 			apps=applist[idx:idxEnd]
 		col=0
 		#self.table.setRowHeight(self.table.rowCount()-1,btn.iconSize+int(btn.iconSize/16))
-		colspan=random.randint(1,3)
+		colspan=random.randint(1,self.maxCol)
 		span=colspan
 		btn=None
 		self.wdgs=[]
+		rowH=QPushButtonRebostApp("{}").iconSize
+		if LAYOUT=="appsedu":
+			rowH=rowH*2
 		for strapp in apps:
 			jsonapp=json.loads(strapp)
 			appname=jsonapp.get('name','')
@@ -711,20 +620,20 @@ class portrait(QStackedWindowItem):
 			col+=1
 			span=span-1
 			if span==0:
-				if colspan==3:
+				if colspan==self.maxCol:
 					colspan=1
 				elif colspan==1:
-					colspan=3
+					colspan=self.maxCol
 				if colspan!=1:
 					self.table.setSpan(row,col-1,1,colspan)
-				colspan=random.randint(1,3)
+				colspan=random.randint(1,self.maxCol)
 				span=colspan
-				self.table.setRowHeight(row,btn.iconSize+int(btn.iconSize/16))
+				self.table.setRowHeight(row,rowH+int(rowH/16))
 				self.table.setRowCount(self.table.rowCount()+1)
 				col=0
 			self.appsLoaded+=1
 		if btn!=None:
-			self.table.setRowHeight(self.table.rowCount()-1,btn.iconSize+int(btn.iconSize/16))
+			self.table.setRowHeight(self.table.rowCount()-1,rowH+int(rowH/16))
 		return(self.wdgs)
 	#def _loadData
 
@@ -807,7 +716,10 @@ class portrait(QStackedWindowItem):
 		self.table.setRowCount(1)
 		self.progress.setVisible(False)
 		self.lblProgress.setVisible(False)
-		self.btnSettings.setVisible(True)
+		if LAYOUT=="appsedu":
+			self.btnSettings.setVisible(False)
+		else:
+			self.btnSettings.setVisible(True)
 		self.appsLoaded=0
 		self.oldSearch=""
 		self.appsSeen=[]
