@@ -372,9 +372,9 @@ class portrait(QStackedWindowItem):
 			japp=json.loads(app)
 			categories=japp.get("categories",[])
 			for cat in categories:
+				if cat=="Forbidden":
+					cat="No Disponible"
 				if cat not in seen:
-					if cat=="Forbidden":
-						cat="No Disponible"
 					self.cmbCategories.addItem(cat)
 					seen.append(cat)
 	#def _populateCategoriesFromApp
