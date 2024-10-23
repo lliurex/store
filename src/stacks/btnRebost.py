@@ -15,8 +15,12 @@ class QPushButtonRebostApp(QPushButton):
 		self.iconSize=kwargs.get("iconSize",128)
 		if LAYOUT=="appsedu":
 			self.iconSize=self.iconSize/2
-		if strapp=="{}":
-			return(None)
+		if isinstance(strapp,str):
+			self.app=json.loads(strapp)
+			if strapp=="{}":
+				return(None)
+		else:
+			self.app=strapp
 		self.margin=12
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
 		self.btn=QPushButton()
@@ -29,7 +33,6 @@ class QPushButtonRebostApp(QPushButton):
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
 		self.setAutoFillBackground(True)
-		self.app=json.loads(strapp)
 		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
 		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name',''),self.app.get('summary'),'')
 		self.label=QLabel(text)
@@ -56,6 +59,9 @@ class QPushButtonRebostApp(QPushButton):
 		return(False)
 
 	def updateScreen(self):
+		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
+		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name',''),self.app.get('summary'),'')
+		self.label.setText(text)
 		self._applyDecoration()
 	#def updateScreen
 

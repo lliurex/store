@@ -623,8 +623,8 @@ class details(QStackedWindowItem):
 		self.lblIcon.loadImg(self.app)
 		self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
 		bundles=list(self.app.get('bundle',{}).keys())
-		if "eduapp" in bundles:
-			self.app["description"]=i18n.get("APPUNKNOWN")
+	#	if "eduapp" in bundles:
+	#		self.app["description"]=i18n.get("APPUNKNOWN")
 		homepage=self.app.get('homepage','')
 		if homepage:
 			homepage=homepage.rstrip("/")

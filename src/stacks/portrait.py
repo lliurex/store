@@ -76,6 +76,22 @@ class chkRebost(QThread):
 		self.chkRebost.emit(True)
 #class chkRebost
 
+class getData(QThread):
+	dataLoaded=Signal("PyObject")
+	def __init__(self):
+		QThread.__init__(self, None)
+
+	def setApps(self,apps):
+		self.apps=apps
+	
+	def run(self):
+		applist=[]
+		for strapp in self.apps:
+			jsonapp=json.loads(strapp)
+			applist.append(jsonapp)
+		self.dataLoaded.emit(applist)
+	#def run(self):
+#class getData(QThread):
 
 class portrait(QStackedWindowItem):
 	def __init_stack__(self):
@@ -105,12 +121,13 @@ class portrait(QStackedWindowItem):
 			self.maxCol=1
 		self.rc=store.client()
 		self.chkRebost=chkRebost()
+		self.getData=getData()
 		self.thUpgrades=chkUpgrades(self.rc)
 		self.hideControlButtons()
 		self.referersHistory={}
 		self.referersShowed={}
 		self.level='user'
-		self.oldcursor=self.cursor()
+		self.oldCursor=self.cursor()
 		self.refresh=True
 		signal.signal(signal.SIGUSR1,self._signals)
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
@@ -169,12 +186,9 @@ class portrait(QStackedWindowItem):
 			tableCol=0
 		self.box.addWidget(self.table,2-tableCol,tableCol,1,self.box.columnCount())
 		self.lblInfo=self._defInfo()
-		self.box.addWidget(self.lblInfo,3,0,2,2)
-		self.lblProgress=QLabel(i18n["NEWDATA"])
-		self.lblProgress.setVisible(False)
-		self.box.addWidget(self.lblProgress,3,0,1,2,Qt.AlignCenter|Qt.AlignBottom)
+		self.box.addWidget(self.lblInfo,self.box.rowCount()-1,0,2,2)
 		self.progress=self._defProgress()
-		self.box.addWidget(self.progress,4,0,1,2)
+		self.box.addWidget(self.progress,self.box.rowCount()-1,0,1,2,Qt.AlignBottom)
 		self.btnSettings=QPushButton()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		self.btnSettings.setIcon(icn)
@@ -288,11 +302,16 @@ class portrait(QStackedWindowItem):
 	#def _defInfo(self):
 
 	def _defProgress(self):
+		wdg=QWidget()
+		vbox=QVBoxLayout()
+		lblProgress=QLabel(i18n["NEWDATA"])
+		vbox.addWidget(lblProgress,Qt.AlignCenter|Qt.AlignBottom)
 		progress=QProgressBar()
-		progress.setVisible(False)
 		progress.setMinimum(0)
 		progress.setMaximum(0)
-		return(progress)
+		vbox.addWidget(progress,Qt.AlignCenter)
+		wdg.setLayout(vbox)
+		return(wdg)
 	#def _defProgress
 
 	def tableLeaveEvent(self,*args):
@@ -343,6 +362,23 @@ class portrait(QStackedWindowItem):
 		#self.cmbCategories.view().setMinimumWidth(self.cmbCategories.minimumSizeHint().width())
 	#def _populateCategories
 
+	def _populateCategoriesFromApps(self):
+		self.cmbCategories.clear()
+		self.cmbCategories.setSizeAdjustPolicy(self.cmbCategories.SizeAdjustPolicy.AdjustToContents)
+		seen=[]
+		self.cmbCategories.addItem(i18n.get('ALL'))
+		for app in self.apps:
+			japp=json.loads(app)
+			categories=japp.get("categories",[])
+			for cat in categories:
+				if cat not in seen:
+					if cat=="Forbidden":
+						cat="No Disponible"
+					self.cmbCategories.addItem(cat)
+					seen.append(cat)
+	#def _populateCategoriesFromApp
+
+
 	def _getAppList(self,cat=[]):
 		apps=[]
 		if isinstance(cat,str):
@@ -356,7 +392,7 @@ class portrait(QStackedWindowItem):
 				#getting categories from raw data (deep search)
 				apps.extend(json.loads(self.rc.execute('list',"{}".format(categories),1000)))
 			self._debug("Loading cat {}".format(",".join(cat)))
-		else:
+		elif LAYOUT!="appsedu":
 			categories=[]
 			for i18ncat,cat in self.i18nCat.items():
 				categories.append("\"{}\"".format(cat))
@@ -366,7 +402,10 @@ class portrait(QStackedWindowItem):
 				categories.append("\"Forbidden\"")
 			categories=",".join(categories)
 			apps.extend(json.loads(self.rc.execute('list',"({})".format(categories))))
+		else:
+			apps=json.loads(self.rc.execute("search",""))
 		self.appsRaw=apps
+		apps.sort()
 		self.cleanAux()
 		return(apps)
 	#def _getAppList
@@ -388,12 +427,18 @@ class portrait(QStackedWindowItem):
 		self.setCursor(cursor)
 		self.btnSettings.setVisible(False)
 		self.progress.setVisible(True)
-		self.lblProgress.setVisible(True)
 	#def _beginUpdate
 
+	def _endUpdate(self):
+		self.setCursor(self.oldCursor)
+		if LAYOUT!="appsedu":
+			self.btnSettings.setVisible(True)
+		self.progress.setVisible(False)
+	#def _endUpdate
+
 	def _shuffleApps(self):
-		#random.shuffle(self.apps)
-		pass
+		if LAYOUT!="appsedu":
+			random.shuffle(self.apps)
 	#def _shuffleApps
 
 	def _goHome(self,*args,**kwargs):
@@ -406,7 +451,7 @@ class portrait(QStackedWindowItem):
 		self.searchBox.setText("")
 		self._loadFilters()
 		self.apps=self._getAppList()
-		self._populateCategories()
+		self._populateCategoriesFromApps()
 		self._shuffleApps()
 		self.resetScreen()
 		if isinstance(self.cmbCategories,QListWidget):
@@ -530,7 +575,10 @@ class portrait(QStackedWindowItem):
 	#def _sortApps
 
 	def _searchApps(self):
-		self.cmbCategories.setCurrentText(i18n.get("ALL"))
+		if LAYOUT=="appsedu":
+			self.cmbCategories.setCurrentRow(0)
+		else:
+			self.cmbCategories.setCurrentText(i18n.get("ALL"))
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		txt=self.searchBox.text()
@@ -566,10 +614,9 @@ class portrait(QStackedWindowItem):
 		if time.time()-self.oldTime<MINTIME:
 			#self.cmbCategories.setCurrentText(self.oldCat)
 			return
-		cursor=QtGui.QCursor(Qt.WaitCursor)
-		self.setCursor(cursor)
 		self.searchBox.setText("")
 		self.resetScreen()
+		self._beginUpdate()
 		i18ncat=self.cmbCategories.currentItem().text()
 		if self.oldCat!=i18ncat:
 			self.oldCat=i18ncat
@@ -580,20 +627,31 @@ class portrait(QStackedWindowItem):
 		self._filterView(getApps=False)
 		self.releaseKeyboard()
 		self.oldTime=time.time()
+		#self._endUpdate()
 	#def _loadCategory
 
 	def _getMoreData(self):
+		return
 		if (self.table.verticalScrollBar().value()==self.table.verticalScrollBar().maximum()) and self.appsLoaded!=len(self.apps):
-			self._loadData(self.appsLoaded,self.appsLoaded+self.appsToLoad)
+			self._beginLoadData(self.appsLoaded,self.appsLoaded+self.appsToLoad)
 			for wdg in self.wdgs:
 				self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
 	#def _getMoreData
 
-	def _loadData(self,idx,idxEnd,applist=None):
-		if applist==None:
-			apps=self.apps[idx:idxEnd]
-		else:
-			apps=applist[idx:idxEnd]
+	def _beginLoadData(self,idx,idxEnd,applist=None):
+		#appData=getData(apps)
+		if self.getData.isRunning()==False:
+			self._beginUpdate()
+			if applist==None:
+				apps=self.apps[idx:idxEnd]
+			else:
+				apps=applist[idx:idxEnd]
+			self.getData.setApps(apps)
+			self.getData.start()
+			self.getData.dataLoaded.connect(self._loadData)
+	#def _beginLoadData
+
+	def _loadData(self,apps):
 		col=0
 		#self.table.setRowHeight(self.table.rowCount()-1,btn.iconSize+int(btn.iconSize/16))
 		colspan=random.randint(1,self.maxCol)
@@ -603,15 +661,14 @@ class portrait(QStackedWindowItem):
 		rowH=QPushButtonRebostApp("{}").iconSize
 		if LAYOUT=="appsedu":
 			rowH=rowH*2
-		for strapp in apps:
-			jsonapp=json.loads(strapp)
+		for jsonapp in apps:
 			appname=jsonapp.get('name','')
 			if appname in self.appsSeen:
 				self.appsLoaded+=1
 				continue
 			self.appsSeen.append(appname)
 			row=self.table.rowCount()-1
-			btn=QPushButtonRebostApp(strapp)
+			btn=QPushButtonRebostApp(jsonapp)
 			btn.clicked.connect(self._loadDetails)
 			btn.keypress.connect(self.tableKeyPressEvent)
 			self.wdgs.append((row,col,btn))
@@ -634,8 +691,24 @@ class portrait(QStackedWindowItem):
 			self.appsLoaded+=1
 		if btn!=None:
 			self.table.setRowHeight(self.table.rowCount()-1,rowH+int(rowH/16))
-		return(self.wdgs)
+		self._endLoadData()
 	#def _loadData
+
+	def _endLoadData(self):
+		if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
+			#self._beginUpdate()
+			self.chkRebost.start()
+			self.chkRebost.finished.connect(self._goHome)
+		else:
+			for wdg in self.wdgs:
+				self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
+			self._endUpdate()
+		self.cleanAux()
+		self.refresh=True
+	#def _endLoadData(self):
+
+	def _endLoadApps(self,args):
+		pass
 
 	def _loadDetails(self,*args,**kwargs):
 		icn=""
@@ -687,19 +760,9 @@ class portrait(QStackedWindowItem):
 			for i in self.referersShowed.keys():
 				self.referersShowed[i]=None
 			self.cleanAux()
-			self._loadData(self.appsLoaded,self.appsToLoad)
-			if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
-				self._beginUpdate()
-				self.chkRebost.start()
-				self.chkRebost.finished.connect(self._goHome)
-			else:
-				for wdg in self.wdgs:
-					self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
-				self.setCursor(self.oldcursor)
-			self.cleanAux()
+			self._beginLoadData(self.appsLoaded,self.appsToLoad)
 		else:
-			self.refresh=True
-			self.setCursor(self.oldcursor)
+			self._endUpdate()
 	#def _updateScreen
 
 	def resetScreen(self):
@@ -714,12 +777,6 @@ class portrait(QStackedWindowItem):
 				self.table.removeCellWidget(x,y)
 		self.table.setRowCount(0)
 		self.table.setRowCount(1)
-		self.progress.setVisible(False)
-		self.lblProgress.setVisible(False)
-		if LAYOUT=="appsedu":
-			self.btnSettings.setVisible(False)
-		else:
-			self.btnSettings.setVisible(True)
 		self.appsLoaded=0
 		self.oldSearch=""
 		self.appsSeen=[]
@@ -755,7 +812,13 @@ class portrait(QStackedWindowItem):
 		else:
 			cat=kwargs.get("cat",{})
 			if len(cat)>0:
-				self.cmbCategories.setCurrentText(self.catI18n.get(cat,cat))
+				if isinstance(self.cmbCategories,QListWidget):
+					it=self.cmbCategories.findItems(cat.strip(),Qt.MatchFlags.MatchFixedString)
+					if it==None or len(it)==0:
+						it=self.cmbCategories.findItems("No Disponible",Qt.MatchFlags.MatchFixedString)
+					self.cmbCategories.setCurrentItem(it[0])
+				else:
+					self.cmbCategories.setCurrentText(self.catI18n.get(cat,cat))
 				self._loadCategory()
 			else:
 				self.oldSearch=""
