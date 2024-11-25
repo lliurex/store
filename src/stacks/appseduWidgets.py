@@ -67,7 +67,7 @@ class QPushButtonAppsedu(QPushButton):
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
 		self.setAutoFillBackground(True)
 		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('app'))))
-		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('app',''),self.app.get('summary'),'')
+		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('app',''),self.app.get('summary',""))
 		self.label=QLabel(text)
 		self.label.setWordWrap(True)
 		img=self.app.get('icon','')
@@ -92,9 +92,12 @@ class QPushButtonAppsedu(QPushButton):
 
 	@staticmethod
 	def _on_destroyed(th):
-		if isinstance(th,QThread):
-			th.terminate()
-			th.wait()
+		try:
+			if isinstance(th,QThread):
+				th.terminate()
+				th.wait()
+		except:
+			pass
 	#def _on_destroyed
 
 	def updateScreen(self,*args):
