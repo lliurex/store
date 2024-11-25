@@ -14,9 +14,8 @@ _ = gettext.gettext
 
 app=QApplication(["AppsEdu Store"])
 mw=QStackedWindow()
-icn=QtGui.QIcon.fromTheme("appsedu")
 mw.disableNavBar(True)
-mw.setIcon(icn)
+mw.setIcon("appsedu")
 #Remove banner
 i=mw.layout().itemAtPosition(0,0)
 mw.layout().removeItem(i)

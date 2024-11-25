@@ -2,117 +2,129 @@
 import os
 import json
 from PySide6.QtWidgets import QLabel, QPushButton,QHBoxLayout
-from PySide6.QtCore import Qt,Signal
+from PySide6.QtCore import Qt,Signal,QThread,QSize
 from PySide6.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
-from QtExtraWidgets import QScreenShotContainer
+from appsedu import manager
+import urllib
 
-LAYOUT="appsedu"
-class QPushButtonRebostApp(QPushButton):
+DBG=True
+
+class getAppInfo(QThread):
+	getInfo=Signal("PyObject")
+	def __init__(self,parent=None,**kwargs):
+		QThread.__init__(self, None)
+		self.app=kwargs["app"]
+		self.appsedu=manager(cache=True)
+		self.cache=os.path.join(os.environ.get("HOME"),".cache","appsedu","imgs")
+		if os.path.exists(self.cache)==False:
+			os.makedirs(self.cache)
+	#def __init__
+		
+	def _debug(self,msg):
+		if DBG==True:
+			print("getInfo: {}".format(msg))
+	#def _debug
+
+	def run(self):
+		#self._debug("Getting info for {}".format(self.app))
+		appInfo=self.appsedu.getApplication(self.app["url"])
+		iconPath="_".join(appInfo.get("icon","/ / / /").split("/")[-3:])
+		self.downloadIcon(appInfo)
+		appInfo["icon"]=os.path.join(self.cache,iconPath)
+		self.getInfo.emit(appInfo)
+	#def run
+	
+	def downloadIcon(self,appInfo):
+		iconPath="_".join(appInfo.get("icon","/ / / /").split("/")[-3:])
+		iconPath=os.path.join(self.cache,iconPath)
+		if os.path.isfile(iconPath)==True:
+			pxm=QPixmap(iconPath)
+			if pxm.isNull()==True:
+				print("REMOVE: {}".format(iconPath))
+				os.unlink(iconPath)
+		if os.path.isfile(iconPath)==False and appInfo.get("icon","").startswith("http"):
+			urllib.request.urlretrieve(appInfo["icon"],iconPath)
+			
+
+#class getInfo
+
+class QPushButtonAppsedu(QPushButton):
 	clicked=Signal("PyObject","PyObject")
-	keypress=Signal()
-	def __init__(self,strapp,parent=None,**kwargs):
+	def __init__(self,appedu,parent=None,**kwargs):
 		QPushButton.__init__(self, parent)
+		self.app=appedu
 		self.iconSize=kwargs.get("iconSize",128)
-		if LAYOUT=="appsedu":
-			self.iconSize=self.iconSize/2
-		if isinstance(strapp,str):
-			self.app=json.loads(strapp)
-			if strapp=="{}":
-				return(None)
-		else:
-			self.app=strapp
+		self.iconSize=self.iconSize/2
 		self.margin=12
-		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
-		self.btn=QPushButton()
-		self.btn.setIcon(QIcon.fromTheme("download"))
-		if LAYOUT!="appsedu":
-			self.btn.setVisible(False)
+		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","appsedu","imgs")
+		self.btnInstall=QPushButton()
+		self.btnInstall.setIcon(QIcon.fromTheme("download"))
 		if os.path.exists(self.cacheDir)==False:
+			print("GENERATING CACHE {}".format(self.cacheDir))
 			os.makedirs(self.cacheDir)
 		self.setObjectName("rebostapp")
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
 		self.setAutoFillBackground(True)
-		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
-		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name',''),self.app.get('summary'),'')
+		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('app'))))
+		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('app',''),self.app.get('summary'),'')
 		self.label=QLabel(text)
 		self.label.setWordWrap(True)
 		img=self.app.get('icon','')
 		self.iconUri=QLabel()
 		self.iconUri.setStyleSheet("""QLabel{margin-left: %spx;margin-right:%spx}"""%(self.margin,self.margin))
-		self.loadImg(self.app)
 		self.setCursor(QCursor(Qt.PointingHandCursor))
 		lay=QHBoxLayout()
 		lay.addWidget(self.iconUri,0)
 		lay.addWidget(self.label,1)
-		lay.addWidget(self.btn)
+		lay.addWidget(self.btnInstall)
 		self.refererApp=None
 		self.setDefault(True)
+		self.setMinimumHeight(self.iconSize)
 		self.setLayout(lay)
-		self.installEventFilter(self)
+		self.init=False
+		self.info=getAppInfo(app=self.app)
+		self.info.getInfo.connect(self.updateScreen)
+		self.destroyed.connect(lambda x:QPushButtonAppsedu._on_destroyed(self.info))
+
+		#self.installEventFilter(self)
 	#def __init__
 
-	def eventFilter(self,*args):
-		ev=args[1]
-		if isinstance(ev,QMouseEvent):
-			self.activate()
-		return(False)
+	@staticmethod
+	def _on_destroyed(th):
+		if th.isRunning():
+			th.terminate()
+			th.wait()
+		pass
 
-	def updateScreen(self):
-		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
-		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name',''),self.app.get('summary'),'')
+	def updateScreen(self,*args):
+		if len(args)>0 and isinstance(args[0],dict):
+			self.app.update(args[0])
+		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('app'))))
+		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('app',''),self.app.get('summary'),'')
 		self.label.setText(text)
-		self._applyDecoration()
+		pxm=QPixmap(self.app.get("icon")).scaled(QSize(self.iconSize,self.iconSize),Qt.AspectRatioMode.IgnoreAspectRatio,Qt.TransformationMode.SmoothTransformation)
+		if pxm.isNull()==True:
+			print("NULL IMAGE: {}\n----".format(self.app))
+		else:
+			self.init=True
+			self.iconUri.setPixmap(pxm)
 	#def updateScreen
 
 	def enterEvent(self,*args):
-	   self.setFocus()
+		self.setFocus()
 	#def enterEvent
 
+	def loadInfo(self):
+		if self.init==False:
+			self.info.start()
+
 	def loadImg(self,app):
-		img=app.get('icon','')
-		self.aux=QScreenShotContainer()
-		self.scr=self.aux.loadScreenShot(img,self.cacheDir)
-		icn=''
-		if os.path.isfile(img):
-			icn=QPixmap.fromImage(QImage(img))
-			icn=icn.scaled(self.iconSize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation)
-		elif img=='':
-			icn2=QIcon.fromTheme(app.get('pkgname'),QIcon.fromTheme("appedu-generic"))
-			icn=icn2.pixmap(self.iconSize,self.iconSize)
-		elif "flathub" in img:
-			tmp=img.split("/")
-			if "icons" in tmp:
-				idx=tmp.index("icons")
-				prefix=tmp[:idx-1]
-				iconPath=os.path.join("/".join(prefix),"active","/".join(tmp[idx:]))
-				if os.path.isfile(iconPath):
-					icn=QPixmap.fromImage(iconPath)
-					icn=icn.scaled(self.iconSize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation)
-		if icn:
-			wsize=self.iconSize
-			if "/usr/share/banners/lliurex-neu" in img:
-				wsize*=2
-			self.iconUri.setPixmap(icn.scaled(wsize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
-		elif img.startswith('http'):
-			self.scr.start()
-			self.scr.imageLoaded.connect(self.load)
 		self._applyDecoration(app)
 	#def loadImg
 
 	def _getStats(self,app):
 		stats={}
-		for bundle,state in app.get("state",{}).items():
-			if bundle=="zomando" and state=="0":
-				stats["zomando"]=True
-			elif state=="0":
-				stats["installed"]=True
-			
-		if "Forbidden" in app.get("categories",[]):
-			stats["forbidden"]=True
-		if app["name"]==app["pkgname"] and "zomando" in app.get("state",{}):
-			if len(app.get("state",{}))==1:
-				stats["installed"]=False
 		return(stats)
 	#def _getStats
 
