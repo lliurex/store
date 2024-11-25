@@ -92,10 +92,10 @@ class QPushButtonAppsedu(QPushButton):
 
 	@staticmethod
 	def _on_destroyed(th):
-		if th.isRunning():
-			th.terminate()
-			th.wait()
-		pass
+		if isinstance(th,QThread):
+			if th.isRunning():
+				th.terminate()
+				th.wait()
 
 	def updateScreen(self,*args):
 		if len(args)>0 and isinstance(args[0],dict):
