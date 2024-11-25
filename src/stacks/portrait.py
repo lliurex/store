@@ -4,7 +4,7 @@ import os
 from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,QEvent,QSignalMapper
-from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QStackedWindowItem,QInfoLabel
+from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QStackedWindowItem,QScrollLabel
 import subprocess
 import gettext
 from appseduWidgets import QPushButtonAppsedu
@@ -118,6 +118,8 @@ class portrait(QStackedWindowItem):
 		self.table=self._defTable()
 		tableCol=1
 		self.box.addWidget(self.table,2-tableCol,tableCol,1,self.box.columnCount())
+		self.details=self._defDetails()
+		self.box.addWidget(self.details,2-tableCol,tableCol,1,self.box.columnCount())
 		self.progress=self._defProgress()
 		self.box.addWidget(self.progress,0,0,self.table.rowCount(),2,Qt.AlignCenter)
 		self.box.setColumnStretch(1,1)
@@ -133,6 +135,64 @@ class portrait(QStackedWindowItem):
 		lbl.setStyleSheet("""QLabel{padding:0px}""")
 		return(lbl)
 	#def _defBanner
+	
+	def _defDetails(self):
+		wdg=QWidget()
+		lay=QGridLayout()
+		self.detailIcon=QLabel()
+		self.detailTitle=QLabel()
+		self.detailTitle.setWordWrap(True)
+		self.detailInstall=QPushButton("INSTALL")
+		self.detailExit=QPushButton("X")
+		self.detailExit.clicked.connect(self._gotoHome)
+		self.detailTags=QLabel()
+		self.detailTags.linkActivated.connect(self._gotoCategory)
+	#def _generateTags
+		self.detailTags.setWordWrap(True)
+		self.detailDescription=QScrollLabel()
+		self.detailDescription.setWordWrap(True)
+		lay.addWidget(self.detailIcon,0,0,2,1,Qt.AlignTop)
+		lay.addWidget(self.detailTitle,0,1,1,1,Qt.AlignTop|Qt.AlignLeft)
+		lay.addWidget(self.detailExit,0,2,1,1,Qt.AlignTop|Qt.AlignRight)
+		lay.addWidget(self.detailInstall,4,2,1,1)
+		lay.addWidget(self.detailTags,3,0,1,1)
+		#lay.addWidget(self.detailSummary,1,0,1,2,Qt.AlignTop)
+		lay.addWidget(self.detailDescription,2,0,1,3)
+		wdg.setLayout(lay)
+		wdg.setVisible(False)
+		return(wdg)
+	#def _defDetails
+
+	def _gotoHome(self,*args):
+		self.details.setVisible(False)
+		self.table.setVisible(True)
+
+	def _gotoDetails(self,btn):
+		#self.parent.setCurrentStack(2,parms=btn.app)
+		self.details.setVisible(True)
+		self.detailTitle.setText("<h1>{}</h1>".format(btn.app.get("app")))
+		self.detailDescription.setText("<p>{0}</p><p><a href=\"{1}\">{1}</a></p>".format(btn.app.get("description"),btn.app.get("url")))
+		#self.detailSummary.setText(btn.app.get("summary"))
+		if os.path.isfile(btn.app.get("icon")):
+			pxm=QtGui.QPixmap(btn.app.get("icon"))
+			self.detailIcon.setPixmap(pxm.scaled(ICON_SIZE,ICON_SIZE))
+		tags=""
+		for cat in btn.app.get("categories",[]):
+			if cat.strip().islower() or len(cat)==0:
+				continue
+			icat=_(cat)
+			if icat not in tags:
+				tags+="<a href=\"#{0}\"><strong>{0}</strong></a> ".format(icat)
+		self.detailTags.setText("{}".format(tags.strip()))
+		self.table.setVisible(False)
+	#def _gotoDetails
+
+	def _gotoCategory(self,*args):
+		item=self.cmbCategories.findItems(args[0].replace("#",""),Qt.MatchExactly)
+		if item!=None:
+			self.cmbCategories.setCurrentItem(item[0])
+		self._loadCategory()
+
 
 	def _defNavBar(self):
 		wdg=QWidget()
@@ -226,10 +286,6 @@ class portrait(QStackedWindowItem):
 		self.searchBox.setEnabled(False)
 	#def progressEnable
 
-	def _gotoDetails(self,btn):
-		self.parent.setCurrentStack(2,parms=btn.app)
-	#def _gotoDetails
-
 	def updateScreen(self,applications=[]):
 		if len(applications)==0:
 			self.appsedu.setAction("getApplications",cache=True)
@@ -274,7 +330,7 @@ class portrait(QStackedWindowItem):
 	#def _getMoreData
 
 	def _loadCategory(self):
-		self.searchBox.setText("")
+		self._gotoHome()
 		self.progressEnable()
 		category=self.cmbCategories.currentItem().text()
 		if self.cmbCategories.currentRow()>0:
@@ -285,9 +341,13 @@ class portrait(QStackedWindowItem):
 	#def _loadCategory
 
 	def _searchApps(self,*args):
+		self._gotoHome()
 		app=self.searchBox.text()
 		self.progressEnable()
 		self.appsedu.setAction("searchApplications",app)
+		self.cmbCategories.currentItemChanged.disconnect()
+		self.cmbCategories.setCurrentRow(0)
+		self.cmbCategories.currentItemChanged.connect(self._loadCategory)
 		self.appsedu.start()
 	#def _searchApps
 		
