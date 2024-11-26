@@ -26,6 +26,8 @@ i18n={
 	"SEARCH":_("Search"),
 	"SORTDSC":_("Sort alphabetically"),
 	"TOOLTIP":_("Portrait"),
+	"FORBIDDEN":_("Forbidden"),
+	"PREINSTALLED":_("Preinstalled"),
 	}
 
 class thAppsedu(QThread):
@@ -226,7 +228,7 @@ class portrait(QStackedWindowItem):
 		self.cmbCategories.setSizeAdjustPolicy(self.cmbCategories.SizeAdjustPolicy.AdjustToContents)
 		self.cmbCategories.addItem(i18n.get('ALL'))
 		for cat in categories:
-			icat=_(cat)
+			icat=i18n.get(cat,cat)
 			if cat=="Forbidden":
 				self.forbiddenCat=icat
 			self.cmbCategories.addItem(icat)
@@ -330,6 +332,8 @@ class portrait(QStackedWindowItem):
 			text+=self.details.description()
 			self.details.setDescription(text)
 			self.details.setEnabled(False)
+#		if "Installed" in btn.app.get("categories",[]):
+#			self.details.setManageEnabled(False)
 		self.details.setVisible(True)
 	#def _gotoDetails
 

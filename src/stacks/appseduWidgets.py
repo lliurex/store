@@ -138,7 +138,7 @@ class QPushButtonAppsedu(QPushButton):
 		stats={}
 		if "Forbidden" in app.get("categories",[]):
 			stats["forbidden"]=True
-		if "installed" in app.get("categories",[]):
+		if "Installed" in app.get("categories",[]):
 			stats["installed"]=True
 		if "Zomando" in app.get("categories",[]):
 			stats["zomando"]=True
@@ -160,8 +160,10 @@ class QPushButtonAppsedu(QPushButton):
 		if stats.get("forbidden",False)==True:
 			bkgcolor=QColor(QPalette().color(QPalette.Disabled,QPalette.Mid))
 			fcolor=QColor(QPalette().color(QPalette.Disabled,QPalette.BrightText))
+			self.btnInstall.setVisible(False)
 		elif stats.get("installed",False)==True:
 			bkgcolor=bkgAlternateColor
+			self.btnInstall.setVisible(False)
 		elif stats.get("zomando",False)==True:
 			bkgcolor=bkgAlternateColor
 			lightnessMod=50
@@ -252,8 +254,14 @@ class QFormAppsedu(QWidget):
 		self.detailIcon=QLabel()
 		self.detailTitle=QLabel()
 		self.detailTitle.setWordWrap(True)
-		self.detailInstall=QPushButton("INSTALL")
+		self.detailInstall=QPushButton()
+		self.detailInstall.setIcon(QIcon.fromTheme("download"))
 		self.detailInstall.clicked.connect(self._emitInstall)
+		self.detailRemove=QPushButton()
+		self.detailRemove.setIcon(QIcon.fromTheme("edit-delete"))
+		self.detailRemove.clicked.connect(self._emitInstall)
+		self.detailOpen=QPushButton()
+		self.detailOpen.setIcon(QIcon.fromTheme("document-open"))
 		self.detailExit=QPushButton("")
 		self.detailExit.setIcon(QIcon.fromTheme("window-close"))
 		self.detailExit.setIconSize(QSize(24,24))
@@ -265,10 +273,16 @@ class QFormAppsedu(QWidget):
 		self.detailDescription.linkActivated.connect(self._emitLinkActivated)
 		self.detailDescription.setWordWrap(True)
 		self.title=""
+		wdg=QWidget()
+		hlay=QHBoxLayout()
+		wdg.setLayout(hlay)
+		hlay.addWidget(self.detailInstall)
+		hlay.addWidget(self.detailRemove)
+		hlay.addWidget(self.detailOpen)
 		lay.addWidget(self.detailIcon,0,0,2,1,Qt.AlignTop)
 		lay.addWidget(self.detailTitle,0,1,1,1,Qt.AlignTop|Qt.AlignLeft)
 		lay.addWidget(self.detailExit,0,2,1,1,Qt.AlignTop|Qt.AlignRight)
-		lay.addWidget(self.detailInstall,4,2,1,1,Qt.AlignRight)
+		lay.addWidget(wdg,4,2,1,1,Qt.AlignRight)
 		lay.addWidget(self.detailTags,3,0,1,1)
 		#lay.addWidget(self.detailSummary,1,0,1,2,Qt.AlignTop)
 		lay.addWidget(self.detailDescription,2,0,1,3)
@@ -336,8 +350,14 @@ class QFormAppsedu(QWidget):
 	def setEnabled(self,state):
 		self.detailIcon.setEnabled(state)
 		self.detailTitle.setEnabled(state)
-		self.detailInstall.setEnabled(state)
+		self.setManageEnabled(state)
 	#def setEnabled
+
+	def setManageEnabled(self,state):
+		self.detailInstall.setEnabled(state)
+		self.detailRemove.setEnabled(state)
+		self.detailOpen.setEnabled(state)
+	#def setManageEnabled
 	
 	def _emitClicked(self):
 		self.clicked.emit()

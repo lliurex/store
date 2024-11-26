@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-26 15:34+0100\n"
-"PO-Revision-Date: 2024-11-26 15:36+0100\n"
+"POT-Creation-Date: 2024-11-26 16:47+0100\n"
+"PO-Revision-Date: 2024-11-26 16:48+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -20,7 +20,9 @@ msgstr "Todo"
 
 #: ../src/stacks/portrait.py:19
 msgid "Application is blocked. Check link below for more info."
-msgstr "La aplicación está bloqueada. Visita el enlace del final para más información."
+msgstr ""
+"La aplicación está bloqueada. Visita el enlace del final para más "
+"información."
 
 #: ../src/stacks/portrait.py:20 ../src/stacks/portrait.py:28
 msgid "Portrait"
@@ -31,8 +33,11 @@ msgid "Navigate through all applications"
 msgstr "Mostrar todas las aplicaciones"
 
 #: ../src/stacks/portrait.py:22
-msgid "Application is included in catalogue but doesn't provide an install option"
-msgstr "La aplicación está en el catálogo pero no tiene información para su instalación"
+msgid ""
+"Application is included in catalogue but doesn't provide an install option"
+msgstr ""
+"La aplicación está en el catálogo pero no tiene información para su "
+"instalación"
 
 #: ../src/stacks/portrait.py:23
 msgid "Show applications"
@@ -54,8 +59,21 @@ msgstr "Busca"
 msgid "Sort alphabetically"
 msgstr "Orden alfabético"
 
-#~ msgid "The app could not be loaded. Until included in LliureX catalogue it can't be installed"
-#~ msgstr "No se puede cargar la aplicación. Hasta que no esté incluida en en el catálogo de appsedu no estará disponible. Más información en https://portal.edu.gva.es/appsedu/aplicacions-lliurex"
+#: ../src/stacks/portrait.py:29
+msgid "Forbidden"
+msgstr "Bloqueadas"
+
+#: ../src/stacks/portrait.py:30
+msgid "Preinstalled"
+msgstr "Preinstaladas"
+
+#~ msgid ""
+#~ "The app could not be loaded. Until included in LliureX catalogue it can't "
+#~ "be installed"
+#~ msgstr ""
+#~ "No se puede cargar la aplicación. Hasta que no esté incluida en en el "
+#~ "catálogo de appsedu no estará disponible. Más información en https://"
+#~ "portal.edu.gva.es/appsedu/aplicacions-lliurex"
 
 #~ msgid "Choose"
 #~ msgstr "Seleccionar"
@@ -120,9 +138,6 @@ msgstr "Orden alfabético"
 #~ msgid "Main page"
 #~ msgstr "Página principal"
 
-#~ msgid "Installed"
-#~ msgstr "Instalado"
-
 #~ msgid "Launch LliurexUp"
 #~ msgstr "LliurexUp"
 
@@ -135,7 +150,8 @@ msgstr "Orden alfabético"
 #~ msgid "Clear cache"
 #~ msgstr "Limpiar caché"
 
-#~ msgid "Remove all files from cache, as per exemple icons or another related stuff"
+#~ msgid ""
+#~ "Remove all files from cache, as per exemple icons or another related stuff"
 #~ msgstr "Elimina los ficheros de la caché, como puedan ser iconos o imágenes"
 
 #~ msgid "Sources"
@@ -159,8 +175,12 @@ msgstr "Orden alfabético"
 #~ msgid "Restart database"
 #~ msgstr "Reinicializa el catálogo"
 
-#~ msgid "Forces a refresh of all the info from sources resetting all previous stored information"
-#~ msgstr "Recarga toda la información desde los proveedores de aplicaciones, eliminando toda la información almacenada"
+#~ msgid ""
+#~ "Forces a refresh of all the info from sources resetting all previous "
+#~ "stored information"
+#~ msgstr ""
+#~ "Recarga toda la información desde los proveedores de aplicaciones, "
+#~ "eliminando toda la información almacenada"
 
 #~ msgid "Service could not be reloaded. Check credentials"
 #~ msgstr "No se puede recargar. Verifica credenciales"
@@ -290,9 +310,6 @@ msgstr "Orden alfabético"
 
 #~ msgid "Finance"
 #~ msgstr "Finanzas"
-
-#~ msgid "Forbidden"
-#~ msgstr "Bloqueadas"
 
 #~ msgid "Game"
 #~ msgstr "Juego"
