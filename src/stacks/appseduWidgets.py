@@ -1,13 +1,15 @@
 #!/usr/bin/python3
 import os
 import json
-from PySide6.QtWidgets import QLabel, QPushButton,QHBoxLayout
+from PySide6.QtWidgets import QLabel, QPushButton,QHBoxLayout,QGridLayout,QWidget
 from PySide6.QtCore import Qt,Signal,QThread,QSize
 from PySide6.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
+from QtExtraWidgets import QScrollLabel
 from appsedu import manager
 import urllib
 
 DBG=True
+ICON_SIZE=128
 
 class getAppInfo(QThread):
 	getInfo=Signal("PyObject")
@@ -40,16 +42,15 @@ class getAppInfo(QThread):
 		if os.path.isfile(iconPath)==True:
 			pxm=QPixmap(iconPath)
 			if pxm.isNull()==True:
-				print("REMOVE: {}".format(iconPath))
 				os.unlink(iconPath)
 		if os.path.isfile(iconPath)==False and appInfo.get("icon","").startswith("http"):
 			urllib.request.urlretrieve(appInfo["icon"],iconPath)
-			
-
+	#def downloadIcon
 #class getInfo
 
 class QPushButtonAppsedu(QPushButton):
 	clicked=Signal("PyObject","PyObject")
+	keypress=Signal()
 	def __init__(self,appedu,parent=None,**kwargs):
 		QPushButton.__init__(self, parent)
 		self.app=appedu
@@ -60,9 +61,8 @@ class QPushButtonAppsedu(QPushButton):
 		self.btnInstall=QPushButton()
 		self.btnInstall.setIcon(QIcon.fromTheme("download"))
 		if os.path.exists(self.cacheDir)==False:
-			print("GENERATING CACHE {}".format(self.cacheDir))
 			os.makedirs(self.cacheDir)
-		self.setObjectName("rebostapp")
+		self.setObjectName("appedu")
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
 		self.setAutoFillBackground(True)
@@ -86,7 +86,6 @@ class QPushButtonAppsedu(QPushButton):
 		self.info=getAppInfo(app=self.app)
 		self.info.getInfo.connect(self.updateScreen)
 		self.destroyed.connect(lambda x:QPushButtonAppsedu._on_destroyed(self.info))
-
 		#self.installEventFilter(self)
 	#def __init__
 
@@ -107,11 +106,16 @@ class QPushButtonAppsedu(QPushButton):
 		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('app',''),self.app.get('summary'),'')
 		self.label.setText(text)
 		pxm=QPixmap(self.app.get("icon")).scaled(QSize(self.iconSize,self.iconSize),Qt.AspectRatioMode.IgnoreAspectRatio,Qt.TransformationMode.SmoothTransformation)
-		if pxm.isNull()==True:
-			print("NULL IMAGE: {}\n----".format(self.app))
-		else:
+		if pxm.isNull()==False:
+			#Mark as done if img
 			self.init=True
 			self.iconUri.setPixmap(pxm)
+		if "Forbidden" in self.app.get("categories",[]):
+			self._applyDecoration(forbidden=True)
+		elif "installed" in self.app.get("categories",[]):
+			self._applyDecoration(installed=True)
+		else:
+			self._applyDecoration()
 	#def updateScreen
 
 	def enterEvent(self,*args):
@@ -121,6 +125,7 @@ class QPushButtonAppsedu(QPushButton):
 	def loadInfo(self):
 		if self.init==False:
 			self.info.start()
+	#def loadInfo(self):
 
 	def loadImg(self,app):
 		self._applyDecoration(app)
@@ -128,6 +133,12 @@ class QPushButtonAppsedu(QPushButton):
 
 	def _getStats(self,app):
 		stats={}
+		if "Forbidden" in app.get("categories",[]):
+			stats["forbidden"]=True
+		if "installed" in app.get("categories",[]):
+			stats["installed"]=True
+		if "Zomando" in app.get("categories",[]):
+			stats["zomando"]=True
 		return(stats)
 	#def _getStats
 
@@ -172,17 +183,15 @@ class QPushButtonAppsedu(QPushButton):
 		if app=={}:
 			app=self.app
 		style=self._getStyle(app)
-		brdWidth=6
-		if LAYOUT=="appsedu":
-			brdWidth=1
-		self.setStyleSheet("""#rebostapp {
+		brdWidth=1
+		self.setStyleSheet("""#appedu {
 			background-color: hsl(%s); 
 			border-color: hsl(%s); 
 			border-style: solid; 
 			border-width: 1px; 
 			border-radius: 5px;
 			}
-			#rebostapp:focus:!pressed {
+			#appedu:focus:!pressed {
 				border-width:%spx;
 				}
 			QLabel{
@@ -191,7 +200,7 @@ class QPushButtonAppsedu(QPushButton):
 			"""%(style["bkgColor"],style["brdColor"],brdWidth,style["frgColor"]))
 		if style.get("forbidden",False)==True:
 			self.iconUri.setEnabled(False)
-			self.btn.setEnabled(False)
+			self.btnInstall.setEnabled(False)
 	#def _applyDecoration
 
 	def _removeDecoration(self):
@@ -223,4 +232,85 @@ class QPushButtonAppsedu(QPushButton):
 
 	def setApp(self,app):
 		self.app=app
-#class QPushButtonRebostApp
+#class QPushButtonAppsEdu
+
+class QFormAppsedu(QWidget):
+	linkActivated=Signal("PyObject")
+	clicked=Signal()
+	def __init__(self,parent=None):
+		QWidget.__init__(self, parent)
+		lay=QGridLayout()
+		self.detailIcon=QLabel()
+		self.detailTitle=QLabel()
+		self.detailTitle.setWordWrap(True)
+		self.detailInstall=QPushButton("INSTALL")
+		self.detailExit=QPushButton("")
+		self.detailExit.setIcon(QIcon.fromTheme("window-close"))
+		self.detailExit.setIconSize(QSize(24,24))
+		self.detailExit.clicked.connect(self._emitClicked)
+		self.detailTags=QLabel()
+		self.detailTags.linkActivated.connect(self._emitLinkActivated)
+		self.detailTags.setWordWrap(True)
+		self.detailDescription=QScrollLabel()
+		self.detailDescription.setWordWrap(True)
+		lay.addWidget(self.detailIcon,0,0,2,1,Qt.AlignTop)
+		lay.addWidget(self.detailTitle,0,1,1,1,Qt.AlignTop|Qt.AlignLeft)
+		lay.addWidget(self.detailExit,0,2,1,1,Qt.AlignTop|Qt.AlignRight)
+		lay.addWidget(self.detailInstall,4,2,1,1)
+		lay.addWidget(self.detailTags,3,0,1,1)
+		#lay.addWidget(self.detailSummary,1,0,1,2,Qt.AlignTop)
+		lay.addWidget(self.detailDescription,2,0,1,3)
+		self.setLayout(lay)
+		self.setVisible(False)
+	#def __init__
+
+	def title(self):
+		return(self.detailTitle.text())
+	#def title
+
+	def setTitle(self,title):
+		self.detailTitle.setText("<h1>{}</h1>".format(title))
+	#def setTitle
+
+	def description(self):
+		return(self.detailDescription.text())
+	#def description
+
+	def setDescription(self,description,url=""):
+		self.detailDescription.setText("<p>{0}</p><p><a href=\"{1}\">{1}</a></p>".format(description,url))
+	#def setDescription
+
+	def icon(self):
+		return(self.detailIcon,pixmap())
+	#def icon(self)
+
+	def setIcon(self,icon):
+		pxm=None
+		if os.path.isfile(icon):
+			pxm=QPixmap(icon)
+		elif isinstance(icon,QPixmap):
+			pxm=icon
+		if pxm:
+			self.detailIcon.setPixmap(pxm.scaled(ICON_SIZE,ICON_SIZE))
+	#def setIcon
+
+	def setTags(self,taglist):
+		tags=""
+		for cat in taglist:
+			tags+="<a href=\"#{0}\"><strong>{0}</strong></a> ".format(cat)
+		self.detailTags.setText("{}".format(tags.strip()))
+	#def setTags
+
+	def setEnabled(self,state):
+		self.detailIcon.setEnabled(state)
+		self.detailTitle.setEnabled(state)
+		self.detailInstall.setEnabled(state)
+	#def setEnabled
+	
+	def _emitClicked(self):
+		self.clicked.emit()
+	#def _emitClicked
+
+	def _emitLinkActivated(self,*args):
+		self.linkActivated.emit(*args)
+	#def _emitLinkActivated
