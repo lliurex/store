@@ -8,7 +8,7 @@ from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QStac
 import subprocess
 import gettext
 from appseduWidgets import QPushButtonAppsedu,QFormAppsedu
-from appsedu import manager
+from appsedu import appsedu
 _ = gettext.gettext
 QString=type("")
 
@@ -19,8 +19,10 @@ i18n={
 	"BLOCKED":_("Application is blocked. Check link below for more info."),
 	"CONFIG":_("Portrait"),
 	"DESC":_("Navigate through all applications"),
+	"MISCATALOGUED":_("Application is included in catalogue but doesn't provide an install option"),
 	"MENU":_("Show applications"),
 	"NEWDATA":_("Updating info"),
+	"NOTFOUND":_("Application not found"),
 	"SEARCH":_("Search"),
 	"SORTDSC":_("Sort alphabetically"),
 	"TOOLTIP":_("Portrait"),
@@ -31,9 +33,10 @@ class thAppsedu(QThread):
 	getCategoriesFromApplications=Signal("PyObject")
 	getApplicationsFromCategory=Signal("PyObject")
 	searchApplications=Signal("PyObject")
+	getRelatedZomando=Signal("PyObject")
 	def __init__(self,parent=None,**kwargs):
 		QThread.__init__(self, None)
-		self.appsedu=manager()
+		self.appsedu=appsedu.manager()
 
 	def run(self):
 		if len(self.kwargs)>0:
@@ -52,6 +55,9 @@ class thAppsedu(QThread):
 		elif self.action=="searchApplications":
 			applications=self.appsedu.searchApplications(args)
 			self.searchApplications.emit(applications)
+		elif self.action=="getRelatedZomando":
+			zomando=self.appsedu.getRelatedZomando(args)
+			self.getRelatedZomando.emit(zomando)
 			
 	def setAction(self,action,*args,**kwargs):
 		self.action=action
@@ -77,9 +83,12 @@ class portrait(QStackedWindowItem):
 		self.appsedu.getCategoriesFromApplications.connect(self._loadCategoriesData)
 		self.appsedu.getApplicationsFromCategory.connect(self._loadApplicationsData)
 		self.appsedu.searchApplications.connect(self._loadApplicationsData)
+		self.appsedu.getRelatedZomando.connect(self._launchZomando)
 		self.oldCursor=self.cursor()
 		self.mapper=QSignalMapper(self)
 		self.mapper.mappedObject.connect(self._gotoDetails)
+		self.mapperInstall=QSignalMapper(self)
+		self.mapperInstall.mappedObject.connect(self._installApp)
 		self.refresh=True
 	#def __init__
 
@@ -121,8 +130,9 @@ class portrait(QStackedWindowItem):
 	def _defDetails(self):
 		wdg=QWidget()
 		wdg=QFormAppsedu()
-		wdg.linkActivated.connect(self._gotoCategory)
+		wdg.linkActivated.connect(self._gotoUrl)
 		wdg.clicked.connect(self._gotoHome)
+		wdg.install.connect(self._installApp)
 		wdg.setVisible(False)
 		return(wdg)
 	#def _defDetails
@@ -247,7 +257,9 @@ class portrait(QStackedWindowItem):
 		for app in applications:
 			btn=QPushButtonAppsedu(app)
 			btn.clicked.connect(self.mapper.map)
+			btn.install.connect(self.mapperInstall.map)
 			self.mapper.setMapping(btn,btn)
+			self.mapperInstall.setMapping(btn,btn)
 			self.table.setCellWidget(idx,0,btn)
 			self.table.setRowHeight(idx,btn.iconSize*2)
 			idx+=1
@@ -305,12 +317,31 @@ class portrait(QStackedWindowItem):
 		self.details.setVisible(True)
 	#def _gotoDetails
 
+	def _gotoUrl(self,*args):
+		if args[0].startswith("#"):
+			self._gotoCategory(*args)
+		else:
+			cmd=["kde-open5",args[0]]
+			subprocess.run(cmd)
+	#def _gotoUrl
+
 	def _gotoCategory(self,*args):
 		item=self.cmbCategories.findItems(args[0].replace("#",""),Qt.MatchExactly)
 		if item!=None:
 			self.cmbCategories.setCurrentItem(item[0])
 		self._loadCategory()
 	#def _gotoCategory(self,*args):
+
+	def _installApp(self,*args):
+		self.details.lock()
+		if isinstance(args[0],str):
+			app=args[0]
+		else:
+			app=args[0].app.get("app")
+		self.progressbarShow()
+		self.appsedu.setAction("getRelatedZomando",app)
+		self.appsedu.start()
+	#def _installApp
 
 	def _searchApps(self,*args):
 		self._gotoHome()
@@ -322,6 +353,19 @@ class portrait(QStackedWindowItem):
 		self.cmbCategories.currentItemChanged.connect(self._loadCategory)
 		self.appsedu.start()
 	#def _searchApps
+
+	def _launchZomando(self,*args):
+		cmd=""
+		if len(args)>0:
+			if len(args[0])>0:
+				cmd=["pkexec",args[0]]
+				subprocess.run(cmd)
+		self.progressbarHide()
+		if len(cmd)==0:
+			self.showMsg(summary=i18n.get("NOTFOUND"),timeout=5,text=i18n.get("MISCATALOGUED"))
+		self.details.unlock()
+
+	#def _launchZomando(self,*args):
 
 	def _updateConfig(self,key):
 		pass

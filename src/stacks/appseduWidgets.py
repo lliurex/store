@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QLabel, QPushButton,QHBoxLayout,QGridLayout,QWidge
 from PySide6.QtCore import Qt,Signal,QThread,QSize
 from PySide6.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
 from QtExtraWidgets import QScrollLabel
-from appsedu import manager
+from appsedu import appsedu
 import urllib
 
 DBG=True
@@ -16,7 +16,7 @@ class getAppInfo(QThread):
 	def __init__(self,parent=None,**kwargs):
 		QThread.__init__(self, None)
 		self.app=kwargs["app"]
-		self.appsedu=manager(cache=True)
+		self.appsedu=appsedu.manager(cache=True)
 		self.cache=os.path.join(os.environ.get("HOME"),".cache","appsedu","imgs")
 		if os.path.exists(self.cache)==False:
 			os.makedirs(self.cache)
@@ -50,6 +50,7 @@ class getAppInfo(QThread):
 
 class QPushButtonAppsedu(QPushButton):
 	clicked=Signal("PyObject","PyObject")
+	install=Signal("PyObject","PyObject")
 	keypress=Signal()
 	def __init__(self,appedu,parent=None,**kwargs):
 		QPushButton.__init__(self, parent)
@@ -60,6 +61,7 @@ class QPushButtonAppsedu(QPushButton):
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","appsedu","imgs")
 		self.btnInstall=QPushButton()
 		self.btnInstall.setIcon(QIcon.fromTheme("download"))
+		self.btnInstall.clicked.connect(self._emitInstall)
 		if os.path.exists(self.cacheDir)==False:
 			os.makedirs(self.cacheDir)
 		self.setObjectName("appedu")
@@ -229,14 +231,20 @@ class QPushButtonAppsedu(QPushButton):
 	def mousePressEvent(self,*args):
 		self.clicked.emit(self,self.app)
 	#def mousePressEvent
+	
+	def _emitInstall(self,*args):
+		self.install.emit(self,self.app)
+	#def _emitInstall
 
 	def setApp(self,app):
 		self.app=app
+	#def setApp
 #class QPushButtonAppsEdu
 
 class QFormAppsedu(QWidget):
 	linkActivated=Signal("PyObject")
 	clicked=Signal()
+	install=Signal("PyObject")
 	def __init__(self,parent=None):
 		QWidget.__init__(self, parent)
 		lay=QGridLayout()
@@ -244,6 +252,7 @@ class QFormAppsedu(QWidget):
 		self.detailTitle=QLabel()
 		self.detailTitle.setWordWrap(True)
 		self.detailInstall=QPushButton("INSTALL")
+		self.detailInstall.clicked.connect(self._emitInstall)
 		self.detailExit=QPushButton("")
 		self.detailExit.setIcon(QIcon.fromTheme("window-close"))
 		self.detailExit.setIconSize(QSize(24,24))
@@ -252,7 +261,9 @@ class QFormAppsedu(QWidget):
 		self.detailTags.linkActivated.connect(self._emitLinkActivated)
 		self.detailTags.setWordWrap(True)
 		self.detailDescription=QScrollLabel()
+		self.detailDescription.linkActivated.connect(self._emitLinkActivated)
 		self.detailDescription.setWordWrap(True)
+		self.title=""
 		lay.addWidget(self.detailIcon,0,0,2,1,Qt.AlignTop)
 		lay.addWidget(self.detailTitle,0,1,1,1,Qt.AlignTop|Qt.AlignLeft)
 		lay.addWidget(self.detailExit,0,2,1,1,Qt.AlignTop|Qt.AlignRight)
@@ -265,11 +276,12 @@ class QFormAppsedu(QWidget):
 	#def __init__
 
 	def title(self):
-		return(self.detailTitle.text())
+		return(self.title)
 	#def title
 
 	def setTitle(self,title):
 		self.detailTitle.setText("<h1>{}</h1>".format(title))
+		self.title=title
 	#def setTitle
 
 	def description(self):
@@ -301,6 +313,20 @@ class QFormAppsedu(QWidget):
 		self.detailTags.setText("{}".format(tags.strip()))
 	#def setTags
 
+	def lock(self):
+		self.setEnabled(False)
+		self.detailTags.setEnabled(False)
+		self.detailDescription.setEnabled(False)
+		self.detailExit.setEnabled(False)
+	#def lock
+
+	def unlock(self):
+		self.setEnabled(True)
+		self.detailTags.setEnabled(True)
+		self.detailDescription.setEnabled(True)
+		self.detailExit.setEnabled(True)
+	#def unlock
+
 	def setEnabled(self,state):
 		self.detailIcon.setEnabled(state)
 		self.detailTitle.setEnabled(state)
@@ -312,5 +338,12 @@ class QFormAppsedu(QWidget):
 	#def _emitClicked
 
 	def _emitLinkActivated(self,*args):
-		self.linkActivated.emit(*args)
+		url=args[0]
+		if isinstance(url,tuple):
+			url=url[0]
+		self.linkActivated.emit(url)
+	#def _emitLinkActivated
+
+	def _emitInstall(self,*args):
+		self.install.emit(self.title)
 	#def _emitLinkActivated
