@@ -91,6 +91,8 @@ class portrait(QStackedWindowItem):
 		self.mapper.mappedObject.connect(self._gotoDetails)
 		self.mapperInstall=QSignalMapper(self)
 		self.mapperInstall.mappedObject.connect(self._installApp)
+		self.forbiddenCat=""
+		self.preinstalledCat=""
 		self.loadApp=""
 	#def __init__
 
@@ -227,11 +229,17 @@ class portrait(QStackedWindowItem):
 		self.cmbCategories.clear()
 		self.cmbCategories.setSizeAdjustPolicy(self.cmbCategories.SizeAdjustPolicy.AdjustToContents)
 		self.cmbCategories.addItem(i18n.get('ALL'))
+		sortedCats=[]
 		for cat in categories:
-			icat=i18n.get(cat,cat)
+			icat=i18n.get(cat.upper(),cat)
 			if cat=="Forbidden":
 				self.forbiddenCat=icat
-			self.cmbCategories.addItem(icat)
+			if cat=="Preinstalled":
+				self.preinstalledCat=icat
+			sortedCats.append(icat)
+		sortedCats.sort()
+		for cat in sortedCats:
+			self.cmbCategories.addItem(cat)
 		self.progressbarHide()
 	#def _loadCategoriesData
 
@@ -241,6 +249,8 @@ class portrait(QStackedWindowItem):
 		category=self.cmbCategories.currentItem().text()
 		if category==self.forbiddenCat:
 			category="Forbidden"
+		elif category==self.preinstalledCat:
+			category="Preinstalled"
 		if self.cmbCategories.currentRow()>0:
 			self.appsedu.setAction("getApplicationsFromCategory",category)
 		else:
@@ -307,7 +317,7 @@ class portrait(QStackedWindowItem):
 		for cat in categories:
 			if cat.strip().islower() or len(cat)==0:
 				continue
-			icat=_(cat)
+			icat=i18n.get(cat.upper(),cat)
 			if icat not in tags:
 				tags.append(icat)
 		return(tags)
