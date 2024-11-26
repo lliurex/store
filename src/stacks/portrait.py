@@ -21,7 +21,7 @@ i18n={
 	"DESC":_("Navigate through all applications"),
 	"MISCATALOGUED":_("Application is included in catalogue but doesn't provide an install option"),
 	"MENU":_("Show applications"),
-	"NEWDATA":_("Updating info"),
+	"NEWDATA":_("Getting info"),
 	"NOTFOUND":_("Application not found"),
 	"SEARCH":_("Search"),
 	"SORTDSC":_("Sort alphabetically"),
