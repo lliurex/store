@@ -267,7 +267,7 @@ class QFormAppsedu(QWidget):
 		lay.addWidget(self.detailIcon,0,0,2,1,Qt.AlignTop)
 		lay.addWidget(self.detailTitle,0,1,1,1,Qt.AlignTop|Qt.AlignLeft)
 		lay.addWidget(self.detailExit,0,2,1,1,Qt.AlignTop|Qt.AlignRight)
-		lay.addWidget(self.detailInstall,4,2,1,1)
+		lay.addWidget(self.detailInstall,4,2,1,1,Qt.AlignRight)
 		lay.addWidget(self.detailTags,3,0,1,1)
 		#lay.addWidget(self.detailSummary,1,0,1,2,Qt.AlignTop)
 		lay.addWidget(self.detailDescription,2,0,1,3)
