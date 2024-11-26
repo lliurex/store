@@ -114,7 +114,7 @@ class QPushButtonAppsedu(QPushButton):
 			self.iconUri.setPixmap(pxm)
 		if "Forbidden" in self.app.get("categories",[]):
 			self._applyDecoration(forbidden=True)
-		elif "installed" in self.app.get("categories",[]):
+		elif "Preinstalled" in self.app.get("categories",[]):
 			self._applyDecoration(installed=True)
 		else:
 			self._applyDecoration()
@@ -138,7 +138,7 @@ class QPushButtonAppsedu(QPushButton):
 		stats={}
 		if "Forbidden" in app.get("categories",[]):
 			stats["forbidden"]=True
-		if "Installed" in app.get("categories",[]):
+		if "Preinstalled" in app.get("categories",[]):
 			stats["installed"]=True
 		if "Zomando" in app.get("categories",[]):
 			stats["zomando"]=True
