@@ -51,6 +51,7 @@ class getAppInfo(QThread):
 class QPushButtonAppsedu(QPushButton):
 	clicked=Signal("PyObject","PyObject")
 	install=Signal("PyObject","PyObject")
+	dataChanged=Signal("PyObject")
 	keypress=Signal()
 	def __init__(self,appedu,parent=None,**kwargs):
 		QPushButton.__init__(self, parent)
@@ -118,6 +119,7 @@ class QPushButtonAppsedu(QPushButton):
 			self._applyDecoration(installed=True)
 		else:
 			self._applyDecoration()
+		self.dataChanged.emit(self)
 	#def updateScreen
 
 	def enterEvent(self,*args):
@@ -274,6 +276,11 @@ class QFormAppsedu(QWidget):
 		self.setLayout(lay)
 		self.setVisible(False)
 	#def __init__
+
+	def updateData(self,app):
+		self.setTitle(app["app"])
+		self.setDescription(app["description"],app["url"])
+		self.setIcon(app["icon"])
 
 	def title(self):
 		return(self.title)
