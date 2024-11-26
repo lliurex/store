@@ -21,7 +21,7 @@ i18n={
 	"DESC":_("Navigate through all applications"),
 	"MISCATALOGUED":_("Application is included in catalogue but doesn't provide an install option"),
 	"MENU":_("Show applications"),
-	"NEWDATA":_("Updating info"),
+	"NEWDATA":_("Getting info"),
 	"NOTFOUND":_("Application not found"),
 	"SEARCH":_("Search"),
 	"SORTDSC":_("Sort alphabetically"),
@@ -273,10 +273,11 @@ class portrait(QStackedWindowItem):
 			self.table.setCurrentCell(0,0)
 			self.table.verticalScrollBar().setValue(0)
 		if self.loadApp!="" and self.loadApp!="match":
+			icn=QtGui.QIcon.fromTheme("dialog-warning")
 			appErr={"app":self.loadApp,
 				"url":"https://portal.edu.gva.es/appsedu/es/aplicaciones-lliurex/",
 				"description":i18n.get("NOTFOUND"),
-				"icon":""
+				"icon":icn.pixmap(QSize(128,128))
 				}
 			btn=QPushButtonAppsedu(appErr)
 			self._gotoDetails(btn)

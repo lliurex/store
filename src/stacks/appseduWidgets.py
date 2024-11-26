@@ -73,7 +73,6 @@ class QPushButtonAppsedu(QPushButton):
 		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('app',''),self.app.get('summary',""))
 		self.label=QLabel(text)
 		self.label.setWordWrap(True)
-		img=self.app.get('icon','')
 		self.iconUri=QLabel()
 		self.iconUri.setStyleSheet("""QLabel{margin-left: %spx;margin-right:%spx}"""%(self.margin,self.margin))
 		self.setCursor(QCursor(Qt.PointingHandCursor))
@@ -305,10 +304,10 @@ class QFormAppsedu(QWidget):
 
 	def setIcon(self,icon):
 		pxm=None
-		if os.path.isfile(icon):
-			pxm=QPixmap(icon)
-		elif isinstance(icon,QPixmap):
+		if isinstance(icon,QPixmap):
 			pxm=icon
+		elif os.path.isfile(icon):
+			pxm=QPixmap(icon)
 		if pxm:
 			self.detailIcon.setPixmap(pxm.scaled(ICON_SIZE,ICON_SIZE))
 	#def setIcon
