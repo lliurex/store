@@ -7,32 +7,23 @@ from PySide6.QtCore import Qt,QSize,Signal,QThread,QEvent,QSignalMapper
 from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QStackedWindowItem,QScrollLabel
 import subprocess
 import gettext
-from appseduWidgets import QPushButtonAppsedu
+from appseduWidgets import QPushButtonAppsedu,QFormAppsedu
 from appsedu import manager
 _ = gettext.gettext
 QString=type("")
 
 ICON_SIZE=128
-MINTIME=0.2
 
 i18n={
 	"ALL":_("All"),
-	"AVAILABLE":_("Available"),
-	"CATEGORIESDSC":_("Filter by category"),
+	"BLOCKED":_("Application is blocked. Check link below for more info."),
 	"CONFIG":_("Portrait"),
 	"DESC":_("Navigate through all applications"),
-	"FILTERS":_("Filters"),
-	"FILTERSDSC":_("Filter by formats and states"),
-	"HOMEDSC":_("Main page"),
-	"INSTALLED":_("Installed"),
-	"LLXUP":_("Launch LliurexUp"),
 	"MENU":_("Show applications"),
 	"NEWDATA":_("Updating info"),
 	"SEARCH":_("Search"),
 	"SORTDSC":_("Sort alphabetically"),
 	"TOOLTIP":_("Portrait"),
-	"UPGRADABLE":_("Upgradables"),
-	"UPGRADES":_("There're upgrades available")
 	}
 
 class thAppsedu(QThread):
@@ -71,10 +62,6 @@ class thAppsedu(QThread):
 
 class portrait(QStackedWindowItem):
 	def __init_stack__(self):
-		self.aux=[]
-		self.init=True
-		self.minTime=1
-		self.oldTime=0
 		self.dbg=True
 		self.enabled=True
 		self._debug("portrait load")
@@ -84,12 +71,7 @@ class portrait(QStackedWindowItem):
 			tooltip=i18n.get("TOOLTIP"),
 			index=1,
 			visible=True)
-		self.i18nCat={}
-		self.oldCat=""
-		self.catI18n={}
 		self.hideControlButtons()
-		self.referersHistory={}
-		self.referersShowed={}
 		self.appsedu=thAppsedu()
 		self.appsedu.getApplications.connect(self._loadTableData)
 		self.appsedu.getCategoriesFromApplications.connect(self._loadCategoriesData)
@@ -110,21 +92,21 @@ class portrait(QStackedWindowItem):
 		self.box=QGridLayout()
 		self.setLayout(self.box)
 		self.sortAsc=False
+		#Banner is hidden
 		lbl=self._defBanner()
 		lbl.setVisible(False)
 		self.box.addWidget(lbl,0,0,1,2,Qt.AlignTop|Qt.AlignCenter)
 		navBar=self._defNavBar()
 		self.box.addWidget(navBar,1,0,1,1,Qt.AlignLeft)
 		self.table=self._defTable()
-		tableCol=1
-		self.box.addWidget(self.table,2-tableCol,tableCol,1,self.box.columnCount())
+		self.box.addWidget(self.table,1,1,1,self.box.columnCount())
 		self.details=self._defDetails()
-		self.box.addWidget(self.details,2-tableCol,tableCol,1,self.box.columnCount())
+		self.box.addWidget(self.details,1,1,1,self.box.columnCount())
 		self.progress=self._defProgress()
 		self.box.addWidget(self.progress,0,0,self.table.rowCount(),2,Qt.AlignCenter)
 		self.box.setColumnStretch(1,1)
 		self.table.setMinimumHeight(QPushButtonAppsedu({}).iconSize*9)
-		self.progressEnable()
+		self.progressbarShow()
 	#def _load_screen
 
 	def _defBanner(self):
@@ -138,61 +120,12 @@ class portrait(QStackedWindowItem):
 	
 	def _defDetails(self):
 		wdg=QWidget()
-		lay=QGridLayout()
-		self.detailIcon=QLabel()
-		self.detailTitle=QLabel()
-		self.detailTitle.setWordWrap(True)
-		self.detailInstall=QPushButton("INSTALL")
-		self.detailExit=QPushButton("X")
-		self.detailExit.clicked.connect(self._gotoHome)
-		self.detailTags=QLabel()
-		self.detailTags.linkActivated.connect(self._gotoCategory)
-	#def _generateTags
-		self.detailTags.setWordWrap(True)
-		self.detailDescription=QScrollLabel()
-		self.detailDescription.setWordWrap(True)
-		lay.addWidget(self.detailIcon,0,0,2,1,Qt.AlignTop)
-		lay.addWidget(self.detailTitle,0,1,1,1,Qt.AlignTop|Qt.AlignLeft)
-		lay.addWidget(self.detailExit,0,2,1,1,Qt.AlignTop|Qt.AlignRight)
-		lay.addWidget(self.detailInstall,4,2,1,1)
-		lay.addWidget(self.detailTags,3,0,1,1)
-		#lay.addWidget(self.detailSummary,1,0,1,2,Qt.AlignTop)
-		lay.addWidget(self.detailDescription,2,0,1,3)
-		wdg.setLayout(lay)
+		wdg=QFormAppsedu()
+		wdg.linkActivated.connect(self._gotoCategory)
+		wdg.clicked.connect(self._gotoHome)
 		wdg.setVisible(False)
 		return(wdg)
 	#def _defDetails
-
-	def _gotoHome(self,*args):
-		self.details.setVisible(False)
-		self.table.setVisible(True)
-
-	def _gotoDetails(self,btn):
-		#self.parent.setCurrentStack(2,parms=btn.app)
-		self.details.setVisible(True)
-		self.detailTitle.setText("<h1>{}</h1>".format(btn.app.get("app")))
-		self.detailDescription.setText("<p>{0}</p><p><a href=\"{1}\">{1}</a></p>".format(btn.app.get("description"),btn.app.get("url")))
-		#self.detailSummary.setText(btn.app.get("summary"))
-		if os.path.isfile(btn.app.get("icon")):
-			pxm=QtGui.QPixmap(btn.app.get("icon"))
-			self.detailIcon.setPixmap(pxm.scaled(ICON_SIZE,ICON_SIZE))
-		tags=""
-		for cat in btn.app.get("categories",[]):
-			if cat.strip().islower() or len(cat)==0:
-				continue
-			icat=_(cat)
-			if icat not in tags:
-				tags+="<a href=\"#{0}\"><strong>{0}</strong></a> ".format(icat)
-		self.detailTags.setText("{}".format(tags.strip()))
-		self.table.setVisible(False)
-	#def _gotoDetails
-
-	def _gotoCategory(self,*args):
-		item=self.cmbCategories.findItems(args[0].replace("#",""),Qt.MatchExactly)
-		if item!=None:
-			self.cmbCategories.setCurrentItem(item[0])
-		self._loadCategory()
-
 
 	def _defNavBar(self):
 		wdg=QWidget()
@@ -217,8 +150,7 @@ class portrait(QStackedWindowItem):
 	def _defTable(self):
 		self.maxCol=1
 		table=QTableTouchWidget()
-		table.setAutoScroll(False)
-		table.leaveEvent=self.tableLeaveEvent
+		table.setAutoScroll(True)
 		table.setAttribute(Qt.WA_AcceptTouchEvents)
 		table.setColumnCount(self.maxCol)
 		table.setShowGrid(False)
@@ -235,56 +167,36 @@ class portrait(QStackedWindowItem):
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
 		vbox=QVBoxLayout()
 		vbox.setContentsMargins(0,0,0,0)
-		lblProgress=QLabel("<strong>{}</strong>".format(i18n["NEWDATA"]))
-		lblProgress.setStyleSheet("background-color:rgba(255,255,255,0.1")
+		lblProgress=QLabel("<h3>{}</h3>".format(i18n["NEWDATA"]))
 		progress=QProgressBar()
 		progress.setMinimum(0)
 		progress.setMaximum(0)
 		vbox.addWidget(progress)
 		vbox.addWidget(lblProgress,Qt.AlignBottom,Qt.Alignment(-1))
 		wdg.setLayout(vbox)
-		wdg.setObjectName("frame")
+		bkgcolor=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Active,QtGui.QPalette.Button)).toRgb()
+		lblProgress.setObjectName("frame")
+		lblProgress.setStyleSheet('''#frame{
+								border:2px solid;
+								background-color:rgba(%s,%s,%s,1);
+								border-color:rgba(%s,%s,%s,1)}'''
+								%(bkgcolor.red(),bkgcolor.green(),bkgcolor.blue(),bkgcolor.red(),bkgcolor.green(),bkgcolor.blue()))
 		return(wdg)
 	#def _defProgress
 
-	def tableLeaveEvent(self,*args):
-		self.table.setAutoScroll(False)
-		return(False)
-	#def enterEvent
-
-	def tableKeyPressEvent(self,*args):
-		if self.table.doAutoScroll()==None:
-			self.table.setAutoScroll(True)
-		return(False)
-	#def tableKeyPressEvent
-
-	def _populateCategoriesFromApps(self,applications):
-		self.appsedu.setAction("getCategoriesFromApplications",applications)
-		self.appsedu.start()
-	#def _populateCategoriesFromApp
-	
-	def _loadCategoriesData(self,categories):
-		self.cmbCategories.clear()
-		self.cmbCategories.setSizeAdjustPolicy(self.cmbCategories.SizeAdjustPolicy.AdjustToContents)
-		self.cmbCategories.addItem(i18n.get('ALL'))
-		for cat in categories:
-			self.cmbCategories.addItem(cat)
-		self.progressDisable()
-	#def _loadCategoriesData
-
-	def progressDisable(self):
+	def progressbarHide(self):
 		self.progress.setVisible(False)
 		self.table.setEnabled(True)
 		self.cmbCategories.setEnabled(True)
 		self.searchBox.setEnabled(True)
-	#def progressDisable
+	#def progressbarHide
 
-	def progressEnable(self):
+	def progressbarShow(self):
 		self.progress.setVisible(True)
 		self.table.setEnabled(False)
 		self.cmbCategories.setEnabled(False)
 		self.searchBox.setEnabled(False)
-	#def progressEnable
+	#def progressbarShow
 
 	def updateScreen(self,applications=[]):
 		if len(applications)==0:
@@ -294,6 +206,36 @@ class portrait(QStackedWindowItem):
 			self._loadTableData(applications)
 	#def updateScreen
 	
+	def _populateCategoriesFromApps(self,applications):
+		self.appsedu.setAction("getCategoriesFromApplications",applications)
+		self.appsedu.start()
+	#def _populateCategoriesFromApps
+	
+	def _loadCategoriesData(self,categories):
+		self.cmbCategories.clear()
+		self.cmbCategories.setSizeAdjustPolicy(self.cmbCategories.SizeAdjustPolicy.AdjustToContents)
+		self.cmbCategories.addItem(i18n.get('ALL'))
+		for cat in categories:
+			icat=_(cat)
+			if cat=="Forbidden":
+				self.forbiddenCat=icat
+			self.cmbCategories.addItem(icat)
+		self.progressbarHide()
+	#def _loadCategoriesData
+
+	def _loadCategory(self):
+		self._gotoHome()
+		self.progressbarShow()
+		category=self.cmbCategories.currentItem().text()
+		if category==self.forbiddenCat:
+			category="Forbidden"
+		if self.cmbCategories.currentRow()>0:
+			self.appsedu.setAction("getApplicationsFromCategory",category)
+		else:
+			self.appsedu.setAction("getApplications")
+		self.appsedu.start()
+	#def _loadCategory
+
 	def _loadTableData(self,applications):
 		if self.cmbCategories.count()==0:
 			self._populateCategoriesFromApps(applications)
@@ -314,11 +256,12 @@ class portrait(QStackedWindowItem):
 		if self.cmbCategories.currentRow()>0:
 			self.table.setCurrentCell(0,0)
 			self.table.verticalScrollBar().setValue(0)
-		self.progressDisable()
+		self.progressbarHide()
 	#def _loadTableData
 
 	def _loadApplicationsData(self,applications):
 		self._loadTableData(applications)
+	#def _loadApplicationsData
 	
 	def _getMoreData(self,*args):
 		limitY=self.table.verticalScrollBar().value()
@@ -329,31 +272,56 @@ class portrait(QStackedWindowItem):
 				btn.loadInfo()
 	#def _getMoreData
 
-	def _loadCategory(self):
-		self._gotoHome()
-		self.progressEnable()
-		category=self.cmbCategories.currentItem().text()
-		if self.cmbCategories.currentRow()>0:
-			self.appsedu.setAction("getApplicationsFromCategory",category)
-		else:
-			self.appsedu.setAction("getApplications")
-		self.appsedu.start()
-	#def _loadCategory
+	def _tagCategories(self,categories):
+		tags=[]
+		for cat in categories:
+			if cat.strip().islower() or len(cat)==0:
+				continue
+			icat=_(cat)
+			if icat not in tags:
+				tags.append(icat)
+		return(tags)
+	#def _tagCategories
+
+	def _gotoHome(self,*args):
+		self.details.setVisible(False)
+		self.table.setVisible(True)
+	#def _gotoHome
+
+	def _gotoDetails(self,btn):
+		self.details.setTitle(btn.app.get("app"))
+		self.details.setDescription(btn.app.get("description"),btn.app.get("url"))
+		self.details.setIcon(btn.app.get("icon"))
+		#self.detailSummary.setText(btn.app.get("summary"))
+		taglist=self._tagCategories(btn.app.get("categories",[]))
+		self.details.setTags(taglist)
+		self.table.setVisible(False)
+		self.details.setEnabled(True)
+		if "Forbidden" in btn.app.get("categories",[]):
+			text="<h3>{}</h3".format(i18n.get("BLOCKED"))
+			text+=self.details.description()
+			self.details.setDescription(text)
+			self.details.setEnabled(False)
+		self.details.setVisible(True)
+	#def _gotoDetails
+
+	def _gotoCategory(self,*args):
+		item=self.cmbCategories.findItems(args[0].replace("#",""),Qt.MatchExactly)
+		if item!=None:
+			self.cmbCategories.setCurrentItem(item[0])
+		self._loadCategory()
+	#def _gotoCategory(self,*args):
 
 	def _searchApps(self,*args):
 		self._gotoHome()
 		app=self.searchBox.text()
-		self.progressEnable()
+		self.progressbarShow()
 		self.appsedu.setAction("searchApplications",app)
 		self.cmbCategories.currentItemChanged.disconnect()
 		self.cmbCategories.setCurrentRow(0)
 		self.cmbCategories.currentItemChanged.connect(self._loadCategory)
 		self.appsedu.start()
 	#def _searchApps
-		
-
-	def _endLoad(self,applications=[]):
-		self.updateScreen(applications)
 
 	def _updateConfig(self,key):
 		pass
