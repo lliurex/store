@@ -89,7 +89,7 @@ class portrait(QStackedWindowItem):
 		self.mapper.mappedObject.connect(self._gotoDetails)
 		self.mapperInstall=QSignalMapper(self)
 		self.mapperInstall.mappedObject.connect(self._installApp)
-		self.refresh=True
+		self.loadApp=""
 	#def __init__
 
 	def _debug(self,msg):
@@ -256,6 +256,10 @@ class portrait(QStackedWindowItem):
 		idx=0
 		for app in applications:
 			btn=QPushButtonAppsedu(app)
+			if app["app"].capitalize()==self.loadApp.capitalize():
+				self.loadApp="match"
+				btn.dataChanged.connect(self._gotoDetails)
+				btn.loadInfo()
 			btn.clicked.connect(self.mapper.map)
 			btn.install.connect(self.mapperInstall.map)
 			self.mapper.setMapping(btn,btn)
@@ -268,6 +272,17 @@ class portrait(QStackedWindowItem):
 		if self.cmbCategories.currentRow()>0:
 			self.table.setCurrentCell(0,0)
 			self.table.verticalScrollBar().setValue(0)
+		if self.loadApp!="" and self.loadApp!="match":
+			appErr={"app":self.loadApp,
+				"url":"https://portal.edu.gva.es/appsedu/es/aplicaciones-lliurex/",
+				"description":i18n.get("NOTFOUND"),
+				"icon":""
+				}
+			btn=QPushButtonAppsedu(appErr)
+			self._gotoDetails(btn)
+			self.details.setEnabled(False)
+			
+		self.loadApp=""
 		self.progressbarHide()
 	#def _loadTableData
 
@@ -366,6 +381,14 @@ class portrait(QStackedWindowItem):
 		self.details.unlock()
 
 	#def _launchZomando(self,*args):
+
+	def setParms(self,*args,**kwargs):
+		self.loadApp=""
+		if len(args)>0:
+			if isinstance(args[0],str):
+				if args[0].startswith("appstream://"):
+					self.loadApp=args[0].split("/")[-1]
+	#def setParms
 
 	def _updateConfig(self,key):
 		pass
