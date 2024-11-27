@@ -1,3 +1,9 @@
+appsedu (1.9.1-0lliurex25) noble; urgency=medium
+
+  * Single Window mode
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 27 Nov 2024 12:58:31 +0100
+
 appsedu (1.9-0lliurex25) noble; urgency=medium
 
   * Only fetch applications from appsedu
