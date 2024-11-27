@@ -61,6 +61,7 @@ class QPushButtonAppsedu(QPushButton):
 		self.margin=12
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","appsedu","imgs")
 		self.btnInstall=QPushButton()
+		self.btnInstall.setVisible(False)
 		self.btnInstall.setIcon(QIcon.fromTheme("download"))
 		self.btnInstall.clicked.connect(self._emitInstall)
 		if os.path.exists(self.cacheDir)==False:
@@ -75,6 +76,9 @@ class QPushButtonAppsedu(QPushButton):
 		self.label.setWordWrap(True)
 		self.iconUri=QLabel()
 		self.iconUri.setStyleSheet("""QLabel{margin-left: %spx;margin-right:%spx}"""%(self.margin,self.margin))
+		icn=QIcon.fromTheme("appsedu")
+		pxm=QPixmap(icn.pixmap(QSize(self.iconSize,self.iconSize)))
+		self.iconUri.setPixmap(pxm)
 		self.setCursor(QCursor(Qt.PointingHandCursor))
 		lay=QHBoxLayout()
 		lay.addWidget(self.iconUri,0)
@@ -105,7 +109,7 @@ class QPushButtonAppsedu(QPushButton):
 		if len(args)>0 and isinstance(args[0],dict):
 			self.app.update(args[0])
 		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('app'))))
-		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('app',''),self.app.get('summary'),'')
+		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('app',''),self.app.get('summary',''))
 		self.label.setText(text)
 		pxm=QPixmap(self.app.get("icon")).scaled(QSize(self.iconSize,self.iconSize),Qt.AspectRatioMode.IgnoreAspectRatio,Qt.TransformationMode.SmoothTransformation)
 		if pxm.isNull()==False:
@@ -117,6 +121,7 @@ class QPushButtonAppsedu(QPushButton):
 		elif "Preinstalled" in self.app.get("categories",[]):
 			self._applyDecoration(installed=True)
 		else:
+			self.btnInstall.setVisible(True)
 			self._applyDecoration()
 		self.dataChanged.emit(self)
 	#def updateScreen
@@ -280,7 +285,7 @@ class QFormAppsedu(QWidget):
 		hlay.addWidget(self.detailRemove)
 		hlay.addWidget(self.detailOpen)
 		lay.addWidget(self.detailIcon,0,0,2,1,Qt.AlignTop)
-		lay.addWidget(self.detailTitle,0,1,1,1,Qt.AlignTop|Qt.AlignLeft)
+		lay.addWidget(self.detailTitle,0,1,1,1)
 		lay.addWidget(self.detailExit,0,2,1,1,Qt.AlignTop|Qt.AlignRight)
 		lay.addWidget(wdg,4,2,1,1,Qt.AlignRight)
 		lay.addWidget(self.detailTags,3,0,1,1)
@@ -313,7 +318,7 @@ class QFormAppsedu(QWidget):
 	#def setDescription
 
 	def icon(self):
-		return(self.detailIcon,pixmap())
+		return(self.detailIcon.pixmap())
 	#def icon(self)
 
 	def setIcon(self,icon):
@@ -322,7 +327,10 @@ class QFormAppsedu(QWidget):
 			pxm=icon
 		elif os.path.isfile(icon):
 			pxm=QPixmap(icon)
-		if pxm:
+		else:
+			icn=QIcon.fromTheme("appsedu")
+			pxm=QPixmap(icn.pixmap(QSize(ICON_SIZE,ICON_SIZE)))
+		if isinstance(pxm,QPixmap):
 			self.detailIcon.setPixmap(pxm.scaled(ICON_SIZE,ICON_SIZE))
 	#def setIcon
 
@@ -358,6 +366,14 @@ class QFormAppsedu(QWidget):
 		self.detailRemove.setEnabled(state)
 		self.detailOpen.setEnabled(state)
 	#def setManageEnabled
+
+	def keyPressEvent(self,ev):
+		if ev.key() in [Qt.Key_Escape]:
+			self.clicked.emit()
+		else:
+			ev.ignore()
+		return True
+	#def keyPressEvent(self,ev):
 	
 	def _emitClicked(self):
 		self.clicked.emit()

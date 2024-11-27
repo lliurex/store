@@ -114,7 +114,7 @@ class portrait(QStackedWindowItem):
 		self.table=self._defTable()
 		self.box.addWidget(self.table,1,1,1,self.box.columnCount())
 		self.details=self._defDetails()
-		self.box.addWidget(self.details,1,1,1,self.box.columnCount())
+		self.box.addWidget(self.details,1,1,1,self.box.columnCount()-1)
 		self.progress=self._defProgress()
 		self.box.addWidget(self.progress,0,0,self.table.rowCount(),2,Qt.AlignCenter)
 		self.box.setColumnStretch(1,1)
@@ -145,7 +145,7 @@ class portrait(QStackedWindowItem):
 		wdg=QWidget()
 		vbox=QVBoxLayout()
 		vbox.setContentsMargins(0,0,10,0)
-		self.searchBox=QSearchBox()
+		self.searchBox=QSearchBox(history=True)
 		self.searchBox.btnSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
 		self.searchBox.txtSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
 		self.searchBox.setToolTip(i18n["SEARCH"])
@@ -156,7 +156,9 @@ class portrait(QStackedWindowItem):
 		vbox.addWidget(self.searchBox)
 		vbox.addWidget(self.cmbCategories)
 		self.cmbCategories.setMinimumHeight(int(ICON_SIZE/3))
-		self.cmbCategories.currentItemChanged.connect(self._loadCategory)
+		#self.cmbCategories.currentItemChanged.connect(self._loadCategory)
+		self.cmbCategories.itemActivated.connect(self._loadCategory)
+		self.cmbCategories.itemClicked.connect(self._loadCategory)
 		wdg.setLayout(vbox)
 		return(wdg)
 	#def _defNavBar
@@ -255,6 +257,7 @@ class portrait(QStackedWindowItem):
 			self.appsedu.setAction("getApplicationsFromCategory",category)
 		else:
 			self.appsedu.setAction("getApplications")
+		self.searchBox.setText("")
 		self.appsedu.start()
 	#def _loadCategory
 
@@ -269,7 +272,7 @@ class portrait(QStackedWindowItem):
 		for app in applications:
 			btn=QPushButtonAppsedu(app)
 			if app["app"].capitalize()==self.loadApp.capitalize():
-				self.loadApp="match"
+				self.loadApp="matchAppFromAppstream"
 				btn.dataChanged.connect(self._gotoDetails)
 				btn.loadInfo()
 			btn.clicked.connect(self.mapper.map)
@@ -284,7 +287,7 @@ class portrait(QStackedWindowItem):
 		if self.cmbCategories.currentRow()>0:
 			self.table.setCurrentCell(0,0)
 			self.table.verticalScrollBar().setValue(0)
-		if self.loadApp!="" and self.loadApp!="match":
+		if self.loadApp!="" and self.loadApp!="matchAppFromAppstream":
 			icn=QtGui.QIcon.fromTheme("dialog-warning")
 			appErr={"app":self.loadApp,
 				"url":"https://portal.edu.gva.es/appsedu/es/aplicaciones-lliurex/",
@@ -293,8 +296,7 @@ class portrait(QStackedWindowItem):
 				}
 			btn=QPushButtonAppsedu(appErr)
 			self._gotoDetails(btn)
-			self.details.setEnabled(False)
-			
+			self.details.setManageEnabled(False)
 		self.loadApp=""
 		self.progressbarHide()
 	#def _loadTableData
@@ -312,25 +314,15 @@ class portrait(QStackedWindowItem):
 				btn.loadInfo()
 	#def _getMoreData
 
-	def _tagCategories(self,categories):
-		tags=[]
-		for cat in categories:
-			if cat.strip().islower() or len(cat)==0:
-				continue
-			icat=i18n.get(cat.upper(),cat)
-			if icat not in tags:
-				tags.append(icat)
-		return(tags)
-	#def _tagCategories
-
 	def _gotoHome(self,*args):
 		self.details.setVisible(False)
 		self.table.setVisible(True)
+		self.table.setFocus()
 	#def _gotoHome
 
 	def _gotoDetails(self,btn):
 		self.details.setTitle(btn.app.get("app"))
-		self.details.setDescription(btn.app.get("description"),btn.app.get("url"))
+		self.details.setDescription(btn.app.get("description",""),btn.app.get("url","https://portal.edu.gva.es/appsedu/aplicacions-lliurex/"))
 		self.details.setIcon(btn.app.get("icon"))
 		#self.detailSummary.setText(btn.app.get("summary"))
 		taglist=self._tagCategories(btn.app.get("categories",[]))
@@ -345,6 +337,7 @@ class portrait(QStackedWindowItem):
 #		if "Installed" in btn.app.get("categories",[]):
 #			self.details.setManageEnabled(False)
 		self.details.setVisible(True)
+		self.details.setFocus()
 	#def _gotoDetails
 
 	def _gotoUrl(self,*args):
@@ -362,6 +355,28 @@ class portrait(QStackedWindowItem):
 		self._loadCategory()
 	#def _gotoCategory(self,*args):
 
+	def _tagCategories(self,categories):
+		tags=[]
+		for cat in categories:
+			if cat.strip().islower() or len(cat)==0:
+				continue
+			icat=i18n.get(cat.upper(),cat)
+			if icat not in tags:
+				tags.append(icat)
+		return(tags)
+	#def _tagCategories
+
+	def _searchApps(self,*args):
+		self._gotoHome()
+		app=self.searchBox.text()
+		self.progressbarShow()
+		self.appsedu.setAction("searchApplications",app,True)
+		self.cmbCategories.currentItemChanged.disconnect()
+		self.cmbCategories.setCurrentRow(0)
+		self.cmbCategories.currentItemChanged.connect(self._loadCategory)
+		self.appsedu.start()
+	#def _searchApps
+
 	def _installApp(self,*args):
 		self.details.lock()
 		if isinstance(args[0],str):
@@ -373,17 +388,6 @@ class portrait(QStackedWindowItem):
 		self.appsedu.start()
 	#def _installApp
 
-	def _searchApps(self,*args):
-		self._gotoHome()
-		app=self.searchBox.text()
-		self.progressbarShow()
-		self.appsedu.setAction("searchApplications",app)
-		self.cmbCategories.currentItemChanged.disconnect()
-		self.cmbCategories.setCurrentRow(0)
-		self.cmbCategories.currentItemChanged.connect(self._loadCategory)
-		self.appsedu.start()
-	#def _searchApps
-
 	def _launchZomando(self,*args):
 		cmd=""
 		if len(args)>0:
@@ -394,7 +398,6 @@ class portrait(QStackedWindowItem):
 		if len(cmd)==0:
 			self.showMsg(summary=i18n.get("NOTFOUND"),timeout=5,text=i18n.get("MISCATALOGUED"))
 		self.details.unlock()
-
 	#def _launchZomando(self,*args):
 
 	def setParms(self,*args,**kwargs):
