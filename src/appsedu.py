@@ -17,6 +17,9 @@ mw=QStackedWindow()
 icn=QtGui.QIcon.fromTheme("appsedu")
 mw.disableNavBar(True)
 mw.setIcon(icn)
+#Remove banner
+i=mw.layout().itemAtPosition(0,0)
+mw.layout().removeItem(i)
 
 if os.path.islink(__file__)==True:
 	abspath=os.path.join(os.path.dirname(__file__),os.path.dirname(os.readlink(__file__)))
@@ -24,7 +27,7 @@ else:
 	abspath=os.path.dirname(__file__)
 mw.addStacksFromFolder(os.path.join(abspath,"stacks"))
 mw.show()
-#mw.setMinimumWidth(960)
+mw.setMinimumWidth(840)
 #mw.setMinimumHeight(600)
 if len(sys.argv)>1:
 	if ("://") in sys.argv[1] or os.path.isfile(sys.argv[1]):
