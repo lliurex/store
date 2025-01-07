@@ -5,10 +5,10 @@ try:
 	from lliurex import lliurexup
 except:
 	lliurexup=None
-from PySide2.QtWidgets import QApplication, QLabel, QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar
+from PySide2.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread
-from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QScreenShotContainer,QStackedWindowItem,QInfoLabel
+from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QStackedWindowItem,QInfoLabel
 from rebost import store 
 import subprocess
 import json
@@ -354,8 +354,8 @@ class portrait(QStackedWindowItem):
 			#if cat.islower() it's a category from system without appstream info 
 			if _(cat) in self.i18nCat.keys() or cat.islower():
 				continue
-			translatedCategories.append(_(cat))
-			self.i18nCat[_(cat)]=cat
+			translatedCategories.append(_(cat).capitalize())
+			self.i18nCat[_(cat).capitalize()]=cat
 			self.catI18n[cat]=_(cat)
 		translatedCategories.sort()
 		for cat in translatedCategories:
@@ -372,10 +372,9 @@ class portrait(QStackedWindowItem):
 			japp=json.loads(app)
 			categories=japp.get("categories",[])
 			for cat in categories:
-				if cat=="Forbidden":
-					cat="No Disponible"
 				if cat not in seen:
-					self.cmbCategories.addItem(cat)
+					self.cmbCategories.addItem(_(cat).capitalize())
+					self.i18nCat[_(cat).capitalize()]=cat
 					seen.append(cat)
 	#def _populateCategoriesFromApp
 
@@ -615,6 +614,7 @@ class portrait(QStackedWindowItem):
 		if time.time()-self.oldTime<MINTIME:
 			#self.cmbCategories.setCurrentText(self.oldCat)
 			return
+		self.refresh=True
 		self.searchBox.setText("")
 		self.resetScreen()
 		self._beginUpdate()
@@ -814,9 +814,9 @@ class portrait(QStackedWindowItem):
 			cat=kwargs.get("cat",{})
 			if len(cat)>0:
 				if isinstance(self.cmbCategories,QListWidget):
-					it=self.cmbCategories.findItems(cat.strip(),Qt.MatchFlags.MatchFixedString)
+					it=self.cmbCategories.findItems(cat.strip(),Qt.MatchFlag.MatchFixedString)
 					if it==None or len(it)==0:
-						it=self.cmbCategories.findItems("No Disponible",Qt.MatchFlags.MatchFixedString)
+						it=self.cmbCategories.findItems("No Disponible",Qt.MatchFlag.MatchFixedString)
 					self.cmbCategories.setCurrentItem(it[0])
 				else:
 					self.cmbCategories.setCurrentText(self.catI18n.get(cat,cat))
