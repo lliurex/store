@@ -188,8 +188,8 @@ class portrait(QStackedWindowItem):
 		wdg=QWidget()
 		lay=QVBoxLayout()
 		self.sortAsc=False
-		btnHome=self._defHome()
-		lay.addWidget(btnHome)
+		btnBar=self._btnBar()
+		lay.addWidget(btnBar)
 		topBar=self._defTopBar()
 		if LAYOUT=="appsedu":
 			topBar.setVisible(False)
@@ -218,6 +218,7 @@ class portrait(QStackedWindowItem):
 		wdg.setLayout(vbox)
 		vbox.setContentsMargins(0,0,10,0)
 		if LAYOUT=="appsedu":
+			vbox.addWidget(self._appseduCertified())
 			self.cmbCategories=QListWidget()
 			vbox.addWidget(self.cmbCategories)
 		else:
@@ -279,6 +280,14 @@ class portrait(QStackedWindowItem):
 		return(wdg)
 	#def _rightPane(self):
 
+	def _appseduCertified(self):
+		wdg=QWidget()
+		lay=QHBoxLayout()
+		chk=QCheckBox(i18n.get("CERTIFIED"))
+		lay.addWidget(chk)
+		wdg.setLayout(lay)
+		return(wdg)
+
 	def _defInst(self):
 		btnInst=QPushButton(i18n.get("INSTALLED"))
 		#icn=QtGui.QIcon.fromTheme("view-refresh")
@@ -298,6 +307,17 @@ class portrait(QStackedWindowItem):
 		#btnHome.setIconSize(btnHome.sizeHint())
 		return(btnHome)
 	#def _defHome
+
+	def _btnBar(self):
+		wdg=QWidget()
+		lay=QHBoxLayout()
+		wdg.setLayout(lay)
+		btnHome=self._defHome()
+		lay.addWidget(btnHome)
+		btnInst=self._defInst()
+		lay.addWidget(btnInst)
+		return(wdg)
+	#def _btnBar
 
 	def _defBanner(self):
 			#vbox.addWidget(self.searchBox,Qt.AlignRight)
