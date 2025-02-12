@@ -188,6 +188,8 @@ class portrait(QStackedWindowItem):
 		wdg=QWidget()
 		lay=QVBoxLayout()
 		self.sortAsc=False
+		banner=self._defBanner()
+		lay.addWidget(banner)
 		btnBar=self._btnBar()
 		lay.addWidget(btnBar)
 		topBar=self._defTopBar()
@@ -198,6 +200,13 @@ class portrait(QStackedWindowItem):
 		lay.addWidget(navBar)
 		wdg.setLayout(lay)
 		return(wdg)
+
+	def _defBanner(self):
+		lbl=QLabel()
+		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","undefined.svg")
+		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
+		lbl.setPixmap(pxm)
+		return lbl
 
 	def _searchBox(self):
 		self.searchBox=QSearchBox()
@@ -220,7 +229,9 @@ class portrait(QStackedWindowItem):
 		if LAYOUT=="appsedu":
 			vbox.addWidget(self._appseduCertified())
 			self.cmbCategories=QListWidget()
-			vbox.addWidget(self.cmbCategories)
+			self.cmbCategories.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+			self.cmbCategories.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+			vbox.addWidget(self.cmbCategories,Qt.AlignTop|Qt.AlignRight)
 		else:
 			self.cmbCategories=QComboBox()
 			vbox.addWidget(self.cmbCategories,Qt.AlignLeft)
@@ -231,7 +242,12 @@ class portrait(QStackedWindowItem):
 		elif isinstance(self.cmbCategories,QComboBox):
 			self.cmbCategories.activated.connect(self._loadCategory)
 		self.lblInfo=self._defInfo()
-		vbox.addWidget(self.lblInfo)
+		vbox.addSpacing(30)
+		vbox.addWidget(self.lblInfo,Qt.AlignBottom)
+		vbox.setStretch(0,0)
+		vbox.setStretch(1,1)
+		vbox.setStretch(2,0)
+		vbox.setStretch(3,0)
 		return(wdg)
 	#def _defNavBar
 
@@ -262,7 +278,7 @@ class portrait(QStackedWindowItem):
 	def _rightPane(self):
 		wdg=QWidget()
 		lay=QVBoxLayout()
-		lbl=self._defBanner()
+		lbl=self._defSearch()
 		lbl.setVisible(False)
 		lay.addWidget(lbl)
 		if LAYOUT=="appsedu":
@@ -283,7 +299,14 @@ class portrait(QStackedWindowItem):
 	def _appseduCertified(self):
 		wdg=QWidget()
 		lay=QHBoxLayout()
+		lbl=QLabel()
+		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","appsedu128x128.png")
+		lay.addWidget(lbl)
 		chk=QCheckBox(i18n.get("CERTIFIED"))
+		pxm=QtGui.QPixmap(img).scaled(24,24)
+		lbl.setPixmap(pxm)
+		chk.setStyleSheet("padding:5px;margin:5px;background:#2e746c;border-radius:5px")
+		chk.setLayoutDirection(Qt.RightToLeft)
 		lay.addWidget(chk)
 		wdg.setLayout(lay)
 		return(wdg)
@@ -316,10 +339,11 @@ class portrait(QStackedWindowItem):
 		lay.addWidget(btnHome)
 		btnInst=self._defInst()
 		lay.addWidget(btnInst)
+		wdg.setStyleSheet("""QPushButton{color:#002c4f;background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:5px;padding-bottom:5px;padding-top:5px}""")
 		return(wdg)
 	#def _btnBar
 
-	def _defBanner(self):
+	def _defSearch(self):
 			#vbox.addWidget(self.searchBox,Qt.AlignRight)
 		#lbl=QLabel()
 		#imgDir=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.png")
@@ -350,7 +374,7 @@ class portrait(QStackedWindowItem):
 		#wdg.setStyleSheet("""background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:20px""")
 		wdg.setStyleSheet("""background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:20px;margin-left:20px;margin-right:20px""")
 		return(wdg)
-	#def _defBanner
+	#def _defSearch
 
 	def _defTable(self):
 		table=QTableTouchWidget()
