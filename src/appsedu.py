@@ -12,7 +12,7 @@ import time
 gettext.textdomain('appsedu')
 _ = gettext.gettext
 
-app=QApplication(["AppsEdu Store"])
+app=QApplication(["LliureX Store"])
 mw=QStackedWindow()
 icn=QtGui.QIcon.fromTheme("appsedu")
 mw.disableNavBar(True)
@@ -26,8 +26,10 @@ if os.path.islink(__file__)==True:
 else:
 	abspath=os.path.dirname(__file__)
 mw.addStacksFromFolder(os.path.join(abspath,"stacks"))
+mw.layout().setContentsMargins(0,0,0,0)
+mw.setStyleSheet("""background:#002c4f; color:#FFFFFF;margin:0px;padding:0px;border:0px;""")
 mw.show()
-mw.setMinimumWidth(840)
+mw.setMinimumWidth(1000)
 #mw.setMinimumHeight(600)
 if len(sys.argv)>1:
 	if ("://") in sys.argv[1] or os.path.isfile(sys.argv[1]):
