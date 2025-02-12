@@ -1,10 +1,15 @@
 #!/usr/bin/python3
 import os
 import json
-from PySide2.QtWidgets import QLabel, QPushButton,QHBoxLayout
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect
 from PySide2.QtCore import Qt,Signal
 from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
 from QtExtraWidgets import QScreenShotContainer
+import gettext
+gettext.textdomain('appsedu')
+_ = gettext.gettext
+
+i18n={"INSTALL":_("Install")}
 
 LAYOUT="appsedu"
 class QPushButtonRebostApp(QPushButton):
@@ -24,7 +29,13 @@ class QPushButtonRebostApp(QPushButton):
 		self.margin=12
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
 		self.btn=QPushButton()
-		self.btn.setIcon(QIcon.fromTheme("download"))
+		#self.btn.setIcon(QIcon.fromTheme("download"))
+		self.btn.setText(i18n.get("INSTALL"))
+		self.btn.setObjectName("btnInstall")
+		self.flyIcon=QPixmap("rsrc/appsedu.svg")
+		self.lblFlyIcon=QLabel()
+		scaleFactor=(self.iconSize/2)
+		self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
 		if LAYOUT!="appsedu":
 			self.btn.setVisible(False)
 		if os.path.exists(self.cacheDir)==False:
@@ -34,22 +45,27 @@ class QPushButtonRebostApp(QPushButton):
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
 		self.setAutoFillBackground(True)
 		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
-		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name',''),self.app.get('summary'),'')
+		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name','').strip(),self.app.get('summary','').strip(),'')
 		self.label=QLabel(text)
 		self.label.setWordWrap(True)
+		self.label.setAlignment(Qt.AlignCenter)
 		img=self.app.get('icon','')
 		self.iconUri=QLabel()
-		self.iconUri.setStyleSheet("""QLabel{margin-left: %spx;margin-right:%spx}"""%(self.margin,self.margin))
+		self.iconUri.setStyleSheet("""QLabel{margin-top: %spx;margin-right:%spx}"""%(self.margin,self.margin))
 		self.loadImg(self.app)
 		self.setCursor(QCursor(Qt.PointingHandCursor))
-		lay=QHBoxLayout()
-		lay.addWidget(self.iconUri,0)
-		lay.addWidget(self.label,1)
-		lay.addWidget(self.btn)
+		lay=QGridLayout()
+		lay.addWidget(self.iconUri,0,0,Qt.AlignCenter|Qt.AlignBottom)
+		lay.addWidget(self.lblFlyIcon,0,0,Qt.AlignRight|Qt.AlignTop)
+		lay.addWidget(self.label,1,0,Qt.AlignCenter|Qt.AlignTop)
+		lay.addWidget(self.btn,2,0,Qt.AlignCenter|Qt.AlignBottom)
+		#lay.setAlignment(Qt.AlignCenter)
 		self.refererApp=None
 		self.setDefault(True)
 		self.setLayout(lay)
 		self.installEventFilter(self)
+		shadow=QGraphicsDropShadowEffect()
+		self.setGraphicsEffect(shadow)
 	#def __init__
 
 	def eventFilter(self,*args):
@@ -62,7 +78,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
 		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name',''),self.app.get('summary'),'')
 		self.label.setText(text)
-		self._applyDecoration()
+		#self._applyDecoration()
 	#def updateScreen
 
 	def enterEvent(self,*args):
@@ -143,6 +159,12 @@ class QPushButtonRebostApp(QPushButton):
 		style["bkgColor"]="{0},{1},{2}".format(bkgcolorHls.hue(),
 												bkgcolorHls.saturation(),
 												bkglightness)
+		style["bkgBtnColor"]="{0},{1},{2}".format(bkgcolorHls.hue(),
+												bkgcolorHls.saturation(),
+												bkglightness-10)
+		style["brdBtnColor"]="{0},{1},{2}".format(bkgcolorHls.hue(),
+												bkgcolorHls.saturation(),
+												bkglightness-5)
 		style["brdColor"]="{0},{1},{2}".format(bkgcolor.hue(),
 												bkgcolor.saturation(),
 												bkgcolor.lightness()/2)
@@ -160,20 +182,42 @@ class QPushButtonRebostApp(QPushButton):
 		brdWidth=6
 		if LAYOUT=="appsedu":
 			brdWidth=1
-		self.setStyleSheet("""#rebostapp {
-			background-color: hsl(%s); 
+			focusedBrdWidth=2
+		self.setStyleSheet("""#rebostapp_deprecated {
+			background: hsl(%s); 
 			border-color: hsl(%s); 
 			border-style: solid; 
-			border-width: 1px; 
+			border-width: %spx; 
 			border-radius: 5px;
 			}
-			#rebostapp:focus:!pressed {
+			#rebostapp_deprecated:focus:!pressed {
 				border-width:%spx;
 				}
+			#rebostapp {
+				border-color: silver;
+				border-style: solid; 
+				border-width: 1px; 
+				border-radius: 5px;
+			}
 			QLabel{
 				color: rgb(%s);
+				color: unset;
+				/*background:hsl(%s);*/
 			}
-			"""%(style["bkgColor"],style["brdColor"],brdWidth,style["frgColor"]))
+			#btnInstall{
+				color: rgb(%s);
+				color: unset;
+				background:hsl(%s);
+				background:#EEEEEE;
+				border:1px solid;
+				border-color: hsl(%s); 
+				border-color: #EEEEEE; 
+				border-radius:5px;
+				padding:3px;
+				padding-left:10px;
+				padding-right:10px;
+			}
+			"""%(style["bkgColor"],style["brdColor"],brdWidth,focusedBrdWidth,style["frgColor"],style["bkgColor"],style["frgColor"],style["bkgBtnColor"],style["brdBtnColor"]))
 		if style.get("forbidden",False)==True:
 			self.iconUri.setEnabled(False)
 			self.btn.setEnabled(False)
