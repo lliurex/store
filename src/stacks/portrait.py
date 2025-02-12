@@ -5,7 +5,7 @@ try:
 	from lliurex import lliurexup
 except:
 	lliurexup=None
-from PySide2.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget
+from PySide2.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget,QSizePolicy,QCheckBox,QGraphicsDropShadowEffect
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread
 from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QStackedWindowItem,QInfoLabel
@@ -29,10 +29,12 @@ i18n={
 	"ALL":_("All"),
 	"AVAILABLE":_("Available"),
 	"CATEGORIESDSC":_("Filter by category"),
+	"CERTIFIED":_("Certified by Appsedu"),
 	"CONFIG":_("Portrait"),
 	"DESC":_("Navigate through all applications"),
 	"FILTERS":_("Filters"),
 	"FILTERSDSC":_("Filter by formats and states"),
+	"HOME":_("Home"),
 	"HOMEDSC":_("Main page"),
 	"INSTALLED":_("Installed"),
 	"LLXUP":_("Launch LliurexUp"),
@@ -118,7 +120,7 @@ class portrait(QStackedWindowItem):
 		self.oldSearch=""
 		self.maxCol=3
 		if LAYOUT=="appsedu":
-			self.maxCol=1
+			self.maxCol=5
 		self.rc=store.client()
 		self.chkRebost=chkRebost()
 		self.getData=getData()
@@ -161,32 +163,12 @@ class portrait(QStackedWindowItem):
 		objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 		self.box=QGridLayout()
 		self.setLayout(self.box)
+		self.box.setContentsMargins(0,0,0,0)
 		self.sortAsc=False
-		btnHome=self._defHome()
-		self.box.addWidget(btnHome,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
-		lbl=self._defBanner()
-		lbl.setVisible(False)
-		self.box.addWidget(lbl,0,0,1,2,Qt.AlignTop|Qt.AlignCenter)
-		if LAYOUT=="appsedu":
-			btnHome.setVisible(False)
-			lbl.setVisible(True)
-		topBar=self._defTopBar()
-		if LAYOUT=="appsedu":
-			topBar.setVisible(False)
-		self.box.addWidget(topBar,1,0,1,1,Qt.AlignLeft)
-		navBar=self._defNavBar()
-		if LAYOUT=="appsedu":
-			self.box.addWidget(navBar,1,0,1,1,Qt.AlignLeft)
-		else:
-			self.box.addWidget(navBar,1,1,1,1)
-		self.table=self._defTable()
-		if LAYOUT=="appsedu":
-			tableCol=1
-		else:
-			tableCol=0
-		self.box.addWidget(self.table,2-tableCol,tableCol,1,self.box.columnCount())
-		self.lblInfo=self._defInfo()
-		self.box.addWidget(self.lblInfo,self.box.rowCount()-1,0,2,2)
+		self.box.addWidget(self._leftPane(),0,0,Qt.AlignLeft)
+		self.box.addWidget(self._rightPane(),0,1)
+		#btnHome=self._defHome()
+		#self.box.addWidget(btnHome,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
 		self.progress=self._defProgress()
 		self.box.addWidget(self.progress,self.box.rowCount()-1,0,1,2,Qt.AlignBottom)
 		self.btnSettings=QPushButton()
@@ -195,29 +177,62 @@ class portrait(QStackedWindowItem):
 		self.btnSettings.clicked.connect(self._gotoSettings)
 		if LAYOUT=="appsedu":
 			self.btnSettings.setVisible(False)
-		self.box.addWidget(self.btnSettings,self.box.rowCount()-1,self.box.columnCount()-1,1,1,Qt.Alignment(-1))
+		#self.box.addWidget(self.btnSettings,self.box.rowCount()-1,self.box.columnCount()-1,1,1,Qt.Alignment(-1))
 		self.box.setColumnStretch(1,1)
+		self.setStyleSheet("padding:0px;border:0px;margin:0px;")
+		print("***")
 		self.resetScreen()
 	#def _load_screen
+	
+	def _leftPane(self):
+		wdg=QWidget()
+		lay=QVBoxLayout()
+		self.sortAsc=False
+		btnHome=self._defHome()
+		lay.addWidget(btnHome)
+		#topBar=self._defTopBar()
+		#if LAYOUT=="appsedu":
+		#	topBar.setVisible(False)
+		#lay.addWidget(topBar)
+		navBar=self._defNavBar()
+		lay.addWidget(navBar)
+		wdg.setLayout(lay)
+		return(wdg)
 
-	def _defHome(self):
-		btnHome=QPushButton()
-		icn=QtGui.QIcon.fromTheme("view-refresh")
-		btnHome.setIcon(icn)
-		btnHome.clicked.connect(self._goHome)
-		btnHome.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
-		btnHome.setIconSize(btnHome.sizeHint())
-		return(btnHome)
-	#def _defHome
+	def _searchBox(self):
+		self.searchBox=QSearchBox()
+		self.searchBox.btnSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
+		self.searchBox.txtSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
+		self.searchBox.setToolTip(i18n["SEARCH"])
+		self.searchBox.setPlaceholderText(i18n["SEARCH"])
+		self.searchBox.returnPressed.connect(self._searchApps)
+		self.searchBox.textChanged.connect(self._resetSearchBtnIcon)
+		self.searchBox.clicked.connect(self._searchAppsBtn)
 
-	def _defBanner(self):
-		lbl=QLabel()
-		imgDir=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.png")
-		img=QtGui.QImage(imgDir)
-		lbl.setPixmap(QtGui.QPixmap(img))
-		lbl.setStyleSheet("""QLabel{padding:0px}""")
-		return(lbl)
-	#def _defBanner
+	def _defNavBar(self):
+		wdg=QWidget()
+		if LAYOUT=="appsedu":
+			vbox=QVBoxLayout()
+		else:
+			vbox=QHBoxLayout()
+		wdg.setLayout(vbox)
+		vbox.setContentsMargins(0,0,10,0)
+		if LAYOUT=="appsedu":
+			self.cmbCategories=QListWidget()
+			vbox.addWidget(self.cmbCategories)
+		else:
+			self.cmbCategories=QComboBox()
+			vbox.addWidget(self.cmbCategories,Qt.AlignLeft)
+			vbox.addWidget(self.searchBox,Qt.AlignRight)
+		self.cmbCategories.setMinimumHeight(int(ICON_SIZE/3))
+		if isinstance(self.cmbCategories,QListWidget):
+			self.cmbCategories.currentItemChanged.connect(self._loadCategory)
+		elif isinstance(self.cmbCategories,QComboBox):
+			self.cmbCategories.activated.connect(self._loadCategory)
+		self.lblInfo=self._defInfo()
+		vbox.addWidget(self.lblInfo)
+		return(wdg)
+	#def _defNavBar
 
 	def _defTopBar(self):
 		wdg=QWidget()
@@ -226,7 +241,7 @@ class portrait(QStackedWindowItem):
 		self.apps=[]
 		self.btnFilters=QCheckableComboBox()
 		self.btnFilters.setMaximumHeight(ICON_SIZE/3)
-		#self.btnFilters.clicked.connect(self._filterView)
+		self.btnFilters.clicked.connect(self._filterView)
 		self.btnFilters.activated.connect(self._selectFilters)
 		self._loadFilters()
 		icn=QtGui.QIcon.fromTheme("view-filter")
@@ -243,37 +258,79 @@ class portrait(QStackedWindowItem):
 		return(wdg)
 	#def _defTopBar
 
-	def _defNavBar(self):
+	def _rightPane(self):
 		wdg=QWidget()
+		lay=QVBoxLayout()
+		lbl=self._defBanner()
+		lbl.setVisible(False)
+		lay.addWidget(lbl)
 		if LAYOUT=="appsedu":
-			vbox=QVBoxLayout()
+			#btnHome.setVisible(False)
+			lbl.setVisible(True)
+		self.table=self._defTable()
+		self.table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		if LAYOUT=="appsedu":
+			tableCol=1
 		else:
-			vbox=QHBoxLayout()
-		vbox.setContentsMargins(0,0,10,0)
-		self.searchBox=QSearchBox()
-		self.searchBox.btnSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
-		self.searchBox.txtSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
+			tableCol=0
+		lay.addWidget(self.table)#,2-tableCol,tableCol,1,self.box.columnCount())
+		wdg.setLayout(lay)
+		wdg.setStyleSheet("padding:0px;border:0px;margin:0px;background:#FFFFFF")
+		return(wdg)
+	#def _rightPane(self):
+
+	def _defInst(self):
+		btnInst=QPushButton(i18n.get("INSTALLED"))
+		#icn=QtGui.QIcon.fromTheme("view-refresh")
+		#btnHome.setIcon(icn)
+		#btnHome.clicked.connect(self._goHome)
+		#btnHome.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
+		#btnHome.setIconSize(btnHome.sizeHint())
+		return(btnInst)
+	#def _defHome
+
+	def _defHome(self):
+		btnHome=QPushButton(i18n.get("HOME"))
+		#icn=QtGui.QIcon.fromTheme("view-refresh")
+		#btnHome.setIcon(icn)
+		btnHome.clicked.connect(self._goHome)
+		#btnHome.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
+		#btnHome.setIconSize(btnHome.sizeHint())
+		return(btnHome)
+	#def _defHome
+
+	def _defBanner(self):
+			#vbox.addWidget(self.searchBox,Qt.AlignRight)
+		#lbl=QLabel()
+		#imgDir=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.png")
+		#img=QtGui.QImage(imgDir)
+		#lbl.setPixmap(QtGui.QPixmap(img))
+		#lbl.setStyleSheet("""QLabel{padding:0px}""")
+		wdg=QWidget()
+		wdg.setAttribute(Qt.WA_StyledBackground, True)
+		self.searchBox=QLineEdit()
+		lay=QHBoxLayout()
+		lay.setStretch(1,0)
+		lay.setStretch(0,1)
+		btnSearch=QPushButton()
+		icn=QtGui.QIcon("rsrc/search.png")
+		btnSearch.setIcon(icn)
+		btnSearch.setMinimumSize(int(ICON_SIZE/4),int(ICON_SIZE/4))
+		#self.searchBox.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/20))
 		self.searchBox.setToolTip(i18n["SEARCH"])
 		self.searchBox.setPlaceholderText(i18n["SEARCH"])
 		self.searchBox.returnPressed.connect(self._searchApps)
 		self.searchBox.textChanged.connect(self._resetSearchBtnIcon)
-		self.searchBox.clicked.connect(self._searchAppsBtn)
-		if LAYOUT=="appsedu":
-			self.cmbCategories=QListWidget()
-			vbox.addWidget(self.searchBox)
-			vbox.addWidget(self.cmbCategories)
-		else:
-			self.cmbCategories=QComboBox()
-			vbox.addWidget(self.cmbCategories,Qt.AlignLeft)
-			vbox.addWidget(self.searchBox,Qt.AlignRight)
-		self.cmbCategories.setMinimumHeight(int(ICON_SIZE/3))
-		if isinstance(self.cmbCategories,QListWidget):
-			self.cmbCategories.currentItemChanged.connect(self._loadCategory)
-		elif isinstance(self.cmbCategories,QComboBox):
-			self.cmbCategories.activated.connect(self._loadCategory)
-		wdg.setLayout(vbox)
+		btnSearch.clicked.connect(self._searchAppsBtn)
+		btnSearch.setIconSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
+		#self.searchBox.txtSearch.setStyleSheet("""background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:5px""")
+		lay.addWidget(self.searchBox)
+		lay.addWidget(btnSearch)
+		wdg.setLayout(lay)
+		#wdg.setStyleSheet("""background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:20px""")
+		wdg.setStyleSheet("""background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:20px;margin-left:20px;margin-right:20px""")
 		return(wdg)
-	#def _defNavBar
+	#def _defBanner
 
 	def _defTable(self):
 		table=QTableTouchWidget()
@@ -288,16 +345,17 @@ class portrait(QStackedWindowItem):
 		#table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		if LAYOUT=="appsedu":
-			table.setStyleSheet("""QTableWidget::item{padding:12px}""")
+			table.setStyleSheet("""QTableWidget{; background:#FFFFFF;} QTableWidget::item{padding:12px}""")
 		return(table)
 	#def _defTable
 
 	def _defInfo(self):
 		lblInfo=QInfoLabel()
-		lblInfo.setActionText(i18n.get("LLXUP"))
-		lblInfo.setActionIcon("lliurex-up")
-		lblInfo.setText(i18n.get("UPGRADES"))
-		lblInfo.clicked.connect(self._launchLlxUp)
+		#lblInfo.setActionText(i18n.get("LLXUP"))
+		#lblInfo.setActionIcon("lliurex-up")
+		#lblInfo.setText(i18n.get("UPGRADES"))
+		#lblInfo.clicked.connect(self._launchLlxUp)
+		lblInfo=QLabel(i18n.get("UPGRADES"))
 		lblInfo.setVisible(False)
 		return(lblInfo)
 	#def _defInfo(self):
@@ -332,12 +390,13 @@ class portrait(QStackedWindowItem):
 	#def _launchLlxUp
 
 	def _loadFilters(self):
-		self.btnFilters.clear()
-		self.btnFilters.setText(i18n.get("FILTERS"))
-		self.btnFilters.addItem(i18n.get("ALL"))
-		items=[i18n.get("INSTALLED"),"Snap","Appimage","Flatpak","Zomando"]
-		for item in items:
-			self.btnFilters.addItem(item,state=False)
+		if hasattr(self,"btnFilters"):
+			self.btnFilters.clear()
+			self.btnFilters.setText(i18n.get("FILTERS"))
+			self.btnFilters.addItem(i18n.get("ALL"))
+			items=[i18n.get("INSTALLED"),"Snap","Appimage","Flatpak","Zomando"]
+			for item in items:
+				self.btnFilters.addItem(item,state=False)
 	#def _loadFilters
 
 	def _populateCategories(self): 
@@ -347,6 +406,7 @@ class portrait(QStackedWindowItem):
 		self.catI18n={}
 		catList=json.loads(self.rc.execute('getCategories'))
 		self.cmbCategories.addItem(i18n.get('ALL'))
+		self.cmbCategories.itemAt(0).setData(0, QFont(self.cmbCategories.font(),bold=True), Qt.FontRole)
 		seenCats={}
 		#Sort categories
 		translatedCategories=[]
@@ -359,7 +419,7 @@ class portrait(QStackedWindowItem):
 			self.catI18n[cat]=_(cat)
 		translatedCategories.sort()
 		for cat in translatedCategories:
-			self.cmbCategories.addItem(cat)
+			self.cmbCategories.addItem(" · {}".format(cat))
 		#self.cmbCategories.view().setMinimumWidth(self.cmbCategories.minimumSizeHint().width())
 	#def _populateCategories
 
@@ -367,13 +427,15 @@ class portrait(QStackedWindowItem):
 		self.cmbCategories.clear()
 		self.cmbCategories.setSizeAdjustPolicy(self.cmbCategories.SizeAdjustPolicy.AdjustToContents)
 		seen=[]
-		self.cmbCategories.addItem(i18n.get('ALL'))
+		self.cmbCategories.addItem("· {}".format(i18n.get('ALL')))
+		item=self.cmbCategories.item(0)
+		item.font().setBold(True)
 		for app in self.apps:
 			japp=json.loads(app)
 			categories=japp.get("categories",[])
 			for cat in categories:
 				if cat not in seen:
-					self.cmbCategories.addItem(_(cat).capitalize())
+					self.cmbCategories.addItem("· {}".format(_(cat).capitalize()))
 					self.i18nCat[_(cat).capitalize()]=cat
 					seen.append(cat)
 	#def _populateCategoriesFromApp
@@ -481,17 +543,17 @@ class portrait(QStackedWindowItem):
 	def _readFilters(self):
 		filters={}
 		desc=[]
-		for item in self.btnFilters.getItems():
-			if item.checkState()==Qt.Checked:
-				filters[item.text().lower()]=True
-				desc.append(item.text())
+		##for item in self.btnFilters.getItems():
+		 #   if item.checkState()==Qt.Checked:
+		 #   	filters[item.text().lower()]=True
+		 #   	desc.append(item.text())
 		if len(filters)>1:
 			filters[i18n.get("ALL").lower()]=False
-		if len(desc)==0:
-			item=self.btnFilters.model().item(1)
-			item.setCheckState(Qt.Checked)
-			desc.append(item.text())
-		self.btnFilters.setText(",".join(desc))
+		#if len(desc)==0:
+		#	item=self.btnFilters.model().item(1)
+		#	item.setCheckState(Qt.Checked)
+		#	desc.append(item.text())
+		#self.btnFilters.setText(",".join(desc))
 		return(filters)
 	#def _readFilters
 
@@ -562,7 +624,6 @@ class portrait(QStackedWindowItem):
 			icn=QtGui.QIcon.fromTheme("dialog-cancel")
 		else:
 			icn=QtGui.QIcon.fromTheme("search")
-		self.searchBox.btnSearch.setIcon(icn)
 	#def _resetSearchBtnIcon
 
 	def _sortApps(self):
@@ -588,13 +649,10 @@ class portrait(QStackedWindowItem):
 		self.oldSearch=txt
 		self.resetScreen()
 		if len(txt)==0:
-			icn=QtGui.QIcon.fromTheme("search")
 			self.apps=self._getAppList()
 		else:
-			icn=QtGui.QIcon.fromTheme("dialog-cancel")
 			self.apps=json.loads(self.rc.execute('search',txt))
 			self.appsRaw=self.apps.copy()
-		self.searchBox.btnSearch.setIcon(icn)
 		self.refresh=True
 		if len(self.apps)==0:
 			self.refresh=False
@@ -618,7 +676,7 @@ class portrait(QStackedWindowItem):
 		self.searchBox.setText("")
 		self.resetScreen()
 		self._beginUpdate()
-		i18ncat=self.cmbCategories.currentItem().text()
+		i18ncat=self.cmbCategories.currentItem().text().replace("· ","")
 		if self.oldCat!=i18ncat:
 			self.oldCat=i18ncat
 		cat=self.i18nCat.get(i18ncat,i18ncat)
@@ -656,12 +714,13 @@ class portrait(QStackedWindowItem):
 		col=0
 		#self.table.setRowHeight(self.table.rowCount()-1,btn.iconSize+int(btn.iconSize/16))
 		colspan=random.randint(1,self.maxCol)
+		rowH=QPushButtonRebostApp("{}").iconSize
+		if LAYOUT=="appsedu":
+			colspan=self.maxCol
+			rowH=rowH*2
 		span=colspan
 		btn=None
 		self.wdgs=[]
-		rowH=QPushButtonRebostApp("{}").iconSize
-		if LAYOUT=="appsedu":
-			rowH=rowH*2
 		for jsonapp in apps:
 			appname=jsonapp.get('name','')
 			if appname in self.appsSeen:
@@ -677,21 +736,22 @@ class portrait(QStackedWindowItem):
 				self.referersShowed.update({appname:btn})
 			col+=1
 			span=span-1
-			if span==0:
-				if colspan==self.maxCol:
-					colspan=1
-				elif colspan==1:
-					colspan=self.maxCol
-				if colspan!=1:
-					self.table.setSpan(row,col-1,1,colspan)
+			#if span==0:
+			#	if colspan==self.maxCol:
+			#		colspan=1
+			#	elif colspan==1:
+			#		colspan=self.maxCol
+			#	if colspan!=1:
+			#		self.table.setSpan(row,col-1,1,colspan)
+			if col==self.maxCol:
+				col=0
 				colspan=random.randint(1,self.maxCol)
 				span=colspan
-				self.table.setRowHeight(row,rowH+int(rowH/16))
+				self.table.setRowHeight(row,rowH+int(rowH*1))
 				self.table.setRowCount(self.table.rowCount()+1)
-				col=0
 			self.appsLoaded+=1
 		if btn!=None:
-			self.table.setRowHeight(self.table.rowCount()-1,rowH+int(rowH/16))
+			self.table.setRowHeight(self.table.rowCount()-1,rowH+int(rowH*1))
 		self._endLoadData()
 	#def _loadData
 
@@ -702,7 +762,13 @@ class portrait(QStackedWindowItem):
 			self.chkRebost.finished.connect(self._goHome)
 		else:
 			for wdg in self.wdgs:
-				self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
+				shadow=QGraphicsDropShadowEffect()
+				shadow.setColor(QtGui.QColor(85, 85, 93, 180))
+				shadow.setOffset(8, 8)
+				shadow.setBlurRadius(1)
+				appWdg=wdg[2]
+				appWdg.setGraphicsEffect(shadow)
+				self.table.setCellWidget(wdg[0],wdg[1],appWdg)
 			self._endUpdate()
 		self.cleanAux()
 		self.refresh=True
@@ -755,7 +821,8 @@ class portrait(QStackedWindowItem):
 	#def cleanAux
 
 	def updateScreen(self):
-		self.btnFilters.setMaximumWidth(self.btnFilters.sizeHint().width())
+		if hasattr(self,"btnFilter"):
+			self.btnFilters.setMaximumWidth(self.btnFilters.sizeHint().width())
 		self._debug("Reload data (self.refresh={})".format(self.refresh))
 		if self.refresh==True:
 			for i in self.referersShowed.keys():
