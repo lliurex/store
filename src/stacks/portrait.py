@@ -190,10 +190,10 @@ class portrait(QStackedWindowItem):
 		self.sortAsc=False
 		btnHome=self._defHome()
 		lay.addWidget(btnHome)
-		#topBar=self._defTopBar()
-		#if LAYOUT=="appsedu":
-		#	topBar.setVisible(False)
-		#lay.addWidget(topBar)
+		topBar=self._defTopBar()
+		if LAYOUT=="appsedu":
+			topBar.setVisible(False)
+		lay.addWidget(topBar)
 		navBar=self._defNavBar()
 		lay.addWidget(navBar)
 		wdg.setLayout(lay)
@@ -543,17 +543,17 @@ class portrait(QStackedWindowItem):
 	def _readFilters(self):
 		filters={}
 		desc=[]
-		##for item in self.btnFilters.getItems():
-		 #   if item.checkState()==Qt.Checked:
-		 #   	filters[item.text().lower()]=True
-		 #   	desc.append(item.text())
+		for item in self.btnFilters.getItems():
+		   if item.checkState()==Qt.Checked:
+		   	filters[item.text().lower()]=True
+		   	desc.append(item.text())
 		if len(filters)>1:
 			filters[i18n.get("ALL").lower()]=False
-		#if len(desc)==0:
-		#	item=self.btnFilters.model().item(1)
-		#	item.setCheckState(Qt.Checked)
-		#	desc.append(item.text())
-		#self.btnFilters.setText(",".join(desc))
+		if len(desc)==0:
+			item=self.btnFilters.model().item(1)
+			item.setCheckState(Qt.Checked)
+			desc.append(item.text())
+		self.btnFilters.setText(",".join(desc))
 		return(filters)
 	#def _readFilters
 
@@ -821,8 +821,7 @@ class portrait(QStackedWindowItem):
 	#def cleanAux
 
 	def updateScreen(self):
-		if hasattr(self,"btnFilter"):
-			self.btnFilters.setMaximumWidth(self.btnFilters.sizeHint().width())
+		self.btnFilters.setMaximumWidth(self.btnFilters.sizeHint().width())
 		self._debug("Reload data (self.refresh={})".format(self.refresh))
 		if self.refresh==True:
 			for i in self.referersShowed.keys():
