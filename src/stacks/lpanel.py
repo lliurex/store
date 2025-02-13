@@ -369,7 +369,7 @@ class detailPanel(QWidget):
 	#def _getRunappResults
 
 	def _genericEpiInstall(self):
-		bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
+		bundle=self.lstInfo.currentText().lower().split(" ")[-1]
 		self.rc.enableGui(True)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
