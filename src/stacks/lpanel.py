@@ -432,7 +432,7 @@ class detailPanel(QWidget):
 		self.header.setStyleSheet("QWidget#frame{margin:0px;padding:0px;border:1px solid #DDDDDD;bottom:0px}""")
 		self.box.addWidget(self.header,1,1,1,4)
 		self.screenShot=self._defScreenshot()
-		self.box.addWidget(self.screenShot,3,1,1,1)
+		self.box.addWidget(self.screenShot,2,1,1,4)
 		resources=self._defResources()
 		resources.setObjectName("resources")
 		resources.setAttribute(Qt.WA_StyledBackground, True)
