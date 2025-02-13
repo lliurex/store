@@ -43,6 +43,8 @@ i18n={
 	"RELEASE":_("Release"),
 	"REMOVE":_("Remove"),
 	"RUN":_("Open"),
+	"SEEIT":_("See at Appsedu"),
+	"SITE":_("Website"),
 	"TOOLTIP":_("Details"),
 	"UPGRADE":_("Upgrade"),
 	"ZMDNOTFOUND":_("Zommand not found. Open Zero-Center?"),
@@ -186,7 +188,6 @@ class detailPanel(QWidget):
 	#def _tagNav(self,*args)
 
 	def _showSplash(self,icon):
-		return
 		pxm=None
 		if isinstance(icon,QtGui.QPixmap):
 			pxm=icon
@@ -198,9 +199,9 @@ class detailPanel(QWidget):
 			pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
 		if isinstance(pxm,QtGui.QPixmap):
 			color=QtGui.QPalette().color(QtGui.QPalette.Dark)
-			self.wdgSplash.setPixmap(pxm.scaled(int(self.parent.width()),int(self.parent.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
-		self.wdgSplash.setMaximumWidth(self.parent.width()-ICON_SIZE*1.1)
-		self.wdgSplash.setMaximumHeight(self.parent.height()-ICON_SIZE*1.1)
+			self.wdgSplash.setPixmap(pxm.scaled(int(self.width()),int(self.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
+		self.wdgSplash.setMaximumWidth(self.width()-ICON_SIZE*1.1)
+		self.wdgSplash.setMaximumHeight(self.height()-ICON_SIZE*1.1)
 		self.wdgSplash.setVisible(True)
 	#def _showSplash
 
@@ -289,8 +290,8 @@ class detailPanel(QWidget):
 				#		status=self.rc.getAppStatus(name,bundle)
 				#		self.app['state'][bundle]=str(status)
 		self.setCursor(self.oldcursor)
-		#for anim in self.anims:
-		#	anim.start()
+		for anim in self.anims:
+			anim.start()
 		self.updateScreen()
 	#def _endSetParms
 
@@ -631,6 +632,10 @@ class detailPanel(QWidget):
 			desc=homepage
 			if len(homepage)>30:
 				desc="{}...".format(homepage[0:30])
+			if desc.startswith("https://portal.edu.gva.es/appsedu")==True:
+				desc=i18n.get("SEEIT")
+			else:
+				desc=i18n.get("SITE")
 			text='<a href="{0}">{1}</a> '.format(homepage,desc)
 			self.lblHomepage.setText(text)
 			self.lblHomepage.setToolTip(homepage)
