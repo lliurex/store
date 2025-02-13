@@ -32,8 +32,9 @@ class QPushButtonRebostApp(QPushButton):
 		#self.btn.setIcon(QIcon.fromTheme("download"))
 		self.btn.setText(i18n.get("INSTALL"))
 		self.btn.setObjectName("btnInstall")
-		self.flyIcon=QPixmap("rsrc/appsedu.svg")
+		self.flyIcon=QPixmap("rsrc/appsedu128x128.png")
 		self.lblFlyIcon=QLabel()
+		self.lblFlyIcon.setStyleSheet("""background:transparent""")
 		scaleFactor=(self.iconSize/2)
 		self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
 		if LAYOUT!="appsedu":
