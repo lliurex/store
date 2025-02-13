@@ -18,6 +18,8 @@ import dbus.mainloop.glib
 import random
 import gettext
 from btnRebost import QPushButtonRebostApp
+from rpanel import mainPanel
+from lpanel import detailPanel
 _ = gettext.gettext
 QString=type("")
 
@@ -166,7 +168,8 @@ class portrait(QStackedWindowItem):
 		self.box.setContentsMargins(0,0,0,0)
 		self.sortAsc=False
 		self.box.addWidget(self._leftPane(),0,0,Qt.AlignLeft)
-		self.box.addWidget(self._rightPane(),0,1)
+		self.rp=self._rightPane()
+		self.box.addWidget(self.rp,0,1)
 		#btnHome=self._defHome()
 		#self.box.addWidget(btnHome,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
 		self.progress=self._defProgress()
@@ -207,16 +210,6 @@ class portrait(QStackedWindowItem):
 		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		lbl.setPixmap(pxm)
 		return lbl
-
-	def _searchBox(self):
-		self.searchBox=QSearchBox()
-		self.searchBox.btnSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
-		self.searchBox.txtSearch.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/3))
-		self.searchBox.setToolTip(i18n["SEARCH"])
-		self.searchBox.setPlaceholderText(i18n["SEARCH"])
-		self.searchBox.returnPressed.connect(self._searchApps)
-		self.searchBox.textChanged.connect(self._resetSearchBtnIcon)
-		self.searchBox.clicked.connect(self._searchAppsBtn)
 
 	def _defNavBar(self):
 		wdg=QWidget()
@@ -276,25 +269,13 @@ class portrait(QStackedWindowItem):
 	#def _defTopBar
 
 	def _rightPane(self):
-		wdg=QWidget()
-		lay=QVBoxLayout()
-		lbl=self._defSearch()
-		lbl.setVisible(False)
-		lay.addWidget(lbl)
-		if LAYOUT=="appsedu":
-			#btnHome.setVisible(False)
-			lbl.setVisible(True)
-		self.table=self._defTable()
-		self.table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		if LAYOUT=="appsedu":
-			tableCol=1
-		else:
-			tableCol=0
-		lay.addWidget(self.table)#,2-tableCol,tableCol,1,self.box.columnCount())
-		wdg.setLayout(lay)
-		wdg.setStyleSheet("padding:0px;border:0px;margin:0px;background:#FFFFFF")
-		return(wdg)
-	#def _rightPane(self):
+		rp=mainPanel()
+		rp.searchBox.returnPressed.connect(self._searchApps)
+		rp.btnSearch.clicked.connect(self._searchAppsBtn)
+		rp.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
+		rp.setStyleSheet("padding:0px;border:0px;margin:0px;background:#FFFFFF")
+		return(rp)
+	#def _rightPane
 
 	def _appseduCertified(self):
 		wdg=QWidget()
@@ -343,56 +324,6 @@ class portrait(QStackedWindowItem):
 		return(wdg)
 	#def _btnBar
 
-	def _defSearch(self):
-			#vbox.addWidget(self.searchBox,Qt.AlignRight)
-		#lbl=QLabel()
-		#imgDir=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.png")
-		#img=QtGui.QImage(imgDir)
-		#lbl.setPixmap(QtGui.QPixmap(img))
-		#lbl.setStyleSheet("""QLabel{padding:0px}""")
-		wdg=QWidget()
-		wdg.setAttribute(Qt.WA_StyledBackground, True)
-		self.searchBox=QLineEdit()
-		lay=QHBoxLayout()
-		lay.setStretch(1,0)
-		lay.setStretch(0,1)
-		btnSearch=QPushButton()
-		icn=QtGui.QIcon("rsrc/search.png")
-		btnSearch.setIcon(icn)
-		btnSearch.setMinimumSize(int(ICON_SIZE/4),int(ICON_SIZE/4))
-		#self.searchBox.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/20))
-		self.searchBox.setToolTip(i18n["SEARCH"])
-		self.searchBox.setPlaceholderText(i18n["SEARCH"])
-		self.searchBox.returnPressed.connect(self._searchApps)
-		self.searchBox.textChanged.connect(self._resetSearchBtnIcon)
-		btnSearch.clicked.connect(self._searchAppsBtn)
-		btnSearch.setIconSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
-		#self.searchBox.txtSearch.setStyleSheet("""background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:5px""")
-		lay.addWidget(self.searchBox)
-		lay.addWidget(btnSearch)
-		wdg.setLayout(lay)
-		#wdg.setStyleSheet("""background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:20px""")
-		wdg.setStyleSheet("""background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:20px;margin-left:20px;margin-right:20px""")
-		return(wdg)
-	#def _defSearch
-
-	def _defTable(self):
-		table=QTableTouchWidget()
-		table.setAutoScroll(False)
-		table.leaveEvent=self.tableLeaveEvent
-		table.setAttribute(Qt.WA_AcceptTouchEvents)
-		table.setColumnCount(self.maxCol)
-		table.setShowGrid(False)
-		table.verticalHeader().hide()
-		table.horizontalHeader().hide()
-		table.verticalScrollBar().valueChanged.connect(self._getMoreData)
-		#table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
-		table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-		if LAYOUT=="appsedu":
-			table.setStyleSheet("""QTableWidget{; background:#FFFFFF;} QTableWidget::item{padding:12px}""")
-		return(table)
-	#def _defTable
-
 	def _defInfo(self):
 		lblInfo=QInfoLabel()
 		#lblInfo.setActionText(i18n.get("LLXUP"))
@@ -418,16 +349,15 @@ class portrait(QStackedWindowItem):
 	#def _defProgress
 
 	def tableLeaveEvent(self,*args):
-		self.table.setAutoScroll(False)
+		self.rp.table.setAutoScroll(False)
 		return(False)
 	#def enterEvent
 
 	def tableKeyPressEvent(self,*args):
-		if self.table.doAutoScroll()==None:
-			self.table.setAutoScroll(True)
+		if self.rp.table.doAutoScroll()==None:
+			self.rp.table.setAutoScroll(True)
 		return(False)
 	#def tableKeyPressEvent
-
 
 	def _launchLlxUp(self):
 		subprocess.run(["pkexec","lliurex-up"])
@@ -483,7 +413,6 @@ class portrait(QStackedWindowItem):
 					self.i18nCat[_(cat).capitalize()]=cat
 					seen.append(cat)
 	#def _populateCategoriesFromApp
-
 
 	def _getAppList(self,cat=[]):
 		apps=[]
@@ -554,7 +483,7 @@ class portrait(QStackedWindowItem):
 			self._getUpgradables()
 		self.oldTime=time.time()
 		self.sortAsc=False
-		self.searchBox.setText("")
+		self.rp.searchBox.setText("")
 		self._loadFilters()
 		self.apps=self._getAppList()
 		self._populateCategoriesFromApps()
@@ -663,7 +592,7 @@ class portrait(QStackedWindowItem):
 	#def _selectFilters
 
 	def _resetSearchBtnIcon(self):
-		txt=self.searchBox.text()
+		txt=self.rp.searchBox.text()
 		if txt==self.oldSearch:
 			icn=QtGui.QIcon.fromTheme("dialog-cancel")
 		else:
@@ -686,9 +615,9 @@ class portrait(QStackedWindowItem):
 			self.cmbCategories.setCurrentText(i18n.get("ALL"))
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
-		txt=self.searchBox.text()
+		txt=self.rp.searchBox.text()
 		if txt==self.oldSearch:
-			self.searchBox.setText("")
+			self.rp.searchBox.setText("")
 			txt=""
 		self.oldSearch=txt
 		self.resetScreen()
@@ -704,9 +633,9 @@ class portrait(QStackedWindowItem):
 	#def _searchApps
 
 	def _searchAppsBtn(self):
-		txt=self.searchBox.text()
+		txt=self.rp.searchBox.text()
 		if txt==self.oldSearch:
-			self.searchBox.setText("")
+			self.rp.searchBox.setText("")
 			txt=""
 		self.oldSearch=txt
 		self._searchApps()
@@ -717,7 +646,7 @@ class portrait(QStackedWindowItem):
 			#self.cmbCategories.setCurrentText(self.oldCat)
 			return
 		self.refresh=True
-		self.searchBox.setText("")
+		self.rp.searchBox.setText("")
 		self.resetScreen()
 		self._beginUpdate()
 		i18ncat=self.cmbCategories.currentItem().text().replace("· ","")
@@ -735,10 +664,10 @@ class portrait(QStackedWindowItem):
 
 	def _getMoreData(self):
 		return
-		if (self.table.verticalScrollBar().value()==self.table.verticalScrollBar().maximum()) and self.appsLoaded!=len(self.apps):
+		if (self.rp.table.verticalScrollBar().value()==self.rp.table.verticalScrollBar().maximum()) and self.appsLoaded!=len(self.apps):
 			self._beginLoadData(self.appsLoaded,self.appsLoaded+self.appsToLoad)
 			for wdg in self.wdgs:
-				self.table.setCellWidget(wdg[0],wdg[1],wdg[2])
+				self.rp.table.setCellWidget(wdg[0],wdg[1],wdg[2])
 	#def _getMoreData
 
 	def _beginLoadData(self,idx,idxEnd,applist=None):
@@ -771,7 +700,7 @@ class portrait(QStackedWindowItem):
 				self.appsLoaded+=1
 				continue
 			self.appsSeen.append(appname)
-			row=self.table.rowCount()-1
+			row=self.rp.table.rowCount()-1
 			btn=QPushButtonRebostApp(jsonapp)
 			btn.clicked.connect(self._loadDetails)
 			btn.keypress.connect(self.tableKeyPressEvent)
@@ -791,11 +720,11 @@ class portrait(QStackedWindowItem):
 				col=0
 				colspan=random.randint(1,self.maxCol)
 				span=colspan
-				self.table.setRowHeight(row,rowH+int(rowH*1))
-				self.table.setRowCount(self.table.rowCount()+1)
+				self.rp.table.setRowHeight(row,rowH+int(rowH*1))
+				self.rp.table.setRowCount(self.rp.table.rowCount()+1)
 			self.appsLoaded+=1
 		if btn!=None:
-			self.table.setRowHeight(self.table.rowCount()-1,rowH+int(rowH*1))
+			self.rp.table.setRowHeight(self.rp.table.rowCount()-1,rowH+int(rowH*1))
 		self._endLoadData()
 	#def _loadData
 
@@ -812,7 +741,7 @@ class portrait(QStackedWindowItem):
 				shadow.setBlurRadius(1)
 				appWdg=wdg[2]
 				appWdg.setGraphicsEffect(shadow)
-				self.table.setCellWidget(wdg[0],wdg[1],appWdg)
+				self.rp.table.setCellWidget(wdg[0],wdg[1],appWdg)
 			self._endUpdate()
 		self.cleanAux()
 		self.refresh=True
@@ -877,17 +806,17 @@ class portrait(QStackedWindowItem):
 	#def _updateScreen
 
 	def resetScreen(self):
-		for x in range(self.table.rowCount()):
-			for y in range(self.table.columnCount()):
-				w=self.table.cellWidget(x,y)
+		for x in range(self.rp.table.rowCount()):
+			for y in range(self.rp.table.columnCount()):
+				w=self.rp.table.cellWidget(x,y)
 				if isinstance(w,QPushButton):
 					if w.scr.isRunning():
 						self.aux.append(w.scr)
 					elif w.scr in self.aux:
 						self.aux.remove(w)
-				self.table.removeCellWidget(x,y)
-		self.table.setRowCount(0)
-		self.table.setRowCount(1)
+				self.rp.table.removeCellWidget(x,y)
+		self.rp.table.setRowCount(0)
+		self.rp.table.setRowCount(1)
 		self.appsLoaded=0
 		self.oldSearch=""
 		self.appsSeen=[]
@@ -916,7 +845,7 @@ class portrait(QStackedWindowItem):
 		if self.refresh==False:
 			cursor=QtGui.QCursor(Qt.WaitCursor)
 			self.setCursor(cursor)
-			if len(self.searchBox.text())>1:
+			if len(self.rp.searchBox.text())>1:
 		#			self._populateCategories()
 					self.oldSearch=""
 		#			self._searchApps()
