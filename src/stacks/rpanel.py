@@ -63,8 +63,6 @@ class mainPanel(QWidget):
 		table.setShowGrid(False)
 		table.verticalHeader().hide()
 		table.horizontalHeader().hide()
-		#table.verticalScrollBar().valueChanged.connect(self._getMoreData)
-		#table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		if LAYOUT=="appsedu":
 			table.setStyleSheet("""QTableWidget{; background:#FFFFFF;} QTableWidget::item{padding:12px}""")
@@ -83,12 +81,6 @@ class mainPanel(QWidget):
 	#def tableKeyPressEvent
 
 	def _defSearch(self):
-			#vbox.addWidget(self.searchBox,Qt.AlignRight)
-		#lbl=QLabel()
-		#imgDir=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.png")
-		#img=QtGui.QImage(imgDir)
-		#lbl.setPixmap(QtGui.QPixmap(img))
-		#lbl.setStyleSheet("""QLabel{padding:0px}""")
 		wdg=QWidget()
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
 		self.searchBox=QLineEdit()
@@ -99,18 +91,12 @@ class mainPanel(QWidget):
 		icn=QtGui.QIcon("rsrc/search.png")
 		self.btnSearch.setIcon(icn)
 		self.btnSearch.setMinimumSize(int(ICON_SIZE/4),int(ICON_SIZE/4))
-		#self.searchBox.setMinimumSize(int(ICON_SIZE/3),int(ICON_SIZE/20))
 		self.searchBox.setToolTip(i18n["SEARCH"])
 		self.searchBox.setPlaceholderText(i18n["SEARCH"])
-		#self.searchBox.returnPressed.connect(self._searchApps)
-		#self.searchBox.textChanged.connect(self._resetSearchBtnIcon)
-		#self.btnSearch.clicked.connect(self._searchAppsBtn)
 		self.btnSearch.setIconSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
-		#self.searchBox.txtSearch.setStyleSheet("""background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:5px""")
 		lay.addWidget(self.searchBox)
 		lay.addWidget(self.btnSearch)
 		wdg.setLayout(lay)
-		#wdg.setStyleSheet("""background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:20px""")
 		wdg.setStyleSheet("""background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:20px;margin-left:20px;margin-right:20px""")
 		return(wdg)
 	#def _defSearch
