@@ -26,6 +26,7 @@ QString=type("")
 ICON_SIZE=128
 MINTIME=0.2
 LAYOUT="appsedu"
+APPNAME="LliureX Store"
 
 i18n={
 	"ALL":_("All"),
@@ -167,11 +168,13 @@ class portrait(QStackedWindowItem):
 		self.setLayout(self.box)
 		self.box.setContentsMargins(0,0,0,0)
 		self.sortAsc=False
-		self.box.addWidget(self._leftPane(),0,0,Qt.AlignLeft)
-		self.rp=self._rightPane()
+		self.box.addWidget(self._navPane(),0,0,Qt.AlignLeft)
+		self.rp=self._mainPane()
 		self.box.addWidget(self.rp,0,1)
-		#btnHome=self._defHome()
-		#self.box.addWidget(btnHome,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
+		self.lp=self._detailPane()
+		self.lp.btnBack.clicked.connect(self._return)
+		self.box.addWidget(self.lp,0,1)
+		self.lp.hide()
 		self.progress=self._defProgress()
 		self.box.addWidget(self.progress,self.box.rowCount()-1,0,1,2,Qt.AlignBottom)
 		self.btnSettings=QPushButton()
@@ -180,14 +183,12 @@ class portrait(QStackedWindowItem):
 		self.btnSettings.clicked.connect(self._gotoSettings)
 		if LAYOUT=="appsedu":
 			self.btnSettings.setVisible(False)
-		#self.box.addWidget(self.btnSettings,self.box.rowCount()-1,self.box.columnCount()-1,1,1,Qt.Alignment(-1))
 		self.box.setColumnStretch(1,1)
 		self.setStyleSheet("padding:0px;border:0px;margin:0px;")
-		print("***")
 		self.resetScreen()
 	#def _load_screen
 	
-	def _leftPane(self):
+	def _navPane(self):
 		wdg=QWidget()
 		lay=QVBoxLayout()
 		self.sortAsc=False
@@ -268,15 +269,6 @@ class portrait(QStackedWindowItem):
 		return(wdg)
 	#def _defTopBar
 
-	def _rightPane(self):
-		rp=mainPanel()
-		rp.searchBox.returnPressed.connect(self._searchApps)
-		rp.btnSearch.clicked.connect(self._searchAppsBtn)
-		rp.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
-		rp.setStyleSheet("padding:0px;border:0px;margin:0px;background:#FFFFFF")
-		return(rp)
-	#def _rightPane
-
 	def _appseduCertified(self):
 		wdg=QWidget()
 		lay=QHBoxLayout()
@@ -348,6 +340,15 @@ class portrait(QStackedWindowItem):
 		return(wdg)
 	#def _defProgress
 
+	def _mainPane(self):
+		mp=mainPanel()
+		mp.searchBox.returnPressed.connect(self._searchApps)
+		mp.btnSearch.clicked.connect(self._searchAppsBtn)
+		mp.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
+		mp.setStyleSheet("padding:0px;border:0px;margin:0px;background:#FFFFFF")
+		return(mp)
+	#def _mainPane
+
 	def tableLeaveEvent(self,*args):
 		self.rp.table.setAutoScroll(False)
 		return(False)
@@ -358,6 +359,11 @@ class portrait(QStackedWindowItem):
 			self.rp.table.setAutoScroll(True)
 		return(False)
 	#def tableKeyPressEvent
+
+	def _detailPane(self):
+		dp=detailPanel()
+		return(dp)
+	#def _detailPane
 
 	def _launchLlxUp(self):
 		subprocess.run(["pkexec","lliurex-up"])
@@ -764,8 +770,19 @@ class portrait(QStackedWindowItem):
 		self.referersHistory.update({self.refererApp.app["name"]:self.refererApp})
 		self.referersShowed.update({self.refererApp.app["name"]:self.refererApp})
 		self.setChanged(False)
-		self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
+		#self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
+		self.lp.setParms({"name":args[-1].get("name",""),"icon":icn})
+		self.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","")))
+		self.lp.show()
+		self.rp.hide()
+		self.setCursor(self.oldCursor)
 	#def _loadDetails
+
+	def _return(self):
+		self.setCursor(self.oldCursor)
+		self.setWindowTitle("{}".format(APPNAME))
+		self.lp.hide()
+		self.rp.show()
 
 	def _gotoSettings(self):
 		self.cleanAux()
@@ -794,6 +811,7 @@ class portrait(QStackedWindowItem):
 	#def cleanAux
 
 	def updateScreen(self):
+		self._return()
 		self.btnFilters.setMaximumWidth(self.btnFilters.sizeHint().width())
 		self._debug("Reload data (self.refresh={})".format(self.refresh))
 		if self.refresh==True:
