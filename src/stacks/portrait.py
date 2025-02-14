@@ -184,7 +184,8 @@ class portrait(QStackedWindowItem):
 		if LAYOUT=="appsedu":
 			self.btnSettings.setVisible(False)
 		self.box.setColumnStretch(1,1)
-		self.setStyleSheet("padding:0px;border:0px;margin:0px;")
+		self.setObjectName("portrait")
+		self.setStyleSheet("""QWidget#portrait{padding:0px;border:0px;margin:0px;}""")
 		self.resetScreen()
 	#def _load_screen
 	
@@ -225,7 +226,8 @@ class portrait(QStackedWindowItem):
 			self.cmbCategories=QListWidget()
 			self.cmbCategories.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 			self.cmbCategories.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-			vbox.addWidget(self.cmbCategories,Qt.AlignTop|Qt.AlignRight)
+			self.cmbCategories.setStyleSheet("""color:#FFFFFF;background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:5px;padding-bottom:5px;padding-top:5px""")
+			vbox.addWidget(self.cmbCategories,Qt.AlignTop|Qt.AlignCenter)
 		else:
 			self.cmbCategories=QComboBox()
 			vbox.addWidget(self.cmbCategories,Qt.AlignLeft)
@@ -317,11 +319,11 @@ class portrait(QStackedWindowItem):
 	#def _btnBar
 
 	def _defInfo(self):
-		lblInfo=QPushButton(i18n.get("UPGRADES"))
-		lblInfo.clicked.connect(self._launchLlxUp)
-		lblInfo.setVisible(False)
-		lblInfo.setStyleSheet("""color:#002c4f;background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:5px;padding-bottom:5px;padding-top:5px""")
-		return(lblInfo)
+		wdg=QPushButton(i18n.get("UPGRADES"))
+		wdg.clicked.connect(self._launchLlxUp)
+		wdg.setVisible(False)
+		wdg.setStyleSheet("""color:#002c4f;background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:5px;padding-bottom:5px;padding-top:5px""")
+		return(wdg)
 	#def _defInfo(self):
 
 	def _defProgress(self):
@@ -334,15 +336,17 @@ class portrait(QStackedWindowItem):
 		progress.setMaximum(0)
 		vbox.addWidget(progress,Qt.AlignCenter)
 		wdg.setLayout(vbox)
+		wdg.setObjectName("progress")
 		return(wdg)
 	#def _defProgress
 
 	def _mainPane(self):
 		mp=mainPanel()
+		mp.setObjectName("mp")
 		mp.searchBox.returnPressed.connect(self._searchApps)
 		mp.btnSearch.clicked.connect(self._searchAppsBtn)
 		mp.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
-		mp.setStyleSheet("padding:0px;border:0px;margin:0px;background:#FFFFFF")
+		mp.setStyleSheet("""QWidget#mp{padding:0px;border:0px;margin:0px;background:#FFFFFF}""")
 		return(mp)
 	#def _mainPane
 

@@ -26,8 +26,9 @@ if os.path.islink(__file__)==True:
 else:
 	abspath=os.path.dirname(__file__)
 mw.addStacksFromFolder(os.path.join(abspath,"stacks"))
+mw.setObjectName("MAIN")
 mw.layout().setContentsMargins(0,0,0,0)
-mw.setStyleSheet("""background:#002c4f; color:#FFFFFF;margin:0px;padding:0px;border:0px;""")
+mw.setStyleSheet("""QWidget#MAIN{background:#002c4f; color:#FFFFFF;margin:0px;padding:0px;border:0px;}""")
 mw.show()
 mw.setMinimumWidth(900)
 mw.setMinimumHeight(600)
