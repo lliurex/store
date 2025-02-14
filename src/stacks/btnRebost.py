@@ -79,7 +79,8 @@ class QPushButtonRebostApp(QPushButton):
 		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
 		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name',''),self.app.get('summary'),'')
 		self.label.setText(text)
-		#self._applyDecoration()
+		self.loadImg(self.app)
+		self._applyDecoration()
 	#def updateScreen
 
 	def enterEvent(self,*args):
