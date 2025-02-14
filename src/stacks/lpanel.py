@@ -593,9 +593,6 @@ class detailPanel(QWidget):
 	#def _setUnknownAppInfo
 
 	def _loadScreenshots(self):
-		print("****")
-		print(self.app)
-		print("****")
 		scrs=self.app.get('screenshots',[])
 		if isinstance(scrs,list)==False:
 			scrs=[]
@@ -626,19 +623,19 @@ class detailPanel(QWidget):
 		bundles=list(self.app.get('bundle',{}).keys())
 	#	if "eduapp" in bundles:
 	#		self.app["description"]=i18n.get("APPUNKNOWN")
-		homepage=self.app.get('homepage','')
+		homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
+		if not isinstance(homepage,str):
+			homepage='https://portal.edu.gva.es/appsedu/aplicacions-lliurex'
 		if homepage:
 			homepage=homepage.rstrip("/")
 			desc=homepage
-			if len(homepage)>30:
-				desc="{}...".format(homepage[0:30])
 			if desc.startswith("https://portal.edu.gva.es/appsedu")==True:
 				desc=i18n.get("SEEIT")
 			else:
 				desc=i18n.get("SITE")
 			text='<a href="{0}">{1}</a> '.format(homepage,desc)
-			self.lblHomepage.setText(text)
-			self.lblHomepage.setToolTip(homepage)
+		self.lblHomepage.setText(text)
+		self.lblHomepage.setToolTip(homepage)
 		self.lblDesc.label.setOpenExternalLinks(False)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
 		if "Forbidden" in self.app.get("categories",[]):
