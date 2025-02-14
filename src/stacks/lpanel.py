@@ -138,6 +138,7 @@ class QLabelLink(QWidget):
 		self.lbl.setText(*args)
 
 class detailPanel(QWidget):
+	clicked=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=False
@@ -420,9 +421,13 @@ class detailPanel(QWidget):
 		self.updateScreen()
 	 #def _endGetEpiResults
 
+	def _clicked(self):
+		self.clicked.emit(self.app)
+
 	def __initScreen__(self):
 		self.box=QGridLayout()
 		self.btnBack=QPushButton()
+		self.btnBack.clicked.connect(self._clicked)
 		icn=QtGui.QIcon("rsrc/go-previous32x32.png")
 		self.btnBack.setIcon(icn)
 		#self.btnBack.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
