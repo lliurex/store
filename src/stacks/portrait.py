@@ -387,7 +387,7 @@ class portrait(QStackedWindowItem):
 		self.catI18n={}
 		catList=json.loads(self.rc.execute('getCategories'))
 		self.cmbCategories.addItem(i18n.get('ALL'))
-		self.cmbCategories.itemAt(0).setData(0, QFont(self.cmbCategories.font(),bold=True), Qt.FontRole)
+		#self.cmbCategories.itemAt(0,0).setData(QtGui.QFont(self.cmbCategories.font().setBold(True)), Qt.FontRole)
 		seenCats={}
 		#Sort categories
 		translatedCategories=[]
@@ -493,7 +493,8 @@ class portrait(QStackedWindowItem):
 		self.rp.searchBox.setText("")
 		self._loadFilters()
 		self.apps=self._getAppList()
-		self._populateCategoriesFromApps()
+		#self._populateCategoriesFromApps()
+		self._populateCategories()
 		self._shuffleApps()
 		self.resetScreen()
 		if isinstance(self.cmbCategories,QListWidget):
