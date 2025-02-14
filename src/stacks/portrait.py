@@ -172,7 +172,7 @@ class portrait(QStackedWindowItem):
 		self.rp=self._mainPane()
 		self.box.addWidget(self.rp,0,1)
 		self.lp=self._detailPane()
-		self.lp.btnBack.clicked.connect(self._return)
+		self.lp.clicked.connect(self._return)
 		self.box.addWidget(self.lp,0,1)
 		self.lp.hide()
 		self.progress=self._defProgress()
@@ -780,7 +780,26 @@ class portrait(QStackedWindowItem):
 		self.setCursor(self.oldCursor)
 	#def _loadDetails
 
-	def _return(self):
+	def _return(self,*args,**kwargs):
+		if not hasattr(self,"refererApp"):
+			return()
+		if self.refererApp==None:
+			return()
+		#for arg in args:
+		#	if isinstance(arg,dict):
+		#		for key,item in arg.items():
+		#			kwargs[key]=item
+		#self.refresh=kwargs.get("refresh",False)
+		#app=kwargs.get("app",{})
+		app={}
+		if isinstance(args[0],dict):
+			app=args[0]
+		if app!={}:
+			#refered btn can be deleted so ensure there's a btn
+			if self.referersShowed.get(app.get("name"))!=None:
+				self.refererApp=self.referersShowed[app["name"]]
+				self.refererApp.setApp(app)
+				self.refererApp.updateScreen()
 		self.setCursor(self.oldCursor)
 		self.setWindowTitle("{}".format(APPNAME))
 		self.lp.hide()
@@ -843,6 +862,7 @@ class portrait(QStackedWindowItem):
 	#def resetScreen
 
 	def setParms(self,*args,**kwargs):
+		# >>>> OLD BEHAVIOUR <<<<<
 		#referer will be only fulfilled when details stack
 		#fires events, if there's a repeated call to setParms
 		#referer will be none so function can exit. This must not happen.
