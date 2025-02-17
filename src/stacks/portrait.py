@@ -438,6 +438,7 @@ class portrait(QStackedWindowItem):
 				#getting categories from raw data (deep search)
 				apps.extend(json.loads(self.rc.execute('list',"{}".format(categories),1000)))
 			self._debug("Loading cat {}".format(",".join(cat)))
+			self._debug("Loading cat {}".format(categories))
 		elif LAYOUT!="appsedu":
 			categories=[]
 			for i18ncat,cat in self.i18nCat.items():
@@ -662,9 +663,12 @@ class portrait(QStackedWindowItem):
 		self.resetScreen()
 		self._beginUpdate()
 		if cat=="":
-			i18ncat=self.cmbCategories.currentItem().text().replace("· ","")
+			i18ncat=self.cmbCategories.currentItem().text().replace(" · ","")
 		else:
-			i18ncat=cat
+			if isinstance(cat,str):
+				i18ncat=cat.replace(" · ","")
+			else:
+				i18ncat=cat.text().replace(" · ","")
 			if isinstance(i18ncat,QListWidgetItem):
 				i18ncat=cat.text()
 			flag=Qt.MatchFlags(Qt.MatchFlag.MatchContains)
@@ -676,6 +680,7 @@ class portrait(QStackedWindowItem):
 		if self.oldCat!=i18ncat:
 			self.oldCat=i18ncat
 		cat=self.i18nCat.get(i18ncat,i18ncat)
+		print("CAT: +{}+".format(cat))
 		if cat==i18n.get("ALL"):
 			cat=""
 		self.apps=self._getAppList(cat)
@@ -791,9 +796,9 @@ class portrait(QStackedWindowItem):
 		self.setChanged(False)
 		#self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
 		self.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","")))
-		self.lp.show()
 		self.lp.setParms({"name":args[-1].get("name",""),"icon":icn})
 		self.rp.hide()
+		self.lp.show()
 		self.setCursor(self.oldCursor)
 	#def _loadDetails
 
@@ -866,6 +871,19 @@ class portrait(QStackedWindowItem):
 	#def _updateScreen
 
 	def resetScreen(self):
+		oldTable=self.rp.layout().itemAt(1)
+		oldSearch=self.rp.layout().itemAt(0)
+		newTable=self.rp._defTable()#_mainPane()
+		newSearch=self.rp._defSearch()#_mainPane()
+		if oldTable.widget()==None:
+			return
+		self.rp.layout().replaceWidget(oldSearch.widget(),newSearch)
+		self.rp.layout().replaceWidget(oldTable.widget(),newTable)
+		self.rp.table=newTable	
+		oldTable=None
+		self.appsLoaded=0
+		self.oldSearch=""
+		self.appsSeen=[]
 		return
 		for x in range(self.rp.table.rowCount()):
 			for y in range(self.rp.table.columnCount()):
