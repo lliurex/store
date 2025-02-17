@@ -67,6 +67,7 @@ class mainPanel(QWidget):
 		#table.setRowCount(1)
 		#table.setAutoScroll(False)
 		table=QFlowTouchWidget()
+		table.flowLayout.setSpacing(10)
 		table.leaveEvent=self.tableLeaveEvent
 		table.setAttribute(Qt.WA_AcceptTouchEvents)
 		#table.setColumnCount(self.maxCol)
@@ -75,7 +76,7 @@ class mainPanel(QWidget):
 		#table.horizontalHeader().hide()
 		#table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		if LAYOUT=="appsedu":
-			table.setStyleSheet("""QFlowTouchWidget{border:0px; background:#FFFFFF;} QFlowTouchWidget::item{padding:22px}""")
+			table.setStyleSheet("""QFlowTouchWidget{border:0px; background:#FFFFFF;margin-left:20%;margin-right:1%;} QFlowTouchWidget::item{padding:2px}""")
 		return(table)
 	#def _defTable
 

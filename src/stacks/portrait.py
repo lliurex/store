@@ -623,7 +623,7 @@ class portrait(QStackedWindowItem):
 
 	def _searchApps(self):
 		if LAYOUT=="appsedu":
-			self.cmbCategories.setCurrentRow(0)
+			self.cmbCategories.setCurrentRow(-1)
 		else:
 			self.cmbCategories.setCurrentText(i18n.get("ALL"))
 		cursor=QtGui.QCursor(Qt.WaitCursor)
@@ -655,7 +655,7 @@ class portrait(QStackedWindowItem):
 	#def _searchAppsBtn
 
 	def _loadCategory(self,cat=""):
-		if time.time()-self.oldTime<MINTIME:
+		if time.time()-self.oldTime<MINTIME or cat==None:
 			#self.cmbCategories.setCurrentText(self.oldCat)
 			return
 		self.refresh=True
@@ -667,10 +667,10 @@ class portrait(QStackedWindowItem):
 		else:
 			if isinstance(cat,str):
 				i18ncat=cat.replace(" · ","")
-			else:
-				i18ncat=cat.text().replace(" · ","")
-			if isinstance(i18ncat,QListWidgetItem):
+			elif isinstance(cat,QListWidgetItem):
 				i18ncat=cat.text()
+			elif cat!=None:
+				i18ncat=cat.text().replace(" · ","")
 			flag=Qt.MatchFlags(Qt.MatchFlag.MatchContains)
 			items=self.cmbCategories.findItems(i18ncat,flag)
 			for item in items:
@@ -680,7 +680,6 @@ class portrait(QStackedWindowItem):
 		if self.oldCat!=i18ncat:
 			self.oldCat=i18ncat
 		cat=self.i18nCat.get(i18ncat,i18ncat)
-		print("CAT: +{}+".format(cat))
 		if cat==i18n.get("ALL"):
 			cat=""
 		self.apps=self._getAppList(cat)
@@ -873,10 +872,12 @@ class portrait(QStackedWindowItem):
 	def resetScreen(self):
 		oldTable=self.rp.layout().itemAt(1)
 		oldSearch=self.rp.layout().itemAt(0)
+		searchStr=self.rp.searchBox.text()
 		newTable=self.rp._defTable()#_mainPane()
 		newSearch=self.rp._defSearch()#_mainPane()
 		self.rp.search=newSearch
 		self.rp.searchBox.returnPressed.connect(self._searchApps)
+		self.rp.searchBox.setText(searchStr)
 		self.rp.btnSearch.clicked.connect(self._searchAppsBtn)
 		if oldTable.widget()==None:
 			return

@@ -46,7 +46,7 @@ class QPushButtonRebostApp(QPushButton):
 			os.makedirs(self.cacheDir)
 		self.setObjectName("rebostapp")
 		self.setMinimumHeight(250)
-		self.setMinimumWidth(120)
+		self.setMinimumWidth(150)
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
 		self.setAutoFillBackground(True)
