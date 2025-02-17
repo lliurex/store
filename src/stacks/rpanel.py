@@ -3,7 +3,7 @@
 from PySide2.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget,QSizePolicy,QCheckBox,QGraphicsDropShadowEffect
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread
-from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QInfoLabel
+from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QInfoLabel,QFlowTouchWidget
 import gettext
 _ = gettext.gettext
 
@@ -35,48 +35,53 @@ i18n={
 class mainPanel(QWidget):
 	def __init__(self,*args,**kwargs):
 		super().__init__()
-		self.maxCol=5
+		self.maxCol=1
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		lay=QVBoxLayout()
 		lbl=self._defSearch()
 		lbl.setVisible(False)
-		lay.addWidget(lbl)
+		lay.addWidget(lbl,Qt.AlignCenter|Qt.AlignCenter)
 		if LAYOUT=="appsedu":
 			#btnHome.setVisible(False)
 			lbl.setVisible(True)
 		self.table=self._defTable()
-		self.table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		#self.table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		if LAYOUT=="appsedu":
 			tableCol=1
 		else:
 			tableCol=0
 		lay.addWidget(self.table)#,2-tableCol,tableCol,1,self.box.columnCount())
+		
+		#self.table.setCellWidget(0,0,self.flow)
 		self.setLayout(lay)
 		self.setStyleSheet("padding:0px;border:0px;margin:0px;background:#FFFFFF")
 
 	def _defTable(self):
-		table=QTableTouchWidget()
-		table.setAutoScroll(False)
+		#table=QTableTouchWidget()
+		#table.setColumnCount(1)
+		#table.setRowCount(1)
+		#table.setAutoScroll(False)
+		table=QFlowTouchWidget()
 		table.leaveEvent=self.tableLeaveEvent
 		table.setAttribute(Qt.WA_AcceptTouchEvents)
-		table.setColumnCount(self.maxCol)
-		table.setShowGrid(False)
-		table.verticalHeader().hide()
-		table.horizontalHeader().hide()
-		table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+		#table.setColumnCount(self.maxCol)
+		#table.setShowGrid(False)
+		#table.verticalHeader().hide()
+		#table.horizontalHeader().hide()
+		#table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		if LAYOUT=="appsedu":
-			table.setStyleSheet("""QTableWidget{; background:#FFFFFF;} QTableWidget::item{padding:12px}""")
+			table.setStyleSheet("""QFlowTouchWidget{border:0px; background:#FFFFFF;} QFlowTouchWidget::item{padding:22px}""")
 		return(table)
 	#def _defTable
 
 	def tableLeaveEvent(self,*args):
-		self.table.setAutoScroll(False)
+		#self.table.setAutoScroll(False)
 		return(False)
 	#def enterEvent
 
 	def tableKeyPressEvent(self,*args):
-		if self.table.doAutoScroll()==None:
-			self.table.setAutoScroll(True)
+	#	if self.table.doAutoScroll()==None:
+	#		self.table.setAutoScroll(True)
 		return(False)
 	#def tableKeyPressEvent
 
@@ -97,7 +102,7 @@ class mainPanel(QWidget):
 		lay.addWidget(self.searchBox)
 		lay.addWidget(self.btnSearch)
 		wdg.setLayout(lay)
-		wdg.setStyleSheet("""background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:20px;margin-left:20px;margin-right:20px""")
+		wdg.setStyleSheet("""color:#FFFFFF;background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:20px;margin-left:20px;margin-right:20px""")
 		return(wdg)
 	#def _defSearch
 
