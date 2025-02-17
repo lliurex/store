@@ -39,8 +39,12 @@ class mainPanel(QWidget):
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		lay=QVBoxLayout()
 		lbl=self._defSearch()
+		hlay=QHBoxLayout()
+		wdg=QWidget()
+		wdg.setLayout(hlay)
 		lbl.setVisible(False)
-		lay.addWidget(lbl,Qt.AlignCenter|Qt.AlignCenter)
+		hlay.addWidget(lbl)
+		lay.addWidget(wdg)#,Qt.AlignTop,Qt.AlignCenter)
 		if LAYOUT=="appsedu":
 			#btnHome.setVisible(False)
 			lbl.setVisible(True)
@@ -54,7 +58,7 @@ class mainPanel(QWidget):
 		
 		#self.table.setCellWidget(0,0,self.flow)
 		self.setLayout(lay)
-		self.setStyleSheet("padding:0px;border:0px;margin:0px;background:#FFFFFF")
+		self.setStyleSheet("""padding:0px;border:0px;margin:0px;background:#FFFFFF""")
 
 	def _defTable(self):
 		#table=QTableTouchWidget()
@@ -87,6 +91,7 @@ class mainPanel(QWidget):
 
 	def _defSearch(self):
 		wdg=QWidget()
+		wdg.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Maximum)
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
 		self.searchBox=QLineEdit()
 		lay=QHBoxLayout()
@@ -102,7 +107,7 @@ class mainPanel(QWidget):
 		lay.addWidget(self.searchBox)
 		lay.addWidget(self.btnSearch)
 		wdg.setLayout(lay)
-		wdg.setStyleSheet("""color:#FFFFFF;background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:20px;margin-left:20px;margin-right:20px""")
+		wdg.setStyleSheet("""color:#FFFFFF;background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:20px;margin-left:100%;margin-right:100%""")
 		return(wdg)
 	#def _defSearch
 
