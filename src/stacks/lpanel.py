@@ -139,6 +139,8 @@ class QLabelLink(QWidget):
 
 class detailPanel(QWidget):
 	clicked=Signal("PyObject")
+	loaded=Signal("PyObject")
+	tagpressed=Signal(str)
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=False
@@ -178,14 +180,12 @@ class detailPanel(QWidget):
 	#def _debug
 
 	def _return(self):
-		#self.parent.setWindowTitle("AppsEdu")
-		self.parent.setCurrentStack(1,parms={"refresh":self.refresh,"app":self.app})
+		return
 	#def _return
 
 	def _tagNav(self,*args):
 		cat=args[0][0].replace("#","")
-		self.parent.setWindowTitle("AppsEdu - {}".format(cat))
-		self.parent.setCurrentStack(1,parms={"refresh":True,"cat":cat})
+		self.tagpressed.emit(cat)
 	#def _tagNav(self,*args)
 
 	def _showSplash(self,icon):
@@ -424,6 +424,9 @@ class detailPanel(QWidget):
 	def _clicked(self):
 		self.clicked.emit(self.app)
 
+	def _loaded(self):
+		self.loaded.emit(self.app)
+
 	def __initScreen__(self):
 		self.box=QGridLayout()
 		self.btnBack=QPushButton()
@@ -661,6 +664,7 @@ class detailPanel(QWidget):
 		self._setLauncherOptions()
 		self.lblTags.setText(self._generateCategoryTags())
 		self.lblTags.adjustSize()
+		self.loaded.emit(self.app)
 	#def _updateScreen
 
 	def _getLauncherForApp(self):
