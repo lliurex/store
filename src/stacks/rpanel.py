@@ -38,16 +38,16 @@ class mainPanel(QWidget):
 		self.maxCol=1
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		lay=QVBoxLayout()
-		lbl=self._defSearch()
+		self.search=self._defSearch()
 		hlay=QHBoxLayout()
 		wdg=QWidget()
 		wdg.setLayout(hlay)
-		lbl.setVisible(False)
-		hlay.addWidget(lbl)
+		self.searchBox.setVisible(False)
+		hlay.addWidget(self.search)
 		lay.addWidget(wdg)#,Qt.AlignTop,Qt.AlignCenter)
 		if LAYOUT=="appsedu":
 			#btnHome.setVisible(False)
-			lbl.setVisible(True)
+			self.search.setVisible(True)
 		self.table=self._defTable()
 		#self.table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		if LAYOUT=="appsedu":
@@ -58,7 +58,8 @@ class mainPanel(QWidget):
 		
 		#self.table.setCellWidget(0,0,self.flow)
 		self.setLayout(lay)
-		self.setStyleSheet("""padding:0px;border:0px;margin:0px;background:#FFFFFF""")
+		self.setObjectName("mp")
+		self.setStyleSheet("""QWidget#mp{padding:0px;border:0px;margin:0px;background:#FFFFFF}""")
 
 	def _defTable(self):
 		#table=QTableTouchWidget()
@@ -107,7 +108,7 @@ class mainPanel(QWidget):
 		lay.addWidget(self.searchBox)
 		lay.addWidget(self.btnSearch)
 		wdg.setLayout(lay)
-		wdg.setStyleSheet("""color:#FFFFFF;background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:20px;margin-left:100%;margin-right:100%""")
+		wdg.setStyleSheet("""QWidget{color:#FFFFFF;background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:20px;margin-left:100%;margin-right:100%}""")
 		return(wdg)
 	#def _defSearch
 
