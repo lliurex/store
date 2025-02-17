@@ -875,6 +875,9 @@ class portrait(QStackedWindowItem):
 		oldSearch=self.rp.layout().itemAt(0)
 		newTable=self.rp._defTable()#_mainPane()
 		newSearch=self.rp._defSearch()#_mainPane()
+		self.rp.search=newSearch
+		self.rp.searchBox.returnPressed.connect(self._searchApps)
+		self.rp.btnSearch.clicked.connect(self._searchAppsBtn)
 		if oldTable.widget()==None:
 			return
 		self.rp.layout().replaceWidget(oldSearch.widget(),newSearch)
