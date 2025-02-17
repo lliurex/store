@@ -5,7 +5,9 @@ try:
 	from lliurex import lliurexup
 except:
 	lliurexup=None
-from PySide2.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget,QSizePolicy,QCheckBox,QGraphicsDropShadowEffect
+from PySide2.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox, \
+							QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget, \
+							QSizePolicy,QCheckBox,QGraphicsDropShadowEffect,QListWidgetItem
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread
 from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QStackedWindowItem,QInfoLabel
@@ -173,6 +175,8 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(self.rp,0,1)
 		self.lp=self._detailPane()
 		self.lp.clicked.connect(self._return)
+		self.lp.loaded.connect(self._updateBtn)
+		self.lp.tagpressed.connect(self._loadCategory)
 		self.box.addWidget(self.lp,0,1)
 		self.lp.hide()
 		self.progress=self._defProgress()
@@ -280,7 +284,7 @@ class portrait(QStackedWindowItem):
 		chk=QCheckBox(i18n.get("CERTIFIED"))
 		pxm=QtGui.QPixmap(img).scaled(24,24)
 		lbl.setPixmap(pxm)
-		chk.setStyleSheet("padding:5px;margin:5px;background:#2e746c;border-radius:5px")
+		chk.setStyleSheet("color:#FFFFFF;padding:5px;margin:5px;background:#2e746c;border-radius:5px")
 		chk.setLayoutDirection(Qt.RightToLeft)
 		lay.addWidget(chk)
 		wdg.setLayout(lay)
@@ -345,7 +349,7 @@ class portrait(QStackedWindowItem):
 		mp.setObjectName("mp")
 		mp.searchBox.returnPressed.connect(self._searchApps)
 		mp.btnSearch.clicked.connect(self._searchAppsBtn)
-		mp.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
+		#mp.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
 		mp.setStyleSheet("""QWidget#mp{padding:0px;border:0px;margin:0px;background:#FFFFFF}""")
 		return(mp)
 	#def _mainPane
@@ -649,7 +653,7 @@ class portrait(QStackedWindowItem):
 		self._searchApps()
 	#def _searchAppsBtn
 
-	def _loadCategory(self):
+	def _loadCategory(self,cat=""):
 		if time.time()-self.oldTime<MINTIME:
 			#self.cmbCategories.setCurrentText(self.oldCat)
 			return
@@ -657,7 +661,18 @@ class portrait(QStackedWindowItem):
 		self.rp.searchBox.setText("")
 		self.resetScreen()
 		self._beginUpdate()
-		i18ncat=self.cmbCategories.currentItem().text().replace("· ","")
+		if cat=="":
+			i18ncat=self.cmbCategories.currentItem().text().replace("· ","")
+		else:
+			i18ncat=cat
+			if isinstance(i18ncat,QListWidgetItem):
+				i18ncat=cat.text()
+			flag=Qt.MatchFlags(Qt.MatchFlag.MatchContains)
+			items=self.cmbCategories.findItems(i18ncat,flag)
+			for item in items:
+				if item.text().replace(" · ","").lower()==i18ncat.lower():
+					self.cmbCategories.setCurrentItem(item)
+					break
 		if self.oldCat!=i18ncat:
 			self.oldCat=i18ncat
 		cat=self.i18nCat.get(i18ncat,i18ncat)
@@ -708,7 +723,8 @@ class portrait(QStackedWindowItem):
 				self.appsLoaded+=1
 				continue
 			self.appsSeen.append(appname)
-			row=self.rp.table.rowCount()-1
+			#row=self.rp.table.rowCount()-1
+			row=1
 			btn=QPushButtonRebostApp(jsonapp)
 			btn.clicked.connect(self._loadDetails)
 			btn.keypress.connect(self.tableKeyPressEvent)
@@ -724,15 +740,15 @@ class portrait(QStackedWindowItem):
 			#		colspan=self.maxCol
 			#	if colspan!=1:
 			#		self.table.setSpan(row,col-1,1,colspan)
-			if col==self.maxCol:
-				col=0
-				colspan=random.randint(1,self.maxCol)
-				span=colspan
-				self.rp.table.setRowHeight(row,rowH+int(rowH*1))
-				self.rp.table.setRowCount(self.rp.table.rowCount()+1)
+#			if col==self.maxCol:
+#				col=0
+#				colspan=random.randint(1,self.maxCol)
+#				span=colspan
+#				self.rp.table.setRowHeight(row,rowH+int(rowH*1))
+#				self.rp.table.setRowCount(self.rp.table.rowCount()+1)
 			self.appsLoaded+=1
-		if btn!=None:
-			self.rp.table.setRowHeight(self.rp.table.rowCount()-1,rowH+int(rowH*1))
+		#if btn!=None:
+	 #		self.rp.table.setRowHeight(self.rp.table.rowCount()-1,rowH+int(rowH*1))
 		self._endLoadData()
 	#def _loadData
 
@@ -749,7 +765,8 @@ class portrait(QStackedWindowItem):
 				shadow.setBlurRadius(1)
 				appWdg=wdg[2]
 				appWdg.setGraphicsEffect(shadow)
-				self.rp.table.setCellWidget(wdg[0],wdg[1],appWdg)
+				#self.rp.table.setCellWidget(wdg[0],wdg[1],baseWdg)
+				self.rp.table.addWidget(appWdg)
 			self._endUpdate()
 		self.cleanAux()
 		self.refresh=True
@@ -780,7 +797,7 @@ class portrait(QStackedWindowItem):
 		self.setCursor(self.oldCursor)
 	#def _loadDetails
 
-	def _return(self,*args,**kwargs):
+	def _updateBtn(self,*args,**kwargs):
 		if not hasattr(self,"refererApp"):
 			return()
 		if self.refererApp==None:
@@ -800,10 +817,14 @@ class portrait(QStackedWindowItem):
 				self.refererApp=self.referersShowed[app["name"]]
 				self.refererApp.setApp(app)
 				self.refererApp.updateScreen()
+	#def _updateBtn
+
+	def _return(self,*args,**kwargs):
 		self.setCursor(self.oldCursor)
 		self.setWindowTitle("{}".format(APPNAME))
 		self.lp.hide()
 		self.rp.show()
+	#def _return
 
 	def _gotoSettings(self):
 		self.cleanAux()
@@ -845,6 +866,7 @@ class portrait(QStackedWindowItem):
 	#def _updateScreen
 
 	def resetScreen(self):
+		return
 		for x in range(self.rp.table.rowCount()):
 			for y in range(self.rp.table.columnCount()):
 				w=self.rp.table.cellWidget(x,y)
@@ -854,8 +876,8 @@ class portrait(QStackedWindowItem):
 					elif w.scr in self.aux:
 						self.aux.remove(w)
 				self.rp.table.removeCellWidget(x,y)
-		self.rp.table.setRowCount(0)
-		self.rp.table.setRowCount(1)
+		#self.rp.table.setRowCount(0)
+		#self.rp.table.setRowCount(1)
 		self.appsLoaded=0
 		self.oldSearch=""
 		self.appsSeen=[]
