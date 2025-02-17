@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os
 import json
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy
 from PySide2.QtCore import Qt,Signal
 from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
 from QtExtraWidgets import QScreenShotContainer
@@ -32,7 +32,10 @@ class QPushButtonRebostApp(QPushButton):
 		#self.btn.setIcon(QIcon.fromTheme("download"))
 		self.btn.setText(i18n.get("INSTALL"))
 		self.btn.setObjectName("btnInstall")
-		self.flyIcon=QPixmap("rsrc/appsedu128x128.png")
+		if self.app.get("name","").startswith("zero-"):
+			self.flyIcon=QPixmap("rsrc/zero-center128x128.png")
+		else:
+			self.flyIcon=QPixmap("rsrc/appsedu128x128.png")
 		self.lblFlyIcon=QLabel()
 		self.lblFlyIcon.setStyleSheet("""background:transparent""")
 		scaleFactor=(self.iconSize/2)
@@ -42,6 +45,8 @@ class QPushButtonRebostApp(QPushButton):
 		if os.path.exists(self.cacheDir)==False:
 			os.makedirs(self.cacheDir)
 		self.setObjectName("rebostapp")
+		self.setMinimumHeight(250)
+		self.setMinimumWidth(120)
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
 		self.setAutoFillBackground(True)
