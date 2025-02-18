@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+<id>net.lliurex.appsedu</id>
+<metadata_license>CC0-1.0</metadata_license>
+<name>AppsEdu</name>
+<summary>Software center for Lliurex</summary>
+<summary xml:lang="es">Centro de aplicaciones para Lliurex</summary>
+<summary xml:lang="ca">Centre d'aplicacions per a Lliurex</summary>
+<description>
+<p>AppsEdu is a software center capable of manage zomandos and install software approved and reviewed published at AppsEdu (https://portal.edu.gva.es/appsedu).</p>
+<p xml:lang="ca">AppsEdu es un centre de aplicacions per al programari publicat a AppsEdu (https://portal.edu.gva.es/appsedu).</p>
+<p xml:lang="es">AppsEdu es un centro de aplicaciones para el software publicado en AppsEdu (https://portal.edu.gva.es/appsedu).</p>
+</description>
+<categories>
+<category>System</category>
+<category>LliureX-Administration</category>
+</categories>
+<icon type="stock">appsedu</icon>
+<provides><binary>/usr/bin/appsedu</binary></provides>
+<keywords>
+<keyword>appsedu</keyword>
+<keyword>store</keyword>
+<keyword>software</keyword>
+<keyword>instalar</keyword>
+<keyword>tienda</keyword>
+<keyword>botiga</keyword>
+</keywords>
+</component>
