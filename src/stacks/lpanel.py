@@ -7,11 +7,11 @@ import json
 import html
 from app2menu import App2Menu as app2menu
 from rebost import store
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,\
+from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,\
 							QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,\
 							QAbstractScrollArea, QFrame
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
 #from appconfig.appConfigStack import appConfigStack as confStack
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QStackedWindowItem
 import gettext
