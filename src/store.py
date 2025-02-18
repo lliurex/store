@@ -3,13 +3,13 @@ import sys
 import subprocess
 import os,shutil
 import json
-from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import Qt
-from PySide2 import QtGui
+from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import Qt
+from PySide6 import QtGui
 from QtExtraWidgets import QStackedWindow
 import gettext
 import time
-gettext.textdomain('appsedu')
+gettext.textdomain('store')
 _ = gettext.gettext
 
 app=QApplication(["LliureX Store"])
@@ -35,4 +35,4 @@ mw.setMinimumHeight(600)
 if len(sys.argv)>1:
 	if ("://") in sys.argv[1] or os.path.isfile(sys.argv[1]):
 		mw.setCurrentStack(3,parms=sys.argv[1])
-app.exec_()
+app.exec()
