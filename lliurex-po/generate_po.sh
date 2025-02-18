@@ -7,7 +7,7 @@ mkdir -p store
 xgettext $GUI_FILES -o store/store.pot
 
 #Categories
-CAT=$(qdbus net.lliurex.rebost /net/lliurex/rebost net.lliurex.rebost.getCategories)
+CAT=$(qdbus6 net.lliurex.rebost /net/lliurex/rebost net.lliurex.rebost.getCategories)
 if [[ $? -eq 0 ]]
 then
 	CAT=${CAT/[/}
