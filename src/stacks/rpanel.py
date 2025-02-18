@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget,QSizePolicy,QCheckBox,QGraphicsDropShadowEffect
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread

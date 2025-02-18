@@ -6,7 +6,7 @@ from PySide6.QtCore import Qt,Signal
 from PySide6.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
 from QtExtraWidgets import QScreenShotContainer
 import gettext
-gettext.textdomain('appsedu')
+gettext.textdomain('store')
 _ = gettext.gettext
 
 i18n={"INSTALL":_("Install")}
