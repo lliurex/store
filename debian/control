@@ -10,8 +10,8 @@ Homepage: https://github.com/lliurex/rebost
 Package: store
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, rebost, rebost-data, python3-rebost, python3-qtextrawidgets(>=0.4), python3-pyside6.qtgui, python3-pyside6.qtcore
-Provides: rebost-gui
-Conflicts: rebost-gui 
-Replaces: rebost-gui
-Description: QT Gui for appsedu
+Provides: rebost-gui, appsedu
+Conflicts: rebost-gui, appsedu
+Replaces: rebost-gui, appsedu
+Description: Applications store
 
