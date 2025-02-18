@@ -14,7 +14,7 @@ _ = gettext.gettext
 
 app=QApplication(["LliureX Store"])
 mw=QStackedWindow()
-icn=QtGui.QIcon.fromTheme("appsedu")
+icn=QtGui.QIcon.fromTheme("store")
 mw.disableNavBar(True)
 mw.setIcon(icn)
 #Remove banner
