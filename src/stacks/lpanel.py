@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-#!/usr/bin/python3
 import sys,signal
 import os
 import subprocess
@@ -17,6 +16,7 @@ from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QStackedWindowItem
 import gettext
 import libhelper
 import exehelper
+from cmbBtn import QComboButton
 _ = gettext.gettext
 QString=type("")
 ICON_SIZE=128
@@ -491,9 +491,9 @@ class detailPanel(QWidget):
 
 		launchers=QWidget()
 		hlay=QVBoxLayout()
-		self.btnInstall=QPushButton(i18n.get("INSTALL"))
-		self.btnInstall.setStyleSheet("""color:#002c4f;background:#FFFFFF;border:1px solid;border-color:#AAAAAA;border-radius:5px;padding-bottom:5px;padding-top:5px""")
-		self.btnInstall.clicked.connect(self._genericEpiInstall)
+		self.btnInstall=QLabel(i18n.get("INSTALL"))
+		#self.btnInstall.setStyleSheet("""color:#002c4f;background:#FFFFFF;border:1px solid;border-color:#AAAAAA;border-radius:5px;padding-bottom:5px;padding-top:5px""")
+		#self.btnInstall.clicked.connect(self._genericEpiInstall)
 		self.btnInstall.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
 		#self.btnInstall.setMinimumHeight(int(ICON_SIZE/3))
 		#self.btnInstall.setMaximumHeight(int(ICON_SIZE/3))
@@ -518,10 +518,11 @@ class detailPanel(QWidget):
 		for i in [self.btnInstall,self.btnRemove,self.btnLaunch,self.btnZomando]:
 			i.setMinimumWidth(self.btnZomando.sizeHint().width()+(4*i.font().pointSize()))
 
-		self.lstInfo=QListWidget()
-		self.lstInfo=QComboBox()
+		#self.lstInfo=QListWidget()
+		self.lstInfo=QComboButton()
+		self.lstInfo.setMaximumWidth(200)
 		#self.lstInfo.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.lstInfo.setStyleSheet("""QComboBox{padding:6px;margin:1px;border:1px solid;border-color:#AAAAAA;border-radius:5px;}
+		self.lstInfo.setStyleSheet("""QWidget{padding:6px;margin:1px;border:1px solid;border-color:#AAAAAA;border-radius:5px;}
 								QComboBox::drop-down{ subcontrol-origin: padding;
 								subcontrol-position: top right;
 								border-top-right-radius: 3px; /* same radius as the QComboBox */
@@ -530,6 +531,9 @@ class detailPanel(QWidget):
 								QComboBox::down-arrow {
 									image: url("rsrc/drop-down16x16.png");
 									right:10px;
+									border-left:1px solid #AAAAAA;
+									padding:6px;
+									margin-left:18px;
 								}
 								QComboBox::down-arrow:on { /* shift the arrow when popup is open */
 									top: 1px;
@@ -537,6 +541,7 @@ class detailPanel(QWidget):
 								}
 								""")
 		self.lstInfo.currentTextChanged.connect(self._setLauncherOptions)	
+		self.lstInfo.clicked.connect(self._genericEpiInstall)
 		lay.addWidget(self.lstInfo,2,3,2,1,Qt.AlignTop)
 		wdg.setLayout(lay)
 		return(wdg)
@@ -735,6 +740,11 @@ class detailPanel(QWidget):
 	#def _onError
 
 	def _setLauncherOptions(self):
+		bundle=self.lstInfo.currentText()
+		bundle=bundle.split(" ")[-1]
+		self.btnInstall.setText("{0} / {1}".format(bundle,self.app.get("versions",{}).get(bundle,"lliurex")))
+
+	def _old_setLauncherOptions(self):
 		self.lstInfo.setEnabled(True)
 		self.btnInstall.setEnabled(True)
 		self.btnRemove.setEnabled(True)
@@ -761,7 +771,9 @@ class detailPanel(QWidget):
 		if bundle=="package":
 			bundle="app" # Only for show purposes. "App" is friendly than "package"
 		if self.lstInfo.count()>0:
-			self.btnInstall.setText("{0} {1}".format(i18n.get("INSTALL"),bundle))
+			#self.btnInstall.setText("{0} {1}".format(i18n.get("INSTALL"),bundle))
+			print(self.app)
+			self.btnInstall.setText("{0} / {1}".format(bundle,self.app.get("versions",{}).get(bundle,"")))
 			self.btnRemove.setText("{0} {1}".format(i18n.get("REMOVE"),bundle))
 			self.btnLaunch.setText("{0} {1}".format(i18n.get("RUN"),bundle))
 		self.btnInstall.setToolTip("{0}: {1}\n{2}".format(i18n.get("RELEASE"),release,bundle.capitalize()))
@@ -840,7 +852,7 @@ class detailPanel(QWidget):
 				state=1
 			states+=state
 			if bundle=="zomando" and ((pkgState==0 or state==0) or (self.app.get("pkgname","x$%&/-1") not in self.app["bundle"]["zomando"])):
-				self.btnZomando.setVisible(True)
+			#	self.btnZomando.setVisible(True)
 				continue
 		#	elif bundle=="zomando":
 		#		continue
@@ -855,7 +867,7 @@ class detailPanel(QWidget):
 		if len(bundles)<=0:
 			return()
 		(installed,uninstalled)=self._classifyBundles(bundles)
-		priority=["zomando","snap","flatpak","appimage","package","eduapp"]
+		priority=["zomando","flatpak","snap","package","appimage","eduapp"]
 		for i in installed+uninstalled:
 			version=self.app.get('versions',{}).get(i,'')
 			if version=="":
@@ -874,7 +886,8 @@ class detailPanel(QWidget):
 					bcolor=BKG_COLOR_INSTALLED
 					release.setBackground(bcolor)
 				release.setToolTip(version)
-				release="{} {}".format(fversion,i)
+				#release="{} {}".format(fversion,i)
+				release="{0} {1}".format(i18n["INSTALL"],i)
 				self.lstInfo.insertItem(idx,release)
 		if "eduapp" in bundles.keys():
 			bundles.pop("eduapp")
