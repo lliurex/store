@@ -43,7 +43,7 @@ class mainPanel(QWidget):
 		wdg=QWidget()
 		wdg.setLayout(hlay)
 		self.searchBox.setVisible(False)
-		hlay.addWidget(self.search)
+		hlay.addWidget(self.search,Qt.AlignRight)
 		lay.addWidget(wdg)#,Qt.AlignTop,Qt.AlignCenter)
 		if LAYOUT=="appsedu":
 			#btnHome.setVisible(False)
