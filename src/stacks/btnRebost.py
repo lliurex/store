@@ -14,6 +14,7 @@ i18n={"INSTALL":_("Install")}
 LAYOUT="appsedu"
 class QPushButtonRebostApp(QPushButton):
 	clicked=Signal("PyObject","PyObject")
+	install=Signal("PyObject")
 	keypress=Signal()
 	def __init__(self,strapp,parent=None,**kwargs):
 		QPushButton.__init__(self, parent)
@@ -32,6 +33,7 @@ class QPushButtonRebostApp(QPushButton):
 		#self.btn.setIcon(QIcon.fromTheme("download"))
 		self.btn.setText(i18n.get("INSTALL"))
 		self.btn.setObjectName("btnInstall")
+		self.btn.clicked.connect(self._emitInstall)
 		if self.app.get("name","").startswith("zero-"):
 			self.flyIcon=QPixmap("rsrc/zero-center128x128.png")
 		else:
@@ -73,6 +75,10 @@ class QPushButtonRebostApp(QPushButton):
 		shadow=QGraphicsDropShadowEffect()
 		self.setGraphicsEffect(shadow)
 	#def __init__
+
+	def _emitInstall(self,*args):
+		self.install.emit(self.app)
+	#def _emitInstall
 
 	def eventFilter(self,*args):
 		ev=args[1]
