@@ -20,6 +20,7 @@ import dbus.mainloop.glib
 import random
 import gettext
 from btnRebost import QPushButtonRebostApp
+import exehelper
 from rpanel import mainPanel
 from lpanel import detailPanel
 _ = gettext.gettext
@@ -136,6 +137,8 @@ class portrait(QStackedWindowItem):
 		self.level='user'
 		self.oldCursor=self.cursor()
 		self.refresh=True
+		self.epi=exehelper.appLauncher()
+		#self.epi.runEnded.connect(self._getEpiResults)
 		signal.signal(signal.SIGUSR1,self._signals)
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 	#def __init__
@@ -732,6 +735,7 @@ class portrait(QStackedWindowItem):
 			btn=QPushButtonRebostApp(jsonapp)
 			btn.clicked.connect(self._loadDetails)
 			btn.keypress.connect(self.tableKeyPressEvent)
+			btn.install.connect(self._installBundle)
 			self.wdgs.append((row,col,btn))
 			if appname in self.referersHistory.keys():
 				self.referersShowed.update({appname:btn})
@@ -778,6 +782,45 @@ class portrait(QStackedWindowItem):
 
 	def _endLoadApps(self,args):
 		pass
+
+	def _installBundle(self,*args):
+		app=args[0]
+		if isinstance(app,dict)==False:
+			return
+		bundle=""
+		priority=["flatpak","snap","package","appimage","eduapp"]
+		for bund in priority:
+			if app.get("bundle",{}).get(bund,"")!="":
+				bundle=bund
+				break
+		if len(bundle)==0:
+			if app.get("bundle",{}).get("zomando","")!="":
+				bundle="zomando"
+			else:
+				return
+		self.rc.enableGui(True)
+		cursor=QtGui.QCursor(Qt.WaitCursor)
+		self.setCursor(cursor)
+		pkg=app.get('name').replace(' ','')
+		user=os.environ.get('USER')
+		res=self.rc.testInstall("{}".format(pkg),"{}".format(bundle),user=user)
+		try:
+			res=json.loads(res)[0]
+		except:
+			res={}
+		epi=res.get('epi')
+		self._debug("Invoking EPI for {}".format(epi))
+		if epi==None:
+			if res.get("done",0)==1 and "system package" in res.get("msg","").lower():
+				self.showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(app["name"]),timeout=4)
+			else:
+				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(app["name"]),timeout=4)
+			self.updateScreen()
+		else:
+			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
+			self.epi.setArgs(app,cmd,bundle)
+			self.epi.start()
+	#def _installBundle
 
 	def _loadDetails(self,*args,**kwargs):
 		icn=""
@@ -886,7 +929,7 @@ class portrait(QStackedWindowItem):
 		self.rp.table=newTable	
 		oldTable=None
 		self.appsLoaded=0
-		self.oldSearch=""
+		self.oldSearch=None
 		self.appsSeen=[]
 		return
 		for x in range(self.rp.table.rowCount()):
