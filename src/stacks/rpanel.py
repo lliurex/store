@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+import os
 from PySide2.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget,QSizePolicy,QCheckBox,QGraphicsDropShadowEffect
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread
@@ -10,6 +10,7 @@ _ = gettext.gettext
 ICON_SIZE=128
 MINTIME=0.2
 LAYOUT="appsedu"
+RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
 i18n={
 	"ALL":_("All"),
 	"AVAILABLE":_("Available"),
@@ -100,7 +101,7 @@ class mainPanel(QWidget):
 		lay.setStretch(1,0)
 		lay.setStretch(0,1)
 		self.btnSearch=QPushButton()
-		icn=QtGui.QIcon("rsrc/search.png")
+		icn=QtGui.QIcon(os.path.join(RSRC,"search.png"))
 		self.btnSearch.setIcon(icn)
 		self.btnSearch.setMinimumSize(int(ICON_SIZE/4),int(ICON_SIZE/4))
 		self.searchBox.setToolTip(i18n["SEARCH"])
