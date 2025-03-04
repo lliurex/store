@@ -15,6 +15,7 @@ class QComboButton(QCheckableComboBox):
 	installClicked=Signal("PyObject","PyObject")
 	def __init__(self,parent=None,**kwargs):
 		QCheckableComboBox.__init__(self, parent)
+		self.setFixedWidth(150)
 		self.showPop=False
 		self.setCursor(Qt.PointingHandCursor)
 		self.overrideHide=QCheckableComboBox.hidePopup
