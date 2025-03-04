@@ -174,7 +174,9 @@ class portrait(QStackedWindowItem):
 		self.setLayout(self.box)
 		self.box.setContentsMargins(0,0,0,0)
 		self.sortAsc=False
-		self.box.addWidget(self._navPane(),0,0,Qt.AlignLeft)
+		wdg=self._navPane()
+		wdg.setObjectName("wdg")
+		self.box.addWidget(wdg,0,0,Qt.AlignLeft)
 		self.rp=self._mainPane()
 		self.box.addWidget(self.rp,0,1)
 		self.lp=self._detailPane()
@@ -199,12 +201,17 @@ class portrait(QStackedWindowItem):
 	
 	def _navPane(self):
 		wdg=QWidget()
+		wdg.setObjectName("wdg")
 		lay=QVBoxLayout()
 		self.sortAsc=False
 		banner=self._defBanner()
 		lay.addWidget(banner)
 		btnBar=self._btnBar()
-		lay.addWidget(btnBar)
+		hlay=QHBoxLayout()
+		wdg2=QWidget()
+		wdg2.setLayout(hlay)
+		hlay.addWidget(btnBar,Qt.AlignCenter)
+		lay.addWidget(wdg2)
 		topBar=self._defTopBar()
 		if LAYOUT=="appsedu":
 			topBar.setVisible(False)
@@ -219,6 +226,7 @@ class portrait(QStackedWindowItem):
 		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","undefined.svg")
 		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		lbl.setPixmap(pxm)
+		lbl.setStyleSheet("""margin-top:24px;margin-bottom:12px;margin-left:20%;margin-right:10%""")
 		return lbl
 
 	def _defNavBar(self):
@@ -228,13 +236,13 @@ class portrait(QStackedWindowItem):
 		else:
 			vbox=QHBoxLayout()
 		wdg.setLayout(vbox)
-		vbox.setContentsMargins(0,0,10,0)
+		vbox.setContentsMargins(10,0,10,0)
 		if LAYOUT=="appsedu":
-			vbox.addWidget(self._appseduCertified())
+			vbox.addWidget(self._appseduCertified(),Qt.AlignRight)
 			self.cmbCategories=QListWidget()
 			self.cmbCategories.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 			self.cmbCategories.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-			self.cmbCategories.setStyleSheet("""color:#FFFFFF;background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:5px;padding-bottom:5px;padding-top:5px""")
+			self.cmbCategories.setStyleSheet("""color:#FFFFFF;background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:5px;padding-left:30px;padding-right:30px;padding-bottom:5px;padding-top:5px;margin-top:32""")
 			vbox.addWidget(self.cmbCategories,Qt.AlignTop|Qt.AlignCenter)
 		else:
 			self.cmbCategories=QComboBox()
@@ -282,13 +290,15 @@ class portrait(QStackedWindowItem):
 	def _appseduCertified(self):
 		wdg=QWidget()
 		lay=QHBoxLayout()
+		lay.setSpacing(3)
 		lbl=QLabel()
 		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","appsedu128x128.png")
 		lay.addWidget(lbl)
 		chk=QCheckBox(i18n.get("CERTIFIED"))
 		pxm=QtGui.QPixmap(img).scaled(24,24)
 		lbl.setPixmap(pxm)
-		chk.setStyleSheet("color:#FFFFFF;padding:5px;margin:5px;background:#2e746c;border-radius:5px")
+		chk.setStyleSheet("color:#FFFFFF;background:#2e746c;border-radius:5px;padding:3px;")
+		#lbl.setStyleSheet("color:#FFFFFF;padding:5px;margin:5px;margin-right:0;background:#2e746c;border-radius:5px")
 		chk.setLayoutDirection(Qt.RightToLeft)
 		lay.addWidget(chk)
 		wdg.setLayout(lay)
@@ -316,13 +326,16 @@ class portrait(QStackedWindowItem):
 
 	def _btnBar(self):
 		wdg=QWidget()
+		wdg.setObjectName("wdg")
 		lay=QHBoxLayout()
 		wdg.setLayout(lay)
 		btnHome=self._defHome()
-		lay.addWidget(btnHome)
+		lay.addWidget(btnHome,Qt.AlignRight)
 		btnInst=self._defInst()
-		lay.addWidget(btnInst)
-		wdg.setStyleSheet("""QPushButton{color:#002c4f;background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:5px;padding-bottom:5px;padding-top:5px}""")
+		lay.addWidget(btnInst,Qt.AlignLeft)
+		btnHome.setMaximumWidth(btnInst.sizeHint().width())
+		wdg.setMaximumWidth(btnInst.sizeHint().width()*2+10)
+		wdg.setStyleSheet("""QWidget#wdg{border-top:3px solid #AAAAAA;padding-top:12px} QPushButton{margin-top:24px;color:#002c4f;background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:5px;padding-bottom:5px;padding-top:5px}""")
 		return(wdg)
 	#def _btnBar
 
@@ -330,7 +343,7 @@ class portrait(QStackedWindowItem):
 		wdg=QPushButton(i18n.get("UPGRADES"))
 		wdg.clicked.connect(self._launchLlxUp)
 		wdg.setVisible(False)
-		wdg.setStyleSheet("""color:#002c4f;background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:5px;padding-bottom:5px;padding-top:5px""")
+		wdg.setStyleSheet("""color:#002c4f;background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:5px;padding:5px""")
 		return(wdg)
 	#def _defInfo(self):
 
