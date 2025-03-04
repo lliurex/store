@@ -48,7 +48,7 @@ class QPushButtonRebostApp(QPushButton):
 			os.makedirs(self.cacheDir)
 		self.setObjectName("rebostapp")
 		self.setMinimumHeight(250)
-		self.setMinimumWidth(150)
+		self.setMinimumWidth(140)
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
 		self.setAutoFillBackground(True)
@@ -234,6 +234,7 @@ class QPushButtonRebostApp(QPushButton):
 		if style.get("forbidden",False)==True:
 			self.iconUri.setEnabled(False)
 			self.btn.setEnabled(False)
+			self.btn.setStyleSheet("""color:#AAAAAA""")
 	#def _applyDecoration
 
 	def _removeDecoration(self):
