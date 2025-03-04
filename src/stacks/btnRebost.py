@@ -10,6 +10,7 @@ gettext.textdomain('appsedu')
 _ = gettext.gettext
 
 i18n={"INSTALL":_("Install")}
+RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
 
 LAYOUT="appsedu"
 class QPushButtonRebostApp(QPushButton):
@@ -35,9 +36,9 @@ class QPushButtonRebostApp(QPushButton):
 		self.btn.setObjectName("btnInstall")
 		self.btn.clicked.connect(self._emitInstall)
 		if self.app.get("name","").startswith("zero-"):
-			self.flyIcon=QPixmap("rsrc/zero-center128x128.png")
+			self.flyIcon=QPixmap(os.path.join(RSRC,"zero-center128x128.png"))
 		else:
-			self.flyIcon=QPixmap("rsrc/appsedu128x128.png")
+			self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu128x128.png"))
 		self.lblFlyIcon=QLabel()
 		self.lblFlyIcon.setStyleSheet("""background:transparent""")
 		scaleFactor=(self.iconSize/2)
