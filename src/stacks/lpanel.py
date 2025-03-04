@@ -23,6 +23,7 @@ ICON_SIZE=128
 BKG_COLOR_INSTALLED=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Highlight))
 ICON_SIZE=128
 MINTIME=0.2
+RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
 
 i18n={
 	"APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
@@ -123,7 +124,7 @@ class QLabelLink(QWidget):
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		hbox=QHBoxLayout()
-		icn=QtGui.QPixmap("rsrc/link24x24.png")
+		icn=QtGui.QPixmap(os.path.join(RSRC,"link24x24.png"))
 		lblIcn=QLabel()
 		lblIcn.setPixmap(icn.scaled(16,16))
 		hbox.addWidget(lblIcn)
@@ -369,8 +370,8 @@ class detailPanel(QWidget):
 					pass
 	#def _getRunappResults
 
-	def _genericEpiInstall(self):
-		bundle=self.lstInfo.currentText().lower().split(" ")[-1]
+	def _genericEpiInstall(self,*args):
+		bundle=self.lstInfo.currentText().lower().split(" ")[0]
 		self.rc.enableGui(True)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
@@ -385,14 +386,18 @@ class detailPanel(QWidget):
 		self._debug("Invoking EPI for {}".format(epi))
 		if epi==None:
 			if res.get("done",0)==1 and "system package" in res.get("msg","").lower():
-				self.showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
+				self.parent().showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
 			else:
-				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
+				self.parent().showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
 			self.updateScreen()
 		else:
-			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
-			self.epi.setArgs(self.app,cmd,bundle)
-			self.epi.start()
+			if bundle=="zomando" and self.app.get("state",{}).get("zomando","1")=="0":
+				self.zmdLauncher.setApp(self.app)
+				self.zmdLauncher.start()
+			else:
+				cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
+				self.epi.setArgs(self.app,cmd,bundle)
+				self.epi.start()
 	#def _genericEpiInstall
 	
 	def _getEpiResults(self,app,*args):
@@ -431,7 +436,7 @@ class detailPanel(QWidget):
 		self.box=QGridLayout()
 		self.btnBack=QPushButton()
 		self.btnBack.clicked.connect(self._clicked)
-		icn=QtGui.QIcon("rsrc/go-previous32x32.png")
+		icn=QtGui.QIcon(os.path.join(RSRC,"go-previous32x32.png"))
 		self.btnBack.setIcon(icn)
 		#self.btnBack.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
 		self.btnBack.setIconSize(self.btnBack.sizeHint())
@@ -497,7 +502,6 @@ class detailPanel(QWidget):
 		self.btnInstall.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
 		#self.btnInstall.setMinimumHeight(int(ICON_SIZE/3))
 		#self.btnInstall.setMaximumHeight(int(ICON_SIZE/3))
-		hlay.addWidget(self.btnInstall,Qt.AlignRight)
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
 		self.btnRemove.clicked.connect(self._genericEpiInstall)
 		self.btnRemove.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
@@ -520,31 +524,39 @@ class detailPanel(QWidget):
 
 		#self.lstInfo=QListWidget()
 		self.lstInfo=QComboButton()
-		self.lstInfo.setMaximumWidth(200)
+		self.lstInfo.setMaximumWidth(50)
 		#self.lstInfo.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.lstInfo.setStyleSheet("""QWidget{padding:6px;margin:1px;border:1px solid;border-color:#AAAAAA;border-radius:5px;}
-								QComboBox::drop-down{ subcontrol-origin: padding;
-								subcontrol-position: top right;
-								border-top-right-radius: 3px; /* same radius as the QComboBox */
-								border-bottom-right-radius: 3px;
-								}
-								QComboBox::down-arrow {
-									image: url("rsrc/drop-down16x16.png");
-									right:10px;
-									border-left:1px solid #AAAAAA;
-									padding:6px;
-									margin-left:18px;
-								}
-								QComboBox::down-arrow:on { /* shift the arrow when popup is open */
-									top: 1px;
-									right: 8px;
-								}
-								""")
+		self.lstInfo.setStyleSheet(self._lstInfoStyle())
 		self.lstInfo.currentTextChanged.connect(self._setLauncherOptions)	
-		self.lstInfo.clicked.connect(self._genericEpiInstall)
-		lay.addWidget(self.lstInfo,2,3,2,1,Qt.AlignTop)
+		self.lstInfo.installClicked.connect(self._genericEpiInstall)
+		lay.addWidget(self.btnInstall,2,3,2,1,Qt.AlignRight|Qt.AlignTop)
+		lay.addWidget(self.lstInfo,2,3,2,1,Qt.AlignBottom)
 		wdg.setLayout(lay)
 		return(wdg)
+
+	def _lstInfoStyle(self):
+		fgColor="unset"
+		if self.lstInfo.isEnabled()==False:
+			fgColor="#AAAAAA"
+		css="""QWidget{padding:6px;margin:1px;border:1px solid;border-color:#AAAAAA;border-radius:5px;}
+				QComboBox::drop-down{ subcontrol-origin: padding;
+				subcontrol-position: top right;
+				border-top-right-radius: 3px; /* same radius as the QComboBox */
+				border-bottom-right-radius: 3px;
+				}
+				QComboBox::down-arrow {
+					image: url("%s/drop-down16x16.png");
+					right:10px;
+					border-left:1px solid #AAAAAA;
+					padding:6px;
+					margin-left:18px;
+				}
+				QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+					top: 1px;
+					right: 8px;
+				}
+				"""%(RSRC)
+		return(css)
 
 	def _defScreenshot(self):
 		wdg=QScreenShotContainer()
@@ -600,7 +612,7 @@ class detailPanel(QWidget):
 			self.lblHomepage.setText(text)
 			self.lblHomepage.setToolTip(homepage)
 			#self.lblIcon.loadImg(self.app)
-			self.lstInfo.setMaximumWidth(self.lblDesc.width()/2)
+			#self.lstInfo.setMaximumWidth(self.lblDesc.width()/2)
 			if self.lblDesc.width()>self.lblTags.width():
 				self.lblTags.setMaximumWidth(self.lblDesc.width()/2)
 	#def _setUnknownAppInfo
@@ -666,7 +678,7 @@ class detailPanel(QWidget):
 		if applicense:
 			text="<strong>{}</strong>".format(applicense)
 		self._loadScreenshots()	
-		self._setLauncherOptions()
+		#self._setLauncherOptions()
 		self.lblTags.setText(self._generateCategoryTags())
 		self.lblTags.adjustSize()
 		self.loaded.emit(self.app)
@@ -741,8 +753,15 @@ class detailPanel(QWidget):
 
 	def _setLauncherOptions(self):
 		bundle=self.lstInfo.currentText()
-		bundle=bundle.split(" ")[-1]
+		if bundle==i18n["INSTALL"].upper():
+			return
+		bundle=bundle.split(" ")[0]
 		self.btnInstall.setText("{0} / {1}".format(bundle,self.app.get("versions",{}).get(bundle,"lliurex")))
+		self.lstInfo.setVisible(True)
+		self.lstInfo.setEnabled(True)
+		if "Forbidden" in self.app.get("categories",[]) or "eduapp" in bundle:
+			self.lstInfo.setVisible(False)
+		self.lstInfo.setText(i18n["INSTALL"].upper())
 
 	def _old_setLauncherOptions(self):
 		self.lstInfo.setEnabled(True)
@@ -772,7 +791,6 @@ class detailPanel(QWidget):
 			bundle="app" # Only for show purposes. "App" is friendly than "package"
 		if self.lstInfo.count()>0:
 			#self.btnInstall.setText("{0} {1}".format(i18n.get("INSTALL"),bundle))
-			print(self.app)
 			self.btnInstall.setText("{0} / {1}".format(bundle,self.app.get("versions",{}).get(bundle,"")))
 			self.btnRemove.setText("{0} {1}".format(i18n.get("REMOVE"),bundle))
 			self.btnLaunch.setText("{0} {1}".format(i18n.get("RUN"),bundle))
@@ -886,9 +904,10 @@ class detailPanel(QWidget):
 					bcolor=BKG_COLOR_INSTALLED
 					release.setBackground(bcolor)
 				release.setToolTip(version)
-				#release="{} {}".format(fversion,i)
-				release="{0} {1}".format(i18n["INSTALL"],i)
+				release="{} {}".format(i,fversion)
+				#release="{0}".format(i)
 				self.lstInfo.insertItem(idx,release)
+		self.lstInfo.setText(i18n["INSTALL"].upper())
 		if "eduapp" in bundles.keys():
 			bundles.pop("eduapp")
 		if len(bundles)<=0:
