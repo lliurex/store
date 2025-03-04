@@ -220,6 +220,7 @@ class portrait(QStackedWindowItem):
 		lay.addWidget(navBar)
 		wdg.setLayout(lay)
 		return(wdg)
+	#def _navPane
 
 	def _defBanner(self):
 		lbl=QLabel()
@@ -228,6 +229,7 @@ class portrait(QStackedWindowItem):
 		lbl.setPixmap(pxm)
 		lbl.setStyleSheet("""margin-top:24px;margin-bottom:12px;margin-left:20%;margin-right:10%""")
 		return lbl
+	#def _defBanner
 
 	def _defNavBar(self):
 		wdg=QWidget()
