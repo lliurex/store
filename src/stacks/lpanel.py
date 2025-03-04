@@ -524,13 +524,13 @@ class detailPanel(QWidget):
 
 		#self.lstInfo=QListWidget()
 		self.lstInfo=QComboButton()
-		self.lstInfo.setMaximumWidth(50)
 		#self.lstInfo.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.lstInfo.setStyleSheet(self._lstInfoStyle())
+		self.lstInfo.setMaximumWidth(50)
 		self.lstInfo.currentTextChanged.connect(self._setLauncherOptions)	
 		self.lstInfo.installClicked.connect(self._genericEpiInstall)
 		lay.addWidget(self.btnInstall,2,3,2,1,Qt.AlignRight|Qt.AlignTop)
-		lay.addWidget(self.lstInfo,2,3,2,1,Qt.AlignBottom)
+		lay.addWidget(self.lstInfo,2,3,2,1,Qt.AlignRight|Qt.AlignBottom)
 		wdg.setLayout(lay)
 		return(wdg)
 
