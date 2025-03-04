@@ -672,7 +672,7 @@ class portrait(QStackedWindowItem):
 			if isinstance(cat,str):
 				i18ncat=cat.replace(" · ","")
 			elif isinstance(cat,QListWidgetItem):
-				i18ncat=cat.text()
+				i18ncat=cat.text().replace(" · ","")
 			elif cat!=None:
 				i18ncat=cat.text().replace(" · ","")
 			flag=Qt.MatchFlags(Qt.MatchFlag.MatchContains)
@@ -919,36 +919,42 @@ class portrait(QStackedWindowItem):
 	#def _updateScreen
 
 	def resetScreen(self):
-		oldTable=self.rp.layout().itemAt(1)
-		oldSearch=self.rp.layout().itemAt(0)
-		searchStr=self.rp.searchBox.text()
-		newTable=self.rp._defTable()#_mainPane()
-		newSearch=self.rp._defSearch()#_mainPane()
-		self.rp.search=newSearch
-		self.rp.searchBox.returnPressed.connect(self._searchApps)
-		self.rp.searchBox.setText(searchStr)
-		self.rp.btnSearch.clicked.connect(self._searchAppsBtn)
-		if oldTable.widget()==None:
-			return
-		self.rp.layout().replaceWidget(oldSearch.widget(),newSearch)
-		self.rp.layout().replaceWidget(oldTable.widget(),newTable)
-		self.rp.table=newTable	
-		oldTable=None
-		self.appsLoaded=0
-		self.oldSearch=None
-		self.appsSeen=[]
-		return
-		for x in range(self.rp.table.rowCount()):
-			for y in range(self.rp.table.columnCount()):
-				w=self.rp.table.cellWidget(x,y)
-				if isinstance(w,QPushButton):
-					if w.scr.isRunning():
-						self.aux.append(w.scr)
-					elif w.scr in self.aux:
-						self.aux.remove(w)
-				self.rp.table.removeCellWidget(x,y)
+#	
+#		oldTable=self.rp.layout().takeAt(1)
+#		oldSearch=self.rp.layout().takeAt(0)
+#		searchStr=self.rp.searchBox.text()
+#		newTable=self.rp._defTable()#_mainPane()
+#		newSearch=self.rp._defSearch()#_mainPane()
+#		self.rp.search=newSearch
+#		self.rp.searchBox.returnPressed.connect(self._searchApps)
+#		self.rp.searchBox.setText(searchStr)
+#		self.rp.btnSearch.clicked.connect(self._searchAppsBtn)
+#		if oldTable==None:
+#			return
+#		if oldTable.widget()==None:
+#			return
+#		self.rp.layout().replaceWidget(oldSearch.widget(),newSearch)
+#		self.rp.layout().addWidget(newSearch,Qt.AlignCenter|Qt.AlignTop)
+#		self.rp.layout().addWidget(newTable)
+#		#self.rp.layout().replaceWidget(oldTable.widget(),newTable)
+#		self.rp.table=newTable	
+#		oldTable=None
+#		self.appsLoaded=0
+#		self.oldSearch=None
+#		self.appsSeen=[]
+#		return
+#		for x in range(self.rp.table.rowCount()):
+#			for y in range(self.rp.table.columnCount()):
+#				w=self.rp.table.cellWidget(x,y)
+#				if isinstance(w,QPushButton):
+#					if w.scr.isRunning():
+#						self.aux.append(w.scr)
+#					elif w.scr in self.aux:
+#						self.aux.remove(w)
+#				self.rp.table.removeCellWidget(x,y)
 		#self.rp.table.setRowCount(0)
 		#self.rp.table.setRowCount(1)
+		self.rp.table.clean()
 		self.appsLoaded=0
 		self.oldSearch=""
 		self.appsSeen=[]
