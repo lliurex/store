@@ -138,6 +138,7 @@ class portrait(QStackedWindowItem):
 		self.oldCursor=self.cursor()
 		self.refresh=True
 		self.epi=exehelper.appLauncher()
+		self.zmdLauncher=exehelper.zmdLauncher()
 		#self.epi.runEnded.connect(self._getEpiResults)
 		signal.signal(signal.SIGUSR1,self._signals)
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
@@ -793,10 +794,10 @@ class portrait(QStackedWindowItem):
 			if app.get("bundle",{}).get(bund,"")!="":
 				bundle=bund
 				break
-		if len(bundle)==0:
+		if len(bundle)==0 or bundle=="package":
 			if app.get("bundle",{}).get("zomando","")!="":
 				bundle="zomando"
-			else:
+			elif len(bundle)==0:
 				return
 		self.rc.enableGui(True)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
@@ -806,7 +807,8 @@ class portrait(QStackedWindowItem):
 		res=self.rc.testInstall("{}".format(pkg),"{}".format(bundle),user=user)
 		try:
 			res=json.loads(res)[0]
-		except:
+		except Exception as e:
+			self._debug(e)
 			res={}
 		epi=res.get('epi')
 		self._debug("Invoking EPI for {}".format(epi))
@@ -817,9 +819,13 @@ class portrait(QStackedWindowItem):
 				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(app["name"]),timeout=4)
 			self.updateScreen()
 		else:
-			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
-			self.epi.setArgs(app,cmd,bundle)
-			self.epi.start()
+			if bundle=="zomando" and app.get("state",{}).get("zomando","1")=="0":
+				self.zmdLauncher.setApp(app)
+				self.zmdLauncher.start()
+			else:
+				cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
+				self.epi.setArgs(app,cmd,bundle)
+				self.epi.start()
 	#def _installBundle
 
 	def _loadDetails(self,*args,**kwargs):
