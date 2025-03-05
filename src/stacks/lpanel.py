@@ -19,9 +19,8 @@ import exehelper
 from cmbBtn import QComboButton
 _ = gettext.gettext
 QString=type("")
-ICON_SIZE=128
+ICON_SIZE=96
 BKG_COLOR_INSTALLED=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Highlight))
-ICON_SIZE=128
 MINTIME=0.2
 RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
 
@@ -434,6 +433,7 @@ class detailPanel(QWidget):
 
 	def __initScreen__(self):
 		self.box=QGridLayout()
+		self.setObjectName("dp")
 		self.btnBack=QPushButton()
 		self.btnBack.clicked.connect(self._clicked)
 		icn=QtGui.QIcon(os.path.join(RSRC,"go-previous32x32.png"))
@@ -441,20 +441,25 @@ class detailPanel(QWidget):
 		#self.btnBack.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
 		self.btnBack.setIconSize(self.btnBack.sizeHint())
 		self.box.addWidget(self.btnBack,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
+		spacingI=QLabel("")
+		spacingE=QLabel("")
+		spacingI.setFixedWidth(32)
+		spacingE.setFixedWidth(48)
+		self.box.addWidget(spacingI,0,1,1,1)
 		self.header=self._defHeader()
 		self.header.setStyleSheet("QWidget#frame{margin:0px;padding:0px;border:1px solid #DDDDDD;bottom:0px}""")
-		self.box.addWidget(self.header,1,1,1,4)
+		self.box.addWidget(self.header,1,2,1,3)
 		self.screenShot=self._defScreenshot()
-		self.box.addWidget(self.screenShot,2,1,1,4)
+		self.box.addWidget(self.screenShot,2,2,1,3)
 		resources=self._defResources()
 		resources.setObjectName("resources")
 		resources.setAttribute(Qt.WA_StyledBackground, True)
 		self.lblDesc=QScrollLabel()
 		self.lblDesc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		self.lblDesc.setWordWrap(True)	  
-		self.box.addWidget(resources,3,1,1,1)
+		self.box.addWidget(resources,3,2,1,1)
 		resources.setStyleSheet("""QWidget#resources{margin-top:12px;border-right:3px solid;border-radius:1px;border-right-color:#EEEEEE;}""")
-		self.box.addWidget(self.lblDesc,3,2,2,2)
+		self.box.addWidget(self.lblDesc,3,3,2,1)
 
 		self.setLayout(self.box)
 		self.box.setColumnStretch(0,0)
@@ -464,6 +469,7 @@ class detailPanel(QWidget):
 		self.box.setRowStretch(0,0)
 		self.box.setRowStretch(4,1)
 		self.box.setRowStretch(5,0)
+		self.box.addWidget(spacingE,0,self.box.columnCount(),1,1)
 		
 		self.wdgSplash=QLabel()
 		errorLay=QGridLayout()
@@ -486,17 +492,21 @@ class detailPanel(QWidget):
 		wdg.setObjectName("frame")
 		lay=QGridLayout()
 		self.lblIcon=QLabelRebostApp()
-		lay.addWidget(self.lblIcon,1,1,2,1,Qt.AlignTop|Qt.AlignLeft)
+		self.lblIcon.setMaximumWidth(ICON_SIZE+6)
+		lay.addWidget(self.lblIcon,0,1,3,1)
   
 		self.lblName=QLabel()
-		lay.addWidget(self.lblName,1,2,1,1,Qt.AlignTop)
+		lay.addWidget(self.lblName,1,2,1,1,Qt.AlignLeft|Qt.AlignTop)
+		self.lblName.setStyleSheet("""margin-right:24;margin-top:0""")
 		self.lblSummary=QLabel()
+		self.lblSummary.setStyleSheet("""margin-right:24;margin-top:12""")
 		self.lblSummary.setWordWrap(True)
-		lay.addWidget(self.lblSummary,2,2,1,1,Qt.AlignTop)
+		lay.addWidget(self.lblSummary,1,2,2,1,Qt.AlignCenter|Qt.AlignLeft)
 
 		launchers=QWidget()
 		hlay=QVBoxLayout()
 		self.btnInstall=QLabel(i18n.get("INSTALL"))
+		self.btnInstall.setStyleSheet("""margin-bottom:75""")
 		#self.btnInstall.setStyleSheet("""color:#002c4f;background:#FFFFFF;border:1px solid;border-color:#AAAAAA;border-radius:5px;padding-bottom:5px;padding-top:5px""")
 		#self.btnInstall.clicked.connect(self._genericEpiInstall)
 		self.btnInstall.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
@@ -529,10 +539,17 @@ class detailPanel(QWidget):
 		self.lstInfo.setMaximumWidth(50)
 		self.lstInfo.currentTextChanged.connect(self._setLauncherOptions)	
 		self.lstInfo.installClicked.connect(self._genericEpiInstall)
-		lay.addWidget(self.btnInstall,2,3,2,1,Qt.AlignRight|Qt.AlignTop)
-		lay.addWidget(self.lstInfo,2,3,2,1,Qt.AlignRight|Qt.AlignBottom)
+		lay.addWidget(self.btnInstall,1,3,3,1,Qt.AlignLeft|Qt.AlignBottom)
+		lay.addWidget(self.lstInfo,2,3,1,1,Qt.AlignLeft|Qt.AlignTop)
+		spacing=QLabel("")
+		spacing.setFixedWidth(64)
+		lay.addWidget(spacing,0,lay.columnCount())
 		wdg.setLayout(lay)
+		lay.setColumnStretch(0,0)
+		lay.setColumnStretch(1,3)
+		lay.setColumnStretch(2,2)
 		return(wdg)
+	#def _defHeader
 
 	def _lstInfoStyle(self):
 		fgColor="unset"
@@ -591,7 +608,9 @@ class detailPanel(QWidget):
 
 	def _setUnknownAppInfo(self):
 		if self.app.get("name","")!="":
-			self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+			#Disabled as requisite (250214-11:52)
+			#self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+			self.lblName.setText("{}".format(self.app.get('name')))
 			icn=self.app.get("icon","")
 			pxm=None
 			if isinstance(icn,QtGui.QPixmap):
@@ -640,11 +659,15 @@ class detailPanel(QWidget):
 		if self.app.get("bundle",None)==None:
 			self._setUnknownAppInfo()
 			return
-		self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+		#Disabled as requisite (250214-11:52)
+		#self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+		self.lblName.setText("{}".format(self.app.get('name').upper()))
 		icn=self._getIconFromApp(self.app)
 		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
 		self.lblIcon.loadImg(self.app)
-		self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
+		#Disabled as requisite (250214-11:52)
+		#self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
+		self.lblSummary.setText("{}".format(self.app.get('summary','')))
 		bundles=list(self.app.get('bundle',{}).keys())
 	#	if "eduapp" in bundles:
 	#		self.app["description"]=i18n.get("APPUNKNOWN")
@@ -714,7 +737,9 @@ class detailPanel(QWidget):
 				continue
 			icat=_(cat)
 			if icat not in tags:
-				tags+="<a href=\"#{0}\"><strong>{0}</strong></a> / ".format(icat)
+				#Disabled as requisite  (250214-11:52)
+				#tags+="<a href=\"#{0}\"><strong>{0}</strong></a> / ".format(icat)
+				tags+="{0} / ".format(icat)
 		return("{}".format(tags.strip(" / ")))
 	#def _generateCategoryTags
 
@@ -756,7 +781,7 @@ class detailPanel(QWidget):
 		if bundle==i18n["INSTALL"].upper():
 			return
 		bundle=bundle.split(" ")[0]
-		self.btnInstall.setText("{0} / {1}".format(bundle,self.app.get("versions",{}).get(bundle,"lliurex")))
+		self.btnInstall.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
 		self.lstInfo.setVisible(True)
 		self.lstInfo.setEnabled(True)
 		if "Forbidden" in self.app.get("categories",[]) or "eduapp" in bundle:
@@ -960,7 +985,8 @@ class detailPanel(QWidget):
 			self.btnZomando.setVisible(False)
 			self.lblHomepage.setText("")
 			self.lblTags.setText("")
-			self.lblTags.linkActivated.connect(self._tagNav)
+			#Disabled as requisite (250214-11:52)
+			#self.lblTags.linkActivated.connect(self._tagNav)
 			self.app['name']=self.app.get('name','').replace(" ","")
 		else:
 			self._onError()
