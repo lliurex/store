@@ -39,6 +39,8 @@ class mainPanel(QWidget):
 		self.maxCol=1
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		lay=QVBoxLayout()
+		lay.addSpacing(32)
+		lay.setSpacing(24)
 		self.search=self._defSearch()
 		hlay=QHBoxLayout()
 		wdg=QWidget()
@@ -55,7 +57,7 @@ class mainPanel(QWidget):
 			tableCol=1
 		else:
 			tableCol=0
-		lay.addWidget(self.table)#,2-tableCol,tableCol,1,self.box.columnCount())
+		lay.addWidget(self.table)
 		
 		#self.table.setCellWidget(0,0,self.flow)
 		self.setLayout(lay)
@@ -77,7 +79,7 @@ class mainPanel(QWidget):
 		#table.horizontalHeader().hide()
 		#table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		if LAYOUT=="appsedu":
-			table.setStyleSheet("""QFlowTouchWidget{border:0px; background:#FFFFFF;margin-left:20%;margin-right:1%;} QFlowTouchWidget::item{padding:2px}""")
+			table.setStyleSheet("""QFlowTouchWidget{border:0px; background:#FFFFFF;margin-left:100%;margin-right:1%;} QFlowTouchWidget::item{padding:2px}""")
 		return(table)
 	#def _defTable
 
