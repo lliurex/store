@@ -457,7 +457,6 @@ class detailPanel(QWidget):
 		resources.setAttribute(Qt.WA_StyledBackground, True)
 		self.lblDesc=QScrollLabel()
 		self.lblDesc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		self.lblDesc.setWordWrap(True)	  
 		spacing=QLabel("")
 		spacing.setFixedHeight(6)
 		self.box.addWidget(spacing,3,1,1,1)
@@ -504,8 +503,9 @@ class detailPanel(QWidget):
 		self.lblName.setStyleSheet("""margin-right:24;margin-top:0""")
 		self.lblSummary=QLabel()
 		self.lblSummary.setStyleSheet("""margin-right:24;margin-top:0""")
+		self.lblSummary.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
 		self.lblSummary.setWordWrap(True)
-		lay.addWidget(self.lblSummary,0,2,3,1,Qt.AlignCenter|Qt.AlignLeft)
+		lay.addWidget(self.lblSummary,0,2,3,1)
 
 		launchers=QWidget()
 		hlay=QVBoxLayout()
