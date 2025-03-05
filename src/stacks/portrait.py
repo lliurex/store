@@ -379,8 +379,8 @@ class portrait(QStackedWindowItem):
 	#def enterEvent
 
 	def tableKeyPressEvent(self,*args):
-		if self.rp.table.doAutoScroll()==None:
-			self.rp.table.setAutoScroll(True)
+		#if self.rp.table.doAutoScroll()==None:
+		#	self.rp.table.setAutoScroll(True)
 		return(False)
 	#def tableKeyPressEvent
 
