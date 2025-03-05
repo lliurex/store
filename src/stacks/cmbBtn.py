@@ -62,7 +62,10 @@ class QComboButton(QCheckableComboBox):
 	#def hidePopup
 
 	def currentText(self):
-		text=""
+		text=self.lineEdit().text()
+		return(text)
+
+	def currentSelected(self):
 		items=self.getItems()
 		if len(items)>0:
 			for item in items:
