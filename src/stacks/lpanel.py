@@ -786,6 +786,7 @@ class detailPanel(QWidget):
 		self.lstInfo.setEnabled(True)
 		if "Forbidden" in self.app.get("categories",[]) or "eduapp" in bundle:
 			self.lstInfo.setVisible(False)
+			self.btnInstall.setVisible(False)
 		self.lstInfo.setText(i18n["INSTALL"].upper())
 
 	def _old_setLauncherOptions(self):
@@ -967,6 +968,7 @@ class detailPanel(QWidget):
 		#Reload config if app has been epified
 		if len(self.app)>0:
 			self.lstInfo.setVisible(True)
+			self.btnInstall.setVisible(True)
 			if self.app.get('name','')==self.epi.app.get('name',''):
 				try:
 					self.app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
