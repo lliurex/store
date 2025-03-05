@@ -67,6 +67,7 @@ class QComboButton(QCheckableComboBox):
 
 	def currentSelected(self):
 		items=self.getItems()
+		text=""
 		if len(items)>0:
 			for item in items:
 				if item.checkState() == Qt.Checked:
