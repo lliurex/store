@@ -9,7 +9,7 @@ Homepage: https://github.com/lliurex/rebost
 
 Package: appsedu
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}, rebost, rebost-data, python3-rebost, python3-qtextrawidgets(>=0.4), python3-pyside2.qtgui, python3-pyside2.qtcore
+Depends: ${misc:Depends}, ${python3:Depends}, rebost, rebost-data, python3-rebost, python3-qtextrawidgets(>=0.4), python3-pyside2.qtgui, python3-pyside2.qtcore,python3-pyside2.qtuitools
 Provides: rebost-gui
 Conflicts: rebost-gui 
 Replaces: rebost-gui
