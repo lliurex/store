@@ -370,7 +370,7 @@ class detailPanel(QWidget):
 	#def _getRunappResults
 
 	def _genericEpiInstall(self,*args):
-		bundle=self.lstInfo.currentText().lower().split(" ")[0]
+		bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
 		self.rc.enableGui(True)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
@@ -496,12 +496,12 @@ class detailPanel(QWidget):
 		lay.addWidget(self.lblIcon,0,1,3,1)
   
 		self.lblName=QLabel()
-		lay.addWidget(self.lblName,1,2,1,1,Qt.AlignLeft|Qt.AlignTop)
+		#lay.addWidget(self.lblName,1,2,1,1,Qt.AlignLeft|Qt.AlignTop)
 		self.lblName.setStyleSheet("""margin-right:24;margin-top:0""")
 		self.lblSummary=QLabel()
 		self.lblSummary.setStyleSheet("""margin-right:24;margin-top:12""")
 		self.lblSummary.setWordWrap(True)
-		lay.addWidget(self.lblSummary,1,2,2,1,Qt.AlignCenter|Qt.AlignLeft)
+		lay.addWidget(self.lblSummary,1,2,2,1,Qt.AlignTop|Qt.AlignLeft)
 
 		launchers=QWidget()
 		hlay=QVBoxLayout()
@@ -661,13 +661,16 @@ class detailPanel(QWidget):
 			return
 		#Disabled as requisite (250214-11:52)
 		#self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
-		self.lblName.setText("{}".format(self.app.get('name').upper()))
+	#	self.lblName.setText("{}".format(self.app.get('name').upper()))
 		icn=self._getIconFromApp(self.app)
 		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
 		self.lblIcon.loadImg(self.app)
 		#Disabled as requisite (250214-11:52)
 		#self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
-		self.lblSummary.setText("{}".format(self.app.get('summary','')))
+		summary="{}<br>{}".format(self.app["name"].upper(),self.app.get("summary",""))
+		if len(summary)>150:
+			summary="{}...".format(summary[0:150])
+		self.lblSummary.setText("{}".format(summary))
 		bundles=list(self.app.get('bundle',{}).keys())
 	#	if "eduapp" in bundles:
 	#		self.app["description"]=i18n.get("APPUNKNOWN")
