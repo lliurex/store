@@ -19,7 +19,7 @@ class QPushButtonRebostApp(QPushButton):
 	keypress=Signal()
 	def __init__(self,strapp,parent=None,**kwargs):
 		QPushButton.__init__(self, parent)
-		self.iconSize=kwargs.get("iconSize",128)
+		self.iconSize=kwargs.get("iconSize",96)
 		if LAYOUT=="appsedu":
 			self.iconSize=self.iconSize/2
 		if isinstance(strapp,str):
@@ -64,7 +64,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.loadImg(self.app)
 		self.setCursor(QCursor(Qt.PointingHandCursor))
 		lay=QGridLayout()
-		lay.addWidget(self.iconUri,0,0,Qt.AlignCenter|Qt.AlignBottom)
+		lay.addWidget(self.iconUri,0,0,Qt.AlignCenter|Qt.AlignTop)
 		lay.addWidget(self.lblFlyIcon,0,0,Qt.AlignRight|Qt.AlignTop)
 		lay.addWidget(self.label,1,0,Qt.AlignCenter|Qt.AlignTop)
 		lay.addWidget(self.btn,2,0,Qt.AlignCenter|Qt.AlignBottom)
