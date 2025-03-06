@@ -518,7 +518,7 @@ class detailPanel(QWidget):
 		#self.btnInstall.setMaximumHeight(int(ICON_SIZE/3))
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
 		self.btnRemove.clicked.connect(self._genericEpiInstall)
-		self.btnRemove.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
+		#self.btnRemove.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
 	#	hlay.addWidget(self.btnRemove,Qt.AlignLeft)
 
 		self.btnZomando=QPushButton(" {} zomando ".format(i18n.get("RUN")))
@@ -533,7 +533,8 @@ class detailPanel(QWidget):
 	#	hlay.addWidget(self.btnLaunch,Qt.AlignLeft)
 		launchers.setLayout(hlay)
 		lay.addWidget(launchers,1,3,1,1,Qt.AlignTop|Qt.AlignRight)
-		for i in [self.btnInstall,self.btnRemove,self.btnLaunch,self.btnZomando]:
+		#for i in [self.btnInstall,self.btnRemove,self.btnLaunch,self.btnZomando]:
+		for i in [self.btnInstall,self.btnLaunch,self.btnZomando]:
 			i.setMinimumWidth(self.btnZomando.sizeHint().width()+(4*i.font().pointSize()))
 
 		#self.lstInfo=QListWidget()
@@ -545,6 +546,9 @@ class detailPanel(QWidget):
 		self.lstInfo.installClicked.connect(self._genericEpiInstall)
 		lay.addWidget(self.btnInstall,1,3,3,1,Qt.AlignLeft|Qt.AlignBottom)
 		lay.addWidget(self.lstInfo,2,3,1,1,Qt.AlignLeft|Qt.AlignTop)
+		self.btnRemove.setStyleSheet(self._lstInfoStyle())
+		lay.addWidget(self.btnRemove,2,3,1,1)
+		self.btnRemove.setVisible(False)
 		spacing=QLabel("")
 		spacing.setFixedWidth(64)
 		lay.addWidget(spacing,0,lay.columnCount())
@@ -795,6 +799,16 @@ class detailPanel(QWidget):
 		bundle=bundle.split(" ")[0]
 		self.btnInstall.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
 		self.lstInfo.setText(i18n["INSTALL"].upper())
+		states=self.app.get("state").copy()
+		installed=False
+		if "zomando" in states:
+			states.pop("zomando")
+		for bundle,state in states.items():
+			if state=="0":
+				installed=True
+				break
+		self.btnRemove.setVisible(installed)
+	#def _setLauncherOptions
 
 	def _old_setLauncherOptions(self):
 		self.lstInfo.setEnabled(True)

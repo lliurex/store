@@ -9,7 +9,8 @@ import gettext
 gettext.textdomain('appsedu')
 _ = gettext.gettext
 
-i18n={"INSTALL":_("Install")}
+i18n={"INSTALL":_("Install"),
+	"REMOVE":_("Remove")}
 RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
 
 LAYOUT="appsedu"
@@ -33,6 +34,14 @@ class QPushButtonRebostApp(QPushButton):
 		self.btn=QPushButton()
 		#self.btn.setIcon(QIcon.fromTheme("download"))
 		self.btn.setText(i18n.get("INSTALL"))
+		states=self.app.get("state").copy()
+		print(states)
+		if "zomando" in states:
+			states.pop("zomando")
+		for bundle,state in states.items():
+			if state=="0":
+				self.btn.setText(i18n.get("REMOVE"))
+				break
 		self.btn.setObjectName("btnInstall")
 		self.btn.clicked.connect(self._emitInstall)
 		if self.app.get("name","").startswith("zero-"):
@@ -92,6 +101,15 @@ class QPushButtonRebostApp(QPushButton):
 		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name',''),self.app.get('summary'),'')
 		self.label.setText(text)
 		self.loadImg(self.app)
+		states=self.app.get("state").copy()
+		self.btn.setText(i18n.get("INSTALL"))
+		print(states)
+		if "zomando" in states:
+			states.pop("zomando")
+		for bundle,state in states.items():
+			if state=="0":
+				self.btn.setText(i18n.get("REMOVE"))
+				break
 		self._applyDecoration()
 	#def updateScreen
 
