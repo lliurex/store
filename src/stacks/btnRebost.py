@@ -35,7 +35,6 @@ class QPushButtonRebostApp(QPushButton):
 		#self.btn.setIcon(QIcon.fromTheme("download"))
 		self.btn.setText(i18n.get("INSTALL"))
 		states=self.app.get("state").copy()
-		print(states)
 		if "zomando" in states:
 			states.pop("zomando")
 		for bundle,state in states.items():
