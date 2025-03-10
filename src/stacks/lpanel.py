@@ -157,6 +157,7 @@ class detailPanel(QWidget):
 		self.app={}
 		self.appmenu=app2menu.app2menu()
 		self.rc=store.client()
+		self.instBundle=""
 		self.__initScreen__()
 	#def __init__
 
@@ -370,7 +371,10 @@ class detailPanel(QWidget):
 	#def _getRunappResults
 
 	def _genericEpiInstall(self,*args):
-		bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
+		if self.instBundle=="":
+			bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
+		else:
+			bundle=self.instBundle
 		self.rc.enableGui(True)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
@@ -757,6 +761,7 @@ class detailPanel(QWidget):
 	def _resetScreen(self,name,icon):
 		#self.parent.setWindowTitle("AppsEdu")
 		self.app={}
+		self.instBundle=""
 		self.app["name"]=name
 		self.app["icon"]=icon
 		self.app["summary"]=""
@@ -806,6 +811,7 @@ class detailPanel(QWidget):
 		for bundle,state in states.items():
 			if state=="0":
 				installed=True
+				self.instBundle=bundle
 				break
 		self.btnRemove.setVisible(installed)
 	#def _setLauncherOptions
@@ -964,11 +970,6 @@ class detailPanel(QWidget):
 			bundles.pop("eduapp")
 		if len(bundles)<=0:
 			self.btnInstall.setEnabled(False)
-		#self.lstInfo.setMaximumWidth(self.lstInfo.sizeHintForColumn(0)+16)
-		#self.lstInfo.setMinimumHeight(self.lstInfo.sizeHintForRow(0)*4.1)
-		#self.lstInfo.setMaximumHeight(self.lstInfo.sizeHintForRow(0)*self.lstInfo.count()-1)
-		#self.lstInfo.setCurrentRow(0)
-		#self.lblTags.setMaximumWidth(self.lstInfo.sizeHintForColumn(0)+16)
 	#def _setReleasesInfo
 
 	def _classifyBundles(self,bundles):
@@ -981,8 +982,9 @@ class detailPanel(QWidget):
 				#	continue
 				if os.path.isfile(bundles[bundle]):
 					state="0"
-			if state.isdigit()==False:
-				state="1"
+			if isinstance(state,str):
+				if state.isdigit()==False:
+					state="1"
 			if int(state)==0: #installed
 				installed.append(bundle)
 			else:
