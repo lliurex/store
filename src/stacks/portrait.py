@@ -308,11 +308,7 @@ class portrait(QStackedWindowItem):
 
 	def _defInst(self):
 		btnInst=QPushButton(i18n.get("INSTALLED"))
-		#icn=QtGui.QIcon.fromTheme("view-refresh")
-		#btnHome.setIcon(icn)
-		#btnHome.clicked.connect(self._goHome)
-		#btnHome.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
-		#btnHome.setIconSize(btnHome.sizeHint())
+		btnInst.clicked.connect(self._filterInstalled)
 		return(btnInst)
 	#def _defHome
 
@@ -561,6 +557,29 @@ class portrait(QStackedWindowItem):
 		self.btnFilters.setText(",".join(desc))
 		return(filters)
 	#def _readFilters
+
+	def _filterInstalled(self):
+		self.resetScreen()
+		appsFiltered=[]
+		for app in self.apps:
+			japp=json.loads(app)
+			bundles=japp.get("bundle")
+			states=japp.get("state",{}).copy()
+			zmd="1"
+			if "zomando" in states.keys():
+				zmd=states.pop("zomando")
+			for bun in bundles.keys():
+				if states.get(bun,"1")!="0" or zmd!="0":
+					continue
+				appsFiltered.append(app)
+				break
+		self.apps=appsFiltered.copy()
+		self.appsRaw=self.apps.copy()
+		self.refresh=True
+		if len(self.apps)==0:
+			self.refresh=False
+		self.updateScreen()
+	#def _filterInstalled
 
 	def _applyFilters(self,filters):
 		appsFiltered=[]
