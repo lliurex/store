@@ -793,12 +793,12 @@ class detailPanel(QWidget):
 	#def _onError
 
 	def _setLauncherOptions(self):
-		hide=False
+		visible=True
 		bundle=self.lstInfo.currentText()
 		if "Forbidden" in self.app.get("categories",[]) or "eduapp" in bundle:
-			hide=True
-		self.lstInfo.setVisible(not(hide))
-		self.btnInstall.setVisible(not(hide))
+			visible=False
+		self.btnInstall.setVisible(visible)
+		self.lstInfo.setVisible(visible)
 		if bundle==i18n["INSTALL"].upper():
 			return
 		bundle=bundle.split(" ")[0]
@@ -860,6 +860,7 @@ class detailPanel(QWidget):
 	def _setListState(self,item):
 		#REM 
 		# DISABLED ATM
+		return
 		self.btnInstall.setVisible(True)
 		self.btnRemove.setVisible(False)
 		self.btnLaunch.setVisible(False)
