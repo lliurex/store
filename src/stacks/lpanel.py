@@ -955,6 +955,11 @@ class detailPanel(QWidget):
 				#release="{0}".format(i)
 				self.lstInfo.insertItem(idx,release)
 		self.lstInfo.setText(i18n["INSTALL"].upper())
+		for idx in range(0,len(priority)):
+			try:
+				self.lstInfo.setState(idx,False)
+			except:
+				break
 		if "eduapp" in bundles.keys():
 			bundles.pop("eduapp")
 		if len(bundles)<=0:
