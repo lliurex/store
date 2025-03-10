@@ -115,7 +115,7 @@ class mainPanel(QWidget):
 		lay.addWidget(self.btnSearch,Qt.Alignment(-1))
 		wdg.setLayout(lay)
 		wdg.setStyleSheet("""#wsearch{border:0px solid #FFFFFF;background:#002c4f;border-radius:20px}#search{color:#FFFFFF;background:#002c4f;border:0px solid} #bsearch{color:#FFFFFF;background:#002c4f;border:0px;}""")
-		wdg.setMaximumWidth(250)
+		wdg.setMaximumWidth(450)
 		return(wdg)
 	#def _defSearch
 
