@@ -34,12 +34,14 @@ class QPushButtonRebostApp(QPushButton):
 		self.btn=QPushButton()
 		#self.btn.setIcon(QIcon.fromTheme("download"))
 		self.btn.setText(i18n.get("INSTALL"))
+		self.instBundle=""
 		states=self.app.get("state").copy()
 		if "zomando" in states:
 			states.pop("zomando")
 		for bundle,state in states.items():
 			if state=="0":
 				self.btn.setText(i18n.get("REMOVE"))
+				self.instBundle=bundle
 				break
 		self.btn.setObjectName("btnInstall")
 		self.btn.clicked.connect(self._emitInstall)
@@ -56,7 +58,7 @@ class QPushButtonRebostApp(QPushButton):
 		if os.path.exists(self.cacheDir)==False:
 			os.makedirs(self.cacheDir)
 		self.setObjectName("rebostapp")
-		self.setMinimumHeight(250)
+		self.setMinimumHeight(220)
 		self.setMinimumWidth(140)
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
@@ -86,6 +88,9 @@ class QPushButtonRebostApp(QPushButton):
 	#def __init__
 
 	def _emitInstall(self,*args):
+		if self.instBundle!="":
+			self.app["state"]={self.instBundle:"0"}
+			self.app["bundle"]={self.instBundle:self.app["bundle"][self.instBundle]}
 		self.install.emit(self.app)
 	#def _emitInstall
 
@@ -104,9 +109,11 @@ class QPushButtonRebostApp(QPushButton):
 		self.btn.setText(i18n.get("INSTALL"))
 		if "zomando" in states:
 			states.pop("zomando")
+		self.instBundle=""
 		for bundle,state in states.items():
 			if state=="0":
 				self.btn.setText(i18n.get("REMOVE"))
+				self.instBundle=bundle
 				break
 		self._applyDecoration()
 	#def updateScreen
