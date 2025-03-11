@@ -70,7 +70,7 @@ class mainPanel(QWidget):
 		#table.setRowCount(1)
 		#table.setAutoScroll(False)
 		table=QFlowTouchWidget()
-		table.flowLayout.setSpacing(10)
+		table.flowLayout.setSpacing(24)
 		table.leaveEvent=self.tableLeaveEvent
 		table.setAttribute(Qt.WA_AcceptTouchEvents)
 		#table.setColumnCount(self.maxCol)
@@ -114,7 +114,7 @@ class mainPanel(QWidget):
 		lay.addWidget(self.searchBox)#,Qt.AlignCenter|Qt.AlignCenter)
 		lay.addWidget(self.btnSearch,Qt.Alignment(-1))
 		wdg.setLayout(lay)
-		wdg.setStyleSheet("""#wsearch{border:0px solid #FFFFFF;background:#002c4f;border-radius:20px}#search{color:#FFFFFF;background:#002c4f;border:0px solid} #bsearch{color:#FFFFFF;background:#002c4f;border:0px;}""")
+		wdg.setStyleSheet("""#wsearch{border:0px solid #FFFFFF;background:#002c4f;border-radius:20px}#search{color:#FFFFFF;background:#002c4f;border:0px solid;margin-left:12px;} #bsearch{color:#FFFFFF;background:#002c4f;border:0px;margin-right:12px}""")
 		wdg.setMaximumWidth(450)
 		return(wdg)
 	#def _defSearch
