@@ -63,14 +63,15 @@ class QPushButtonRebostApp(QPushButton):
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
 		self.setAutoFillBackground(True)
-		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
-		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name','').strip(),self.app.get('summary','').strip(),'')
+		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
+		self.setToolTip(text)
+		#text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name','').strip(),self.app.get('summary','').strip(),'')
 		self.label=QLabel(text)
 		self.label.setWordWrap(True)
 		self.label.setAlignment(Qt.AlignCenter)
 		img=self.app.get('icon','')
 		self.iconUri=QLabel()
-		self.iconUri.setStyleSheet("""QLabel{margin-top: %spx;margin-right:%spx}"""%(self.margin,self.margin))
+		self.iconUri.setStyleSheet("""margin-top: %spx;margin-right:%spx;margin-bottom:%spx;"""%(self.margin,self.margin,self.margin))
 		self.loadImg(self.app)
 		self.setCursor(QCursor(Qt.PointingHandCursor))
 		lay=QGridLayout()
@@ -101,8 +102,10 @@ class QPushButtonRebostApp(QPushButton):
 		return(False)
 
 	def updateScreen(self):
-		self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
-		text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name',''),self.app.get('summary'),'')
+		#self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
+		#text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name',''),self.app.get('summary'),'')
+		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
+		self.setToolTip(text)
 		self.label.setText(text)
 		self.loadImg(self.app)
 		states=self.app.get("state").copy()
@@ -129,7 +132,7 @@ class QPushButtonRebostApp(QPushButton):
 		icn=''
 		if os.path.isfile(img):
 			icn=QPixmap.fromImage(QImage(img))
-			icn=icn.scaled(self.iconSize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation)
+			icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
 		elif img=='':
 			icn2=QIcon.fromTheme(app.get('pkgname'),QIcon.fromTheme("appedu-generic"))
 			icn=icn2.pixmap(self.iconSize,self.iconSize)
@@ -141,12 +144,12 @@ class QPushButtonRebostApp(QPushButton):
 				iconPath=os.path.join("/".join(prefix),"active","/".join(tmp[idx:]))
 				if os.path.isfile(iconPath):
 					icn=QPixmap.fromImage(iconPath)
-					icn=icn.scaled(self.iconSize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation)
+					icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
 		if icn:
 			wsize=self.iconSize
 			if "/usr/share/banners/lliurex-neu" in img:
 				wsize*=2
-			self.iconUri.setPixmap(icn.scaled(wsize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
+			self.iconUri.setPixmap(icn.scaled(wsize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation))
 		elif img.startswith('http'):
 			self.scr.start()
 			self.scr.imageLoaded.connect(self.load)
@@ -251,8 +254,9 @@ class QPushButtonRebostApp(QPushButton):
 				border-color: #EEEEEE; 
 				border-radius:5px;
 				padding:3px;
-				padding-left:10px;
-				padding-right:10px;
+				padding-left:12px;
+				padding-right:12px;
+				margin:12px;
 			}
 			"""%(style["bkgColor"],style["brdColor"],brdWidth,focusedBrdWidth,style["frgColor"],style["bkgColor"],style["frgColor"],style["bkgBtnColor"],style["brdBtnColor"]))
 		if style.get("forbidden",False)==True:
