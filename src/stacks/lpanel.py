@@ -686,7 +686,9 @@ class detailPanel(QWidget):
 		bundles=list(self.app.get('bundle',{}).keys())
 	#	if "eduapp" in bundles:
 	#		self.app["description"]=i18n.get("APPUNKNOWN")
-		homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
+		homepage=self.app.get('infopage','')
+		if homepage=='':
+			homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
 		if not isinstance(homepage,str):
 			homepage='https://portal.edu.gva.es/appsedu/aplicacions-lliurex'
 		if homepage:
