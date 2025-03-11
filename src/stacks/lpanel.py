@@ -691,6 +691,7 @@ class detailPanel(QWidget):
 			homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
 		if not isinstance(homepage,str):
 			homepage='https://portal.edu.gva.es/appsedu/aplicacions-lliurex'
+		text=""
 		if homepage:
 			homepage=homepage.rstrip("/")
 			desc=homepage
