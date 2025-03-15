@@ -2,7 +2,7 @@
 import os
 import json
 from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy
-from PySide2.QtCore import Qt,Signal
+from PySide2.QtCore import Qt,Signal,QThread
 from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
 from QtExtraWidgets import QScreenShotContainer
 import gettext
@@ -14,27 +14,72 @@ i18n={"INSTALL":_("Install"),
 RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
 
 LAYOUT="appsedu"
+
+class processData(QThread):
+	processed=Signal("PyObject")
+	def __init__(self,*args,**kwargs):
+		QThread.__init__(self,None)
+		self.data=args[0]
+
+	def run(self):
+		if isinstance(self.data,str):
+			self.app=json.loads(self.data)
+		else:
+			self.app=self.data
+		self.processed.emit(self.app)
+		return True
+	#def run
+#class processData
+
 class QPushButtonRebostApp(QPushButton):
 	clicked=Signal("PyObject","PyObject")
 	install=Signal("PyObject")
+	ready=Signal("PyObject")
 	keypress=Signal()
+
 	def __init__(self,strapp,parent=None,**kwargs):
 		QPushButton.__init__(self, parent)
 		self.iconSize=kwargs.get("iconSize",96)
 		if LAYOUT=="appsedu":
 			self.iconSize=self.iconSize/2
-		if isinstance(strapp,str):
-			self.app=json.loads(strapp)
-			if strapp=="{}":
-				return(None)
-		else:
-			self.app=strapp
 		self.margin=12
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
-		self.btn=QPushButton()
+		self.setObjectName("rebostapp")
+		self.setMinimumHeight(220)
+		self.setMinimumWidth(140)
+		self.setAttribute(Qt.WA_StyledBackground, True)
+		self.setAttribute(Qt.WA_AcceptTouchEvents)
+		self.setAutoFillBackground(True)
 		#self.btn.setIcon(QIcon.fromTheme("download"))
-		self.btn.setText(i18n.get("INSTALL"))
 		self.instBundle=""
+		self.btn=QPushButton()
+		self.btn.setText(i18n.get("INSTALL"))
+		self.btn.setObjectName("btnInstall")
+		self.btn.clicked.connect(self._emitInstall)
+		if LAYOUT!="appsedu":
+			self.btn.setVisible(False)
+		self.lblFlyIcon=QLabel()
+		self.lblFlyIcon.setStyleSheet("""background:transparent""")
+		if os.path.exists(self.cacheDir)==False:
+			os.makedirs(self.cacheDir)
+		self.label=QLabel()
+		self.label.setWordWrap(True)
+		self.label.setAlignment(Qt.AlignCenter)
+		self.iconUri=QLabel()
+		self.iconUri.setStyleSheet("""margin-top: %spx;margin-right:%spx;margin-bottom:%spx;"""%(self.margin,self.margin,self.margin))
+		self.setCursor(QCursor(Qt.PointingHandCursor))
+		lay=QGridLayout()
+		#lay.setAlignment(Qt.AlignCenter)
+		self.refererApp=None
+		self.setDefault(True)
+		self.setLayout(lay)
+		self.installEventFilter(self)
+		self.data=processData(strapp)
+		self.data.processed.connect(self._renderGui)
+		self.data.start()
+
+	def _renderGui(self,*args):
+		self.app=args[0]
 		states=self.app.get("state").copy()
 		if "zomando" in states:
 			states.pop("zomando")
@@ -43,49 +88,27 @@ class QPushButtonRebostApp(QPushButton):
 				self.btn.setText(i18n.get("REMOVE"))
 				self.instBundle=bundle
 				break
-		self.btn.setObjectName("btnInstall")
-		self.btn.clicked.connect(self._emitInstall)
 		if self.app.get("name","").startswith("zero-"):
 			self.flyIcon=QPixmap(os.path.join(RSRC,"zero-center128x128.png"))
 		else:
 			self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu128x128.png"))
-		self.lblFlyIcon=QLabel()
-		self.lblFlyIcon.setStyleSheet("""background:transparent""")
 		scaleFactor=(self.iconSize/2)
 		self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
-		if LAYOUT!="appsedu":
-			self.btn.setVisible(False)
-		if os.path.exists(self.cacheDir)==False:
-			os.makedirs(self.cacheDir)
-		self.setObjectName("rebostapp")
-		self.setMinimumHeight(220)
-		self.setMinimumWidth(140)
-		self.setAttribute(Qt.WA_StyledBackground, True)
-		self.setAttribute(Qt.WA_AcceptTouchEvents)
-		self.setAutoFillBackground(True)
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
 		self.setToolTip(text)
 		#text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name','').strip(),self.app.get('summary','').strip(),'')
-		self.label=QLabel(text)
-		self.label.setWordWrap(True)
-		self.label.setAlignment(Qt.AlignCenter)
+		self.label.setText(text)
 		img=self.app.get('icon','')
-		self.iconUri=QLabel()
-		self.iconUri.setStyleSheet("""margin-top: %spx;margin-right:%spx;margin-bottom:%spx;"""%(self.margin,self.margin,self.margin))
 		self.loadImg(self.app)
-		self.setCursor(QCursor(Qt.PointingHandCursor))
-		lay=QGridLayout()
-		lay.addWidget(self.iconUri,0,0,Qt.AlignCenter|Qt.AlignTop)
-		lay.addWidget(self.lblFlyIcon,0,0,Qt.AlignRight|Qt.AlignTop)
-		lay.addWidget(self.label,1,0,Qt.AlignCenter|Qt.AlignTop)
-		lay.addWidget(self.btn,2,0,Qt.AlignCenter|Qt.AlignBottom)
-		#lay.setAlignment(Qt.AlignCenter)
-		self.refererApp=None
-		self.setDefault(True)
-		self.setLayout(lay)
-		self.installEventFilter(self)
-		shadow=QGraphicsDropShadowEffect()
-		self.setGraphicsEffect(shadow)
+		self.layout().addWidget(self.iconUri,0,0,Qt.AlignCenter|Qt.AlignTop)
+		self.layout().addWidget(self.lblFlyIcon,0,0,Qt.AlignRight|Qt.AlignTop)
+		self.layout().addWidget(self.label,1,0,Qt.AlignCenter|Qt.AlignTop)
+		self.layout().addWidget(self.btn,2,0,Qt.AlignCenter|Qt.AlignBottom)
+		#shadow=QGraphicsDropShadowEffect()
+		#shadow.setOffset(0, 3)
+		#shadow.setBlurRadius(5)
+		#shadow.setColor(QColor(0, 0, 0, 128))
+		#self.setGraphicsEffect(shadow)
 	#def __init__
 
 	def _emitInstall(self,*args):
