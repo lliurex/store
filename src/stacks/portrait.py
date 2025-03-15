@@ -496,7 +496,6 @@ class portrait(QStackedWindowItem):
 		if LAYOUT!="appsedu":
 			self.btnSettings.setVisible(True)
 		self._return()
-		print("ENDUPDATE")
 		#self.progress.setVisible(False)
 	#def _endUpdate
 
@@ -524,7 +523,6 @@ class portrait(QStackedWindowItem):
 		elif isinstance(self.cmbCategories,QComboBox):
 			self.cmbCategories.setCurrentIndex(0)
 		self.updateScreen()
-		print("GOHOME")
 	#def _goHome
 
 	def _filterView(self,getApps=True):
@@ -742,9 +740,7 @@ class portrait(QStackedWindowItem):
 				self.rp.setVisible(True)
 			else:
 				self.first=ev
-		print(ev.type())
 		if isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.Paint:
-			print(args[0])
 			args[0].setVisible(True)
 			self.progress.stop()
 		return(False)
@@ -758,7 +754,6 @@ class portrait(QStackedWindowItem):
 		for wdg in args[0]:
 			if wdg==None:
 				continue
-			print(wdg)
 			wdg.setVisible(False)
 			self.rp.table.addWidget(wdg)
 		self.rp.table.flowLayout.setEnabled(True)
@@ -778,7 +773,6 @@ class portrait(QStackedWindowItem):
 
 	def _beginLoadData(self,idx,idxEnd,applist=None):
 		#appData=getData(apps)
-		print("BEGin LOAD")
 		if self.getData.isRunning()==False:
 			self._beginUpdate()
 			if applist==None:
@@ -787,13 +781,10 @@ class portrait(QStackedWindowItem):
 				apps=applist[idx:idxEnd]
 			self.getData.setApps(apps)
 			self.getData.start()
-			print("GETTIN' DATA")
 			self.getData.dataLoaded.connect(self._loadData)
-		print("BEGin LOADi<")
 	#def _beginLoadData
 
 	def _loadData(self,apps):
-		print("LOAD DATA")
 		col=0
 		#self.table.setRowHeight(self.table.rowCount()-1,btn.iconSize+int(btn.iconSize/16))
 		colspan=random.randint(1,self.maxCol)
@@ -827,18 +818,14 @@ class portrait(QStackedWindowItem):
 		self.rp.table.flowLayout.setEnabled(True)
 		self.rp.table.setVisible(True)
 		self._endLoadData()
-		print("LOAD DATA<")
 	#def _loadData
 
 	def _endLoadData(self):
-		print("APPS LOADED: {}".format(self.appsLoaded))
 		if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
 			#self._beginUpdate()
 			self.chkRebost.start()
 			self.chkRebost.test.connect(self._goHome)
-			print("FOLLONAZO")
 		else:
-			print("CARGO")
 			self.rp.table.setVisible(True)
 			for wdg in self.wdgs:
 		#		appWdg=wdg[2]
@@ -853,7 +840,6 @@ class portrait(QStackedWindowItem):
 				pass
 			self._endUpdate()
 		self.cleanAux()
-		print("END LOAD DATA<")
 		#self.ready.emit(self.wdgs)
 		self.refresh=True
 	#def _endLoadData(self):
@@ -954,7 +940,6 @@ class portrait(QStackedWindowItem):
 		self.setWindowTitle("{}".format(APPNAME))
 		self.lp.hide()
 		self.rp.show()
-		print("RETURN")
 	#def _return
 
 	def _gotoSettings(self):
@@ -990,7 +975,6 @@ class portrait(QStackedWindowItem):
 			for i in self.referersShowed.keys():
 				self.referersShowed[i]=None
 			self.cleanAux()
-			print("CLEANED")
 			self._beginLoadData(self.appsLoaded,self.appsToLoad)
 		else:
 			self._endUpdate()

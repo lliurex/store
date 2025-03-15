@@ -21,7 +21,6 @@ class progress(QThread):
 	def run(self):
 		self.running=True
 		while self.running==True:
-			print("EMITIENDO")
 			self.updated.emit()
 			#self._doProgress()
 			time.sleep(0.05)
@@ -34,14 +33,12 @@ class progress(QThread):
 		elif color.red()>254:
 			self.inc*=-1
 		#print(self.inc)
-		print(color.red())
 		pxm2=QPixmap(self.pxm.size())
 		pxm2.fill(color)
 		pxm2.setMask(self.pxm.createMaskFromColor(Qt.transparent))
 		self.lbl.setPixmap(pxm2)
 
 	def stop(self):
-		print("ME DETIENEN")
 		self.running=False
 
 class QProgressImage(QLabel):
@@ -80,7 +77,6 @@ class QProgressImage(QLabel):
 			self._doProgress()
 
 	def _doProgress(self,*args):
-		print("HEY")
 		self.running=True
 		color=QColor(self.oldColor.red()+self.inc,self.oldColor.green()+self.inc,self.oldColor.blue()+self.inc)
 		self.oldColor=color
@@ -89,7 +85,6 @@ class QProgressImage(QLabel):
 		elif color.red()>254:
 			self.inc*=-1
 		#print(self.inc)
-		print(color.red())
 		self.pxm2.fill(color)
 		self.pxm2.setMask(self.pxm.createMaskFromColor(Qt.transparent))
 		self.setPixmap(self.pxm2)
@@ -98,7 +93,6 @@ class QProgressImage(QLabel):
 
 	def _changeColor(*args):
 		color2=QColor(122,122,122)
-		print(color2)
 		pxm2.fill(color2)
 		pxm2.setMask(pxm.createMaskFromColor(Qt.transparent))
 		self.setPixmap(pxm2)
