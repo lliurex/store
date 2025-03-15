@@ -9,8 +9,8 @@ from PySide2.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHead
 							QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget, \
 							QSizePolicy,QCheckBox,QGraphicsDropShadowEffect,QListWidgetItem
 from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal,QThread
-from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QStackedWindowItem,QInfoLabel
+from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation,QRect,QPoint,QEasingCurve,QEvent
+from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QStackedWindowItem,QInfoLabel,QFlowTouchWidget
 from rebost import store 
 import subprocess
 import json
@@ -20,6 +20,7 @@ import dbus.mainloop.glib
 import random
 import gettext
 from btnRebost import QPushButtonRebostApp
+from prgBar import QProgressImage
 import exehelper
 from rpanel import mainPanel
 from lpanel import detailPanel
@@ -78,14 +79,14 @@ class chkUpgrades(QThread):
 #class chkUpgrades
 
 class chkRebost(QThread):
-	chkRebost=Signal("PyObject")
+	test=Signal("PyObject")
 	def __init__(self):
 		QThread.__init__(self, None)
 		self.rc=store.client()
 	
 	def run(self):
 		self.rc.execute("list","office")
-		self.chkRebost.emit(True)
+		self.test.emit(True)
 #class chkRebost
 
 class getData(QThread):
@@ -106,6 +107,7 @@ class getData(QThread):
 #class getData(QThread):
 
 class portrait(QStackedWindowItem):
+	ready=Signal("PyObject")
 	def __init_stack__(self):
 		self.aux=[]
 		self.init=True
@@ -144,6 +146,7 @@ class portrait(QStackedWindowItem):
 		self.epi=exehelper.appLauncher()
 		self.zmdLauncher=exehelper.zmdLauncher()
 		#self.epi.runEnded.connect(self._getEpiResults)
+		#self.ready.connect(self._fillTable)
 		signal.signal(signal.SIGUSR1,self._signals)
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 	#def __init__
@@ -182,6 +185,7 @@ class portrait(QStackedWindowItem):
 		wdg.setObjectName("wdg")
 		self.box.addWidget(wdg,0,0,Qt.AlignLeft)
 		self.rp=self._mainPane()
+		self.rp.table.installEventFilter(self)
 		self.box.addWidget(self.rp,0,1)
 		self.lp=self._detailPane()
 		self.lp.clicked.connect(self._return)
@@ -190,7 +194,7 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(self.lp,0,1)
 		self.lp.hide()
 		self.progress=self._defProgress()
-		self.box.addWidget(self.progress,self.box.rowCount()-1,0,1,2,Qt.AlignBottom)
+		self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
 		self.btnSettings=QPushButton()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		self.btnSettings.setIcon(icn)
@@ -350,16 +354,7 @@ class portrait(QStackedWindowItem):
 	#def _defInfo(self):
 
 	def _defProgress(self):
-		wdg=QWidget()
-		vbox=QVBoxLayout()
-		lblProgress=QLabel(i18n["NEWDATA"])
-		vbox.addWidget(lblProgress,Qt.AlignCenter|Qt.AlignBottom)
-		progress=QProgressBar()
-		progress.setMinimum(0)
-		progress.setMaximum(0)
-		vbox.addWidget(progress,Qt.AlignCenter)
-		wdg.setLayout(vbox)
-		wdg.setObjectName("progress")
+		wdg=QProgressImage()
 		return(wdg)
 	#def _defProgress
 
@@ -492,14 +487,17 @@ class portrait(QStackedWindowItem):
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.btnSettings.setVisible(False)
-		self.progress.setVisible(True)
+		self.progress.start()
+		self.rp.setVisible(False)
 	#def _beginUpdate
 
 	def _endUpdate(self):
 		self.setCursor(self.oldCursor)
 		if LAYOUT!="appsedu":
 			self.btnSettings.setVisible(True)
-		self.progress.setVisible(False)
+		self._return()
+		print("ENDUPDATE")
+		#self.progress.setVisible(False)
 	#def _endUpdate
 
 	def _shuffleApps(self):
@@ -526,6 +524,7 @@ class portrait(QStackedWindowItem):
 		elif isinstance(self.cmbCategories,QComboBox):
 			self.cmbCategories.setCurrentIndex(0)
 		self.updateScreen()
+		print("GOHOME")
 	#def _goHome
 
 	def _filterView(self,getApps=True):
@@ -731,16 +730,55 @@ class portrait(QStackedWindowItem):
 		#self._endUpdate()
 	#def _loadCategory
 
+	def eventFilter(self,*args):
+		ev=args[1]
+		if ev.type()==QEvent.Type.Resize:
+			if hasattr(self,"first")==False:
+				self.first=ev
+				ev.accept()
+			if self.first!=None:
+				self.first=None
+				self.progress.stop()
+				self.rp.setVisible(True)
+			else:
+				self.first=ev
+		print(ev.type())
+		if isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.Paint:
+			print(args[0])
+			args[0].setVisible(True)
+			self.progress.stop()
+		return(False)
+	#def eventFilter(self,*args):
+
+	def _fillTable(self,*args):
+		self.progress.start()
+		self.rp.table.flowLayout.setEnabled(False)
+		self.rp.setVisible(False)
+		self.rp.table.setVisible(False)
+		for wdg in args[0]:
+			if wdg==None:
+				continue
+			print(wdg)
+			wdg.setVisible(False)
+			self.rp.table.addWidget(wdg)
+		self.rp.table.flowLayout.setEnabled(True)
+		self.rp.setVisible(True)
+		self.rp.table.setVisible(True)
+		#self.progress.stop()
+	#def _fillTable
+
 	def _getMoreData(self):
 		return
 		if (self.rp.table.verticalScrollBar().value()==self.rp.table.verticalScrollBar().maximum()) and self.appsLoaded!=len(self.apps):
 			self._beginLoadData(self.appsLoaded,self.appsLoaded+self.appsToLoad)
 			for wdg in self.wdgs:
-				self.rp.table.setCellWidget(wdg[0],wdg[1],wdg[2])
+				self.rp.table.addWidget(wdg)
+				#self.rp.table.setCellWidget(wdg[0],wdg[1],wdg[2])
 	#def _getMoreData
 
 	def _beginLoadData(self,idx,idxEnd,applist=None):
 		#appData=getData(apps)
+		print("BEGin LOAD")
 		if self.getData.isRunning()==False:
 			self._beginUpdate()
 			if applist==None:
@@ -749,20 +787,23 @@ class portrait(QStackedWindowItem):
 				apps=applist[idx:idxEnd]
 			self.getData.setApps(apps)
 			self.getData.start()
+			print("GETTIN' DATA")
 			self.getData.dataLoaded.connect(self._loadData)
+		print("BEGin LOADi<")
 	#def _beginLoadData
 
 	def _loadData(self,apps):
+		print("LOAD DATA")
 		col=0
 		#self.table.setRowHeight(self.table.rowCount()-1,btn.iconSize+int(btn.iconSize/16))
 		colspan=random.randint(1,self.maxCol)
-		rowH=QPushButtonRebostApp("{}").iconSize
 		if LAYOUT=="appsedu":
 			colspan=self.maxCol
-			rowH=rowH*2
 		span=colspan
 		btn=None
 		self.wdgs=[]
+		self.rp.table.flowLayout.setEnabled(False)
+		self.rp.table.setVisible(False)
 		for jsonapp in apps:
 			appname=jsonapp.get('name','')
 			if appname in self.appsSeen:
@@ -770,52 +811,50 @@ class portrait(QStackedWindowItem):
 				continue
 			self.appsSeen.append(appname)
 			#row=self.rp.table.rowCount()-1
-			row=1
+			#row=1
 			btn=QPushButtonRebostApp(jsonapp)
 			btn.clicked.connect(self._loadDetails)
 			btn.keypress.connect(self.tableKeyPressEvent)
 			btn.install.connect(self._installBundle)
-			self.wdgs.append((row,col,btn))
+			self.wdgs.append(btn)
+			self.rp.table.addWidget(btn)
 			if appname in self.referersHistory.keys():
 				self.referersShowed.update({appname:btn})
-			col+=1
-			span=span-1
-			#if span==0:
-			#	if colspan==self.maxCol:
-			#		colspan=1
-			#	elif colspan==1:
-			#		colspan=self.maxCol
-			#	if colspan!=1:
-			#		self.table.setSpan(row,col-1,1,colspan)
-#			if col==self.maxCol:
-#				col=0
-#				colspan=random.randint(1,self.maxCol)
-#				span=colspan
-#				self.rp.table.setRowHeight(row,rowH+int(rowH*1))
-#				self.rp.table.setRowCount(self.rp.table.rowCount()+1)
+			#col+=1
+			#span=span-1
 			self.appsLoaded+=1
-		#if btn!=None:
-	 #		self.rp.table.setRowHeight(self.rp.table.rowCount()-1,rowH+int(rowH*1))
+			QApplication.processEvents()
+		self.rp.table.flowLayout.setEnabled(True)
+		self.rp.table.setVisible(True)
 		self._endLoadData()
+		print("LOAD DATA<")
 	#def _loadData
 
 	def _endLoadData(self):
+		print("APPS LOADED: {}".format(self.appsLoaded))
 		if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
 			#self._beginUpdate()
 			self.chkRebost.start()
-			self.chkRebost.finished.connect(self._goHome)
+			self.chkRebost.test.connect(self._goHome)
+			print("FOLLONAZO")
 		else:
+			print("CARGO")
+			self.rp.table.setVisible(True)
 			for wdg in self.wdgs:
-				shadow=QGraphicsDropShadowEffect()
-				shadow.setColor(QtGui.QColor(85, 85, 93, 180))
-				shadow.setOffset(8, 8)
-				shadow.setBlurRadius(1)
-				appWdg=wdg[2]
-				appWdg.setGraphicsEffect(shadow)
-				#self.rp.table.setCellWidget(wdg[0],wdg[1],baseWdg)
-				self.rp.table.addWidget(appWdg)
+		#		appWdg=wdg[2]
+		#		#shadow=QGraphicsDropShadowEffect()
+		#		##shadow.setColor(QtGui.QColor(85, 85, 93, 180))
+		#		#shadow.setOffset(0, 3)
+		#		#shadow.setBlurRadius(5)
+		#		#shadow.setColor(QtGui.QColor(0, 0, 0, 128))
+		#		#appWdg.setGraphicsEffect(shadow)
+		#		#self.rp.table.setCellWidget(wdg[0],wdg[1],baseWdg)
+			##	self.rp.table.addWidget(wdg)
+				pass
 			self._endUpdate()
 		self.cleanAux()
+		print("END LOAD DATA<")
+		#self.ready.emit(self.wdgs)
 		self.refresh=True
 	#def _endLoadData(self):
 
@@ -915,6 +954,7 @@ class portrait(QStackedWindowItem):
 		self.setWindowTitle("{}".format(APPNAME))
 		self.lp.hide()
 		self.rp.show()
+		print("RETURN")
 	#def _return
 
 	def _gotoSettings(self):
@@ -944,13 +984,13 @@ class portrait(QStackedWindowItem):
 	#def cleanAux
 
 	def updateScreen(self):
-		self._return()
 		self.btnFilters.setMaximumWidth(self.btnFilters.sizeHint().width())
 		self._debug("Reload data (self.refresh={})".format(self.refresh))
 		if self.refresh==True:
 			for i in self.referersShowed.keys():
 				self.referersShowed[i]=None
 			self.cleanAux()
+			print("CLEANED")
 			self._beginLoadData(self.appsLoaded,self.appsToLoad)
 		else:
 			self._endUpdate()
