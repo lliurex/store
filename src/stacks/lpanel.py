@@ -191,7 +191,6 @@ class detailPanel(QWidget):
 	#def _tagNav(self,*args)
 
 	def _showSplash(self,icon):
-		print("GOLA")
 		self.progress.setVisible(True)
 		self.progress.start()
 		#pxm=None
