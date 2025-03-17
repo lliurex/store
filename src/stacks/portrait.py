@@ -743,6 +743,7 @@ class portrait(QStackedWindowItem):
 		if isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.Paint:
 			args[0].setVisible(True)
 			self.progress.stop()
+			self.rp.table.removeEventFilter(self)
 		return(False)
 	#def eventFilter(self,*args):
 
