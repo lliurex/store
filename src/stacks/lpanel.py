@@ -13,6 +13,7 @@ from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
 #from appconfig.appConfigStack import appConfigStack as confStack
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QStackedWindowItem
+from prgBar import QProgressImage
 import gettext
 import libhelper
 import exehelper
@@ -190,21 +191,23 @@ class detailPanel(QWidget):
 	#def _tagNav(self,*args)
 
 	def _showSplash(self,icon):
-		pxm=None
-		if isinstance(icon,QtGui.QPixmap):
-			pxm=icon
-		elif len(icon)>0:
-			if os.path.isfile(icon):
-				pxm=QtGui.QPixmap(icon)
-		if not pxm:
-			icn=QtGui.QIcon.fromTheme("appedu-generic")
-			pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
-		if isinstance(pxm,QtGui.QPixmap):
-			color=QtGui.QPalette().color(QtGui.QPalette.Dark)
-			self.wdgSplash.setPixmap(pxm.scaled(int(self.width()),int(self.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
-		self.wdgSplash.setMaximumWidth(self.width()-ICON_SIZE*1.1)
-		self.wdgSplash.setMaximumHeight(self.height()-ICON_SIZE*1.1)
-		self.wdgSplash.setVisible(True)
+		print("GOLA")
+		self.progress.setVisible(True)
+		self.progress.start()
+		#pxm=None
+		#if isinstance(icon,QtGui.QPixmap):
+		#	pxm=icon
+		#elif len(icon)>0:
+		#	if os.path.isfile(icon):
+		#		pxm=QtGui.QPixmap(icon)
+		#if not pxm:
+		#	icn=QtGui.QIcon.fromTheme("appedu-generic")
+		#	pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
+		#if isinstance(pxm,QtGui.QPixmap):
+		#	color=QtGui.QPalette().color(QtGui.QPalette.Dark)
+		#	self.progress.setPixmap(pxm.scaled(int(self.width()),int(self.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
+		#self.progress.setMaximumWidth(self.width()-ICON_SIZE*1.1)
+		#self.progress.setMaximumHeight(self.height()-ICON_SIZE*1.1)
 	#def _showSplash
 
 	def _processStreams(self,args):
@@ -292,8 +295,9 @@ class detailPanel(QWidget):
 				#		status=self.rc.getAppStatus(name,bundle)
 				#		self.app['state'][bundle]=str(status)
 		self.setCursor(self.oldcursor)
-		for anim in self.anims:
-			anim.start()
+		self.progress.stop()
+		#for anim in self.anims:
+		#	anim.start()
 		self.updateScreen()
 	#def _endSetParms
 
@@ -478,20 +482,20 @@ class detailPanel(QWidget):
 		self.box.setRowStretch(6,0)
 		self.box.addWidget(spacingE,0,self.box.columnCount(),1,1)
 		
-		self.wdgSplash=QLabel()
+		self.progress=QProgressImage()
 		errorLay=QGridLayout()
-		self.wdgSplash.setLayout(errorLay)
-		color=QtGui.QPalette().color(QtGui.QPalette.Dark)
-		self.wdgSplash.setStyleSheet("background-color:rgba(%s,%s,%s,0.5);"%(color.red(),color.green(),color.blue()))
+		#self.progress.setLayout(errorLay)
+		#color=QtGui.QPalette().color(QtGui.QPalette.Dark)
+		#self.progress.setStyleSheet("background-color:rgba(%s,%s,%s,0.5);"%(color.red(),color.green(),color.blue()))
 		self.lblBkg=QLabel()
 		errorLay.addWidget(self.lblBkg,0,0,1,1)
-		self.box.addWidget(self.wdgSplash,1,0,self.box.rowCount()-1,self.box.columnCount(),Qt.AlignCenter)
-		self.anims = [QPropertyAnimation(self.wdgSplash, b"maximumWidth",parent=self),
-						QPropertyAnimation(self.wdgSplash, b"maximumHeight",parent=self)]
-		self.anims[0].setStartValue(self.wdgSplash.width())
-		for anim in self.anims:
-			anim.setEndValue(0)
-			anim.setDuration(100)
+		self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
+		#self.anims = [QPropertyAnimation(self.progress, b"maximumWidth",parent=self),
+		#				QPropertyAnimation(self.progress, b"maximumHeight",parent=self)]
+		#self.anims[0].setStartValue(self.progress.width())
+		#for anim in self.anims:
+		#	anim.setEndValue(0)
+		#	anim.setDuration(100)
 	#def _load_screen
 
 	def _defHeader(self):
@@ -777,7 +781,7 @@ class detailPanel(QWidget):
 		qpal=QtGui.QPalette()
 		color=qpal.color(qpal.Dark)
 		self.parent.setWindowTitle("AppsEdu - {}".format("ERROR"))
-		#self.wdgSplash.setVisible(True)
+		#self.progress.setVisible(True)
 		if "Forbidden" not in self.app.get("categories",[]):
 			self.app["categories"]=["Forbidden"]
 		self.lstInfo.setEnabled(False)
