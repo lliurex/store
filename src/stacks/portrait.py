@@ -110,7 +110,7 @@ class portrait(QStackedWindowItem):
 	ready=Signal("PyObject")
 	def __init_stack__(self):
 		self.aux=[]
-		self.init=True
+		self.init=False
 		self.minTime=1
 		self.oldTime=0
 		self.dbg=True
@@ -135,6 +135,7 @@ class portrait(QStackedWindowItem):
 			self.maxCol=5
 		self.rc=store.client()
 		self.chkRebost=chkRebost()
+		self.chkRebost.test.connect(self._goHome)
 		self.getData=getData()
 		self.thUpgrades=chkUpgrades(self.rc)
 		self.hideControlButtons()
@@ -487,7 +488,8 @@ class portrait(QStackedWindowItem):
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.btnSettings.setVisible(False)
-		self.progress.start()
+		if self.init==False:
+			self.progress.start()
 		self.rp.setVisible(False)
 	#def _beginUpdate
 
@@ -505,8 +507,9 @@ class portrait(QStackedWindowItem):
 	#def _shuffleApps
 
 	def _goHome(self,*args,**kwargs):
-		if time.time()-self.oldTime<MINTIME*2:
-			return
+		#if time.time()-self.oldTime<MINTIME*2:
+		#	print("EXIT TIME")
+		#	return
 		if self.thUpgrades.isFinished()==False and self.thUpgrades.isRunning()==False:
 			self._getUpgradables()
 		self.oldTime=time.time()
@@ -694,9 +697,13 @@ class portrait(QStackedWindowItem):
 	#def _searchAppsBtn
 
 	def _loadCategory(self,cat=""):
-		if time.time()-self.oldTime<MINTIME or cat==None:
-			#self.cmbCategories.setCurrentText(self.oldCat)
+		if isinstance(cat,QListWidgetItem):
+			cat=cat.text()
+		if cat==None:
 			return
+		#if time.time()-self.oldTime<MINTIME or cat==None:
+			#self.cmbCategories.setCurrentText(self.oldCat)
+		#	return
 		self.refresh=True
 		self.rp.searchBox.setText("")
 		self.resetScreen()
@@ -719,6 +726,7 @@ class portrait(QStackedWindowItem):
 		if self.oldCat!=i18ncat:
 			self.oldCat=i18ncat
 		cat=self.i18nCat.get(i18ncat,i18ncat)
+		self._debug("LOAD CATEGORY {}".format(cat))
 		if cat==i18n.get("ALL"):
 			cat=""
 		self.apps=self._getAppList(cat)
@@ -744,11 +752,12 @@ class portrait(QStackedWindowItem):
 			args[0].setVisible(True)
 			self.progress.stop()
 			self.rp.table.removeEventFilter(self)
+			self.init=True
 		return(False)
 	#def eventFilter(self,*args):
 
 	def _fillTable(self,*args):
-		self.progress.start()
+		#self.progress.start()
 		self.rp.table.flowLayout.setEnabled(False)
 		self.rp.setVisible(False)
 		self.rp.table.setVisible(False)
@@ -825,7 +834,6 @@ class portrait(QStackedWindowItem):
 		if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
 			#self._beginUpdate()
 			self.chkRebost.start()
-			self.chkRebost.test.connect(self._goHome)
 		else:
 			self.rp.table.setVisible(True)
 			for wdg in self.wdgs:
