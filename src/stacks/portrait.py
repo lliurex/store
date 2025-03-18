@@ -142,7 +142,9 @@ class portrait(QStackedWindowItem):
 		self.oldCursor=self.cursor()
 		self.refresh=True
 		self.epi=exehelper.appLauncher()
+		self.epi.runEnded.connect(self._endLaunchHelper)
 		self.zmdLauncher=exehelper.zmdLauncher()
+		self.zmdLauncher.zmdEnded.connect(self._endLaunchHelper)
 		self.setStyleSheet(css.portrait())
 		#self.epi.runEnded.connect(self._getEpiResults)
 		#self.ready.connect(self._fillTable)
@@ -689,11 +691,14 @@ class portrait(QStackedWindowItem):
 	#def _searchAppsBtn
 
 	def _loadCategory(self,*args):
+		cat=None
 		if isinstance(args[0],QListWidgetItem):
 			font=args[0].font()
 			font.setBold(True)
 			args[0].setFont(font)
 			cat=args[0].text()
+		elif isinstance(args[0],str):
+			cat=args[0]
 		if len(args)>1:
 			if isinstance(args[1],QListWidgetItem):
 				font=args[1].font()
@@ -899,6 +904,10 @@ class portrait(QStackedWindowItem):
 				self.epi.setArgs(app,cmd,bundle)
 				self.epi.start()
 	#def _installBundle
+
+	def _endLaunchHelper(self,*args,**kwargs):
+		self.setCursor(self.oldCursor)
+	#def _endLaunchHelper
 
 	def _loadDetails(self,*args,**kwargs):
 		icn=""
