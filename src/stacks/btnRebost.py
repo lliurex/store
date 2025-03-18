@@ -5,6 +5,8 @@ from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShado
 from PySide2.QtCore import Qt,Signal,QThread
 from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
 from QtExtraWidgets import QScreenShotContainer
+import css
+from constants import *
 import gettext
 gettext.textdomain('appsedu')
 _ = gettext.gettext
@@ -12,8 +14,6 @@ _ = gettext.gettext
 i18n={"INSTALL":_("Install"),
 	"REMOVE":_("Remove")}
 RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
-
-LAYOUT="appsedu"
 
 class processData(QThread):
 	processed=Signal("PyObject")
@@ -59,14 +59,16 @@ class QPushButtonRebostApp(QPushButton):
 		if LAYOUT!="appsedu":
 			self.btn.setVisible(False)
 		self.lblFlyIcon=QLabel()
-		self.lblFlyIcon.setStyleSheet("""background:transparent""")
+		self.lblFlyIcon.setObjectName("flyIcon")
+		#self.lblFlyIcon.setStyleSheet("""background:transparent""")
 		if os.path.exists(self.cacheDir)==False:
 			os.makedirs(self.cacheDir)
 		self.label=QLabel()
 		self.label.setWordWrap(True)
 		self.label.setAlignment(Qt.AlignCenter)
 		self.iconUri=QLabel()
-		self.iconUri.setStyleSheet("""margin-top: %spx;margin-right:%spx;margin-bottom:%spx;"""%(self.margin,self.margin,self.margin))
+		self.iconUri.setObjectName("iconUri")
+		#self.iconUri.setStyleSheet("""margin-top: %spx;margin-right:%spx;margin-bottom:%spx;"""%(self.margin,self.margin,self.margin))
 		self.setCursor(QCursor(Qt.PointingHandCursor))
 		lay=QGridLayout()
 		#lay.setAlignment(Qt.AlignCenter)

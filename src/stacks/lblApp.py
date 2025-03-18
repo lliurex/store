@@ -6,13 +6,12 @@ from PySide2.QtCore import Qt,Signal
 from PySide2 import QtGui
 from QtExtraWidgets import QScreenShotContainer
 import gettext
+from constants import *
 gettext.textdomain('appsedu')
 _ = gettext.gettext
 
 i18n={"INSTALL":_("Install")}
-ICON_SIZE=72
 
-LAYOUT="appsedu"
 class QLabelRebostApp(QLabel):
 	clicked=Signal("PyObject")
 	def __init__(self,parent=None):

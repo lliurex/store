@@ -19,12 +19,10 @@ import css
 from cmbBtn import QComboButton
 from lblApp import QLabelRebostApp
 from lblLnk import QLabelLink
+from constants import *
 _ = gettext.gettext
 QString=type("")
-ICON_SIZE=72
 BKG_COLOR_INSTALLED=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Highlight))
-MINTIME=0.2
-RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
 
 i18n={
 	"APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
@@ -412,6 +410,7 @@ class detailPanel(QWidget):
 		wdg=QWidget()
 		wdg.setObjectName("frame")
 		lay=QGridLayout()
+		lay.setSpacing(int(MARGIN)*2)
 		self.lblIcon=QLabelRebostApp()
 		self.lblIcon.setObjectName("lblIcon")
 		self.lblIcon.setMaximumWidth(ICON_SIZE+6)

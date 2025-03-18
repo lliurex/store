@@ -1,23 +1,16 @@
 #!/usr/bin/python3
 import os
-COLOR_BACKGROUND_LIGHT="#FFFFFF"
-COLOR_BORDER="#AAAAAA"
-COLOR_BORDER_DARK="#EEEEEE"
-COLOR_BORDER_DARKEST="#DDDDDD"
-COLOR_FONT="#FFFFFF"
-MARGIN="8"
-RADIUS="6"
-RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
+from constants import *
 
 def detailPanel():
 	css=""
 	detail="""QWidget{
 					padding:0px;
-				border:0px;
-				margin:0px;
-				background:%s;
-				color:unset;
-			}"""%(COLOR_FONT)
+					border:0px;
+					margin:0px;
+					background:%s;
+					color:unset;
+			}"""%(COLOR_FONT_LIGHT)
 	css=css+detail
 	frame="""QWidget#frame{
 					margin:0px;
@@ -108,25 +101,33 @@ def tablePanel():
 				#qFlow::item{
 					padding:%spx;
 				}"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN*2),MARGIN,int(MARGIN)/4)
-	css=css+"\n"+qflow
+	css=css+qflow
 	search="""#wsearch{
-					border:0px solid #FFFFFF;
-					background:#002c4f;
-					border-radius:20px;
+					border:0px solid %s;
+					background:%s;
+					border-radius:%spx;
 				}
 				#search{
-					color:#FFFFFF;
-					background:#002c4f;
+					color:%s;
+					background:%s;
 					border:0px solid;
-					margin-left:12px;
+					margin-left:%spx;
 				} 
 				#bsearch{
-					color:#FFFFFF;
-					background:#002c4f;
+					color:%s;
+					background:%s;
 					border:0px;
-					margin-right:12px;
-				}"""
+					margin-right:%spx;
+				}"""%(COLOR_BORDER,COLOR_BACKGROUND_DARK,int(RADIUS)*3,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN)*1.5,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN)*1.5)
 	css=css+search
+	flyIcon="""#flyIcon{background:transparent;}"""
+	css=css+flyIcon
+	iconUri="""#iconUri{
+					margin-top: %spx;
+					margin-right:%spx;
+					margin-bottom:%spx;
+				}"""%(int(MARGIN)*1.5,int(MARGIN)*1.5,int(MARGIN)*1.5)
+	css=css+iconUri
 	return(css)
 #def tablePanel
 
@@ -139,57 +140,58 @@ def portrait():
 			}"""
 	css=css+port
 	banner="""#banner{
-					margin-top:24px;
-					margin-bottom:12px;
-					margin-left:20%;
-					margin-right:10%
-			}"""
+					margin-top:%spx;
+					margin-bottom:%spx;
+					margin-left:%spx;
+					margin-right:%spx;
+			}"""%(int(MARGIN)*3,int(MARGIN)*1,int(MARGIN)*3,int(MARGIN)*2)
 	css=css+banner
 	cmbCategories="""#cmbCategories{
-					color:#FFFFFF;
-					background:#002c4f;
+					color:%s;
+					background:%s;
 					border:1px;
-					border-color:#FFFFFF;
-					border-radius:5px;
-					padding-left:30px;
-					padding-right:30px;
-					padding-bottom:5px;
-					padding-top:5px;
-					margin-top:32;
+					border-color:%s;
+					border-radius:%spx;
+					padding-left:%spx;
+					padding-right:%spx;
+					padding-bottom:%spx;
+					padding-top:%spx;
+					margin-top:%spx;
 					} 
 				#cmbCategories::item {
-					background-color: transparent;color:#FFFFFF
-				}"""
+					background-color: transparent;
+					color:%s;
+				}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,RADIUS,int(MARGIN)*4,int(MARGIN)*4,MARGIN,MARGIN,int(MARGIN)*4,COLOR_FONT_LIGHT)
 	css=css+cmbCategories
 	certified="""#certified{
-					color:#FFFFFF;
-					background:#2e746c;
-					border-radius:5px;
-					padding:3px;
-				}"""
+					color:%s;
+					background:%s;
+					border-radius:%spx;
+					padding:%spx;
+				}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARKEST,RADIUS,int(MARGIN)/2)
 	css=css+certified
 	btnBar="""#btnBar{
-					border-top:3px solid #AAAAAA;
-					padding-top:12px;
+					border-top:%spx solid %s;
+					padding-top:%spx;
 				} 
 				#btnHome{
-					margin-top:24px;
-					color:#002c4f;
-					background:#FFFFFF;
+					margin-top:%spx;
+					color:%s;
+					background:%s;
 					border:1px;
-					border-color:#FFFFFF;
-					border-radius:5px;
-					padding-bottom:5px;
-					padding-top:5px;
-				}"""
+					border-color:%s;
+					border-radius:%spx;
+					padding-bottom:%spx;
+					padding-top:%spx;
+				}"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
 	css=css+btnBar
 	upgrades="""#upgrades{
-					color:#002c4f;
-					background:#FFFFFF;
+					color:%s;
+					background:%s;
 					border:1px;
-					border-color:#FFFFFF;
-					border-radius:5px;
-					padding:5px;
-				}"""
+					border-color:%s;
+					border-radius:%spx;
+					padding:%spx;
+				}"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,MARGIN)
 	css=css+upgrades
 	return(css)

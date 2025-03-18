@@ -25,13 +25,10 @@ import exehelper
 from rpanel import mainPanel
 from lpanel import detailPanel
 import css
+from constants import *
+
 _ = gettext.gettext
 QString=type("")
-
-ICON_SIZE=128
-MINTIME=0.2
-LAYOUT="appsedu"
-APPNAME="LliureX Store"
 
 i18n={
 	"ALL":_("All"),
@@ -58,7 +55,6 @@ i18n={
 	"UPGRADABLE":_("Upgradables"),
 	"UPGRADES":_("There're upgrades available")
 	}
-
 
 class chkUpgrades(QThread):
 	chkEnded=Signal("PyObject")
