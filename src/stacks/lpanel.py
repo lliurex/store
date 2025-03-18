@@ -4,20 +4,21 @@ import os
 import subprocess
 import json
 import html
-from app2menu import App2Menu as app2menu
 from rebost import store
 from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,\
 							QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,\
 							QAbstractScrollArea, QFrame
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
-#from appconfig.appConfigStack import appConfigStack as confStack
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QStackedWindowItem
 from prgBar import QProgressImage
 import gettext
 import libhelper
 import exehelper
+import css
 from cmbBtn import QComboButton
+from lblApp import QLabelRebostApp
+from lblLnk import QLabelLink
 _ = gettext.gettext
 QString=type("")
 ICON_SIZE=72
@@ -82,62 +83,6 @@ class thShowApp(QThread):
 	#def run
 #class thShowApp
 
-class QLabelRebostApp(QLabel):
-	clicked=Signal("PyObject")
-	def __init__(self,parent=None):
-		QLabel.__init__(self, parent)
-		self.setAlignment(Qt.AlignCenter)
-		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
-	#def __init__
-
-	def loadImg(self,app):
-		img=app.get('icon','')
-		self.setMinimumWidth(1)
-		icn=''
-		if os.path.isfile(img):
-			icn=QtGui.QPixmap.fromImage(QtGui.QImage(img))
-		elif img=='':
-			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
-			icn=icn2.pixmap(ICON_SIZE,ICON_SIZE)
-		if icn:
-			wsize=ICON_SIZE
-			if "/usr/share/banners/lliurex-neu" in img:
-				wsize=int(ICON_SIZE*1.8)
-			self.setPixmap(icn.scaled(wsize,ICON_SIZE,Qt.KeepAspectRatio,Qt.SmoothTransformation))
-			self.setMinimumWidth(wsize+10)
-		elif img.startswith('http'):
-			aux=QScreenShotContainer()
-			self.scr=aux.loadScreenShot(img,self.cacheDir)
-			self.scr.start()
-			self.scr.imageLoaded.connect(self.load)
-			self.scr.wait()
-	#def loadImg
-	
-	def load(self,*args):
-		img=args[0]
-		self.setPixmap(img.scaled(ICON_SIZE,ICON_SIZE))
-		self.setMinimumWidth(ICON_SIZE+10)
-	#def load
-#class QLabelRebostApp
-
-class QLabelLink(QWidget):
-	def __init__(self,*args,**kwargs):
-		super().__init__()
-		hbox=QHBoxLayout()
-		icn=QtGui.QPixmap(os.path.join(RSRC,"link24x24.png"))
-		lblIcn=QLabel()
-		lblIcn.setPixmap(icn.scaled(16,16))
-		hbox.addWidget(lblIcn)
-		self.lbl=QLabel(args[0])
-		hbox.addWidget(self.lbl)
-		self.setLayout(hbox)
-	
-	def setOpenExternalLinks(self,*args):
-		self.lbl.setOpenExternalLinks(*args)
-
-	def setText(self,*args):
-		self.lbl.setText(*args)
-
 class detailPanel(QWidget):
 	clicked=Signal("PyObject")
 	loaded=Signal("PyObject")
@@ -146,8 +91,9 @@ class detailPanel(QWidget):
 		super().__init__()
 		self.dbg=False
 		self._debug("details load")
+		self.setObjectName("detailPanel")
 		self.setAttribute(Qt.WA_StyledBackground, True)
-		self.setStyleSheet("padding:0px;border:0px;margin:0px;background:#FFFFFF;color:unset;")
+		self.setStyleSheet(css.detailPanel())
 		self.refresh=False
 		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
 		self._connectThreads()
@@ -156,7 +102,6 @@ class detailPanel(QWidget):
 		self.launcher=""
 		self.config={}
 		self.app={}
-		self.appmenu=app2menu.app2menu()
 		self.rc=store.client()
 		self.instBundle=""
 		self.__initScreen__()
@@ -193,20 +138,6 @@ class detailPanel(QWidget):
 	def _showSplash(self,icon):
 		self.progress.setVisible(True)
 		self.progress.start()
-		#pxm=None
-		#if isinstance(icon,QtGui.QPixmap):
-		#	pxm=icon
-		#elif len(icon)>0:
-		#	if os.path.isfile(icon):
-		#		pxm=QtGui.QPixmap(icon)
-		#if not pxm:
-		#	icn=QtGui.QIcon.fromTheme("appedu-generic")
-		#	pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
-		#if isinstance(pxm,QtGui.QPixmap):
-		#	color=QtGui.QPalette().color(QtGui.QPalette.Dark)
-		#	self.progress.setPixmap(pxm.scaled(int(self.width()),int(self.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
-		#self.progress.setMaximumWidth(self.width()-ICON_SIZE*1.1)
-		#self.progress.setMaximumHeight(self.height()-ICON_SIZE*1.1)
 	#def _showSplash
 
 	def _processStreams(self,args):
@@ -289,14 +220,8 @@ class detailPanel(QWidget):
 				for bundle,name in (self.app.get('bundle',{}).items()):
 					if bundle=='package':
 						continue
-				#	name=self.app.get('name','')
-				#	if name!='':
-				#		status=self.rc.getAppStatus(name,bundle)
-				#		self.app['state'][bundle]=str(status)
 		self.setCursor(self.oldcursor)
 		self.progress.stop()
-		#for anim in self.anims:
-		#	anim.start()
 		self.updateScreen()
 	#def _endSetParms
 
@@ -445,7 +370,6 @@ class detailPanel(QWidget):
 		self.btnBack.clicked.connect(self._clicked)
 		icn=QtGui.QIcon(os.path.join(RSRC,"go-previous32x32.png"))
 		self.btnBack.setIcon(icn)
-		#self.btnBack.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
 		self.btnBack.setIconSize(self.btnBack.sizeHint())
 		self.box.addWidget(self.btnBack,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
 		spacingI=QLabel("")
@@ -454,7 +378,6 @@ class detailPanel(QWidget):
 		spacingE.setFixedWidth(48)
 		self.box.addWidget(spacingI,0,1,1,1)
 		self.header=self._defHeader()
-		self.header.setStyleSheet("QWidget#frame{margin:0px;padding:0px;border:1px solid #DDDDDD;}""")
 		self.box.addWidget(self.header,1,2,1,3)
 		self.screenShot=self._defScreenshot()
 		self.screenShot.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -468,9 +391,7 @@ class detailPanel(QWidget):
 		spacing.setFixedHeight(6)
 		self.box.addWidget(spacing,3,1,1,1)
 		self.box.addWidget(resources,4,2,1,1)
-		resources.setStyleSheet("""QWidget#resources{margin-top:12px;border-right:3px solid;border-radius:1px;border-right-color:#EEEEEE;}""")
 		self.box.addWidget(self.lblDesc,4,3,2,1)
-
 		self.setLayout(self.box)
 		self.box.setColumnStretch(0,0)
 		self.box.setColumnStretch(1,0)
@@ -480,21 +401,11 @@ class detailPanel(QWidget):
 		self.box.setRowStretch(5,1)
 		self.box.setRowStretch(6,0)
 		self.box.addWidget(spacingE,0,self.box.columnCount(),1,1)
-		
 		self.progress=QProgressImage()
 		errorLay=QGridLayout()
-		#self.progress.setLayout(errorLay)
-		#color=QtGui.QPalette().color(QtGui.QPalette.Dark)
-		#self.progress.setStyleSheet("background-color:rgba(%s,%s,%s,0.5);"%(color.red(),color.green(),color.blue()))
 		self.lblBkg=QLabel()
 		errorLay.addWidget(self.lblBkg,0,0,1,1)
 		self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
-		#self.anims = [QPropertyAnimation(self.progress, b"maximumWidth",parent=self),
-		#				QPropertyAnimation(self.progress, b"maximumHeight",parent=self)]
-		#self.anims[0].setStartValue(self.progress.width())
-		#for anim in self.anims:
-		#	anim.setEndValue(0)
-		#	anim.setDuration(100)
 	#def _load_screen
 
 	def _defHeader(self):
@@ -502,58 +413,47 @@ class detailPanel(QWidget):
 		wdg.setObjectName("frame")
 		lay=QGridLayout()
 		self.lblIcon=QLabelRebostApp()
+		self.lblIcon.setObjectName("lblIcon")
 		self.lblIcon.setMaximumWidth(ICON_SIZE+6)
 		lay.addWidget(self.lblIcon,0,1,3,1)
-  
 		self.lblName=QLabel()
-		#lay.addWidget(self.lblName,1,2,1,1,Qt.AlignLeft|Qt.AlignTop)
-		self.lblName.setStyleSheet("""margin-right:24;margin-top:0""")
+		self.lblName.setObjectName("lblName")
 		self.lblSummary=QLabel()
-		self.lblSummary.setStyleSheet("""margin-right:24;margin-top:0""")
+		self.lblName.setObjectName("lblSummary")
 		self.lblSummary.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
 		self.lblSummary.setWordWrap(True)
 		lay.addWidget(self.lblSummary,0,2,3,1)
-
 		launchers=QWidget()
 		hlay=QVBoxLayout()
+
 		self.btnInstall=QLabel(i18n.get("INSTALL"))
-		self.btnInstall.setStyleSheet("""margin-bottom:75""")
-		#self.btnInstall.setStyleSheet("""color:#002c4f;background:#FFFFFF;border:1px solid;border-color:#AAAAAA;border-radius:5px;padding-bottom:5px;padding-top:5px""")
-		#self.btnInstall.clicked.connect(self._genericEpiInstall)
+		self.btnInstall.setObjectName("btnInstall")
 		self.btnInstall.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
-		#self.btnInstall.setMinimumHeight(int(ICON_SIZE/3))
-		#self.btnInstall.setMaximumHeight(int(ICON_SIZE/3))
+
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
+		self.btnRemove.setObjectName("lstInfo")
 		self.btnRemove.clicked.connect(self._genericEpiInstall)
-		#self.btnRemove.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
-	#	hlay.addWidget(self.btnRemove,Qt.AlignLeft)
 
 		self.btnZomando=QPushButton(" {} zomando ".format(i18n.get("RUN")))
 		self.btnZomando.clicked.connect(self._runZomando)
 		self.btnZomando.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
 		self.btnZomando.setVisible(False)
-	#	hlay.addWidget(self.btnZomando,Qt.AlignLeft)
 
 		self.btnLaunch=QPushButton(i18n.get("RUN"))
 		self.btnLaunch.clicked.connect(self._runApp)
 		self.btnLaunch.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
-	#	hlay.addWidget(self.btnLaunch,Qt.AlignLeft)
 		launchers.setLayout(hlay)
 		lay.addWidget(launchers,1,3,1,1,Qt.AlignTop|Qt.AlignRight)
-		#for i in [self.btnInstall,self.btnRemove,self.btnLaunch,self.btnZomando]:
 		for i in [self.btnInstall,self.btnLaunch,self.btnZomando]:
 			i.setMinimumWidth(self.btnZomando.sizeHint().width()+(4*i.font().pointSize()))
 
-		#self.lstInfo=QListWidget()
 		self.lstInfo=QComboButton()
-		#self.lstInfo.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.lstInfo.setStyleSheet(self._lstInfoStyle())
+		self.lstInfo.setObjectName("lstInfo")
 		self.lstInfo.setMaximumWidth(50)
 		self.lstInfo.currentTextChanged.connect(self._setLauncherOptions)	
 		self.lstInfo.installClicked.connect(self._genericEpiInstall)
 		lay.addWidget(self.btnInstall,1,3,3,1,Qt.AlignLeft|Qt.AlignBottom)
 		lay.addWidget(self.lstInfo,2,3,1,1,Qt.AlignLeft|Qt.AlignTop)
-		self.btnRemove.setStyleSheet(self._lstInfoStyle())
 		lay.addWidget(self.btnRemove,2,3,1,1)
 		self.btnRemove.setVisible(False)
 		spacing=QLabel("")
@@ -566,44 +466,20 @@ class detailPanel(QWidget):
 		return(wdg)
 	#def _defHeader
 
-	def _lstInfoStyle(self):
-		fgColor="unset"
-		if self.lstInfo.isEnabled()==False:
-			fgColor="#AAAAAA"
-		css="""QWidget{padding:6px;margin:1px;border:1px solid;border-color:#AAAAAA;border-radius:5px;}
-				QComboBox::drop-down{ subcontrol-origin: padding;
-				subcontrol-position: top right;
-				border-top-right-radius: 3px; /* same radius as the QComboBox */
-				border-bottom-right-radius: 3px;
-				}
-				QComboBox::down-arrow {
-					image: url("%s/drop-down16x16.png");
-					right:10px;
-					border-left:1px solid #AAAAAA;
-					padding:6px;
-					margin-left:18px;
-				}
-				QComboBox::down-arrow:on { /* shift the arrow when popup is open */
-					top: 1px;
-					right: 8px;
-				}
-				"""%(RSRC)
-		return(css)
-
 	def _defScreenshot(self):
 		wdg=QScreenShotContainer()
+		wdg.setObjectName("screenshot")
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		wdg.setStyleSheet("margin:0px;padding:0px;")
 		return(wdg)
-		
+	#def _defScreenshot
 
 	def _defResources(self):
 		wdg=QWidget()
 		lay=QVBoxLayout()
 		self.lblTags=QScrollLabel()
+		self.lblTags.setObjectName("lblTags")
 		self.lblTags.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.lblTags.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.lblTags.setStyleSheet("margin:0px;padding:0px;border:0px;bottom:0px")
 		lay.addWidget(self.lblTags)
 		self.resources=QWidget()
 		layResources=QVBoxLayout()
@@ -615,6 +491,7 @@ class detailPanel(QWidget):
 		lay.addWidget(self.resources)
 		wdg.setLayout(lay)
 		return(wdg)
+	#def _defResources
 
 	def keyPressEvent(self,*args):
 		if args[0].key() in [Qt.Key_Escape]:
@@ -765,7 +642,6 @@ class detailPanel(QWidget):
 	#def _generateCategoryTags
 
 	def _resetScreen(self,name,icon):
-		#self.parent.setWindowTitle("AppsEdu")
 		self.app={}
 		self.instBundle=""
 		self.app["name"]=name
@@ -780,7 +656,6 @@ class detailPanel(QWidget):
 		qpal=QtGui.QPalette()
 		color=qpal.color(qpal.Dark)
 		self.parent.setWindowTitle("AppsEdu - {}".format("ERROR"))
-		#self.progress.setVisible(True)
 		if "Forbidden" not in self.app.get("categories",[]):
 			self.app["categories"]=["Forbidden"]
 		self.lstInfo.setEnabled(False)
@@ -845,7 +720,6 @@ class detailPanel(QWidget):
 		bundle=item.lower().split(" ")[-1].strip()
 		release=item.lower().split(" ")[0]
 		tooltip=item
-		self._setListState(item)
 		if bundle=="package":
 			bundle="app" # Only for show purposes. "App" is friendly than "package"
 		if self.lstInfo.count()>0:
@@ -862,45 +736,6 @@ class detailPanel(QWidget):
 			self.btnLaunch.setEnabled(False)
 			self.btnZomando.setEnabled(False)
 	#def _setLauncherOptions
-
-	def _setListState(self,item):
-		#REM 
-		# DISABLED ATM
-		return
-		self.btnInstall.setVisible(True)
-		self.btnRemove.setVisible(False)
-		self.btnLaunch.setVisible(False)
-		self.btnZomando.setVisible(False)
-		return
-		#REM 
-		bcurrent=item.background().color()
-		bcolor=BKG_COLOR_INSTALLED.toRgb()
-		if bcurrent==bcolor:
-			rgb=bcurrent.getRgb()
-			self.btnInstall.setVisible(False)
-			if self.app.get("bundle",{}).get("zomando","")!="":
-				self.btnLaunch.setVisible(False)
-				if "zomando" in item.text():
-					self.btnRemove.setVisible(False)
-				else:
-					self.btnLaunch.setVisible(True)
-					self.btnRemove.setVisible(True)
-			else:
-				self.btnRemove.setVisible(True)
-				self.btnLaunch.setVisible(True)
-			self.lstInfo.setStyleSheet("selection-color:grey;selection-background-color:rgba({0},{1},{2},0.5);".format(rgb[0],rgb[1],rgb[2]))
-		else:
-			pkgState=self.app.get('state',{}).get("package",'1')
-			if pkgState.isdigit()==True:
-				pkgState=int(pkgState)
-			else:
-				self._onError()
-				return()
-			self.lstInfo.setStyleSheet("")
-			self.btnInstall.setVisible(True)
-			self.btnRemove.setVisible(False)
-			self.btnLaunch.setVisible(False)
-	#def _setLstState
 
 	def _getIconFromApp(self,app):
 		icn=QtGui.QIcon()
@@ -930,10 +765,7 @@ class detailPanel(QWidget):
 				state=1
 			states+=state
 			if bundle=="zomando" and ((pkgState==0 or state==0) or (self.app.get("pkgname","x$%&/-1") not in self.app["bundle"]["zomando"])):
-			#	self.btnZomando.setVisible(True)
 				continue
-		#	elif bundle=="zomando":
-		#		continue
 		self._setReleasesInfo()
 	#def _updateScreenControls
 
