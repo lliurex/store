@@ -309,6 +309,8 @@ class portrait(QStackedWindowItem):
 		pxm=QtGui.QPixmap(img).scaled(24,24)
 		lbl.setPixmap(pxm)
 		chk.setStyleSheet("color:#FFFFFF;background:#2e746c;border-radius:5px;padding:3px;")
+		chk.setChecked(True)
+		chk.setEnabled(False)
 		#lbl.setStyleSheet("color:#FFFFFF;padding:5px;margin:5px;margin-right:0;background:#2e746c;border-radius:5px")
 		chk.setLayoutDirection(Qt.RightToLeft)
 		lay.addWidget(chk)
@@ -701,9 +703,6 @@ class portrait(QStackedWindowItem):
 	#def _searchAppsBtn
 
 	def _loadCategory(self,*args):
-		print(args)
-		print(args[0].text())
-		print(args[1].text())
 		if isinstance(args[0],QListWidgetItem):
 			font=args[0].font()
 			font.setBold(True)
