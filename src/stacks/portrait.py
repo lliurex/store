@@ -24,6 +24,7 @@ from prgBar import QProgressImage
 import exehelper
 from rpanel import mainPanel
 from lpanel import detailPanel
+import css
 _ = gettext.gettext
 QString=type("")
 
@@ -146,6 +147,7 @@ class portrait(QStackedWindowItem):
 		self.refresh=True
 		self.epi=exehelper.appLauncher()
 		self.zmdLauncher=exehelper.zmdLauncher()
+		self.setStyleSheet(css.portrait())
 		#self.epi.runEnded.connect(self._getEpiResults)
 		#self.ready.connect(self._fillTable)
 		signal.signal(signal.SIGUSR1,self._signals)
@@ -204,7 +206,6 @@ class portrait(QStackedWindowItem):
 			self.btnSettings.setVisible(False)
 		self.box.setColumnStretch(1,1)
 		self.setObjectName("portrait")
-		self.setStyleSheet("""QWidget#portrait{padding:0px;border:0px;margin:0px;}""")
 		self.resetScreen()
 	#def _load_screen
 	
@@ -233,10 +234,10 @@ class portrait(QStackedWindowItem):
 
 	def _defBanner(self):
 		lbl=QLabel()
+		lbl.setObjectName("banner")
 		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","undefined.svg")
 		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		lbl.setPixmap(pxm)
-		lbl.setStyleSheet("""margin-top:24px;margin-bottom:12px;margin-left:20%;margin-right:10%""")
 		return lbl
 	#def _defBanner
 
@@ -251,9 +252,9 @@ class portrait(QStackedWindowItem):
 		if LAYOUT=="appsedu":
 			vbox.addWidget(self._appseduCertified(),Qt.AlignRight)
 			self.cmbCategories=QListWidget()
+			self.cmbCategories.setObjectName("cmbCategories")
 			self.cmbCategories.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 			self.cmbCategories.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-			self.cmbCategories.setStyleSheet("""QListWidget{color:#FFFFFF;background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:5px;padding-left:30px;padding-right:30px;padding-bottom:5px;padding-top:5px;margin-top:32;} QListWidget::item {background-color: transparent;color:#FFFFFF}""")
 			vbox.addWidget(self.cmbCategories,Qt.AlignTop|Qt.AlignCenter)
 		else:
 			self.cmbCategories=QComboBox()
@@ -306,12 +307,11 @@ class portrait(QStackedWindowItem):
 		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","appsedu128x128.png")
 		lay.addWidget(lbl)
 		chk=QCheckBox(i18n.get("CERTIFIED"))
+		chk.setObjectName("certified")
 		pxm=QtGui.QPixmap(img).scaled(24,24)
 		lbl.setPixmap(pxm)
-		chk.setStyleSheet("color:#FFFFFF;background:#2e746c;border-radius:5px;padding:3px;")
 		chk.setChecked(True)
 		chk.setEnabled(False)
-		#lbl.setStyleSheet("color:#FFFFFF;padding:5px;margin:5px;margin-right:0;background:#2e746c;border-radius:5px")
 		chk.setLayoutDirection(Qt.RightToLeft)
 		lay.addWidget(chk)
 		wdg.setLayout(lay)
@@ -335,24 +335,25 @@ class portrait(QStackedWindowItem):
 
 	def _btnBar(self):
 		wdg=QWidget()
-		wdg.setObjectName("wdg")
+		wdg.setObjectName("btnBar")
 		lay=QHBoxLayout()
 		wdg.setLayout(lay)
 		btnHome=self._defHome()
+		btnHome.setObjectName("btnHome")
 		lay.addWidget(btnHome,Qt.AlignRight)
 		btnInst=self._defInst()
+		btnInst.setObjectName("btnHome")
 		lay.addWidget(btnInst,Qt.AlignLeft)
 		btnHome.setMaximumWidth(btnInst.sizeHint().width())
 		wdg.setMaximumWidth(btnInst.sizeHint().width()*2+10)
-		wdg.setStyleSheet("""QWidget#wdg{border-top:3px solid #AAAAAA;padding-top:12px} QPushButton{margin-top:24px;color:#002c4f;background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:5px;padding-bottom:5px;padding-top:5px}""")
 		return(wdg)
 	#def _btnBar
 
 	def _defInfo(self):
 		wdg=QPushButton(i18n.get("UPGRADES"))
+		wdg.setObjectName("upgrades")
 		wdg.clicked.connect(self._launchLlxUp)
 		wdg.setVisible(False)
-		wdg.setStyleSheet("""color:#002c4f;background:#FFFFFF;border:1px;border-color:#FFFFFF;border-radius:5px;padding:5px""")
 		return(wdg)
 	#def _defInfo(self):
 
@@ -363,11 +364,8 @@ class portrait(QStackedWindowItem):
 
 	def _mainPane(self):
 		mp=mainPanel()
-		mp.setObjectName("mp")
 		mp.searchBox.returnPressed.connect(self._searchApps)
 		mp.btnSearch.clicked.connect(self._searchAppsBtn)
-		#mp.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
-		mp.setStyleSheet("""QWidget#mp{padding:0px;border:0px;margin:0px;background:#FFFFFF}""")
 		return(mp)
 	#def _mainPane
 
@@ -377,8 +375,6 @@ class portrait(QStackedWindowItem):
 	#def enterEvent
 
 	def tableKeyPressEvent(self,*args):
-		#if self.rp.table.doAutoScroll()==None:
-		#	self.rp.table.setAutoScroll(True)
 		return(False)
 	#def tableKeyPressEvent
 
@@ -412,7 +408,6 @@ class portrait(QStackedWindowItem):
 		font=item.font()
 		font.setBold(True)
 		item.setFont(font)
-		#self.cmbCategories.itemAt(0,0).setData(QtGui.QFont(self.cmbCategories.font().setBold(True)), Qt.FontRole)
 		seenCats={}
 		#Sort categories
 		translatedCategories=[]
@@ -426,7 +421,6 @@ class portrait(QStackedWindowItem):
 		translatedCategories.sort()
 		for cat in translatedCategories:
 			self.cmbCategories.addItem(" · {}".format(cat))
-		#self.cmbCategories.view().setMinimumWidth(self.cmbCategories.minimumSizeHint().width())
 	#def _populateCategories
 
 	def _populateCategoriesFromApps(self):
@@ -513,9 +507,6 @@ class portrait(QStackedWindowItem):
 	#def _shuffleApps
 
 	def _goHome(self,*args,**kwargs):
-		#if time.time()-self.oldTime<MINTIME*2:
-		#	print("EXIT TIME")
-		#	return
 		if self.thUpgrades.isFinished()==False and self.thUpgrades.isRunning()==False:
 			self._getUpgradables()
 		self.oldTime=time.time()
@@ -523,7 +514,6 @@ class portrait(QStackedWindowItem):
 		self.rp.searchBox.setText("")
 		self._loadFilters()
 		self.apps=self._getAppList()
-		#self._populateCategoriesFromApps()
 		self._populateCategories()
 		self._shuffleApps()
 		self.resetScreen()
