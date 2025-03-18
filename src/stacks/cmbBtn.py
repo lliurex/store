@@ -7,6 +7,7 @@ import gettext
 gettext.textdomain('appsedu')
 _ = gettext.gettext
 
+ICON_SIZE=72
 i18n={"INSTALL":_("Install")}
 
 LAYOUT="appsedu"
