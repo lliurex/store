@@ -4,6 +4,7 @@ from PySide2.QtCore import Signal,QThread
 import libhelper
 
 class zmdLauncher(QThread):
+	zmdEnded=Signal("PyObject")
 	def __init__(self,parent=None):
 		QThread.__init__(self, parent)
 		self.helper=libhelper.helper()
@@ -17,6 +18,7 @@ class zmdLauncher(QThread):
 	def run(self):
 		if self.app:
 			self.helper.runZmd(self.app)
+		self.zmdEnded.emit(self.app)
 	#def run
 #class zmdLauncher
 
