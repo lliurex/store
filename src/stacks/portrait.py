@@ -195,7 +195,7 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(self.lp,0,1)
 		self.lp.hide()
 		self.progress=self._defProgress()
-		self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
+		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		self.btnSettings=QPushButton()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		self.btnSettings.setIcon(icn)
@@ -253,7 +253,7 @@ class portrait(QStackedWindowItem):
 			self.cmbCategories=QListWidget()
 			self.cmbCategories.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 			self.cmbCategories.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-			self.cmbCategories.setStyleSheet("""color:#FFFFFF;background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:5px;padding-left:30px;padding-right:30px;padding-bottom:5px;padding-top:5px;margin-top:32""")
+			self.cmbCategories.setStyleSheet("""QListWidget{color:#FFFFFF;background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:5px;padding-left:30px;padding-right:30px;padding-bottom:5px;padding-top:5px;margin-top:32;} QListWidget::item {background-color: transparent;color:#FFFFFF}""")
 			vbox.addWidget(self.cmbCategories,Qt.AlignTop|Qt.AlignCenter)
 		else:
 			self.cmbCategories=QComboBox()
@@ -406,6 +406,10 @@ class portrait(QStackedWindowItem):
 		self.catI18n={}
 		catList=json.loads(self.rc.execute('getCategories'))
 		self.cmbCategories.addItem(i18n.get('ALL'))
+		item=self.cmbCategories.itemAt(0,0)
+		font=item.font()
+		font.setBold(True)
+		item.setFont(font)
 		#self.cmbCategories.itemAt(0,0).setData(QtGui.QFont(self.cmbCategories.font().setBold(True)), Qt.FontRole)
 		seenCats={}
 		#Sort categories
@@ -696,9 +700,20 @@ class portrait(QStackedWindowItem):
 		self._searchApps()
 	#def _searchAppsBtn
 
-	def _loadCategory(self,cat=""):
-		if isinstance(cat,QListWidgetItem):
-			cat=cat.text()
+	def _loadCategory(self,*args):
+		print(args)
+		print(args[0].text())
+		print(args[1].text())
+		if isinstance(args[0],QListWidgetItem):
+			font=args[0].font()
+			font.setBold(True)
+			args[0].setFont(font)
+			cat=args[0].text()
+		if len(args)>1:
+			if isinstance(args[1],QListWidgetItem):
+				font=args[1].font()
+				font.setBold(False)
+				args[1].setFont(font)
 		if cat==None:
 			return
 		#if time.time()-self.oldTime<MINTIME or cat==None:
