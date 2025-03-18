@@ -4,6 +4,7 @@ import json
 from PySide2.QtWidgets import QLabel
 from PySide2.QtCore import Qt,Signal
 from PySide2 import QtGui
+from QtExtraWidgets import QScreenShotContainer
 import gettext
 gettext.textdomain('appsedu')
 _ = gettext.gettext
