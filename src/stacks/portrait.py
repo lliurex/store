@@ -363,7 +363,8 @@ class portrait(QStackedWindowItem):
 	def _mainPane(self):
 		mp=mainPanel()
 		mp.searchBox.returnPressed.connect(self._searchApps)
-		mp.btnSearch.clicked.connect(self._searchAppsBtn)
+		mp.searchBox.textChanged.connect(self._changeSearchAppsBtnIcon)
+		mp.btnSearch.clicked.connect(self._searchApps)
 		return(mp)
 	#def _mainPane
 
@@ -669,7 +670,6 @@ class portrait(QStackedWindowItem):
 			self.rp.searchBox.setText("")
 			txt=""
 		self.oldSearch=txt
-		self.resetScreen()
 		if len(txt)==0:
 			self.apps=self._getAppList()
 		else:
@@ -681,13 +681,18 @@ class portrait(QStackedWindowItem):
 		self._filterView(getApps=False)
 	#def _searchApps
 
+	def _changeSearchAppsBtnIcon(self):
+		if len(self.rp.searchBox.text())>0:
+			self.rp.setBtnIcon("cancel")
+		else:
+			self.rp.setBtnIcon("search")
 	def _searchAppsBtn(self):
 		txt=self.rp.searchBox.text()
 		if txt==self.oldSearch:
 			self.rp.searchBox.setText("")
 			txt=""
 		self.oldSearch=txt
-		self._searchApps()
+		self._searchApps(resetOld=False)
 	#def _searchAppsBtn
 
 	def _loadCategory(self,*args):
@@ -1036,7 +1041,8 @@ class portrait(QStackedWindowItem):
 		#self.rp.table.setRowCount(1)
 		self.rp.table.clean()
 		self.appsLoaded=0
-		self.oldSearch=""
+		if len(self.rp.searchBox.text())==0:
+			self.oldSearch=""
 		self.appsSeen=[]
 	#def resetScreen
 

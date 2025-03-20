@@ -44,6 +44,7 @@ class mainPanel(QWidget):
 		lay=QVBoxLayout()
 		lay.addSpacing(32)
 		lay.setSpacing(24)
+		self.searchGeometry=QSize(0,0)
 		self.search=self._defSearch()
 		hlay=QHBoxLayout()
 		wdg=QWidget()
@@ -100,7 +101,8 @@ class mainPanel(QWidget):
 		self.btnSearch.setMinimumSize(int(ICON_SIZE/4),int(ICON_SIZE/4))
 		self.searchBox.setToolTip(i18n["SEARCH"])
 		self.searchBox.setPlaceholderText(i18n["SEARCH"])
-		self.btnSearch.setIconSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
+		self.searchGeometry=QSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
+		self.btnSearch.setIconSize(self.searchGeometry)
 		lay.addWidget(self.searchBox)#,Qt.AlignCenter|Qt.AlignCenter)
 		lay.addWidget(self.btnSearch,Qt.Alignment(-1))
 		wdg.setLayout(lay)
@@ -109,10 +111,14 @@ class mainPanel(QWidget):
 		return(wdg)
 	#def _defSearch
 
-	def _resetSearchBtnIcon(self):
-		txt=self.searchBox.text()
-		if txt==self.oldSearch:
-			icn=QtGui.QIcon.fromTheme("dialog-cancel")
+	def setBtnIcon(self,icn=""):
+		if icn!="":
+			icn=QtGui.QIcon(os.path.join(RSRC,"{}.png".format(icn)))
+		if len(self.searchBox.text())>0:
+			icn=QtGui.QIcon(os.path.join(RSRC,"cancel.png"))
+			self.btnSearch.setIconSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
 		else:
-			icn=QtGui.QIcon.fromTheme("search")
+			icn=QtGui.QIcon(os.path.join(RSRC,"search.png"))
+			self.btnSearch.setIconSize(self.searchGeometry)
+		self.btnSearch.setIcon(icn)
 	#def _resetSearchBtnIcon
