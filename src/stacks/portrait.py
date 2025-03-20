@@ -127,6 +127,7 @@ class portrait(QStackedWindowItem):
 		self.appsSeen=[]
 		self.appsRaw=[]
 		self.oldSearch=""
+		self.loading=False
 		self.maxCol=3
 		if LAYOUT=="appsedu":
 			self.maxCol=5
@@ -134,6 +135,7 @@ class portrait(QStackedWindowItem):
 		self.chkRebost=chkRebost()
 		self.chkRebost.test.connect(self._goHome)
 		self.getData=getData()
+		self.getData.dataLoaded.connect(self._loadData)
 		self.thUpgrades=chkUpgrades(self.rc)
 		self.hideControlButtons()
 		self.referersHistory={}
@@ -141,6 +143,7 @@ class portrait(QStackedWindowItem):
 		self.level='user'
 		self.oldCursor=self.cursor()
 		self.refresh=True
+		self.released=True
 		self.epi=exehelper.appLauncher()
 		self.epi.runEnded.connect(self._endLaunchHelper)
 		self.zmdLauncher=exehelper.zmdLauncher()
@@ -260,7 +263,8 @@ class portrait(QStackedWindowItem):
 			vbox.addWidget(self.searchBox,Qt.AlignRight)
 		self.cmbCategories.setMinimumHeight(int(ICON_SIZE/3))
 		if isinstance(self.cmbCategories,QListWidget):
-			self.cmbCategories.currentItemChanged.connect(self._loadCategory)
+			self.cmbCategories.currentItemChanged.connect(self._decoreCmbCategories)
+			self.cmbCategories.itemActivated.connect(self._loadCategory)
 		elif isinstance(self.cmbCategories,QComboBox):
 			self.cmbCategories.activated.connect(self._loadCategory)
 		self.lblInfo=self._defInfo()
@@ -364,7 +368,7 @@ class portrait(QStackedWindowItem):
 		mp=mainPanel()
 		mp.searchBox.returnPressed.connect(self._searchApps)
 		mp.searchBox.textChanged.connect(self._changeSearchAppsBtnIcon)
-		mp.btnSearch.clicked.connect(self._searchApps)
+		mp.btnSearch.clicked.connect(lambda x:mp.searchBox.setText(""))
 		return(mp)
 	#def _mainPane
 
@@ -440,6 +444,7 @@ class portrait(QStackedWindowItem):
 	#def _populateCategoriesFromApp
 
 	def _getAppList(self,cat=[]):
+		self.loading=True
 		apps=[]
 		if isinstance(cat,str):
 			cat=cat.split()
@@ -468,6 +473,7 @@ class portrait(QStackedWindowItem):
 		self.appsRaw=apps
 		apps.sort()
 		self.cleanAux()
+		self.loading=False
 		return(apps)
 	#def _getAppList
 
@@ -514,7 +520,7 @@ class portrait(QStackedWindowItem):
 		self._loadFilters()
 		self.apps=self._getAppList()
 		self._populateCategories()
-		self._shuffleApps()
+		#self._shuffleApps()
 		self.resetScreen()
 		if isinstance(self.cmbCategories,QListWidget):
 			self.cmbCategories.setCurrentRow(0)
@@ -695,25 +701,30 @@ class portrait(QStackedWindowItem):
 		self._searchApps(resetOld=False)
 	#def _searchAppsBtn
 
-	def _loadCategory(self,*args):
-		cat=None
+	def _decoreCmbCategories(self,*args):
 		if isinstance(args[0],QListWidgetItem):
 			font=args[0].font()
 			font.setBold(True)
 			args[0].setFont(font)
-			cat=args[0].text()
-		elif isinstance(args[0],str):
-			cat=args[0]
 		if len(args)>1:
 			if isinstance(args[1],QListWidgetItem):
 				font=args[1].font()
 				font.setBold(False)
 				args[1].setFont(font)
+
+	def _loadCategory(self,*args):
+		cat=None
+		if self.loading==True:
+			return
+		if isinstance(args[0],QListWidgetItem):
+			cat=args[0].text()
+		elif isinstance(args[0],str):
+			cat=args[0]
+		self._debug("LOAD CATEGORY {}".format(cat))
 		if cat==None:
 			return
-		#if time.time()-self.oldTime<MINTIME or cat==None:
-			#self.cmbCategories.setCurrentText(self.oldCat)
-		#	return
+		if time.time()-self.oldTime<MINTIME:
+			return
 		self.refresh=True
 		self.rp.searchBox.setText("")
 		self.resetScreen()
@@ -736,13 +747,12 @@ class portrait(QStackedWindowItem):
 		if self.oldCat!=i18ncat:
 			self.oldCat=i18ncat
 		cat=self.i18nCat.get(i18ncat,i18ncat)
-		self._debug("LOAD CATEGORY {}".format(cat))
 		if cat==i18n.get("ALL"):
 			cat=""
 		self.apps=self._getAppList(cat)
 		self._filterView(getApps=False)
-		self.releaseKeyboard()
 		self.oldTime=time.time()
+		self._debug("LOAD CATEGORY {} END".format(cat))
 		#self._endUpdate()
 	#def _loadCategory
 
@@ -763,6 +773,11 @@ class portrait(QStackedWindowItem):
 			self.progress.stop()
 			self.rp.table.removeEventFilter(self)
 			self.init=True
+		if isinstance(args[0],QListWidget):
+			if args[1].type==QEvent.Type.KeyRelease:
+				self.released=True
+			elif args[1].type==QEvent.Type.KeyPress:
+				self.released=False
 		return(False)
 	#def eventFilter(self,*args):
 
@@ -801,7 +816,6 @@ class portrait(QStackedWindowItem):
 				apps=applist[idx:idxEnd]
 			self.getData.setApps(apps)
 			self.getData.start()
-			self.getData.dataLoaded.connect(self._loadData)
 	#def _beginLoadData
 
 	def _loadData(self,apps):
@@ -841,7 +855,8 @@ class portrait(QStackedWindowItem):
 	#def _loadData
 
 	def _endLoadData(self):
-		if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
+		#if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
+		if self.appsLoaded==0 and self.cmbCategories.count()==0:
 			#self._beginUpdate()
 			self.chkRebost.start()
 		else:
