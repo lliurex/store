@@ -263,6 +263,7 @@ class portrait(QStackedWindowItem):
 			vbox.addWidget(self.searchBox,Qt.AlignRight)
 		self.cmbCategories.setMinimumHeight(int(ICON_SIZE/3))
 		if isinstance(self.cmbCategories,QListWidget):
+			self.cmbCategories.setCursor(Qt.PointingHandCursor)
 			self.cmbCategories.currentItemChanged.connect(self._decoreCmbCategories)
 			self.cmbCategories.itemActivated.connect(self._loadCategory)
 		elif isinstance(self.cmbCategories,QComboBox):
@@ -368,9 +369,13 @@ class portrait(QStackedWindowItem):
 		mp=mainPanel()
 		mp.searchBox.returnPressed.connect(self._searchApps)
 		mp.searchBox.textChanged.connect(self._changeSearchAppsBtnIcon)
-		mp.btnSearch.clicked.connect(lambda x:mp.searchBox.setText(""))
+		mp.btnSearch.clicked.connect(self._resetSearch)
 		return(mp)
 	#def _mainPane
+
+	def _resetSearch(self):
+		self.rp.searchBox.setText("")
+		self.rp.searchBox.setFocus()
 
 	def tableLeaveEvent(self,*args):
 		self.rp.table.setAutoScroll(False)
