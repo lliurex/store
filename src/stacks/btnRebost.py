@@ -13,19 +13,21 @@ _ = gettext.gettext
 
 i18n={"INSTALL":_("Install"),
 	"REMOVE":_("Remove")}
-RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
 
 class processData(QThread):
 	processed=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self,None)
 		self.data=args[0]
+		self.autoUpdate=kwargs.get("autoUpdate",False)
 
 	def run(self):
 		if isinstance(self.data,str):
 			self.app=json.loads(self.data)
 		else:
 			self.app=self.data
+#		if self.autoUpdate==True:
+#			self._getAppseduInfo()
 		self.processed.emit(self.app)
 		return True
 	#def run
@@ -76,7 +78,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.setDefault(True)
 		self.setLayout(lay)
 		self.installEventFilter(self)
-		self.data=processData(strapp)
+		self.data=processData(strapp,autoUpdate=True)
 		self.data.processed.connect(self._renderGui)
 		self.data.start()
 
@@ -172,7 +174,8 @@ class QPushButtonRebostApp(QPushButton):
 					icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
 		if icn:
 			wsize=self.iconSize
-			if "/usr/share/banners/lliurex-neu" in img:
+			print(img)
+			if "/usr/share/banners/lliurex-neu" in img or os.path.basename(img).startswith("zero-lliurex-"):
 				wsize*=2
 			self.iconUri.setPixmap(icn.scaled(wsize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation))
 		elif img.startswith('http'):
