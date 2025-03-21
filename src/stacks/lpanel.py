@@ -26,7 +26,6 @@ BKG_COLOR_INSTALLED=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,
 
 i18n={
 	"APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
-	"APPUNAVAILABLE":_("Unavailable"),
 	"CHOOSE":_("Choose"),
 	"CONFIG":_("Details"),
 	"DESC":_("Navigate through all applications"),
@@ -47,6 +46,7 @@ i18n={
 	"SEEIT":_("See at Appsedu"),
 	"SITE":_("Website"),
 	"TOOLTIP":_("Details"),
+	"UNAVAILABLE":_("Unavailable"),
 	"UPGRADE":_("Upgrade"),
 	"ZMDNOTFOUND":_("Zommand not found. Open Zero-Center?"),
 	}
@@ -434,6 +434,9 @@ class detailPanel(QWidget):
 		self.btnRemove.setObjectName("lstInfo")
 		self.btnRemove.clicked.connect(self._genericEpiInstall)
 
+		self.btnUnavailable=QPushButton(i18n.get("UNAVAILABLE"))
+		self.btnUnavailable.setObjectName("lstInfo")
+
 		self.btnZomando=QPushButton(" {} zomando ".format(i18n.get("RUN")))
 		self.btnZomando.clicked.connect(self._runZomando)
 		self.btnZomando.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
@@ -455,7 +458,9 @@ class detailPanel(QWidget):
 		lay.addWidget(self.btnInstall,1,3,3,1,Qt.AlignLeft|Qt.AlignBottom)
 		lay.addWidget(self.lstInfo,2,3,1,1,Qt.AlignLeft|Qt.AlignTop)
 		lay.addWidget(self.btnRemove,2,3,1,1)
+		lay.addWidget(self.btnUnavailable,2,3,1,1)
 		self.btnRemove.setVisible(False)
+		self.btnUnavailable.setVisible(False)
 		spacing=QLabel("")
 		spacing.setFixedWidth(64)
 		lay.addWidget(spacing,0,lay.columnCount())
@@ -661,6 +666,7 @@ class detailPanel(QWidget):
 		self.lstInfo.setEnabled(False)
 		self.btnInstall.setEnabled(False)
 		self.btnRemove.setEnabled(False)
+		self.btnUnavailable.setEnabled(False)
 		self.btnLaunch.setEnabled(False)
 		self.blur=QGraphicsBlurEffect() 
 		self.blur.setBlurRadius(55) 
@@ -680,12 +686,11 @@ class detailPanel(QWidget):
 			visible=False
 		self.btnInstall.setVisible(visible)
 		self.lstInfo.setVisible(visible)
-		if bundle==i18n["INSTALL"].upper() or bundle==i18n["APPUNAVAILABLE"].upper():
-			if "eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))<=1:
-				self.lstInfo.setText(i18n["APPUNAVAILABLE"].upper())
+		if bundle==i18n["INSTALL"].upper():
 			return
 		bundle=bundle.split(" ")[0]
 		self.btnInstall.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
+		self.lstInfo.blockSignals(True)
 		self.lstInfo.setText(i18n["INSTALL"].upper())
 		states=self.app.get("state").copy()
 		installed=False
@@ -696,7 +701,17 @@ class detailPanel(QWidget):
 				installed=True
 				self.instBundle=bundle
 				break
+		#self.btnUnavailable.setVisible(False)
 		self.btnRemove.setVisible(installed)
+		self.btnRemove.setEnabled(installed)
+		if len(self.app.get("bundle",[]))==1 and "eduapp" in self.app.get("bundle",[]):
+			self.lstInfo.setVisible(False)
+			self.btnRemove.setVisible(False)
+			self.btnRemove.setEnabled(False)
+			self.btnUnavailable.setVisible(True)
+		self.lstInfo.blockSignals(False)
+
+		
 	#def _setLauncherOptions
 
 	def _old_setLauncherOptions(self):
@@ -802,7 +817,6 @@ class detailPanel(QWidget):
 				#release="{0}".format(i)
 				self.lstInfo.insertItem(idx,release)
 		self.lstInfo.setText(i18n["INSTALL"].upper())
-		self.lstInfo.setText(i18n["APPUNAVAILABLE"].upper())
 		for idx in range(0,len(priority)):
 			try:
 				self.lstInfo.setState(idx,False)
@@ -811,8 +825,6 @@ class detailPanel(QWidget):
 		if "eduapp" in bundles.keys():
 			bundles.pop("eduapp")
 		if len(bundles)<=0:
-			print("PASO POR AQUI")
-			self.lstInfo.setText(i18n["APPUNAVAILABLE"].upper())
 			self.lstInfo.setEnabled(False)
 	#def _setReleasesInfo
 

@@ -142,7 +142,8 @@ class QPushButtonRebostApp(QPushButton):
 		self.label.setText(text)
 		self.loadImg(self.app)
 		states=self.app.get("state").copy()
-		self.btn.setText(i18n.get("INSTALL"))
+		if self.btn.text()!=i18n.get("UNAVAILABLE"):
+			self.btn.setText(i18n.get("INSTALL"))
 		if "zomando" in states:
 			states.pop("zomando")
 		self.instBundle=""
