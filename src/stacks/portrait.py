@@ -91,9 +91,46 @@ class chkRebost(QThread):
 			self.test.emit(False)
 #class chkRebost
 
+class _performUpdate(QThread):
+	dataLoaded=Signal("PyObject")
+	def __init__(self,*args,**kwargs):
+		QThread.__init__(self, None)
+		self.rc=store.client()
+		self.name=args[0]
+
+	def run(self):
+		print("RUN FOR {}".format(self.name))
+		self.dataLoaded.emit(self.rc.showApp(self.name))
+
+class updateAppData(QThread):
+	dataLoaded=Signal("PyObject")
+	def __init__(self,*args,**kwargs):
+		QThread.__init__(self, None)
+		self.apps=kwargs.get("apps",{})
+		self.updates=[]
+		self.cont=0
+
+	def run(self):
+		app={}
+		for name in self.apps.keys():
+			while self.cont>1:
+				time.sleep(0.5)
+				QApplication.processEvents()
+			upd=_performUpdate(name)
+			upd.dataLoaded.connect(self._emitDataLoaded)
+			self.updates.append(upd)
+			upd.start()
+			self.cont+=1
+
+	def _emitDataLoaded(self,*args):
+		app=json.loads(args[0])
+		self.dataLoaded.emit(app)
+		self.cont-=1
+#class updateAppData
+
 class getData(QThread):
 	dataLoaded=Signal("PyObject")
-	def __init__(self):
+	def __init__(self,*args,**kwargs):
 		QThread.__init__(self, None)
 
 	def setApps(self,apps):
@@ -836,7 +873,7 @@ class portrait(QStackedWindowItem):
 			colspan=self.maxCol
 		span=colspan
 		btn=None
-		self.wdgs=[]
+		self.pendingApps={}
 		self.rp.table.flowLayout.setEnabled(False)
 		self.rp.table.setVisible(False)
 		for jsonapp in apps:
@@ -851,7 +888,8 @@ class portrait(QStackedWindowItem):
 			btn.clicked.connect(self._loadDetails)
 			btn.keypress.connect(self.tableKeyPressEvent)
 			btn.install.connect(self._installBundle)
-			self.wdgs.append(btn)
+			if jsonapp.get("summary","")=="":
+				self.pendingApps.update({appname:btn})
 			self.rp.table.addWidget(btn)
 			if appname in self.referersHistory.keys():
 				self.referersShowed.update({appname:btn})
@@ -871,17 +909,9 @@ class portrait(QStackedWindowItem):
 			self.chkRebost.start()
 		else:
 			self.rp.table.setVisible(True)
-			for wdg in self.wdgs:
-		#		appWdg=wdg[2]
-		#		#shadow=QGraphicsDropShadowEffect()
-		#		##shadow.setColor(QtGui.QColor(85, 85, 93, 180))
-		#		#shadow.setOffset(0, 3)
-		#		#shadow.setBlurRadius(5)
-		#		#shadow.setColor(QtGui.QColor(0, 0, 0, 128))
-		#		#appWdg.setGraphicsEffect(shadow)
-		#		#self.rp.table.setCellWidget(wdg[0],wdg[1],baseWdg)
-			##	self.rp.table.addWidget(wdg)
-				pass
+			self.appUpdate=updateAppData(apps=self.pendingApps)
+			self.appUpdate.dataLoaded.connect(self._endLoadApps)
+			self.appUpdate.start()
 			self._endUpdate()
 		self.cleanAux()
 		#self.ready.emit(self.wdgs)
@@ -889,7 +919,12 @@ class portrait(QStackedWindowItem):
 	#def _endLoadData(self):
 
 	def _endLoadApps(self,args):
-		pass
+		if isinstance(args[0],str):
+			app=json.loads(args[0])
+		else:
+			app=args[0]
+		self.pendingApps[app["name"]].setApp(app)
+		self.pendingApps[app["name"]].updateScreen()
 
 	def _installBundle(self,*args):
 		app=args[0]
