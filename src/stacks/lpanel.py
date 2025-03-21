@@ -26,6 +26,7 @@ BKG_COLOR_INSTALLED=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,
 
 i18n={
 	"APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
+	"APPUNAVAILABLE":_("Unavailable"),
 	"CHOOSE":_("Choose"),
 	"CONFIG":_("Details"),
 	"DESC":_("Navigate through all applications"),
@@ -536,6 +537,7 @@ class detailPanel(QWidget):
 			self.screenShot.setVisible(False)
 		else:
 			self.screenShot.setVisible(True)
+		print("SCREENS: {}".format(scrs))
 		for icn in scrs:
 			try:
 				self.screenShot.addImage(icn)
@@ -563,8 +565,11 @@ class detailPanel(QWidget):
 			summary="{}...".format(summary[0:150])
 		self.lblSummary.setText("{}".format(summary))
 		bundles=list(self.app.get('bundle',{}).keys())
-	#	if "eduapp" in bundles:
-	#		self.app["description"]=i18n.get("APPUNKNOWN")
+		self.lstInfo.setEnabled(True)
+		if "eduapp" in bundles:
+			self.lstInfo.setEnabled(False)
+			self.lstInfo.setText(i18n.get("APPUNAVAILABLE"))
+			#self.app["description"]=i18n.get("APPUNKNOWN")
 		homepage=self.app.get('infopage','')
 		if homepage=='':
 			homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
@@ -808,6 +813,7 @@ class detailPanel(QWidget):
 			bundles.pop("eduapp")
 		if len(bundles)<=0:
 			self.btnInstall.setEnabled(False)
+		self.lstInfo.setText(i18n["APPUNAVAILABLE"].upper())
 	#def _setReleasesInfo
 
 	def _classifyBundles(self,bundles):
