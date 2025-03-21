@@ -79,11 +79,16 @@ class chkRebost(QThread):
 	test=Signal("PyObject")
 	def __init__(self):
 		QThread.__init__(self, None)
-		self.rc=store.client()
+		try:
+			self.rc=store.client()
+		except:
+			self.rc=None
 	
 	def run(self):
-		self.rc.execute("list","office")
-		self.test.emit(True)
+		if self.rc!=None:
+			self.test.emit(True)
+		else:
+			self.test.emit(False)
 #class chkRebost
 
 class getData(QThread):
