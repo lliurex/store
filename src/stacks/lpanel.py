@@ -566,10 +566,6 @@ class detailPanel(QWidget):
 		self.lblSummary.setText("{}".format(summary))
 		bundles=list(self.app.get('bundle',{}).keys())
 		self.lstInfo.setEnabled(True)
-		if "eduapp" in bundles:
-			self.lstInfo.setEnabled(False)
-			self.lstInfo.setText(i18n.get("APPUNAVAILABLE"))
-			#self.app["description"]=i18n.get("APPUNKNOWN")
 		homepage=self.app.get('infopage','')
 		if homepage=='':
 			homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
@@ -684,7 +680,9 @@ class detailPanel(QWidget):
 			visible=False
 		self.btnInstall.setVisible(visible)
 		self.lstInfo.setVisible(visible)
-		if bundle==i18n["INSTALL"].upper():
+		if bundle==i18n["INSTALL"].upper() or bundle==i18n["APPUNAVAILABLE"].upper():
+			if "eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))<=1:
+				self.lstInfo.setText(i18n["APPUNAVAILABLE"].upper())
 			return
 		bundle=bundle.split(" ")[0]
 		self.btnInstall.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
@@ -804,6 +802,7 @@ class detailPanel(QWidget):
 				#release="{0}".format(i)
 				self.lstInfo.insertItem(idx,release)
 		self.lstInfo.setText(i18n["INSTALL"].upper())
+		self.lstInfo.setText(i18n["APPUNAVAILABLE"].upper())
 		for idx in range(0,len(priority)):
 			try:
 				self.lstInfo.setState(idx,False)
@@ -812,8 +811,9 @@ class detailPanel(QWidget):
 		if "eduapp" in bundles.keys():
 			bundles.pop("eduapp")
 		if len(bundles)<=0:
-			self.btnInstall.setEnabled(False)
-		self.lstInfo.setText(i18n["APPUNAVAILABLE"].upper())
+			print("PASO POR AQUI")
+			self.lstInfo.setText(i18n["APPUNAVAILABLE"].upper())
+			self.lstInfo.setEnabled(False)
 	#def _setReleasesInfo
 
 	def _classifyBundles(self,bundles):

@@ -12,7 +12,9 @@ gettext.textdomain('appsedu')
 _ = gettext.gettext
 
 i18n={"INSTALL":_("Install"),
-	"REMOVE":_("Remove")}
+	"UNAVAILABLE":_("Unavailable"),
+	"REMOVE":_("Remove"),
+	}
 
 class processData(QThread):
 	processed=Signal("PyObject")
@@ -92,6 +94,10 @@ class QPushButtonRebostApp(QPushButton):
 				self.btn.setText(i18n.get("REMOVE"))
 				self.instBundle=bundle
 				break
+
+		if "eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))==1:
+			self.btn.setText(i18n.get("UNAVAILABLE"))
+			self.btn.setEnabled(False)
 		if self.app.get("name","").startswith("zero-"):
 			self.flyIcon=QPixmap(os.path.join(RSRC,"zero-center128x128.png"))
 		else:
