@@ -954,7 +954,7 @@ class portrait(QStackedWindowItem):
 		self.referersShowed.update({self.refererApp.app["name"]:self.refererApp})
 		self.setChanged(False)
 		#self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
-		self.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","")))
+		self.parent.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","")))
 		self.lp.setParms({"name":args[-1].get("name",""),"icon":icn})
 		self.rp.hide()
 		self.lp.show()
@@ -985,7 +985,7 @@ class portrait(QStackedWindowItem):
 
 	def _return(self,*args,**kwargs):
 		self.setCursor(self.oldCursor)
-		self.setWindowTitle("{}".format(APPNAME))
+		self.parent.setWindowTitle("{}".format(APPNAME))
 		self.lp.hide()
 		self.rp.show()
 	#def _return
