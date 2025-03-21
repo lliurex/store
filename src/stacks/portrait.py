@@ -820,6 +820,7 @@ class portrait(QStackedWindowItem):
 			self.progress.stop()
 			self.rp.table.removeEventFilter(self)
 			self.init=True
+			self.appUpdate.start()
 		if isinstance(args[0],QListWidget):
 			if args[1].type==QEvent.Type.KeyRelease:
 				self.released=True
@@ -911,7 +912,6 @@ class portrait(QStackedWindowItem):
 			self.rp.table.setVisible(True)
 			self.appUpdate=updateAppData(apps=self.pendingApps)
 			self.appUpdate.dataLoaded.connect(self._endLoadApps)
-			self.appUpdate.start()
 			self._endUpdate()
 		self.cleanAux()
 		#self.ready.emit(self.wdgs)
