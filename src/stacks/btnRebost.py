@@ -181,7 +181,6 @@ class QPushButtonRebostApp(QPushButton):
 					icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
 		if icn:
 			wsize=self.iconSize
-			print(img)
 			if "/usr/share/banners/lliurex-neu" in img or os.path.basename(img).startswith("zero-lliurex-"):
 				wsize*=2
 			self.iconUri.setPixmap(icn.scaled(wsize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation))
