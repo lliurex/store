@@ -132,9 +132,10 @@ class QPushButtonRebostApp(QPushButton):
 		ev=args[1]
 		if isinstance(ev,QMouseEvent):
 			self.activate()
-		if ev.type()==QEvent.Type.Hide:
-			self.data.quit()
-			self.data.wait()
+		if isinstance(ev,QEvent):
+			if ev.type()==QEvent.Type.Hide:
+				self.data.quit()
+				self.data.wait()
 		return(False)
 
 	def updateScreen(self):
