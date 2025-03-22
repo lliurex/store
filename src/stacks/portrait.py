@@ -99,7 +99,6 @@ class _performUpdate(QThread):
 		self.name=args[0]
 
 	def run(self):
-		print("RUN FOR {}".format(self.name))
 		self.dataLoaded.emit(self.rc.showApp(self.name))
 
 class updateAppData(QThread):
