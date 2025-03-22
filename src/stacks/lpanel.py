@@ -542,7 +542,6 @@ class detailPanel(QWidget):
 			self.screenShot.setVisible(False)
 		else:
 			self.screenShot.setVisible(True)
-		print("SCREENS: {}".format(scrs))
 		for icn in scrs:
 			try:
 				self.screenShot.addImage(icn)
@@ -701,14 +700,15 @@ class detailPanel(QWidget):
 				installed=True
 				self.instBundle=bundle
 				break
-		#self.btnUnavailable.setVisible(False)
 		self.btnRemove.setVisible(installed)
 		self.btnRemove.setEnabled(installed)
-		if len(self.app.get("bundle",[]))==1 and "eduapp" in self.app.get("bundle",[]):
+		if len(self.app.get("bundle",[]))==1 and "eduapp" in self.app.get("bundle",{}).keys():
 			self.lstInfo.setVisible(False)
 			self.btnRemove.setVisible(False)
 			self.btnRemove.setEnabled(False)
 			self.btnUnavailable.setVisible(True)
+		else:
+			self.btnUnavailable.setVisible(False)
 		self.lstInfo.blockSignals(False)
 
 		
