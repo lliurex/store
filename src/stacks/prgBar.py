@@ -67,10 +67,14 @@ class QProgressImage(QLabel):
 	def start(self):
 		self.updateTimer.start()
 		self.setVisible(True)
+	#def start
 
 	def stop(self):
 		self.updateTimer.stop()
 		self.setVisible(False)
+		self.updateTimer.quit()
+		self.updateTimer.wait()
+	#def stop(self):
 		
 	def _beginDoProgress(self,*args):
 		if self.running==False:

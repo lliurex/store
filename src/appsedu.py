@@ -12,14 +12,20 @@ import time
 gettext.textdomain('appsedu')
 _ = gettext.gettext
 
+def closeEvent(*args):
+	portrait=mw.widget(0)
+	mw.hide()
+	portrait._closeEvent()
+
 app=QApplication(["LliureX Store"])
 mw=QStackedWindow()
+mw.closeEvent=closeEvent
 icn=QtGui.QIcon.fromTheme("appsedu")
 mw.disableNavBar(True)
 mw.setIcon(icn)
 #Remove banner
-i=mw.layout().itemAtPosition(0,0)
-mw.layout().removeItem(i)
+banner=mw.layout().itemAtPosition(0,0)
+mw.layout().removeItem(banner)
 
 if os.path.islink(__file__)==True:
 	abspath=os.path.join(os.path.dirname(__file__),os.path.dirname(os.readlink(__file__)))

@@ -107,11 +107,15 @@ class updateAppData(QThread):
 		QThread.__init__(self, None)
 		self.apps=kwargs.get("apps",{})
 		self.updates=[]
+		self._stop=False
 		self.cont=0
+	#def __init__
 
 	def run(self):
 		app={}
 		for name in self.apps.keys():
+			if self._stop==True:
+				break
 			while self.cont>1:
 				time.sleep(0.5)
 				QApplication.processEvents()
@@ -120,29 +124,54 @@ class updateAppData(QThread):
 			self.updates.append(upd)
 			upd.start()
 			self.cont+=1
+		if self._stop==True:
+			for th in self.updates:
+				th.quit()
+				th.wait()
+	#def run
+
+	def stop(self):
+		self._stop=True
+		for th in self.updates:
+			th.quit()
+			th.wait()
+	#def stop
 
 	def _emitDataLoaded(self,*args):
 		app=json.loads(args[0])
 		self.dataLoaded.emit(app)
 		self.cont-=1
+	#def _emitDataLoaded
 #class updateAppData
 
 class getData(QThread):
 	dataLoaded=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self, None)
+		self._stop=False
+	#def __init__
 
 	def setApps(self,apps):
 		self.apps=apps
+	#def setApps
 	
 	def run(self):
 		applist=[]
 		for strapp in self.apps:
+			if self._stop==True:
+				break
 			jsonapp=json.loads(strapp)
 			applist.append(jsonapp)
-		self.dataLoaded.emit(applist)
-	#def run(self):
-#class getData(QThread):
+		if self._stop==False:
+			self.dataLoaded.emit(applist)
+	#def run
+
+	def stop(self):
+		self._stop=True
+		self.quit()
+		self.wait()
+	#def stop
+#class getData
 
 class portrait(QStackedWindowItem):
 	ready=Signal("PyObject")
@@ -250,6 +279,15 @@ class portrait(QStackedWindowItem):
 		self.setObjectName("portrait")
 		self.resetScreen()
 	#def _load_screen
+
+	def _closeEvent(self,*args):
+		if hasattr(self,"progress"):
+			self.progress.stop()
+		if hasattr(self,"appUpdate"):
+			self.appUpdate.stop()
+		if hasattr(self,"getData"):
+			self.getData.stop()
+	#def _closeEvent
 	
 	def _navPane(self):
 		wdg=QWidget()
@@ -360,6 +398,7 @@ class portrait(QStackedWindowItem):
 		lay.addWidget(chk)
 		wdg.setLayout(lay)
 		return(wdg)
+	#def _appseduCertified
 
 	def _defInst(self):
 		btnInst=QPushButton(i18n.get("INSTALLED"))
@@ -369,11 +408,8 @@ class portrait(QStackedWindowItem):
 
 	def _defHome(self):
 		btnHome=QPushButton(i18n.get("HOME"))
-		#icn=QtGui.QIcon.fromTheme("view-refresh")
 		#btnHome.setIcon(icn)
 		btnHome.clicked.connect(self._goHome)
-		#btnHome.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
-		#btnHome.setIconSize(btnHome.sizeHint())
 		return(btnHome)
 	#def _defHome
 

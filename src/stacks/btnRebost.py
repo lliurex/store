@@ -2,7 +2,7 @@
 import os
 import json
 from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy
-from PySide2.QtCore import Qt,Signal,QThread
+from PySide2.QtCore import Qt,Signal,QThread,QEvent
 from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
 from QtExtraWidgets import QScreenShotContainer
 import css
@@ -132,6 +132,9 @@ class QPushButtonRebostApp(QPushButton):
 		ev=args[1]
 		if isinstance(ev,QMouseEvent):
 			self.activate()
+		if ev.type()==QEvent.Type.Hide:
+			self.data.quit()
+			self.data.wait()
 		return(False)
 
 	def updateScreen(self):
