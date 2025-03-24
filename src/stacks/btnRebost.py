@@ -12,8 +12,9 @@ gettext.textdomain('appsedu')
 _ = gettext.gettext
 
 i18n={"INSTALL":_("Install"),
-	"UNAVAILABLE":_("Unavailable"),
 	"REMOVE":_("Remove"),
+	"UNAUTHORIZED":_("Blocked"),
+	"UNAVAILABLE":_("Unavailable"),
 	}
 
 class processData(QThread):
@@ -96,10 +97,10 @@ class QPushButtonRebostApp(QPushButton):
 				self.btn.setText(i18n.get("REMOVE"))
 				self.instBundle=bundle
 				break
-
-		if "eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))==1:
+		if "Forbidden" in self.app.get("categories",[]):
+			self.btn.setText(i18n.get("UNAUTHORIZED"))
+		elif "eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))==1:
 			self.btn.setText(i18n.get("UNAVAILABLE"))
-			self.btn.setEnabled(False)
 		if self.app.get("name","").startswith("zero-"):
 			self.flyIcon=QPixmap(os.path.join(RSRC,"zero-center128x128.png"))
 		else:
@@ -225,7 +226,7 @@ class QPushButtonRebostApp(QPushButton):
 		else:
 			bkgAlternateColor=QColor(QPalette().color(QPalette.Active,QPalette.Highlight))
 		fcolor=QColor(QPalette().color(QPalette.Active,QPalette.Text))
-		if stats.get("forbidden",False)==True:
+		if (stats.get("forbidden",False)==True) or (self.btn.text()==i18n.get("UNAVAILABLE","")):
 			bkgcolor=QColor(QPalette().color(QPalette.Disabled,QPalette.Mid))
 			fcolor=QColor(QPalette().color(QPalette.Disabled,QPalette.BrightText))
 		elif stats.get("installed",False)==True:
@@ -300,8 +301,9 @@ class QPushButtonRebostApp(QPushButton):
 				margin:12px;
 			}
 			"""%(style["bkgColor"],style["brdColor"],brdWidth,focusedBrdWidth,style["frgColor"],style["bkgColor"],style["frgColor"],style["bkgBtnColor"],style["brdBtnColor"]))
-		if style.get("forbidden",False)==True:
-			self.iconUri.setEnabled(False)
+		if (style.get("forbidden",False)==True) or (self.btn.text()==i18n.get("UNAVAILABLE","")):
+			if self.btn.text()!=i18n.get("UNAVAILABLE",""):
+				self.iconUri.setEnabled(False)
 			self.btn.setEnabled(False)
 			self.btn.setStyleSheet("""color:#AAAAAA""")
 	#def _applyDecoration
