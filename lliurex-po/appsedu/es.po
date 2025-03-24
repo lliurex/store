@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-30 11:13+0200\n"
-"PO-Revision-Date: 2024-08-30 11:31+0200\n"
+"POT-Creation-Date: 2025-03-24 09:27+0100\n"
+"PO-Revision-Date: 2025-03-24 09:31+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -14,7 +14,24 @@ msgstr ""
 "X-Generator: Poedit 3.0.1\n"
 "X-Poedit-Basepath: .\n"
 
-#: ../src/stacks/details.py:25
+#: ../src/stacks/btnRebost.py:14 ../src/stacks/cmbBtn.py:11
+#: ../src/stacks/lblApp.py:13 ../src/stacks/lpanel.py:40
+msgid "Install"
+msgstr "Instala"
+
+#: ../src/stacks/btnRebost.py:15 ../src/stacks/lpanel.py:44
+msgid "Remove"
+msgstr "Elimina"
+
+#: ../src/stacks/btnRebost.py:16
+msgid "Blocked"
+msgstr "Bloqueada"
+
+#: ../src/stacks/btnRebost.py:17 ../src/stacks/lpanel.py:49
+msgid "Unavailable"
+msgstr "Pendiente"
+
+#: ../src/stacks/lpanel.py:28
 msgid ""
 "The app could not be loaded. Until included in LliureX catalogue it can't be "
 "installed"
@@ -23,202 +40,151 @@ msgstr ""
 "catálogo de appsedu no estará disponible. Más información en https://portal."
 "edu.gva.es/appsedu/aplicacions-lliurex"
 
-#: ../src/stacks/details.py:26
+#: ../src/stacks/lpanel.py:29
 msgid "Choose"
 msgstr "Seleccionar"
 
-#: ../src/stacks/details.py:27 ../src/stacks/details.py:41
+#: ../src/stacks/lpanel.py:30 ../src/stacks/lpanel.py:48
 msgid "Details"
 msgstr "Detalles"
 
-#: ../src/stacks/details.py:28 ../src/stacks/portrait.py:28
+#: ../src/stacks/lpanel.py:31 ../src/stacks/portrait.py:39
+#: ../src/stacks/rpanel.py:21
 msgid "Navigate through all applications"
 msgstr "Mostrar todas las aplicaciones"
 
-#: ../src/stacks/details.py:29
+#: ../src/stacks/lpanel.py:32 ../src/stacks/portrait.py:40
 msgid "Could not open"
 msgstr "No se pudo abrir"
 
-#: ../src/stacks/details.py:30
+#: ../src/stacks/lpanel.py:33 ../src/stacks/portrait.py:41
 msgid "Error opening"
 msgstr "Error al cargar"
 
-#: ../src/stacks/details.py:31
+#: ../src/stacks/lpanel.py:34 ../src/stacks/portrait.py:42
+msgid "System apps can't be removed"
+msgstr "Aplicación de sistema. No se desinstalará"
+
+#: ../src/stacks/lpanel.py:35 ../src/stacks/portrait.py:43
 msgid "Unknown error"
 msgstr "Error desconocido"
 
-#: ../src/stacks/details.py:32
+#: ../src/stacks/lpanel.py:36
 msgid "App unauthorized"
 msgstr "App no autorizada"
 
-#: ../src/stacks/details.py:33
+#: ../src/stacks/lpanel.py:37
 msgid "Format"
 msgstr "Formato"
 
-#: ../src/stacks/details.py:34
+#: ../src/stacks/lpanel.py:38
+msgid "Info"
+msgstr "Información"
+
+#: ../src/stacks/lpanel.py:39
 msgid "For more info go to"
 msgstr "Para más información ir a"
 
-#: ../src/stacks/details.py:35
-msgid "Install"
-msgstr "Instala"
-
-#: ../src/stacks/details.py:36
+#: ../src/stacks/lpanel.py:41
 msgid "Show application detail"
 msgstr "Mostrar información"
 
-#: ../src/stacks/details.py:37
+#: ../src/stacks/lpanel.py:42
 msgid "Opening"
 msgstr "Abriendo"
 
-#: ../src/stacks/details.py:38
+#: ../src/stacks/lpanel.py:43
 msgid "Release"
 msgstr "Versión"
 
-#: ../src/stacks/details.py:39
-msgid "Remove"
-msgstr "Elimina"
-
-#: ../src/stacks/details.py:40
+#: ../src/stacks/lpanel.py:45
 msgid "Open"
 msgstr "Abre"
 
-#: ../src/stacks/details.py:42
+#: ../src/stacks/lpanel.py:46
+msgid "See at Appsedu"
+msgstr "Mostrar en Appsedu"
+
+#: ../src/stacks/lpanel.py:47
+msgid "Website"
+msgstr "Sitio web"
+
+#: ../src/stacks/lpanel.py:50
 msgid "Upgrade"
 msgstr "Actualiza"
 
-#: ../src/stacks/details.py:43
+#: ../src/stacks/lpanel.py:51
 msgid "Zommand not found. Open Zero-Center?"
 msgstr "No encontrado. ¿Abrir el Zero-Center?"
 
-#: ../src/stacks/portrait.py:24
+#: ../src/stacks/portrait.py:34 ../src/stacks/rpanel.py:16
 msgid "All"
 msgstr "Todo"
 
-#: ../src/stacks/portrait.py:25
+#: ../src/stacks/portrait.py:35 ../src/stacks/rpanel.py:17
 msgid "Available"
 msgstr "Disponible"
 
-#: ../src/stacks/portrait.py:26
+#: ../src/stacks/portrait.py:36 ../src/stacks/rpanel.py:18
 msgid "Filter by category"
 msgstr "Filtrar por categoría"
 
-#: ../src/stacks/portrait.py:27 ../src/stacks/portrait.py:38
+#: ../src/stacks/portrait.py:37 ../src/stacks/rpanel.py:19
+msgid "Certified by Appsedu"
+msgstr "Certificadas por Appsedu"
+
+#: ../src/stacks/portrait.py:38 ../src/stacks/portrait.py:54
+#: ../src/stacks/rpanel.py:20 ../src/stacks/rpanel.py:32
 msgid "Portrait"
 msgstr "Portada"
 
-#: ../src/stacks/portrait.py:29
+#: ../src/stacks/portrait.py:44 ../src/stacks/rpanel.py:22
 msgid "Filters"
 msgstr "Filtros"
 
-#: ../src/stacks/portrait.py:30
+#: ../src/stacks/portrait.py:45 ../src/stacks/rpanel.py:23
 msgid "Filter by formats and states"
 msgstr "Filtar por formatos y estados"
 
-#: ../src/stacks/portrait.py:31
+#: ../src/stacks/portrait.py:46 ../src/stacks/rpanel.py:24
+msgid "Home"
+msgstr "Inicio"
+
+#: ../src/stacks/portrait.py:47 ../src/stacks/rpanel.py:25
 msgid "Main page"
 msgstr "Página principal"
 
-#: ../src/stacks/portrait.py:32
+#: ../src/stacks/portrait.py:48 ../src/stacks/rpanel.py:26
 msgid "Installed"
 msgstr "Instalado"
 
-#: ../src/stacks/portrait.py:33
+#: ../src/stacks/portrait.py:49 ../src/stacks/rpanel.py:27
 msgid "Launch LliurexUp"
 msgstr "LliurexUp"
 
-#: ../src/stacks/portrait.py:34
+#: ../src/stacks/portrait.py:50 ../src/stacks/rpanel.py:28
 msgid "Show applications"
 msgstr "Mostrar aplicaciones"
 
-#: ../src/stacks/portrait.py:35 ../src/stacks/sources.py:26
+#: ../src/stacks/portrait.py:51 ../src/stacks/rpanel.py:29
 msgid "Updating info"
 msgstr "Actualizando datos"
 
-#: ../src/stacks/portrait.py:36
+#: ../src/stacks/portrait.py:52 ../src/stacks/rpanel.py:30
 msgid "Search"
 msgstr "Busca"
 
-#: ../src/stacks/portrait.py:37
+#: ../src/stacks/portrait.py:53 ../src/stacks/rpanel.py:31
 msgid "Sort alphabetically"
 msgstr "Orden alfabético"
 
-#: ../src/stacks/portrait.py:39
+#: ../src/stacks/portrait.py:55 ../src/stacks/rpanel.py:33
 msgid "Upgradables"
 msgstr "Actualizables"
 
-#: ../src/stacks/portrait.py:40
+#: ../src/stacks/portrait.py:56 ../src/stacks/rpanel.py:34
 msgid "There're upgrades available"
 msgstr "Hay actualizaciones pendientes"
-
-#: ../src/stacks/sources.py:21
-msgid "Clear cache"
-msgstr "Limpiar caché"
-
-#: ../src/stacks/sources.py:22
-msgid ""
-"Remove all files from cache, as per exemple icons or another related stuff"
-msgstr "Elimina los ficheros de la caché, como puedan ser iconos o imágenes"
-
-#: ../src/stacks/sources.py:23
-msgid "Sources"
-msgstr "Orígenes"
-
-#: ../src/stacks/sources.py:24
-msgid "Show software sources"
-msgstr "Ver orígenes del software"
-
-#: ../src/stacks/sources.py:25
-msgid "Configure software sources"
-msgstr "Configurar orígenes"
-
-#: ../src/stacks/sources.py:27
-msgid "Configuring software sources"
-msgstr "Configurar orígenes"
-
-#: ../src/stacks/sources.py:28
-msgid "Reload catalogues"
-msgstr "Recargar"
-
-#: ../src/stacks/sources.py:29
-msgid "Reload info from sources"
-msgstr "Recarga la información del catálogo"
-
-#: ../src/stacks/sources.py:30
-msgid "Restart database"
-msgstr "Reinicializa el catálogo"
-
-#: ../src/stacks/sources.py:31
-msgid ""
-"Forces a refresh of all the info from sources resetting all previous stored "
-"information"
-msgstr ""
-"Recarga toda la información desde los proveedores de aplicaciones, "
-"eliminando toda la información almacenada"
-
-#: ../src/stacks/sources.py:32
-msgid "Service could not be reloaded. Check credentials"
-msgstr "No se puede recargar. Verifica credenciales"
-
-#: ../src/stacks/sources.py:33
-msgid "Include appimages"
-msgstr "Incluir appimages"
-
-#: ../src/stacks/sources.py:34
-msgid "Include flatpaks"
-msgstr "Incluir flatpaks"
-
-#: ../src/stacks/sources.py:35
-msgid "Include native packages"
-msgstr "Incluir paquetes nativos"
-
-#: ../src/stacks/sources.py:36
-msgid "Include snaps"
-msgstr "Incluir snaps"
-
-#: ../src/stacks/sources.py:37
-msgid "Configuration"
-msgstr "Configuración"
 
 msgid "2DGraphics"
 msgstr "Gráficos 2D"
@@ -228,18 +194,6 @@ msgstr "Gráficos 3D"
 
 msgid "Accessibility"
 msgstr "Accesibilidad"
-
-msgid "Administration"
-msgstr "Administración"
-
-msgid "Application"
-msgstr "Aplicación"
-
-msgid "ArcadeGame"
-msgstr "Juegos Arcade"
-
-msgid "Archiving"
-msgstr "Compresión"
 
 msgid "Art"
 msgstr "Arte"
@@ -256,11 +210,8 @@ msgstr "Sonido y Video"
 msgid "AudioVideoEditing"
 msgstr "Edición de video y sonido"
 
-msgid "Calculator"
-msgstr "Calculadora"
-
-msgid "Calendar"
-msgstr "Calendario"
+msgid "CAD"
+msgstr "CAD"
 
 msgid "Chart"
 msgstr "Gráficas"
@@ -271,26 +222,20 @@ msgstr "Chat"
 msgid "Chemistry"
 msgstr "Química"
 
-msgid "Compression"
-msgstr "Compresores"
+msgid "Ci\\u00e8ncies"
+msgstr "Ciencias"
 
 msgid "ComputerScience"
 msgstr "Ciencia computacional"
 
-msgid "ConsoleOnly"
-msgstr "Consola"
-
-msgid "ContactManagement"
-msgstr "Contactos"
-
-msgid "Core"
-msgstr "Sistema"
+msgid "Debugger"
+msgstr "Debug"
 
 msgid "Development"
 msgstr "Desarrollo"
 
-msgid "DiscBurning"
-msgstr "Grabación de discos"
+msgid "Disseny"
+msgstr "Diseño"
 
 msgid "Documentation"
 msgstr "Documentación"
@@ -304,8 +249,8 @@ msgstr "Electricidad"
 msgid "Electronics"
 msgstr "Electrónica"
 
-msgid "Email"
-msgstr "Correo"
+msgid "Electr\\u00f2nica"
+msgstr "Electrónica"
 
 msgid "Emulator"
 msgstr "Emuladores"
@@ -316,29 +261,20 @@ msgstr "Ingeniería"
 msgid "FP"
 msgstr "FP"
 
-msgid "Feed"
-msgstr "Origen"
-
-msgid "FileManager"
-msgstr "Gestión de ficheros"
-
-msgid "FileTools"
-msgstr "Herrmientas"
-
-msgid "FileTransfer"
-msgstr "Transferencia de ficheros"
-
-msgid "Filesystem"
-msgstr "Ficheros"
-
-msgid "Finance"
-msgstr "Finanzas"
-
 msgid "Forbidden"
 msgstr "Bloqueadas"
 
+msgid "Fotografia"
+msgstr "Fotografía"
+
 msgid "Game"
 msgstr "Juego"
+
+msgid "Gamificaci\\u00f3"
+msgstr "Gamificación"
+
+msgid "Geografia"
+msgstr "Geografía"
 
 msgid "Geography"
 msgstr "Geografía"
@@ -352,11 +288,14 @@ msgstr "Gráficos"
 msgid "IDE"
 msgstr "IDE"
 
-msgid "IRCClient"
-msgstr "IRC"
+msgid "ImageProcessing"
+msgstr "Procesamiento de imágenes"
 
-msgid "InstantMessaging"
-msgstr "Mensajería instantánea"
+msgid "Inform\\u00e0tica"
+msgstr "Informática"
+
+msgid "Intel\\u00b7lig\\u00e8ncia Artificial"
+msgstr "Inteligencia Artifical"
 
 msgid "Internet"
 msgstr "Internet"
@@ -370,20 +309,17 @@ msgstr "Idiomas"
 msgid "LliureX"
 msgstr "LliureX"
 
-msgid "LliureX-Administration"
-msgstr "Administración"
-
 msgid "LliureX-Infantil"
 msgstr "LliureX-Infantil"
-
-msgid "Lliurex"
-msgstr "LliureX"
 
 msgid "LogicGame"
 msgstr "Juegos de Lógica"
 
 msgid "Maps"
 msgstr "Mapas"
+
+msgid "Matem\\u00e0tiques"
+msgstr "Matemáticas"
 
 msgid "Math"
 msgstr "Matemáticas"
@@ -394,20 +330,23 @@ msgstr "Midi"
 msgid "Mixer"
 msgstr "Mezcladores"
 
-msgid "Monitor"
-msgstr "Monitores"
-
 msgid "Multimedia"
 msgstr "Multimédia"
+
+msgid "Multim\\u00e8dia"
+msgstr "Multimedia"
 
 msgid "Music"
 msgstr "Música"
 
+msgid "Musica"
+msgstr "Música"
+
+msgid "M\\u00fasica"
+msgstr "Música"
+
 msgid "Network"
 msgstr "Redes"
-
-msgid "News"
-msgstr "Noticias"
 
 msgid "OCR"
 msgstr "OCR"
@@ -415,11 +354,8 @@ msgstr "OCR"
 msgid "Office"
 msgstr "Oficina"
 
-msgid "P2P"
-msgstr "P2P"
-
-msgid "PackageManager"
-msgstr "Gestión de paquetes"
+msgid "Ofim\\u00e0tica"
+msgstr "Ofimática"
 
 msgid "Photography"
 msgstr "Fotografía"
@@ -430,8 +366,11 @@ msgstr "Física"
 msgid "Player"
 msgstr "Reproductores"
 
-msgid "Publishing"
-msgstr "Publicación"
+msgid "Programaci\\u00f3"
+msgstr "Programación"
+
+msgid "Qu\\u00edmica"
+msgstr "Química"
 
 msgid "RasterGraphics"
 msgstr "Gráficos Ráster"
@@ -439,14 +378,11 @@ msgstr "Gráficos Ráster"
 msgid "Recorder"
 msgstr "Grabadoras"
 
-msgid "RemoteAccess"
-msgstr "Acceso remoto"
-
 msgid "Resources"
 msgstr "Recursos"
 
-msgid "RevisionControl"
-msgstr "Control de versiones"
+msgid "Rob\\u00f3tica"
+msgstr "Robótica"
 
 msgid "Scanning"
 msgstr "Escaneado"
@@ -457,11 +393,8 @@ msgstr "Ciencia"
 msgid "Sequencer"
 msgstr "Secuenciadores"
 
-msgid "Services"
-msgstr "Servicios"
-
-msgid "Simulation"
-msgstr "Simulación"
+msgid "Shooter"
+msgstr "Disparos"
 
 msgid "Software"
 msgstr "Programas"
@@ -472,13 +405,13 @@ msgstr "Sistema"
 msgid "TV"
 msgstr "TV"
 
-msgid "TerminalEmulator"
-msgstr "Terminales"
+msgid "Tecnologia"
+msgstr "Tecnología"
 
 msgid "TextEditor"
 msgstr "Editores de texto"
 
-msgid "Utilities"
+msgid "Utilitats"
 msgstr "Utilidades"
 
 msgid "Utility"
@@ -493,14 +426,14 @@ msgstr "Video"
 msgid "Viewer"
 msgstr "Visores"
 
+msgid "V\\u00eddeo"
+msgstr "Video"
+
 msgid "WebBrowser"
 msgstr "Navegadores"
 
-msgid "X-Lliurex"
-msgstr "LliureX"
-
-msgid "X-Utilities"
-msgstr "Utilidades"
+msgid "WebDevelopment"
+msgstr "Desarrollo web"
 
 msgid "Zomando"
 msgstr "Zomando"
@@ -511,15 +444,6 @@ msgstr "accesorios"
 msgid "admin-tools"
 msgstr "herramientas administrativas"
 
-msgid "collections"
-msgstr "colecciones"
-
-msgid "communication"
-msgstr "comunicación"
-
-msgid "desktop-gnome"
-msgstr "escritorio gnome"
-
 msgid "desktop-kde"
 msgstr "escritorio kde"
 
@@ -529,9 +453,6 @@ msgstr "educación"
 msgid "electronics"
 msgstr "electrónica"
 
-msgid "fonts"
-msgstr "tipos de letra"
-
 msgid "games"
 msgstr "juegos"
 
@@ -540,9 +461,6 @@ msgstr "gráficos"
 
 msgid "internet"
 msgstr "internet"
-
-msgid "legacy"
-msgstr "antiguo"
 
 msgid "multimedia"
 msgstr "multimedia"
@@ -555,9 +473,6 @@ msgstr "otros"
 
 msgid "programming"
 msgstr "programación"
-
-msgid "publishing"
-msgstr "publicación"
 
 msgid "resources"
 msgstr "herramientas"
@@ -574,8 +489,181 @@ msgstr "sistema"
 msgid "unknown"
 msgstr "desconocido"
 
-#~ msgid "Debugger"
-#~ msgstr "Debug"
+msgid "\\u00c0udio"
+msgstr "Sonido"
+
+#~ msgid "Clear cache"
+#~ msgstr "Limpiar caché"
+
+#~ msgid ""
+#~ "Remove all files from cache, as per exemple icons or another related stuff"
+#~ msgstr "Elimina los ficheros de la caché, como puedan ser iconos o imágenes"
+
+#~ msgid "Sources"
+#~ msgstr "Orígenes"
+
+#~ msgid "Show software sources"
+#~ msgstr "Ver orígenes del software"
+
+#~ msgid "Configure software sources"
+#~ msgstr "Configurar orígenes"
+
+#~ msgid "Configuring software sources"
+#~ msgstr "Configurar orígenes"
+
+#~ msgid "Reload catalogues"
+#~ msgstr "Recargar"
+
+#~ msgid "Reload info from sources"
+#~ msgstr "Recarga la información del catálogo"
+
+#~ msgid "Restart database"
+#~ msgstr "Reinicializa el catálogo"
+
+#~ msgid ""
+#~ "Forces a refresh of all the info from sources resetting all previous "
+#~ "stored information"
+#~ msgstr ""
+#~ "Recarga toda la información desde los proveedores de aplicaciones, "
+#~ "eliminando toda la información almacenada"
+
+#~ msgid "Service could not be reloaded. Check credentials"
+#~ msgstr "No se puede recargar. Verifica credenciales"
+
+#~ msgid "Include appimages"
+#~ msgstr "Incluir appimages"
+
+#~ msgid "Include flatpaks"
+#~ msgstr "Incluir flatpaks"
+
+#~ msgid "Include native packages"
+#~ msgstr "Incluir paquetes nativos"
+
+#~ msgid "Include snaps"
+#~ msgstr "Incluir snaps"
+
+#~ msgid "Configuration"
+#~ msgstr "Configuración"
+
+#~ msgid "Administration"
+#~ msgstr "Administración"
+
+#~ msgid "Application"
+#~ msgstr "Aplicación"
+
+#~ msgid "ArcadeGame"
+#~ msgstr "Juegos Arcade"
+
+#~ msgid "Archiving"
+#~ msgstr "Compresión"
+
+#~ msgid "Calculator"
+#~ msgstr "Calculadora"
+
+#~ msgid "Calendar"
+#~ msgstr "Calendario"
+
+#~ msgid "Compression"
+#~ msgstr "Compresores"
+
+#~ msgid "ConsoleOnly"
+#~ msgstr "Consola"
+
+#~ msgid "ContactManagement"
+#~ msgstr "Contactos"
+
+#~ msgid "Core"
+#~ msgstr "Sistema"
+
+#~ msgid "DiscBurning"
+#~ msgstr "Grabación de discos"
+
+#~ msgid "Email"
+#~ msgstr "Correo"
+
+#~ msgid "Feed"
+#~ msgstr "Origen"
+
+#~ msgid "FileManager"
+#~ msgstr "Gestión de ficheros"
+
+#~ msgid "FileTools"
+#~ msgstr "Herrmientas"
+
+#~ msgid "FileTransfer"
+#~ msgstr "Transferencia de ficheros"
+
+#~ msgid "Filesystem"
+#~ msgstr "Ficheros"
+
+#~ msgid "Finance"
+#~ msgstr "Finanzas"
+
+#~ msgid "IRCClient"
+#~ msgstr "IRC"
+
+#~ msgid "InstantMessaging"
+#~ msgstr "Mensajería instantánea"
+
+#~ msgid "LliureX-Administration"
+#~ msgstr "Administración"
+
+#~ msgid "Lliurex"
+#~ msgstr "LliureX"
+
+#~ msgid "Monitor"
+#~ msgstr "Monitores"
+
+#~ msgid "News"
+#~ msgstr "Noticias"
+
+#~ msgid "P2P"
+#~ msgstr "P2P"
+
+#~ msgid "PackageManager"
+#~ msgstr "Gestión de paquetes"
+
+#~ msgid "Publishing"
+#~ msgstr "Publicación"
+
+#~ msgid "RemoteAccess"
+#~ msgstr "Acceso remoto"
+
+#~ msgid "RevisionControl"
+#~ msgstr "Control de versiones"
+
+#~ msgid "Services"
+#~ msgstr "Servicios"
+
+#~ msgid "Simulation"
+#~ msgstr "Simulación"
+
+#~ msgid "TerminalEmulator"
+#~ msgstr "Terminales"
+
+#~ msgid "X-Lliurex"
+#~ msgstr "LliureX"
+
+#~ msgid "X-Utilities"
+#~ msgstr "Utilidades"
+
+#~ msgid "collections"
+#~ msgstr "colecciones"
+
+#~ msgid "communication"
+#~ msgstr "comunicación"
+
+#~ msgid "desktop-gnome"
+#~ msgstr "escritorio gnome"
+
+#~ msgid "fonts"
+#~ msgstr "tipos de letra"
+
+#~ msgid "legacy"
+#~ msgstr "antiguo"
+
+#~ msgid "publishing"
+#~ msgstr "publicación"
 
 #~ msgid "FORBIDDEN"
 #~ msgstr "Bloqueadas"
@@ -618,9 +706,6 @@ msgstr "desconocido"
 
 #~ msgid "Humanities"
 #~ msgstr "Humanidades"
-
-#~ msgid "ImageProcessing"
-#~ msgstr "Procesamiento de imágenes"
 
 #~ msgid "Jukebox"
 #~ msgstr "Reproductores de música"
@@ -667,9 +752,6 @@ msgstr "desconocido"
 #~ msgid "Translation"
 #~ msgstr "Traducciones"
 
-#~ msgid "WebDevelopment"
-#~ msgstr "Desarrollo web"
-
 #~ msgid "Webdevelopment"
 #~ msgstr "Desarrollo web"
 
@@ -693,9 +775,6 @@ msgstr "desconocido"
 
 #~ msgid "ArtificialIntelligence"
 #~ msgstr "Inteligencia Artificial"
-
-#~ msgid "BlocksGame"
-#~ msgstr "Juegos de bloques"
 
 #~ msgid "BoardGame"
 #~ msgstr "Juegos de tablero"
@@ -786,9 +865,6 @@ msgstr "desconocido"
 
 #~ msgid "Settings"
 #~ msgstr "Ajustes"
-
-#~ msgid "Shooter"
-#~ msgstr "Disparos"
 
 #~ msgid "SportsGame"
 #~ msgstr "Juegos de deporte"
