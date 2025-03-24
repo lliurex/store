@@ -62,6 +62,7 @@ class chkUpgrades(QThread):
 		QThread.__init__(self, None)
 		self.rc=rc
 		self.upgrades=False
+	#def __init__
 	
 	def run(self):
 		apps=json.loads(self.rc.getUpgradableApps())
@@ -73,6 +74,7 @@ class chkUpgrades(QThread):
 				if len(llxup.getPackagesToUpdate())>0:
 					self.upgrades=True
 		self.chkEnded.emit(self.upgrades)
+	#def run
 #class chkUpgrades
 
 class chkRebost(QThread):
@@ -83,12 +85,14 @@ class chkRebost(QThread):
 			self.rc=store.client()
 		except:
 			self.rc=None
+	#def __init__
 	
 	def run(self):
 		if self.rc!=None:
 			self.test.emit(True)
 		else:
 			self.test.emit(False)
+	#def run
 #class chkRebost
 
 class _performUpdate(QThread):
@@ -97,9 +101,11 @@ class _performUpdate(QThread):
 		QThread.__init__(self, None)
 		self.rc=store.client()
 		self.name=args[0]
+	#def __init__
 
 	def run(self):
 		self.dataLoaded.emit(self.rc.showApp(self.name))
+	#def run
 
 class updateAppData(QThread):
 	dataLoaded=Signal("PyObject")
@@ -126,15 +132,18 @@ class updateAppData(QThread):
 			self.cont+=1
 		if self._stop==True:
 			for th in self.updates:
-				th.quit()
-				th.wait()
+				if th.isRunning():
+					th.quit()
+					th.wait()
 	#def run
 
 	def stop(self):
 		self._stop=True
 		for th in self.updates:
-			th.quit()
-			th.wait()
+			if th.isRunning():
+				th.quit()
+				th.wait()
+		self.cont=0
 	#def stop
 
 	def _emitDataLoaded(self,*args):
@@ -285,6 +294,8 @@ class portrait(QStackedWindowItem):
 			self.progress.stop()
 		if hasattr(self,"appUpdate"):
 			self.appUpdate.stop()
+			self.appUpdate.quit()
+			self.appUpdate.wait()
 		if hasattr(self,"getData"):
 			self.getData.stop()
 	#def _closeEvent
