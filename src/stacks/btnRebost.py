@@ -150,7 +150,11 @@ class QPushButtonRebostApp(QPushButton):
 		self.label.setText(text)
 		self.loadImg(self.app)
 		states=self.app.get("state").copy()
-		if self.btn.text()!=i18n.get("UNAVAILABLE"):
+		if "Forbidden" in self.app.get("categories",[]):
+			self.btn.setText(i18n.get("UNAUTHORIZED"))
+		elif ("eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))==1) or len(self.app.get("bundle",[]))==0:
+			self.btn.setText(i18n.get("UNAVAILABLE"))
+		else:
 			self.btn.setText(i18n.get("INSTALL"))
 		if "zomando" in states:
 			states.pop("zomando")
