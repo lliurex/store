@@ -22,6 +22,7 @@ class processData(QThread):
 		QThread.__init__(self,None)
 		self.data=args[0]
 		self.autoUpdate=kwargs.get("autoUpdate",False)
+	#def __init__
 
 	def run(self):
 		if isinstance(self.data,str):
@@ -83,6 +84,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.data=processData(strapp,autoUpdate=True)
 		self.data.processed.connect(self._renderGui)
 		self.data.start()
+	#def __init__
 
 	def _renderGui(self,*args):
 		self.app=args[0]
@@ -137,6 +139,7 @@ class QPushButtonRebostApp(QPushButton):
 				self.data.quit()
 				self.data.wait()
 		return(False)
+	#def eventFilter
 
 	def updateScreen(self):
 		#self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
@@ -332,4 +335,5 @@ class QPushButtonRebostApp(QPushButton):
 
 	def setApp(self,app):
 		self.app=app
+	#def setApp
 #class QPushButtonRebostApp

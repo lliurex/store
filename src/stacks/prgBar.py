@@ -17,6 +17,7 @@ class progress(QThread):
 		self.lbl=args[0]
 		self.pxm=args[1]
 		self.updated.connect(self._doProgress)
+	#def __init__
 
 	def run(self):
 		self.running=True
@@ -24,6 +25,7 @@ class progress(QThread):
 			self.updated.emit()
 			#self._doProgress()
 			time.sleep(0.05)
+	#def run
 
 	def _doProgress(self,*args):
 		color=QColor(self.oldColor.red()+self.inc,self.oldColor.green()+self.inc,self.oldColor.blue()+self.inc)
@@ -37,9 +39,11 @@ class progress(QThread):
 		pxm2.fill(color)
 		pxm2.setMask(self.pxm.createMaskFromColor(Qt.transparent))
 		self.lbl.setPixmap(pxm2)
+	#def _doProgress
 
 	def stop(self):
 		self.running=False
+	#def stop
 
 class QProgressImage(QLabel):
 	def __init__(self,*args,**kwargs):
