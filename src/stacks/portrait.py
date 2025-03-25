@@ -89,6 +89,7 @@ class chkRebost(QThread):
 	
 	def run(self):
 		if self.rc!=None:
+			self.rc.execute("list","lliurex")
 			self.test.emit(True)
 		else:
 			self.test.emit(False)
@@ -210,6 +211,7 @@ class portrait(QStackedWindowItem):
 		self.maxCol=3
 		if LAYOUT=="appsedu":
 			self.maxCol=5
+		self.pendingApps={}
 		self.rc=store.client()
 		self.chkRebost=chkRebost()
 		self.chkRebost.test.connect(self._goHome)
@@ -258,7 +260,7 @@ class portrait(QStackedWindowItem):
 	def __initScreen__(self):
 		bus=dbus.SessionBus()
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
-		objbus.connect_to_signal("updatedSignal",self._goHome,dbus_interface="net.lliurex.rebost")
+		#objbus.connect_to_signal("updatedSignal",self._goHome,dbus_interface="net.lliurex.rebost")
 		objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 		self.box=QGridLayout()
 		self.setLayout(self.box)
@@ -277,7 +279,7 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(self.lp,0,1)
 		self.lp.hide()
 		self.progress=self._defProgress()
-		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
+		self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
 		self.btnSettings=QPushButton()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		self.btnSettings.setIcon(icn)
@@ -539,6 +541,10 @@ class portrait(QStackedWindowItem):
 	def _getAppList(self,cat=[]):
 		self.loading=True
 		apps=[]
+		if hasattr(self,"appUpdate"):
+			self.appUpdate.stop()
+			self.appUpdate.quit()
+			self.appUpdate.wait()
 		if isinstance(cat,str):
 			cat=cat.split()
 		if len(cat)>0:
@@ -672,6 +678,7 @@ class portrait(QStackedWindowItem):
 				appsFiltered.append(app)
 				break
 		self.apps=appsFiltered.copy()
+		self.appUpdate.start()
 		self.appsRaw=self.apps.copy()
 		self.refresh=True
 		if len(self.apps)==0:
@@ -769,6 +776,7 @@ class portrait(QStackedWindowItem):
 			self.rp.searchBox.setText("")
 			txt=""
 		self.oldSearch=txt
+		self.appUpdate.stop()
 		if len(txt)==0:
 			self.apps=self._getAppList()
 		else:
@@ -861,13 +869,20 @@ class portrait(QStackedWindowItem):
 				self.rp.setVisible(True)
 			else:
 				self.first=ev
-		if isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.Paint:
+		elif isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.Paint:
 			args[0].setVisible(True)
 			self.progress.stop()
 			self.rp.table.removeEventFilter(self)
 			self.init=True
 			self.appUpdate.start()
-		if isinstance(args[0],QListWidget):
+		elif isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.HideToParent:
+			if hasattr(self,"firstHide")==False:
+				self.firstHide=None
+			else:
+				if self.firstHide==None:
+					self.firstHide=""
+					self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
+		elif isinstance(args[0],QListWidget):
 			if args[1].type==QEvent.Type.KeyRelease:
 				self.released=True
 			elif args[1].type==QEvent.Type.KeyPress:
@@ -920,9 +935,14 @@ class portrait(QStackedWindowItem):
 			colspan=self.maxCol
 		span=colspan
 		btn=None
-		self.pendingApps={}
 		self.rp.table.flowLayout.setEnabled(False)
 		self.rp.table.setVisible(False)
+		if len(self.pendingApps)>0:
+			self.appUpdate.stop()
+			self.appUpdate.quit()
+			self.appUpdate.wait()
+			self.pendingApps={}
+			
 		for jsonapp in apps:
 			appname=jsonapp.get('name','')
 			if appname in self.appsSeen:
@@ -957,6 +977,7 @@ class portrait(QStackedWindowItem):
 		else:
 			self.rp.table.setVisible(True)
 			self.appUpdate=updateAppData(apps=self.pendingApps)
+			self.appUpdate.start()
 			self.appUpdate.dataLoaded.connect(self._endLoadApps)
 			self._endUpdate()
 		self.cleanAux()
