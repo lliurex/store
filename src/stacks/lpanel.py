@@ -135,6 +135,7 @@ class detailPanel(QWidget):
 	#def _tagNav(self,*args)
 
 	def _showSplash(self,icon):
+		return
 		self.progress.setVisible(True)
 		self.progress.start()
 	#def _showSplash
@@ -197,7 +198,7 @@ class detailPanel(QWidget):
 				self._resetScreen(name,icon)
 				self.thParmShow.setArgs(args[0])
 				self.thParmShow.start()
-		self._showSplash(icon)
+		#self._showSplash(icon)
 	#def setParms
 
 	def _endSetParms(self,*args):
@@ -356,7 +357,9 @@ class detailPanel(QWidget):
 		self.updateScreen()
 	 #def _endGetEpiResults
 
-	def _clicked(self):
+	def _clickedBack(self):
+		if self.thParmShow.isRunning():
+			self.thParmShow.quit()
 		self.clicked.emit(self.app)
 
 	def _loaded(self):
@@ -366,7 +369,7 @@ class detailPanel(QWidget):
 		self.box=QGridLayout()
 		self.setObjectName("dp")
 		self.btnBack=QPushButton()
-		self.btnBack.clicked.connect(self._clicked)
+		self.btnBack.clicked.connect(self._clickedBack)
 		icn=QtGui.QIcon(os.path.join(RSRC,"go-previous32x32.png"))
 		self.btnBack.setIcon(icn)
 		self.btnBack.setIconSize(self.btnBack.sizeHint())
@@ -691,7 +694,7 @@ class detailPanel(QWidget):
 		self.btnInstall.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
 		self.lstInfo.blockSignals(True)
 		self.lstInfo.setText(i18n["INSTALL"].upper())
-		states=self.app.get("state").copy()
+		states=self.app.get("state",{}).copy()
 		installed=False
 		if "zomando" in states:
 			states.pop("zomando")
@@ -710,8 +713,6 @@ class detailPanel(QWidget):
 		else:
 			self.btnUnavailable.setVisible(False)
 		self.lstInfo.blockSignals(False)
-
-		
 	#def _setLauncherOptions
 
 	def _old_setLauncherOptions(self):

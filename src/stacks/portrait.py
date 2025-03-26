@@ -163,7 +163,6 @@ class updateAppData(QThread):
 
 	def setApps(self,*args):
 		self.apps=args[0]
-		print("APPS: {}".format(len(self.apps)))
 	#def setApps
 
 	def run(self):
@@ -1101,6 +1100,7 @@ class portrait(QStackedWindowItem):
 	#def _endLaunchHelper
 
 	def _loadDetails(self,*args,**kwargs):
+		self.progress.start()
 		icn=""
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
@@ -1123,6 +1123,8 @@ class portrait(QStackedWindowItem):
 	#def _endLoadDetails
 
 	def _updateBtn(self,*args,**kwargs):
+		QApplication.processEvents()
+		self.progress.stop()
 		if not hasattr(self,"refererApp"):
 			return()
 		if self.refererApp==None:
@@ -1149,6 +1151,7 @@ class portrait(QStackedWindowItem):
 		self.parent.setWindowTitle("{}".format(APPNAME))
 		self.lp.hide()
 		self.rp.show()
+		self.progress.stop()
 		self.loading=False
 	#def _return
 
