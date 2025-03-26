@@ -146,7 +146,7 @@ def portrait():
 					margin-right:%spx;
 			}"""%(int(MARGIN)*3,int(MARGIN)*1,int(MARGIN)*3,int(MARGIN)*2)
 	css=css+banner
-	cmbCategories="""#cmbCategories{
+	lstCategories="""#lstCategories{
 					color:%s;
 					background:%s;
 					border:1px;
@@ -158,11 +158,11 @@ def portrait():
 					padding-top:%spx;
 					margin-top:%spx;
 					} 
-				#cmbCategories::item {
+				#lstCategories::item {
 					background-color: transparent;
 					color:%s;
 				}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,RADIUS,int(MARGIN)*4,int(MARGIN)*4,MARGIN,MARGIN,int(MARGIN)*4,COLOR_FONT_LIGHT)
-	css=css+cmbCategories
+	css=css+lstCategories
 	certified="""#certified{
 					color:%s;
 					background:%s;
