@@ -161,8 +161,14 @@ class updateAppData(QThread):
 		self.cont=0
 	#def __init__
 
+	def setApps(self,*args):
+		self.apps=args[0]
+		print("APPS: {}".format(len(self.apps)))
+	#def setApps
+
 	def run(self):
 		app={}
+		self._stop=False
 		for name in self.apps.keys():
 			if self._stop==True:
 				break
@@ -246,6 +252,7 @@ class portrait(QStackedWindowItem):
 			tooltip=i18n.get("TOOLTIP"),
 			index=1,
 			visible=True)
+		#Catalogue related
 		self.i18nCat={}
 		self.oldCat=""
 		self.catI18n={}
@@ -254,12 +261,12 @@ class portrait(QStackedWindowItem):
 		self.appsSeen=[]
 		self.appsRaw=[]
 		self.oldSearch=""
+		self.maxCol=5
+		#Thread related
 		self.loading=False
-		self.maxCol=3
-		if LAYOUT=="appsedu":
-			self.maxCol=5
 		self.pendingApps={}
 		self.rc=store.client()
+		self.appUpdate=updateAppData()
 		self.getData=getData()
 		self.getData.dataLoaded.connect(self._loadData)
 		self._rebost=storeHelper()
@@ -267,7 +274,12 @@ class portrait(QStackedWindowItem):
 		self._rebost.test.connect(self._goHome)
 		self._rebost.lstEnded.connect(self._endLoadCategory)
 		self._rebost.srcEnded.connect(self._endSearchApps)
+		self.epi=exehelper.appLauncher()
+		self.epi.runEnded.connect(self._endLaunchHelper)
+		self.zmdLauncher=exehelper.zmdLauncher()
+		self.zmdLauncher.zmdEnded.connect(self._endLaunchHelper)
 		#self.thUpgrades=chkUpgrades(self.rc)
+		#GUI related
 		self.hideControlButtons()
 		self.referersHistory={}
 		self.referersShowed={}
@@ -275,12 +287,9 @@ class portrait(QStackedWindowItem):
 		self.oldCursor=self.cursor()
 		self.refresh=True
 		self.released=True
-		self.epi=exehelper.appLauncher()
-		self.epi.runEnded.connect(self._endLaunchHelper)
-		self.zmdLauncher=exehelper.zmdLauncher()
-		self.zmdLauncher.zmdEnded.connect(self._endLaunchHelper)
 		self.setStyleSheet(css.portrait())
 		#self.epi.runEnded.connect(self._getEpiResults)
+		#DBUS
 		signal.signal(signal.SIGUSR1,self._signals)
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 	#def __init__
@@ -638,7 +647,7 @@ class portrait(QStackedWindowItem):
 	#def _endUpdate
 
 	def _goHome(self,*args,**kwargs):
-		print("Rebost running: {} - {} - {}".format(self._rebost.isFinished(),self._rebost.isRunning(),self._rebost.action))
+		self._debug("Rebost running: {} - {} - {}".format(self._rebost.isFinished(),self._rebost.isRunning(),self._rebost.action))
 		if self._rebost.isFinished()==True and self._rebost.isRunning()==False:
 			self._getUpgradables()
 		self.oldTime=time.time()
@@ -646,7 +655,9 @@ class portrait(QStackedWindowItem):
 		self.rp.searchBox.setText("")
 		self._loadFilters()
 		#self.apps=self._getAppList()
-		self.apps=json.loads(self.rc.execute('search',""))
+		self._rebost.setAction("search","")
+		self._rebost.start()
+		#self.apps=json.loads(self.rc.execute('search',""))
 		self._populateCategories()
 		self.resetScreen()
 		if isinstance(self.lstCategories,QListWidget):
@@ -921,20 +932,17 @@ class portrait(QStackedWindowItem):
 				self.first=ev
 		elif isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.Paint:
 			args[0].setVisible(True)
-			self.progress.stop()
-			self.rp.table.removeEventFilter(self)
 			self.init=True
 			if hasattr(self,"appUpdate"):
 				self.appUpdate.start()
 			else:
 				self._debug("Event filter failed starting appUpdate")
-		elif isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.HideToParent:
 			if hasattr(self,"firstHide")==False:
 				self.firstHide=None
 			else:
-				if self.firstHide==None:
-					self.firstHide=""
-					self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
+				self.progress.stop()
+				self.rp.table.removeEventFilter(self)
+				self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		elif isinstance(args[0],QListWidget):
 			if args[1].type==QEvent.Type.KeyRelease:
 				self.released=True
@@ -1027,7 +1035,8 @@ class portrait(QStackedWindowItem):
 			self._rebost.start()
 		else:
 			self.rp.setVisible(True)
-			self.appUpdate=updateAppData(apps=self.pendingApps)
+			self.appUpdate.stop() #JustInCase
+			self.appUpdate.setApps(self.pendingApps)
 			self.appUpdate.start()
 			self.appUpdate.dataLoaded.connect(self._endLoadApps)
 			self._endUpdate()
