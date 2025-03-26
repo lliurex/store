@@ -574,30 +574,8 @@ class portrait(QStackedWindowItem):
 			self.lstCategories.addItem(" · {}".format(cat))
 	#def _populateCategories
 
-	def _populateCategoriesFromApps(self):
-		self.lstCategories.clear()
-		self.lstCategories.setSizeAdjustPolicy(self.lstCategories.SizeAdjustPolicy.AdjustToContents)
-		seen=[]
-		self.lstCategories.addItem("· {}".format(i18n.get('ALL')))
-		item=self.lstCategories.item(0)
-		item.font().setBold(True)
-		for app in self.apps:
-			japp=json.loads(app)
-			categories=japp.get("categories",[])
-			for cat in categories:
-				if cat not in seen:
-					self.lstCategories.addItem("· {}".format(_(cat).capitalize()))
-					self.i18nCat[_(cat).capitalize()]=cat
-					seen.append(cat)
-	#def _populateCategoriesFromApp
-
 	def _getAppList(self,cat=[]):
 		self.loading=True
-	#	if hasattr(self,"appUpdate"):
-			#QApplication.processEvents()
-		#	self.appUpdate.stop()
-		#	self.appUpdate.quit()
-		#	self.appUpdate.wait()
 		if isinstance(cat,str):
 			cat=cat.split()
 		if len(cat)>0:
