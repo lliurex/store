@@ -56,15 +56,37 @@ i18n={
 	"UPGRADES":_("There're upgrades available")
 	}
 
-class chkUpgrades(QThread):
+
+class storeHelper(QThread):
 	chkEnded=Signal("PyObject")
-	def __init__(self,rc):
+	test=Signal("PyObject")
+	lstEnded=Signal("PyObject")
+	srcEnded=Signal("PyObject")
+	def __init__(self):
 		QThread.__init__(self, None)
-		self.rc=rc
+		self.rc=store.client()
 		self.upgrades=False
+		self.args=[]
+		self.action="upgrade"
 	#def __init__
+
+	def setAction(self,action,*args):
+		self.action=action
+		if len(args)>0:
+			self.args=args
 	
 	def run(self):
+		if self.action=="upgrade":
+			self._chkUpgrades()
+		elif self.action=="test":
+			self._test()
+		elif self.action=="list":
+			self._list()
+		elif self.action=="search":
+			self._search()
+	#def run
+
+	def _chkUpgrades(self):
 		apps=json.loads(self.rc.getUpgradableApps())
 		if len(apps)>0:
 			self.upgrades=True
@@ -74,8 +96,29 @@ class chkUpgrades(QThread):
 				if len(llxup.getPackagesToUpdate())>0:
 					self.upgrades=True
 		self.chkEnded.emit(self.upgrades)
-	#def run
-#class chkUpgrades
+	#def _chkUpgrades(self):
+
+	def _test(self):
+		if self.rc!=None:
+			self.rc.execute("list","lliurex")
+			self.test.emit(True)
+		else:
+			self.test.emit(False)
+	#def _test
+
+	def _list(self):
+		apps=[]
+		if len(self.args)==1:
+			apps.extend(json.loads(self.rc.execute('list',"({})".format(self.args[0]))))
+		elif len(self.args)==2:
+			apps.extend(json.loads(self.rc.execute('list',"{}".format(self.args[0]),self.args[1])))
+		self.lstEnded.emit(apps)
+	#def _list
+
+	def _search(self):
+		apps=json.loads(self.rc.execute("search",self.args[0]))
+		self.srcEnded.emit(apps)
+#class rebostHelper
 
 class chkRebost(QThread):
 	test=Signal("PyObject")
@@ -148,7 +191,12 @@ class updateAppData(QThread):
 	#def stop
 
 	def _emitDataLoaded(self,*args):
-		app=json.loads(args[0])
+		app={}
+		if len(args)>0 and isinstance(args[0],str):
+			try:
+				app=json.loads(args[0])
+			except Exception as e:
+				self._debug("_emitDataLoaded ERR: Json could not be parsed\n{}\n".format(e))
 		self.dataLoaded.emit(app)
 		self.cont-=1
 	#def _emitDataLoaded
@@ -184,7 +232,6 @@ class getData(QThread):
 #class getData
 
 class portrait(QStackedWindowItem):
-	ready=Signal("PyObject")
 	def __init_stack__(self):
 		self.aux=[]
 		self.init=False
@@ -213,11 +260,14 @@ class portrait(QStackedWindowItem):
 			self.maxCol=5
 		self.pendingApps={}
 		self.rc=store.client()
-		self.chkRebost=chkRebost()
-		self.chkRebost.test.connect(self._goHome)
 		self.getData=getData()
 		self.getData.dataLoaded.connect(self._loadData)
-		self.thUpgrades=chkUpgrades(self.rc)
+		self._rebost=storeHelper()
+		self._rebost.chkEnded.connect(self._endGetUpgradables)
+		self._rebost.test.connect(self._goHome)
+		self._rebost.lstEnded.connect(self._endLoadCategory)
+		self._rebost.srcEnded.connect(self._endSearchApps)
+		#self.thUpgrades=chkUpgrades(self.rc)
 		self.hideControlButtons()
 		self.referersHistory={}
 		self.referersShowed={}
@@ -231,7 +281,6 @@ class portrait(QStackedWindowItem):
 		self.zmdLauncher.zmdEnded.connect(self._endLaunchHelper)
 		self.setStyleSheet(css.portrait())
 		#self.epi.runEnded.connect(self._getEpiResults)
-		#self.ready.connect(self._fillTable)
 		signal.signal(signal.SIGUSR1,self._signals)
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 	#def __init__
@@ -342,24 +391,16 @@ class portrait(QStackedWindowItem):
 			vbox=QHBoxLayout()
 		wdg.setLayout(vbox)
 		vbox.setContentsMargins(10,0,10,0)
-		if LAYOUT=="appsedu":
-			vbox.addWidget(self._appseduCertified(),Qt.AlignRight)
-			self.cmbCategories=QListWidget()
-			self.cmbCategories.setObjectName("cmbCategories")
-			self.cmbCategories.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-			self.cmbCategories.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-			vbox.addWidget(self.cmbCategories,Qt.AlignTop|Qt.AlignCenter)
-		else:
-			self.cmbCategories=QComboBox()
-			vbox.addWidget(self.cmbCategories,Qt.AlignLeft)
-			vbox.addWidget(self.searchBox,Qt.AlignRight)
-		self.cmbCategories.setMinimumHeight(int(ICON_SIZE/3))
-		if isinstance(self.cmbCategories,QListWidget):
-			self.cmbCategories.setCursor(Qt.PointingHandCursor)
-			self.cmbCategories.currentItemChanged.connect(self._decoreCmbCategories)
-			self.cmbCategories.itemActivated.connect(self._loadCategory)
-		elif isinstance(self.cmbCategories,QComboBox):
-			self.cmbCategories.activated.connect(self._loadCategory)
+		vbox.addWidget(self._appseduCertified(),Qt.AlignRight)
+		self.lstCategories=QListWidget()
+		self.lstCategories.setObjectName("lstCategories")
+		self.lstCategories.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.lstCategories.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		vbox.addWidget(self.lstCategories,Qt.AlignTop|Qt.AlignCenter)
+		self.lstCategories.setMinimumHeight(int(ICON_SIZE/3))
+		self.lstCategories.setCursor(Qt.PointingHandCursor)
+		self.lstCategories.currentItemChanged.connect(self._decoreCmbCategories)
+		self.lstCategories.itemActivated.connect(self._loadCategory)
 		self.lblInfo=self._defInfo()
 		vbox.addSpacing(30)
 		vbox.addWidget(self.lblInfo,Qt.AlignBottom)
@@ -373,7 +414,7 @@ class portrait(QStackedWindowItem):
 	def _defTopBar(self):
 		wdg=QWidget()
 		hbox=QHBoxLayout()
-		#hbox.addWidget(self.cmbCategories)
+		#hbox.addWidget(self.lstCategories)
 		self.apps=[]
 		self.btnFilters=QCheckableComboBox()
 		self.btnFilters.setMaximumHeight(ICON_SIZE/3)
@@ -482,7 +523,10 @@ class portrait(QStackedWindowItem):
 	#def _detailPane
 
 	def _launchLlxUp(self):
+		self.parent.setVisible(False)
+		QApplication.processEvents()
 		subprocess.run(["pkexec","lliurex-up"])
+		self.parent.setVisible(True)
 	#def _launchLlxUp
 
 	def _loadFilters(self):
@@ -496,96 +540,86 @@ class portrait(QStackedWindowItem):
 	#def _loadFilters
 
 	def _populateCategories(self): 
-		self.cmbCategories.clear()
-		self.cmbCategories.setSizeAdjustPolicy(self.cmbCategories.SizeAdjustPolicy.AdjustToContents)
+		self.lstCategories.clear()
+		self.lstCategories.setSizeAdjustPolicy(self.lstCategories.SizeAdjustPolicy.AdjustToContents)
 		self.i18nCat={}
 		self.catI18n={}
 		catList=json.loads(self.rc.execute('getCategories'))
-		self.cmbCategories.addItem(i18n.get('ALL'))
-		item=self.cmbCategories.itemAt(0,0)
-		font=item.font()
-		font.setBold(True)
-		item.setFont(font)
+		self.lstCategories.addItem(i18n.get('ALL'))
+		item=self.lstCategories.itemAt(0,0)
+		if item!=None:
+			font=item.font()
+			font.setBold(True)
+			item.setFont(font)
 		seenCats={}
 		#Sort categories
 		translatedCategories=[]
 		for cat in catList:
 			#if cat.islower() it's a category from system without appstream info 
-			if _(cat) in self.i18nCat.keys() or cat.islower():
+			if _(cat).capitalize() in self.i18nCat.keys() or cat.islower():
 				continue
 			translatedCategories.append(_(cat).capitalize())
 			self.i18nCat[_(cat).capitalize()]=cat
 			self.catI18n[cat]=_(cat)
 		translatedCategories.sort()
 		for cat in translatedCategories:
-			self.cmbCategories.addItem(" · {}".format(cat))
+			self.lstCategories.addItem(" · {}".format(cat))
 	#def _populateCategories
 
 	def _populateCategoriesFromApps(self):
-		self.cmbCategories.clear()
-		self.cmbCategories.setSizeAdjustPolicy(self.cmbCategories.SizeAdjustPolicy.AdjustToContents)
+		self.lstCategories.clear()
+		self.lstCategories.setSizeAdjustPolicy(self.lstCategories.SizeAdjustPolicy.AdjustToContents)
 		seen=[]
-		self.cmbCategories.addItem("· {}".format(i18n.get('ALL')))
-		item=self.cmbCategories.item(0)
+		self.lstCategories.addItem("· {}".format(i18n.get('ALL')))
+		item=self.lstCategories.item(0)
 		item.font().setBold(True)
 		for app in self.apps:
 			japp=json.loads(app)
 			categories=japp.get("categories",[])
 			for cat in categories:
 				if cat not in seen:
-					self.cmbCategories.addItem("· {}".format(_(cat).capitalize()))
+					self.lstCategories.addItem("· {}".format(_(cat).capitalize()))
 					self.i18nCat[_(cat).capitalize()]=cat
 					seen.append(cat)
 	#def _populateCategoriesFromApp
 
 	def _getAppList(self,cat=[]):
 		self.loading=True
-		apps=[]
-		if hasattr(self,"appUpdate"):
-			self.appUpdate.stop()
-			self.appUpdate.quit()
-			self.appUpdate.wait()
+	#	if hasattr(self,"appUpdate"):
+			#QApplication.processEvents()
+		#	self.appUpdate.stop()
+		#	self.appUpdate.quit()
+		#	self.appUpdate.wait()
 		if isinstance(cat,str):
 			cat=cat.split()
 		if len(cat)>0:
 			categories=",".join(cat)
 			if len(cat)>1:
-				apps.extend(json.loads(self.rc.execute('list',"({})".format(categories))))
+				self._rebost.setAction("list","({})".format(categories))
+				#apps.extend(json.loads(self.rc.execute('list',"({})".format(categories))))
+				self._debug("Loading cat {}".format(",".join(cat)))
 			else:
 				#If max rows is defined rebost tries to return as many apps as possible
 				#getting categories from raw data (deep search)
-				apps.extend(json.loads(self.rc.execute('list',"{}".format(categories),1000)))
-			self._debug("Loading cat {}".format(",".join(cat)))
-			self._debug("Loading cat {}".format(categories))
-		elif LAYOUT!="appsedu":
-			categories=[]
-			for i18ncat,cat in self.i18nCat.items():
-				categories.append("\"{}\"".format(cat))
-			if not "Lliurex" in categories:
-				categories.append("\"Lliurex\"")
-			if not "Forbidden" in categories:
-				categories.append("\"Forbidden\"")
-			categories=",".join(categories)
-			apps.extend(json.loads(self.rc.execute('list',"({})".format(categories))))
+				self._rebost.setAction("list","{}".format(categories),1000)
+				#apps.extend(json.loads(self.rc.execute('list',"{}".format(categories),1000)))
+				self._debug("Loading cat {}".format(categories))
+			self._rebost.start()
 		else:
-			apps=json.loads(self.rc.execute("search",""))
-		self.appsRaw=apps
-		apps.sort()
-		self.cleanAux()
-		self.loading=False
-		return(apps)
+			self._rebost.setAction("search","")
+			self._rebost.start()
 	#def _getAppList
 
 	def _endGetUpgradables(self,*args):
 		if args[0]==True:
 			self.lblInfo.setVisible(True)
-		self.thUpgrades.terminate()
+		self._rebost.terminate()
 	#def _endGetUpgradables(self,*args):
 
 	def _getUpgradables(self):
 		self.lblInfo.setVisible(False)
-		self.thUpgrades.chkEnded.connect(self._endGetUpgradables)
-		self.thUpgrades.start()
+		self._rebost.setAction("upgrade")
+		self._rebost.start()
 	#def _getUpgradables
 
 	def _beginUpdate(self):
@@ -599,32 +633,26 @@ class portrait(QStackedWindowItem):
 
 	def _endUpdate(self):
 		self.setCursor(self.oldCursor)
-		if LAYOUT!="appsedu":
-			self.btnSettings.setVisible(True)
 		self._return()
 		#self.progress.setVisible(False)
 	#def _endUpdate
 
-	def _shuffleApps(self):
-		if LAYOUT!="appsedu":
-			random.shuffle(self.apps)
-	#def _shuffleApps
-
 	def _goHome(self,*args,**kwargs):
-		if self.thUpgrades.isFinished()==False and self.thUpgrades.isRunning()==False:
+		print("Rebost running: {} - {} - {}".format(self._rebost.isFinished(),self._rebost.isRunning(),self._rebost.action))
+		if self._rebost.isFinished()==True and self._rebost.isRunning()==False:
 			self._getUpgradables()
 		self.oldTime=time.time()
 		self.sortAsc=False
 		self.rp.searchBox.setText("")
 		self._loadFilters()
-		self.apps=self._getAppList()
+		#self.apps=self._getAppList()
+		self.apps=json.loads(self.rc.execute('search',""))
 		self._populateCategories()
-		#self._shuffleApps()
 		self.resetScreen()
-		if isinstance(self.cmbCategories,QListWidget):
-			self.cmbCategories.setCurrentRow(0)
-		elif isinstance(self.cmbCategories,QComboBox):
-			self.cmbCategories.setCurrentIndex(0)
+		if isinstance(self.lstCategories,QListWidget):
+			self.lstCategories.setCurrentRow(0)
+		elif isinstance(self.lstCategories,QComboBox):
+			self.lstCategories.setCurrentIndex(0)
 		self.updateScreen()
 	#def _goHome
 
@@ -632,6 +660,7 @@ class portrait(QStackedWindowItem):
 		filters={}
 		appsFiltered=[]
 		self.apps=self.appsRaw
+		self._debug("Checking {} apps".format(len(self.apps)))
 		self.resetScreen()
 		filters=self._readFilters()
 		if getApps==True:
@@ -765,10 +794,7 @@ class portrait(QStackedWindowItem):
 	#def _sortApps
 
 	def _searchApps(self):
-		if LAYOUT=="appsedu":
-			self.cmbCategories.setCurrentRow(-1)
-		else:
-			self.cmbCategories.setCurrentText(i18n.get("ALL"))
+		self.lstCategories.setCurrentRow(-1)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		txt=self.rp.searchBox.text()
@@ -787,6 +813,16 @@ class portrait(QStackedWindowItem):
 			self.refresh=False
 		self._filterView(getApps=False)
 	#def _searchApps
+
+	def _endSearchApps(self,*args):
+		self.appsRaw=args[0]
+		self.appsRaw.sort()
+		self._filterView(getApps=False)
+		self.oldTime=time.time()
+		self.loading=False
+		self._endUpdate()
+		self.progress.stop()
+	#def _endSearchApps
 
 	def _changeSearchAppsBtnIcon(self):
 		if len(self.rp.searchBox.text())>0:
@@ -815,23 +851,27 @@ class portrait(QStackedWindowItem):
 
 	def _loadCategory(self,*args):
 		cat=None
+		flag=""
 		if self.loading==True:
 			return
 		if isinstance(args[0],QListWidgetItem):
 			cat=args[0].text()
 		elif isinstance(args[0],str):
 			cat=args[0]
-		self._debug("LOAD CATEGORY {}".format(cat))
 		if cat==None:
 			return
 		if time.time()-self.oldTime<MINTIME:
 			return
+		self._debug("LOAD CATEGORY {}".format(cat))
+		self.rp.setVisible(False)
+		self.progress.start()
+		QApplication.processEvents()
 		self.refresh=True
 		self.rp.searchBox.setText("")
 		self.resetScreen()
 		self._beginUpdate()
 		if cat=="":
-			i18ncat=self.cmbCategories.currentItem().text().replace(" · ","")
+			i18ncat=self.lstCategories.currentItem().text().replace(" · ","")
 		else:
 			if isinstance(cat,str):
 				i18ncat=cat.replace(" · ","")
@@ -840,22 +880,32 @@ class portrait(QStackedWindowItem):
 			elif cat!=None:
 				i18ncat=cat.text().replace(" · ","")
 			flag=Qt.MatchFlags(Qt.MatchFlag.MatchContains)
-			items=self.cmbCategories.findItems(i18ncat,flag)
+			items=self.lstCategories.findItems(i18ncat,flag)
 			for item in items:
 				if item.text().replace(" · ","").lower()==i18ncat.lower():
-					self.cmbCategories.setCurrentItem(item)
+					self.lstCategories.setCurrentItem(item)
 					break
 		if self.oldCat!=i18ncat:
 			self.oldCat=i18ncat
 		cat=self.i18nCat.get(i18ncat,i18ncat)
 		if cat==i18n.get("ALL"):
 			cat=""
-		self.apps=self._getAppList(cat)
-		self._filterView(getApps=False)
-		self.oldTime=time.time()
-		self._debug("LOAD CATEGORY {} END".format(cat))
+		self._getAppList(cat)
+		#self.apps=self._getAppList(cat)
+		#self._filterView(getApps=False)
+		#self.oldTime=time.time()
+		#self._debug("LOAD CATEGORY {} END".format(cat))
+		#self.progress.stop()
 		#self._endUpdate()
 	#def _loadCategory
+
+	def _endLoadCategory(self,*args):
+		self.appsRaw=args[0]
+		self._filterView(getApps=False)
+		self.oldTime=time.time()
+		self._debug("LOAD CATEGORY END")
+		self.progress.stop()
+		self._endUpdate()
 
 	def eventFilter(self,*args):
 		ev=args[1]
@@ -874,7 +924,10 @@ class portrait(QStackedWindowItem):
 			self.progress.stop()
 			self.rp.table.removeEventFilter(self)
 			self.init=True
-			self.appUpdate.start()
+			if hasattr(self,"appUpdate"):
+				self.appUpdate.start()
+			else:
+				self._debug("Event filter failed starting appUpdate")
 		elif isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.HideToParent:
 			if hasattr(self,"firstHide")==False:
 				self.firstHide=None
@@ -894,7 +947,7 @@ class portrait(QStackedWindowItem):
 		#self.progress.start()
 		self.rp.table.flowLayout.setEnabled(False)
 		self.rp.setVisible(False)
-		self.rp.table.setVisible(False)
+		#self.rp.table.setVisible(False)
 		for wdg in args[0]:
 			if wdg==None:
 				continue
@@ -902,7 +955,7 @@ class portrait(QStackedWindowItem):
 			self.rp.table.addWidget(wdg)
 		self.rp.table.flowLayout.setEnabled(True)
 		self.rp.setVisible(True)
-		self.rp.table.setVisible(True)
+		#self.rp.table.setVisible(True)
 		#self.progress.stop()
 	#def _fillTable
 
@@ -931,12 +984,12 @@ class portrait(QStackedWindowItem):
 		col=0
 		#self.table.setRowHeight(self.table.rowCount()-1,btn.iconSize+int(btn.iconSize/16))
 		colspan=random.randint(1,self.maxCol)
-		if LAYOUT=="appsedu":
-			colspan=self.maxCol
+		colspan=self.maxCol
 		span=colspan
 		btn=None
 		self.rp.table.flowLayout.setEnabled(False)
-		self.rp.table.setVisible(False)
+		#self.rp.table.setVisible(False)
+		self.rp.setVisible(False)
 		if len(self.pendingApps)>0:
 			self.appUpdate.stop()
 			self.appUpdate.quit()
@@ -949,8 +1002,6 @@ class portrait(QStackedWindowItem):
 				self.appsLoaded+=1
 				continue
 			self.appsSeen.append(appname)
-			#row=self.rp.table.rowCount()-1
-			#row=1
 			btn=QPushButtonRebostApp(jsonapp)
 			btn.clicked.connect(self._loadDetails)
 			btn.keypress.connect(self.tableKeyPressEvent)
@@ -960,28 +1011,26 @@ class portrait(QStackedWindowItem):
 			self.rp.table.addWidget(btn)
 			if appname in self.referersHistory.keys():
 				self.referersShowed.update({appname:btn})
-			#col+=1
-			#span=span-1
 			self.appsLoaded+=1
 			QApplication.processEvents()
 		self.rp.table.flowLayout.setEnabled(True)
-		self.rp.table.setVisible(True)
+		#self.rp.table.setVisible(True)
+		self.rp.setVisible(True)
 		self._endLoadData()
 	#def _loadData
 
 	def _endLoadData(self):
 		#if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
-		if self.appsLoaded==0 and self.cmbCategories.count()==0:
+		if self.appsLoaded==0 and self.lstCategories.count()==0:
 			#self._beginUpdate()
-			self.chkRebost.start()
+			self._rebost.setAction("test")
+			self._rebost.start()
 		else:
-			self.rp.table.setVisible(True)
+			self.rp.setVisible(True)
 			self.appUpdate=updateAppData(apps=self.pendingApps)
 			self.appUpdate.start()
 			self.appUpdate.dataLoaded.connect(self._endLoadApps)
 			self._endUpdate()
-		self.cleanAux()
-		#self.ready.emit(self.wdgs)
 		self.refresh=True
 	#def _endLoadData(self):
 
@@ -990,8 +1039,9 @@ class portrait(QStackedWindowItem):
 			app=json.loads(args[0])
 		else:
 			app=args[0]
-		self.pendingApps[app["name"]].setApp(app)
-		self.pendingApps[app["name"]].updateScreen()
+		if app["name"] in self.pendingApps.keys():
+			self.pendingApps[app["name"]].setApp(app)
+			self.pendingApps[app["name"]].updateScreen()
 
 	def _installBundle(self,*args):
 		app=args[0]
@@ -1061,7 +1111,7 @@ class portrait(QStackedWindowItem):
 		self.rp.hide()
 		self.lp.show()
 		self.setCursor(self.oldCursor)
-	#def _loadDetails
+	#def _endLoadDetails
 
 	def _updateBtn(self,*args,**kwargs):
 		if not hasattr(self,"refererApp"):
@@ -1090,33 +1140,14 @@ class portrait(QStackedWindowItem):
 		self.parent.setWindowTitle("{}".format(APPNAME))
 		self.lp.hide()
 		self.rp.show()
+		self.loading=False
 	#def _return
 
 	def _gotoSettings(self):
-		self.cleanAux()
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.parent.setCurrentStack(idx=2,parms="")
 	#def _gotoSettings
-
-	def _thTERM(self,*args):
-		self._debug("Pending thread end")
-	#def _thTERM
-
-	def cleanAux(self,*args):
-		self._debug("Cleaning")
-		i=0
-		if isinstance(self.aux,list):
-			for w in self.aux:
-				if hasattr(w,"finished"):
-					self._debug("Finish {}".format(w))
-					if w.isRunning()==False:
-						w.wait()
-						i+=1
-						self._debug("Removing {}".format(w))
-		self._debug("Caching: {}".format(len(self.aux)))
-		self._debug("Cleaned: {}".format(i))
-	#def cleanAux
 
 	def updateScreen(self):
 		self.btnFilters.setMaximumWidth(self.btnFilters.sizeHint().width())
@@ -1124,101 +1155,18 @@ class portrait(QStackedWindowItem):
 		if self.refresh==True:
 			for i in self.referersShowed.keys():
 				self.referersShowed[i]=None
-			self.cleanAux()
 			self._beginLoadData(self.appsLoaded,self.appsToLoad)
 		else:
 			self._endUpdate()
 	#def _updateScreen
 
 	def resetScreen(self):
-#	
-#		oldTable=self.rp.layout().takeAt(1)
-#		oldSearch=self.rp.layout().takeAt(0)
-#		searchStr=self.rp.searchBox.text()
-#		newTable=self.rp._defTable()#_mainPane()
-#		newSearch=self.rp._defSearch()#_mainPane()
-#		self.rp.search=newSearch
-#		self.rp.searchBox.returnPressed.connect(self._searchApps)
-#		self.rp.searchBox.setText(searchStr)
-#		self.rp.btnSearch.clicked.connect(self._searchAppsBtn)
-#		if oldTable==None:
-#			return
-#		if oldTable.widget()==None:
-#			return
-#		self.rp.layout().replaceWidget(oldSearch.widget(),newSearch)
-#		self.rp.layout().addWidget(newSearch,Qt.AlignCenter|Qt.AlignTop)
-#		self.rp.layout().addWidget(newTable)
-#		#self.rp.layout().replaceWidget(oldTable.widget(),newTable)
-#		self.rp.table=newTable	
-#		oldTable=None
-#		self.appsLoaded=0
-#		self.oldSearch=None
-#		self.appsSeen=[]
-#		return
-#		for x in range(self.rp.table.rowCount()):
-#			for y in range(self.rp.table.columnCount()):
-#				w=self.rp.table.cellWidget(x,y)
-#				if isinstance(w,QPushButton):
-#					if w.scr.isRunning():
-#						self.aux.append(w.scr)
-#					elif w.scr in self.aux:
-#						self.aux.remove(w)
-#				self.rp.table.removeCellWidget(x,y)
-		#self.rp.table.setRowCount(0)
-		#self.rp.table.setRowCount(1)
 		self.rp.table.clean()
 		self.appsLoaded=0
 		if len(self.rp.searchBox.text())==0:
 			self.oldSearch=""
 		self.appsSeen=[]
 	#def resetScreen
-
-	def setParms(self,*args,**kwargs):
-		# >>>> OLD BEHAVIOUR <<<<<
-		#referer will be only fulfilled when details stack
-		#fires events, if there's a repeated call to setParms
-		#referer will be none so function can exit. This must not happen.
-		if not hasattr(self,"refererApp"):
-			return()
-		if self.refererApp==None:
-			return()
-		for arg in args:
-			if isinstance(arg,dict):
-				for key,item in arg.items():
-					kwargs[key]=item
-		self.refresh=kwargs.get("refresh",False)
-		app=kwargs.get("app",{})
-		if app!={}:
-			#refered btn can be deleted so ensure there's a btn
-			if self.referersShowed.get(app.get("name"))!=None:
-				self.refererApp=self.referersShowed[app["name"]]
-				self.refererApp.setApp(app)
-				self.refererApp.updateScreen()
-		if self.refresh==False:
-			cursor=QtGui.QCursor(Qt.WaitCursor)
-			self.setCursor(cursor)
-			if len(self.rp.searchBox.text())>1:
-		#			self._populateCategories()
-					self.oldSearch=""
-		#			self._searchApps()
-		else:
-			cat=kwargs.get("cat",{})
-			if len(cat)>0:
-				if isinstance(self.cmbCategories,QListWidget):
-					it=self.cmbCategories.findItems(cat.strip(),Qt.MatchFlag.MatchFixedString)
-					if it==None or len(it)==0:
-						it=self.cmbCategories.findItems("No Disponible",Qt.MatchFlag.MatchFixedString)
-					self.cmbCategories.setCurrentItem(it[0])
-				else:
-					self.cmbCategories.setCurrentText(self.catI18n.get(cat,cat))
-				self._loadCategory()
-			else:
-				self.oldSearch=""
-				#self._populateCategories()
-				self.refresh=False
-				self.updateScreen()
-		self.refererApp=None
-	#def setParms
 
 	def _updateConfig(self,key):
 		pass
