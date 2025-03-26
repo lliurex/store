@@ -386,7 +386,7 @@ class portrait(QStackedWindowItem):
 	def _defBanner(self):
 		lbl=QLabel()
 		lbl.setObjectName("banner")
-		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","undefined.svg")
+		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.svg")
 		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		lbl.setPixmap(pxm)
 		return lbl
