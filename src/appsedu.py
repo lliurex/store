@@ -20,7 +20,7 @@ def closeEvent(*args):
 app=QApplication(["LliureX Store"])
 mw=QStackedWindow()
 mw.closeEvent=closeEvent
-icn=QtGui.QIcon.fromTheme("appsedu")
+icn=QtGui.QIcon.fromTheme("llxstore")
 mw.disableNavBar(True)
 mw.setIcon(icn)
 #Remove banner
