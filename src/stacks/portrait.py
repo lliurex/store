@@ -570,8 +570,11 @@ class portrait(QStackedWindowItem):
 			self.i18nCat[_(cat).capitalize()]=cat
 			self.catI18n[cat]=_(cat)
 		translatedCategories.sort()
+		lowercats=[]
 		for cat in translatedCategories:
-			self.lstCategories.addItem(" · {}".format(cat))
+			if cat.lower() not in lowercats:
+				self.lstCategories.addItem(" · {}".format(cat))
+				lowercats.append(cat.lower())
 	#def _populateCategories
 
 	def _getAppList(self,cat=[]):
