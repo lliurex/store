@@ -11,7 +11,6 @@ from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidge
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QStackedWindowItem
-from prgBar import QProgressImage
 import gettext
 import libhelper
 import exehelper
@@ -134,12 +133,6 @@ class detailPanel(QWidget):
 		self.tagpressed.emit(cat)
 	#def _tagNav(self,*args)
 
-	def _showSplash(self,icon):
-		return
-		self.progress.setVisible(True)
-		self.progress.start()
-	#def _showSplash
-
 	def _processStreams(self,args):
 		self.app={}
 		if isinstance(args,str):
@@ -221,7 +214,6 @@ class detailPanel(QWidget):
 					if bundle=='package':
 						continue
 		self.setCursor(self.oldcursor)
-		self.progress.stop()
 		self.updateScreen()
 	#def _endSetParms
 
@@ -403,11 +395,9 @@ class detailPanel(QWidget):
 		self.box.setRowStretch(5,1)
 		self.box.setRowStretch(6,0)
 		self.box.addWidget(spacingE,0,self.box.columnCount(),1,1)
-		self.progress=QProgressImage()
 		errorLay=QGridLayout()
 		self.lblBkg=QLabel()
 		errorLay.addWidget(self.lblBkg,0,0,1,1)
-		self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
 	#def _load_screen
 
 	def _defHeader(self):
