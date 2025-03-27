@@ -139,71 +139,55 @@ class chkRebost(QThread):
 	#def run
 #class chkRebost
 
-class _performUpdate(QThread):
-	dataLoaded=Signal("PyObject")
-	def __init__(self,*args,**kwargs):
-		QThread.__init__(self, None)
-		self.rc=store.client()
-		self.name=args[0]
-	#def __init__
-
-	def run(self):
-		self.dataLoaded.emit(self.rc.showApp(self.name))
-	#def run
-
 class updateAppData(QThread):
 	dataLoaded=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self, None)
 		self.apps=kwargs.get("apps",{})
+		self.newApps={}
 		self.updates=[]
+		self.rc=store.client()
 		self._stop=False
 		self.cont=0
 	#def __init__
 
 	def setApps(self,*args):
-		self.apps=args[0]
+		self.newApps=args[0]
 	#def setApps
 
 	def run(self):
 		app={}
 		self._stop=False
-		for name in self.apps.keys():
+		if len(self.newApps)>0:
+			self.apps=self.newApps.copy()
+			self.newApps={}
+		apps = dict(reversed(list(self.apps.items())))
+		while apps:
+			if len(self.newApps)>0:
+				apps = dict(reversed(list(self.newApps.items())))
+				self.apps=self.newApps.copy()
+				self.newApps={}
 			if self._stop==True:
 				break
-			while self.cont>1:
-				time.sleep(0.5)
+			while self.cont>4:
+				time.sleep(0.1)
 				QApplication.processEvents()
-			upd=_performUpdate(name)
-			upd.dataLoaded.connect(self._emitDataLoaded)
-			self.updates.append(upd)
-			upd.start()
+			name=apps.popitem()[0]
+			self._emitDataLoaded(name)
 			self.cont+=1
-		if self._stop==True:
-			for th in self.updates:
-				if th.isRunning():
-					th.quit()
-					th.wait()
 	#def run
 
 	def stop(self):
 		self._stop=True
-		for th in self.updates:
-			if th.isRunning():
-				th.quit()
-				th.wait()
 		self.cont=0
 	#def stop
 
 	def _emitDataLoaded(self,*args):
 		app={}
 		if len(args)>0 and isinstance(args[0],str):
-			try:
-				app=json.loads(args[0])
-			except Exception as e:
-				self._debug("_emitDataLoaded ERR: Json could not be parsed\n{}\n".format(e))
-		self.dataLoaded.emit(app)
+			app=json.loads(self.rc.showApp(args[0]))
 		self.cont-=1
+		self.dataLoaded.emit(app)
 	#def _emitDataLoaded
 #class updateAppData
 
@@ -231,8 +215,6 @@ class getData(QThread):
 
 	def stop(self):
 		self._stop=True
-		self.quit()
-		self.wait()
 	#def stop
 #class getData
 
@@ -261,11 +243,12 @@ class portrait(QStackedWindowItem):
 		self.appsRaw=[]
 		self.oldSearch=""
 		self.maxCol=5
-		#Thread related
+		#Threads related
 		self.loading=False
 		self.pendingApps={}
 		self.rc=store.client()
 		self.appUpdate=updateAppData()
+		self.appUpdate.dataLoaded.connect(self._endLoadApps)
 		self.getData=getData()
 		self.getData.dataLoaded.connect(self._loadData)
 		self._rebost=storeHelper()
@@ -500,7 +483,7 @@ class portrait(QStackedWindowItem):
 	#def _defInfo(self):
 
 	def _defProgress(self):
-		wdg=QProgressImage()
+		wdg=QProgressImage(self)
 		return(wdg)
 	#def _defProgress
 
@@ -592,11 +575,10 @@ class portrait(QStackedWindowItem):
 				#getting categories from raw data (deep search)
 				self._rebost.setAction("list","{}".format(categories),1000)
 				#apps.extend(json.loads(self.rc.execute('list',"{}".format(categories),1000)))
-				self._debug("Loading cat {}".format(categories))
-			self._rebost.start()
+				self._debug("Loading limited cat {}".format(categories))
 		else:
 			self._rebost.setAction("search","")
-			self._rebost.start()
+		self._rebost.start()
 	#def _getAppList
 
 	def _endGetUpgradables(self,*args):
@@ -622,12 +604,15 @@ class portrait(QStackedWindowItem):
 
 	def _endUpdate(self):
 		self.setCursor(self.oldCursor)
+		self.lstCategories.setCursor(self.oldCursor)
+		self.lstCategories.setEnabled(True)
 		self._return()
 		#self.progress.setVisible(False)
 	#def _endUpdate
 
 	def _goHome(self,*args,**kwargs):
 		self._debug("Rebost running: {} - {} - {}".format(self._rebost.isFinished(),self._rebost.isRunning(),self._rebost.action))
+		self.ruina=[]
 		if self._rebost.isFinished()==True and self._rebost.isRunning()==False:
 			self._getUpgradables()
 		self.oldTime=time.time()
@@ -853,13 +838,15 @@ class portrait(QStackedWindowItem):
 			return
 		if time.time()-self.oldTime<MINTIME:
 			return
+		cursor=QtGui.QCursor(Qt.WaitCursor)
+		self.lstCategories.setCursor(cursor)
+		self.lstCategories.setEnabled(False)
 		self._debug("LOAD CATEGORY {}".format(cat))
 		self.rp.setVisible(False)
 		self.progress.start()
-		QApplication.processEvents()
 		self.refresh=True
 		self.rp.searchBox.setText("")
-		self.resetScreen()
+		#self.resetScreen()
 		self._beginUpdate()
 		if cat=="":
 			i18ncat=self.lstCategories.currentItem().text().replace(" · ","")
@@ -895,8 +882,8 @@ class portrait(QStackedWindowItem):
 		self._filterView(getApps=False)
 		self.oldTime=time.time()
 		self._debug("LOAD CATEGORY END")
-		self.progress.stop()
 		self._endUpdate()
+	#def _endLoadCategory
 
 	def eventFilter(self,*args):
 		ev=args[1]
@@ -931,22 +918,6 @@ class portrait(QStackedWindowItem):
 		return(False)
 	#def eventFilter(self,*args):
 
-	def _fillTable(self,*args):
-		#self.progress.start()
-		self.rp.table.flowLayout.setEnabled(False)
-		self.rp.setVisible(False)
-		#self.rp.table.setVisible(False)
-		for wdg in args[0]:
-			if wdg==None:
-				continue
-			wdg.setVisible(False)
-			self.rp.table.addWidget(wdg)
-		self.rp.table.flowLayout.setEnabled(True)
-		self.rp.setVisible(True)
-		#self.rp.table.setVisible(True)
-		#self.progress.stop()
-	#def _fillTable
-
 	def _getMoreData(self):
 		return
 		if (self.rp.table.verticalScrollBar().value()==self.rp.table.verticalScrollBar().maximum()) and self.appsLoaded!=len(self.apps):
@@ -980,8 +951,6 @@ class portrait(QStackedWindowItem):
 		self.rp.setVisible(False)
 		if len(self.pendingApps)>0:
 			self.appUpdate.stop()
-			self.appUpdate.quit()
-			self.appUpdate.wait()
 			self.pendingApps={}
 			
 		for jsonapp in apps:
@@ -1015,10 +984,8 @@ class portrait(QStackedWindowItem):
 			self._rebost.start()
 		else:
 			self.rp.setVisible(True)
-			self.appUpdate.stop() #JustInCase
 			self.appUpdate.setApps(self.pendingApps)
 			self.appUpdate.start()
-			self.appUpdate.dataLoaded.connect(self._endLoadApps)
 			self._endUpdate()
 		self.refresh=True
 	#def _endLoadData(self):
@@ -1096,7 +1063,7 @@ class portrait(QStackedWindowItem):
 		self.referersShowed.update({self.refererApp.app["name"]:self.refererApp})
 		self.setChanged(False)
 		#self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
-		self.parent.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","")))
+		self.parent.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","").capitalize()))
 		self.lp.setParms({"name":args[-1].get("name",""),"icon":icn})
 		self.rp.hide()
 		self.lp.show()
@@ -1128,11 +1095,11 @@ class portrait(QStackedWindowItem):
 	#def _updateBtn
 
 	def _return(self,*args,**kwargs):
+		self.progress.stop()
 		self.setCursor(self.oldCursor)
 		self.parent.setWindowTitle("{}".format(APPNAME))
 		self.lp.hide()
 		self.rp.show()
-		self.progress.stop()
 		self.loading=False
 	#def _return
 
