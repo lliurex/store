@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-24 09:27+0100\n"
-"PO-Revision-Date: 2025-03-24 09:31+0100\n"
+"POT-Creation-Date: 2025-03-27 12:25+0100\n"
+"PO-Revision-Date: 2025-03-27 12:26+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -15,11 +15,11 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 
 #: ../src/stacks/btnRebost.py:14 ../src/stacks/cmbBtn.py:11
-#: ../src/stacks/lblApp.py:13 ../src/stacks/lpanel.py:40
+#: ../src/stacks/lblApp.py:13 ../src/stacks/lpanel.py:39
 msgid "Install"
 msgstr "Instala"
 
-#: ../src/stacks/btnRebost.py:15 ../src/stacks/lpanel.py:44
+#: ../src/stacks/btnRebost.py:15 ../src/stacks/lpanel.py:43
 msgid "Remove"
 msgstr "Elimina"
 
@@ -27,11 +27,11 @@ msgstr "Elimina"
 msgid "Blocked"
 msgstr "Bloqueada"
 
-#: ../src/stacks/btnRebost.py:17 ../src/stacks/lpanel.py:49
+#: ../src/stacks/btnRebost.py:17 ../src/stacks/lpanel.py:48
 msgid "Unavailable"
 msgstr "Pendiente"
 
-#: ../src/stacks/lpanel.py:28
+#: ../src/stacks/lpanel.py:27
 msgid ""
 "The app could not be loaded. Until included in LliureX catalogue it can't be "
 "installed"
@@ -40,80 +40,80 @@ msgstr ""
 "catálogo de appsedu no estará disponible. Más información en https://portal."
 "edu.gva.es/appsedu/aplicacions-lliurex"
 
-#: ../src/stacks/lpanel.py:29
+#: ../src/stacks/lpanel.py:28
 msgid "Choose"
 msgstr "Seleccionar"
 
-#: ../src/stacks/lpanel.py:30 ../src/stacks/lpanel.py:48
+#: ../src/stacks/lpanel.py:29 ../src/stacks/lpanel.py:47
 msgid "Details"
 msgstr "Detalles"
 
-#: ../src/stacks/lpanel.py:31 ../src/stacks/portrait.py:39
+#: ../src/stacks/lpanel.py:30 ../src/stacks/portrait.py:39
 #: ../src/stacks/rpanel.py:21
 msgid "Navigate through all applications"
 msgstr "Mostrar todas las aplicaciones"
 
-#: ../src/stacks/lpanel.py:32 ../src/stacks/portrait.py:40
+#: ../src/stacks/lpanel.py:31 ../src/stacks/portrait.py:40
 msgid "Could not open"
 msgstr "No se pudo abrir"
 
-#: ../src/stacks/lpanel.py:33 ../src/stacks/portrait.py:41
+#: ../src/stacks/lpanel.py:32 ../src/stacks/portrait.py:41
 msgid "Error opening"
 msgstr "Error al cargar"
 
-#: ../src/stacks/lpanel.py:34 ../src/stacks/portrait.py:42
+#: ../src/stacks/lpanel.py:33 ../src/stacks/portrait.py:42
 msgid "System apps can't be removed"
 msgstr "Aplicación de sistema. No se desinstalará"
 
-#: ../src/stacks/lpanel.py:35 ../src/stacks/portrait.py:43
+#: ../src/stacks/lpanel.py:34 ../src/stacks/portrait.py:43
 msgid "Unknown error"
 msgstr "Error desconocido"
 
-#: ../src/stacks/lpanel.py:36
+#: ../src/stacks/lpanel.py:35
 msgid "App unauthorized"
 msgstr "App no autorizada"
 
-#: ../src/stacks/lpanel.py:37
+#: ../src/stacks/lpanel.py:36
 msgid "Format"
 msgstr "Formato"
 
-#: ../src/stacks/lpanel.py:38
+#: ../src/stacks/lpanel.py:37
 msgid "Info"
 msgstr "Información"
 
-#: ../src/stacks/lpanel.py:39
+#: ../src/stacks/lpanel.py:38
 msgid "For more info go to"
 msgstr "Para más información ir a"
 
-#: ../src/stacks/lpanel.py:41
+#: ../src/stacks/lpanel.py:40
 msgid "Show application detail"
 msgstr "Mostrar información"
 
-#: ../src/stacks/lpanel.py:42
+#: ../src/stacks/lpanel.py:41
 msgid "Opening"
 msgstr "Abriendo"
 
-#: ../src/stacks/lpanel.py:43
+#: ../src/stacks/lpanel.py:42
 msgid "Release"
 msgstr "Versión"
 
-#: ../src/stacks/lpanel.py:45
+#: ../src/stacks/lpanel.py:44
 msgid "Open"
 msgstr "Abre"
 
-#: ../src/stacks/lpanel.py:46
+#: ../src/stacks/lpanel.py:45
 msgid "See at Appsedu"
 msgstr "Mostrar en Appsedu"
 
-#: ../src/stacks/lpanel.py:47
+#: ../src/stacks/lpanel.py:46
 msgid "Website"
 msgstr "Sitio web"
 
-#: ../src/stacks/lpanel.py:50
+#: ../src/stacks/lpanel.py:49
 msgid "Upgrade"
 msgstr "Actualiza"
 
-#: ../src/stacks/lpanel.py:51
+#: ../src/stacks/lpanel.py:50
 msgid "Zommand not found. Open Zero-Center?"
 msgstr "No encontrado. ¿Abrir el Zero-Center?"
 
@@ -198,6 +198,9 @@ msgstr "Accesibilidad"
 msgid "Art"
 msgstr "Arte"
 
+msgid "ArtificialIntelligence"
+msgstr "Inteligencia Artificial"
+
 msgid "Astronomy"
 msgstr "Astronomía"
 
@@ -210,9 +213,6 @@ msgstr "Sonido y Video"
 msgid "AudioVideoEditing"
 msgstr "Edición de video y sonido"
 
-msgid "CAD"
-msgstr "CAD"
-
 msgid "Chart"
 msgstr "Gráficas"
 
@@ -221,9 +221,6 @@ msgstr "Chat"
 
 msgid "Chemistry"
 msgstr "Química"
-
-msgid "Ci\\u00e8ncies"
-msgstr "Ciencias"
 
 msgid "ComputerScience"
 msgstr "Ciencia computacional"
@@ -234,22 +231,13 @@ msgstr "Debug"
 msgid "Development"
 msgstr "Desarrollo"
 
-msgid "Disseny"
-msgstr "Diseño"
-
 msgid "Documentation"
 msgstr "Documentación"
 
 msgid "Education"
 msgstr "Educación"
 
-msgid "Electricity"
-msgstr "Electricidad"
-
 msgid "Electronics"
-msgstr "Electrónica"
-
-msgid "Electr\\u00f2nica"
 msgstr "Electrónica"
 
 msgid "Emulator"
@@ -264,17 +252,8 @@ msgstr "FP"
 msgid "Forbidden"
 msgstr "Bloqueadas"
 
-msgid "Fotografia"
-msgstr "Fotografía"
-
 msgid "Game"
 msgstr "Juego"
-
-msgid "Gamificaci\\u00f3"
-msgstr "Gamificación"
-
-msgid "Geografia"
-msgstr "Geografía"
 
 msgid "Geography"
 msgstr "Geografía"
@@ -291,15 +270,6 @@ msgstr "IDE"
 msgid "ImageProcessing"
 msgstr "Procesamiento de imágenes"
 
-msgid "Inform\\u00e0tica"
-msgstr "Informática"
-
-msgid "Intel\\u00b7lig\\u00e8ncia Artificial"
-msgstr "Inteligencia Artifical"
-
-msgid "Internet"
-msgstr "Internet"
-
 msgid "KidsGame"
 msgstr "Juegos infantiles"
 
@@ -309,17 +279,11 @@ msgstr "Idiomas"
 msgid "LliureX"
 msgstr "LliureX"
 
-msgid "LliureX-Infantil"
-msgstr "LliureX-Infantil"
-
 msgid "LogicGame"
 msgstr "Juegos de Lógica"
 
 msgid "Maps"
 msgstr "Mapas"
-
-msgid "Matem\\u00e0tiques"
-msgstr "Matemáticas"
 
 msgid "Math"
 msgstr "Matemáticas"
@@ -333,16 +297,7 @@ msgstr "Mezcladores"
 msgid "Multimedia"
 msgstr "Multimédia"
 
-msgid "Multim\\u00e8dia"
-msgstr "Multimedia"
-
 msgid "Music"
-msgstr "Música"
-
-msgid "Musica"
-msgstr "Música"
-
-msgid "M\\u00fasica"
 msgstr "Música"
 
 msgid "Network"
@@ -353,9 +308,6 @@ msgstr "OCR"
 
 msgid "Office"
 msgstr "Oficina"
-
-msgid "Ofim\\u00e0tica"
-msgstr "Ofimática"
 
 msgid "Photography"
 msgstr "Fotografía"
@@ -369,9 +321,6 @@ msgstr "Reproductores"
 msgid "Programaci\\u00f3"
 msgstr "Programación"
 
-msgid "Qu\\u00edmica"
-msgstr "Química"
-
 msgid "RasterGraphics"
 msgstr "Gráficos Ráster"
 
@@ -381,7 +330,7 @@ msgstr "Grabadoras"
 msgid "Resources"
 msgstr "Recursos"
 
-msgid "Rob\\u00f3tica"
+msgid "Robotics"
 msgstr "Robótica"
 
 msgid "Scanning"
@@ -402,12 +351,6 @@ msgstr "Programas"
 msgid "System"
 msgstr "Sistema"
 
-msgid "TV"
-msgstr "TV"
-
-msgid "Tecnologia"
-msgstr "Tecnología"
-
 msgid "TextEditor"
 msgstr "Editores de texto"
 
@@ -421,12 +364,6 @@ msgid "VectorGraphics"
 msgstr "Gráficos vectoriales"
 
 msgid "Video"
-msgstr "Video"
-
-msgid "Viewer"
-msgstr "Visores"
-
-msgid "V\\u00eddeo"
 msgstr "Video"
 
 msgid "WebBrowser"
@@ -443,6 +380,12 @@ msgstr "accesorios"
 
 msgid "admin-tools"
 msgstr "herramientas administrativas"
+
+msgid "collections"
+msgstr "colecciones"
+
+msgid "desktop-gnome"
+msgstr "escritorio gnome"
 
 msgid "desktop-kde"
 msgstr "escritorio kde"
@@ -474,6 +417,9 @@ msgstr "otros"
 msgid "programming"
 msgstr "programación"
 
+msgid "publishing"
+msgstr "publicación"
+
 msgid "resources"
 msgstr "herramientas"
 
@@ -489,8 +435,77 @@ msgstr "sistema"
 msgid "unknown"
 msgstr "desconocido"
 
-msgid "\\u00c0udio"
-msgstr "Sonido"
+#~ msgid "CAD"
+#~ msgstr "CAD"
+
+#~ msgid "Ci\\u00e8ncies"
+#~ msgstr "Ciencias"
+
+#~ msgid "Disseny"
+#~ msgstr "Diseño"
+
+#~ msgid "Electricity"
+#~ msgstr "Electricidad"
+
+#~ msgid "Electr\\u00f2nica"
+#~ msgstr "Electrónica"
+
+#~ msgid "Fotografia"
+#~ msgstr "Fotografía"
+
+#~ msgid "Gamificaci\\u00f3"
+#~ msgstr "Gamificación"
+
+#~ msgid "Geografia"
+#~ msgstr "Geografía"
+
+#~ msgid "Inform\\u00e0tica"
+#~ msgstr "Informática"
+
+#~ msgid "Intel\\u00b7lig\\u00e8ncia Artificial"
+#~ msgstr "Inteligencia Artifical"
+
+#~ msgid "Internet"
+#~ msgstr "Internet"
+
+#~ msgid "LliureX-Infantil"
+#~ msgstr "LliureX-Infantil"
+
+#~ msgid "Matem\\u00e0tiques"
+#~ msgstr "Matemáticas"
+
+#~ msgid "Multim\\u00e8dia"
+#~ msgstr "Multimedia"
+
+#~ msgid "Musica"
+#~ msgstr "Música"
+
+#~ msgid "M\\u00fasica"
+#~ msgstr "Música"
+
+#~ msgid "Ofim\\u00e0tica"
+#~ msgstr "Ofimática"
+
+#~ msgid "Qu\\u00edmica"
+#~ msgstr "Química"
+
+#~ msgid "Rob\\u00f3tica"
+#~ msgstr "Robótica"
+
+#~ msgid "TV"
+#~ msgstr "TV"
+
+#~ msgid "Tecnologia"
+#~ msgstr "Tecnología"
+
+#~ msgid "Viewer"
+#~ msgstr "Visores"
+
+#~ msgid "V\\u00eddeo"
+#~ msgstr "Video"
+
+#~ msgid "\\u00c0udio"
+#~ msgstr "Sonido"
 
 #~ msgid "Clear cache"
 #~ msgstr "Limpiar caché"
@@ -647,23 +662,14 @@ msgstr "Sonido"
 #~ msgid "X-Utilities"
 #~ msgstr "Utilidades"
 
-#~ msgid "collections"
-#~ msgstr "colecciones"
-
 #~ msgid "communication"
 #~ msgstr "comunicación"
-
-#~ msgid "desktop-gnome"
-#~ msgstr "escritorio gnome"
 
 #~ msgid "fonts"
 #~ msgstr "tipos de letra"
 
 #~ msgid "legacy"
 #~ msgstr "antiguo"
-
-#~ msgid "publishing"
-#~ msgstr "publicación"
 
 #~ msgid "FORBIDDEN"
 #~ msgstr "Bloqueadas"
@@ -773,9 +779,6 @@ msgstr "Sonido"
 #~ msgid "Amusement"
 #~ msgstr "Entretenimiento"
 
-#~ msgid "ArtificialIntelligence"
-#~ msgstr "Inteligencia Artificial"
-
 #~ msgid "BoardGame"
 #~ msgstr "Juegos de tablero"
 
@@ -853,9 +856,6 @@ msgstr "Sonido"
 
 #~ msgid "Qt"
 #~ msgstr "Qt"
-
-#~ msgid "Robotics"
-#~ msgstr "Robótica"
 
 #~ msgid "Role Playing"
 #~ msgstr "Juegos de rol"

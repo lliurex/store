@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-24 09:27+0100\n"
+"POT-Creation-Date: 2025-03-27 12:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../src/stacks/btnRebost.py:14 ../src/stacks/cmbBtn.py:11
-#: ../src/stacks/lblApp.py:13 ../src/stacks/lpanel.py:40
+#: ../src/stacks/lblApp.py:13 ../src/stacks/lpanel.py:39
 msgid "Install"
 msgstr ""
 
-#: ../src/stacks/btnRebost.py:15 ../src/stacks/lpanel.py:44
+#: ../src/stacks/btnRebost.py:15 ../src/stacks/lpanel.py:43
 msgid "Remove"
 msgstr ""
 
@@ -30,90 +30,90 @@ msgstr ""
 msgid "Blocked"
 msgstr ""
 
-#: ../src/stacks/btnRebost.py:17 ../src/stacks/lpanel.py:49
+#: ../src/stacks/btnRebost.py:17 ../src/stacks/lpanel.py:48
 msgid "Unavailable"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:28
+#: ../src/stacks/lpanel.py:27
 msgid ""
 "The app could not be loaded. Until included in LliureX catalogue it can't be "
 "installed"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:29
+#: ../src/stacks/lpanel.py:28
 msgid "Choose"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:30 ../src/stacks/lpanel.py:48
+#: ../src/stacks/lpanel.py:29 ../src/stacks/lpanel.py:47
 msgid "Details"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:31 ../src/stacks/portrait.py:39
+#: ../src/stacks/lpanel.py:30 ../src/stacks/portrait.py:39
 #: ../src/stacks/rpanel.py:21
 msgid "Navigate through all applications"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:32 ../src/stacks/portrait.py:40
+#: ../src/stacks/lpanel.py:31 ../src/stacks/portrait.py:40
 msgid "Could not open"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:33 ../src/stacks/portrait.py:41
+#: ../src/stacks/lpanel.py:32 ../src/stacks/portrait.py:41
 msgid "Error opening"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:34 ../src/stacks/portrait.py:42
+#: ../src/stacks/lpanel.py:33 ../src/stacks/portrait.py:42
 msgid "System apps can't be removed"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:35 ../src/stacks/portrait.py:43
+#: ../src/stacks/lpanel.py:34 ../src/stacks/portrait.py:43
 msgid "Unknown error"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:36
+#: ../src/stacks/lpanel.py:35
 msgid "App unauthorized"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:37
+#: ../src/stacks/lpanel.py:36
 msgid "Format"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:38
+#: ../src/stacks/lpanel.py:37
 msgid "Info"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:39
+#: ../src/stacks/lpanel.py:38
 msgid "For more info go to"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:41
+#: ../src/stacks/lpanel.py:40
 msgid "Show application detail"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:42
+#: ../src/stacks/lpanel.py:41
 msgid "Opening"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:43
+#: ../src/stacks/lpanel.py:42
 msgid "Release"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:45
+#: ../src/stacks/lpanel.py:44
 msgid "Open"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:46
+#: ../src/stacks/lpanel.py:45
 msgid "See at Appsedu"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:47
+#: ../src/stacks/lpanel.py:46
 msgid "Website"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:50
+#: ../src/stacks/lpanel.py:49
 msgid "Upgrade"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:51
+#: ../src/stacks/lpanel.py:50
 msgid "Zommand not found. Open Zero-Center?"
 msgstr ""
 
@@ -198,6 +198,9 @@ msgstr ""
 msgid "Art"
 msgstr ""
 
+msgid "ArtificialIntelligence"
+msgstr ""
+
 msgid "Astronomy"
 msgstr ""
 
@@ -210,9 +213,6 @@ msgstr ""
 msgid "AudioVideoEditing"
 msgstr ""
 
-msgid "CAD"
-msgstr ""
-
 msgid "Chart"
 msgstr ""
 
@@ -220,9 +220,6 @@ msgid "Chat"
 msgstr ""
 
 msgid "Chemistry"
-msgstr ""
-
-msgid "Ci\u00e8ncies"
 msgstr ""
 
 msgid "ComputerScience"
@@ -234,22 +231,13 @@ msgstr ""
 msgid "Development"
 msgstr ""
 
-msgid "Disseny"
-msgstr ""
-
 msgid "Documentation"
 msgstr ""
 
 msgid "Education"
 msgstr ""
 
-msgid "Electricity"
-msgstr ""
-
 msgid "Electronics"
-msgstr ""
-
-msgid "Electr\u00f2nica"
 msgstr ""
 
 msgid "Emulator"
@@ -264,16 +252,7 @@ msgstr ""
 msgid "Forbidden"
 msgstr ""
 
-msgid "Fotografia"
-msgstr ""
-
 msgid "Game"
-msgstr ""
-
-msgid "Gamificaci\u00f3"
-msgstr ""
-
-msgid "Geografia"
 msgstr ""
 
 msgid "Geography"
@@ -291,15 +270,6 @@ msgstr ""
 msgid "ImageProcessing"
 msgstr ""
 
-msgid "Inform\u00e0tica"
-msgstr ""
-
-msgid "Intel\u00b7lig\u00e8ncia Artificial"
-msgstr ""
-
-msgid "Internet"
-msgstr ""
-
 msgid "KidsGame"
 msgstr ""
 
@@ -309,16 +279,10 @@ msgstr ""
 msgid "LliureX"
 msgstr ""
 
-msgid "LliureX-Infantil"
-msgstr ""
-
 msgid "LogicGame"
 msgstr ""
 
 msgid "Maps"
-msgstr ""
-
-msgid "Matem\u00e0tiques"
 msgstr ""
 
 msgid "Math"
@@ -333,16 +297,7 @@ msgstr ""
 msgid "Multimedia"
 msgstr ""
 
-msgid "Multim\u00e8dia"
-msgstr ""
-
 msgid "Music"
-msgstr ""
-
-msgid "Musica"
-msgstr ""
-
-msgid "M\u00fasica"
 msgstr ""
 
 msgid "Network"
@@ -352,9 +307,6 @@ msgid "OCR"
 msgstr ""
 
 msgid "Office"
-msgstr ""
-
-msgid "Ofim\u00e0tica"
 msgstr ""
 
 msgid "Photography"
@@ -369,9 +321,6 @@ msgstr ""
 msgid "Programaci\u00f3"
 msgstr ""
 
-msgid "Qu\u00edmica"
-msgstr ""
-
 msgid "RasterGraphics"
 msgstr ""
 
@@ -381,7 +330,7 @@ msgstr ""
 msgid "Resources"
 msgstr ""
 
-msgid "Rob\u00f3tica"
+msgid "Robotics"
 msgstr ""
 
 msgid "Scanning"
@@ -402,12 +351,6 @@ msgstr ""
 msgid "System"
 msgstr ""
 
-msgid "TV"
-msgstr ""
-
-msgid "Tecnologia"
-msgstr ""
-
 msgid "TextEditor"
 msgstr ""
 
@@ -423,12 +366,6 @@ msgstr ""
 msgid "Video"
 msgstr ""
 
-msgid "Viewer"
-msgstr ""
-
-msgid "V\u00eddeo"
-msgstr ""
-
 msgid "WebBrowser"
 msgstr ""
 
@@ -442,6 +379,12 @@ msgid "accessories"
 msgstr ""
 
 msgid "admin-tools"
+msgstr ""
+
+msgid "collections"
+msgstr ""
+
+msgid "desktop-gnome"
 msgstr ""
 
 msgid "desktop-kde"
@@ -474,6 +417,9 @@ msgstr ""
 msgid "programming"
 msgstr ""
 
+msgid "publishing"
+msgstr ""
+
 msgid "resources"
 msgstr ""
 
@@ -487,8 +433,5 @@ msgid "system"
 msgstr ""
 
 msgid "unknown"
-msgstr ""
-
-msgid "\u00c0udio"
 msgstr ""
 
