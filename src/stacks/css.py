@@ -165,10 +165,16 @@ def portrait():
 	css=css+lstCategories
 	certified="""#certified{
 					color:%s;
-					background:%s;
+					border:0px solid %s;
 					border-radius:%spx;
+				}
+				#certifiedChk
+				{
 					padding:%spx;
-				}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARKEST,RADIUS,int(MARGIN)/2)
+					margin:0px;
+					border:0px;
+				}
+				"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARKEST,RADIUS,int(MARGIN)/2)
 	css=css+certified
 	btnBar="""#btnBar{
 					border-top:%spx solid %s;
