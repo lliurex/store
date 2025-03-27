@@ -11,35 +11,14 @@ class progress(QThread):
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self)
 		self.running=True
-		self.inc=1
-		self.color=QColor(255,255,255)
-		self.oldColor=QColor(253,253,253)
-		self.lbl=args[0]
-		self.pxm=args[1]
-		self.updated.connect(self._doProgress)
 	#def __init__
 
 	def run(self):
 		self.running=True
 		while self.running==True:
 			self.updated.emit()
-			#self._doProgress()
 			time.sleep(0.05)
 	#def run
-
-	def _doProgress(self,*args):
-		color=QColor(self.oldColor.red()+self.inc,self.oldColor.green()+self.inc,self.oldColor.blue()+self.inc)
-		self.oldColor=color
-		if color.red()<150:
-			self.inc*=-1
-		elif color.red()>254:
-			self.inc*=-1
-		#print(self.inc)
-		pxm2=QPixmap(self.pxm.size())
-		pxm2.fill(color)
-		pxm2.setMask(self.pxm.createMaskFromColor(Qt.transparent))
-		self.lbl.setPixmap(pxm2)
-	#def _doProgress
 
 	def stop(self):
 		self.running=False
@@ -57,11 +36,9 @@ class QProgressImage(QLabel):
 		#self.updateTimer=QTimer()
 		#self.updateTimer.timeout.connect(self._doProgress)
 		#self.updateTimer.start(1)
-		self.updateTimer=progress(self,self.pxm,self.pxm2)
+		self.updateTimer=progress(self)
 		self.updateTimer.updated.connect(self._doProgress)
 		#self.setPixmap(self.pxm)
-		mov=QMovie()
-		self.setMovie(mov)
 		self.setAlignment(Qt.AlignCenter)
 		self.inc=5
 		self.oldColor=QColor(255-self.inc,255-self.inc,255-self.inc)
@@ -74,10 +51,11 @@ class QProgressImage(QLabel):
 	#def start
 
 	def stop(self):
-		self.updateTimer.stop()
+		if self.updateTimer.isRunning():
+			self.updateTimer.stop()
+		#self.updateTimer.quit()
+		#self.updateTimer.wait()
 		self.setVisible(False)
-		self.updateTimer.quit()
-		self.updateTimer.wait()
 	#def stop(self):
 		
 	def _beginDoProgress(self,*args):
