@@ -382,7 +382,7 @@ class portrait(QStackedWindowItem):
 			vbox=QHBoxLayout()
 		wdg.setLayout(vbox)
 		vbox.setContentsMargins(10,0,10,0)
-		vbox.addWidget(self._appseduCertified(),Qt.AlignRight)
+		vbox.addWidget(self._appseduCertified(),Qt.AlignCenter)
 		self.lstCategories=QListWidget()
 		self.lstCategories.setObjectName("lstCategories")
 		self.lstCategories.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -429,18 +429,20 @@ class portrait(QStackedWindowItem):
 	def _appseduCertified(self):
 		wdg=QWidget()
 		lay=QHBoxLayout()
-		lay.setSpacing(3)
+		lay.setSpacing(0)
 		lbl=QLabel()
-		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","appsedu128x128.png")
-		lay.addWidget(lbl)
-		chk=QCheckBox(i18n.get("CERTIFIED"))
-		chk.setObjectName("certified")
-		pxm=QtGui.QPixmap(img).scaled(24,24)
+		chk=QCheckBox()
+		chk.setObjectName("certifiedChk")
+		wdg.setObjectName("certified")
+		#img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner128x32.png")
+		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","appsedu128x64.png")
+		pxm=QtGui.QPixmap(img).scaled(132,40,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
 		lbl.setPixmap(pxm)
+		lbl.setAlignment(Qt.AlignCenter|Qt.AlignCenter)
+		lay.addWidget(lbl,Qt.AlignRight)
 		chk.setChecked(True)
 		chk.setEnabled(False)
-		chk.setLayoutDirection(Qt.RightToLeft)
-		lay.addWidget(chk)
+		lay.addWidget(chk,Qt.AlignLeft)
 		wdg.setLayout(lay)
 		return(wdg)
 	#def _appseduCertified
@@ -557,6 +559,9 @@ class portrait(QStackedWindowItem):
 		for cat in translatedCategories:
 			if cat.lower() not in lowercats:
 				self.lstCategories.addItem(" · {}".format(cat))
+				item=self.lstCategories.item(self.lstCategories.count()-1)
+				if item!=None:
+					item.setToolTip(cat)
 				lowercats.append(cat.lower())
 	#def _populateCategories
 
