@@ -36,7 +36,7 @@ mw.setObjectName("MAIN")
 mw.layout().setContentsMargins(0,0,0,0)
 mw.setStyleSheet("""QWidget#MAIN{background:#002c4f; color:#FFFFFF;margin:0px;padding:0px;border:0px;}""")
 mw.show()
-mw.setMinimumWidth(1020)
+mw.setMinimumWidth(1048)
 mw.setMinimumHeight(600)
 if len(sys.argv)>1:
 	if ("://") in sys.argv[1] or os.path.isfile(sys.argv[1]):

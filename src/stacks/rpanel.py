@@ -69,6 +69,7 @@ class mainPanel(QWidget):
 		table.flowLayout.setSpacing(24)
 		table.leaveEvent=self.tableLeaveEvent
 		table.setAttribute(Qt.WA_AcceptTouchEvents)
+		table.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 		#if LAYOUT=="appsedu":
 		#	table.setStyleSheet("""QFlowTouchWidget{border:0px; background:#FFFFFF;margin-left:100%;margin-right:1%;} QFlowTouchWidget::item{padding:2px}""")
 		return(table)
