@@ -64,7 +64,7 @@ class mainPanel(QWidget):
 	#def __init__
 
 	def _defTable(self):
-		table=QFlowTouchWidget()
+		table=QFlowTouchWidget(self)
 		table.setObjectName("qFlow")
 		table.flowLayout.setSpacing(24)
 		table.leaveEvent=self.tableLeaveEvent
