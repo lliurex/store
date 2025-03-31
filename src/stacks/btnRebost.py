@@ -8,7 +8,7 @@ from QtExtraWidgets import QScreenShotContainer
 import css
 from constants import *
 import gettext
-gettext.textdomain('appsedu')
+gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
 i18n={"INSTALL":_("Install"),

@@ -4,11 +4,10 @@ import json
 from PySide2.QtWidgets import QLabel,QWidget,QHBoxLayout
 from PySide2.QtCore import Qt,Signal
 from PySide2 import QtGui
+from constants import *
 import gettext
-gettext.textdomain('appsedu')
+gettext.textdomain('lliurex-store')
 _ = gettext.gettext
-
-RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
 
 LAYOUT="appsedu"
 class QLabelLink(QWidget):

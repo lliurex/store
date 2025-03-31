@@ -3,11 +3,11 @@ import os
 import json
 from PySide2.QtCore import Qt,Signal
 from QtExtraWidgets import QCheckableComboBox
+from constants import *
 import gettext
-gettext.textdomain('appsedu')
+gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
-ICON_SIZE=72
 i18n={"INSTALL":_("Install")}
 
 LAYOUT="appsedu"

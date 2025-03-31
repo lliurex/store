@@ -7,7 +7,7 @@ from PySide2 import QtGui
 from QtExtraWidgets import QScreenShotContainer
 import gettext
 from constants import *
-gettext.textdomain('appsedu')
+gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
 i18n={"INSTALL":_("Install")}

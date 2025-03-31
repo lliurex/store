@@ -9,7 +9,7 @@ from PySide2 import QtGui
 from QtExtraWidgets import QStackedWindow
 import gettext
 import time
-gettext.textdomain('appsedu')
+gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
 def closeEvent(*args):
