@@ -1,3 +1,9 @@
+lliurex-store (1.4.9+0lliurex23) jammy; urgency=medium
+
+  * Rebranded as LliureX Store
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 31 Mar 2025 09:10:27 +0200
+
 appsedu (1.4.0.2+13lliurex23) jammy-testing; urgency=medium
 
   * Appsedu aesthetics
