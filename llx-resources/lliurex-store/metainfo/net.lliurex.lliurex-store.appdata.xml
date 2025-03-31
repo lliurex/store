@@ -15,7 +15,7 @@
 <category>System</category>
 <category>LliureX-Administration</category>
 </categories>
-<icon type="stock">lliurex-store</icon>
+<icon type="stock">llxstore</icon>
 <provides><binary>/usr/bin/lliurex-store</binary></provides>
 <keywords>
 <keyword>lliurex-store</keyword>
