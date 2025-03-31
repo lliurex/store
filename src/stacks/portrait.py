@@ -65,7 +65,6 @@ class storeHelper(QThread):
 	def __init__(self):
 		QThread.__init__(self, None)
 		self.rc=store.client()
-		self.upgrades=False
 		self.args=[]
 		self.action="upgrade"
 	#def __init__
@@ -84,18 +83,21 @@ class storeHelper(QThread):
 			self._list()
 		elif self.action=="search":
 			self._search()
+		elif self.action=="updatePkgData":
+			self._updatePkgData()
 	#def run
 
 	def _chkUpgrades(self):
+		upgrades=False
 		apps=json.loads(self.rc.getUpgradableApps())
 		if len(apps)>0:
-			self.upgrades=True
+			upgrades=True
 		else:
 			if lliurexup!=None:
 				llxup=lliurexup.LliurexUpCore()
 				if len(llxup.getPackagesToUpdate())>0:
-					self.upgrades=True
-		self.chkEnded.emit(self.upgrades)
+					upgrades=True
+		self.chkEnded.emit(upgrades)
 	#def _chkUpgrades(self):
 
 	def _test(self):
@@ -118,26 +120,12 @@ class storeHelper(QThread):
 	def _search(self):
 		apps=json.loads(self.rc.execute("search",self.args[0]))
 		self.srcEnded.emit(apps)
-#class rebostHelper
+	#def _search(self):
 
-class chkRebost(QThread):
-	test=Signal("PyObject")
-	def __init__(self):
-		QThread.__init__(self, None)
-		try:
-			self.rc=store.client()
-		except:
-			self.rc=None
-	#def __init__
-	
-	def run(self):
-		if self.rc!=None:
-			self.rc.execute("list","lliurex")
-			self.test.emit(True)
-		else:
-			self.test.emit(False)
-	#def run
-#class chkRebost
+	def _updatePkgData(self):
+		if len(self.args)>0:
+			self.rc.updatePkgData(self.args[0].get("pkgname"),self.args[0])
+#class rebostHelper
 
 class updateAppData(QThread):
 	dataLoaded=Signal("PyObject")
@@ -167,10 +155,13 @@ class updateAppData(QThread):
 				apps = dict(reversed(list(self.newApps.items())))
 				self.apps=self.newApps.copy()
 				self.newApps={}
+				#self._stop==False
 			if self._stop==True:
 				break
-			while self.cont>4:
-				time.sleep(0.1)
+			while self.cont>3:
+				if self._stop==True:
+					break
+				time.sleep(0.3)
 				QApplication.processEvents()
 			name=apps.popitem()[0]
 			self._emitDataLoaded(name)
@@ -179,15 +170,18 @@ class updateAppData(QThread):
 
 	def stop(self):
 		self._stop=True
+		self.apps={}
+		self.newApps={}
 		self.cont=0
 	#def stop
 
 	def _emitDataLoaded(self,*args):
 		app={}
-		if len(args)>0 and isinstance(args[0],str):
-			app=json.loads(self.rc.showApp(args[0]))
+		if self._stop==False:
+			if len(args)>0 and isinstance(args[0],str):
+				app=json.loads(self.rc.showApp(args[0]))
+				self.dataLoaded.emit(app)
 		self.cont-=1
-		self.dataLoaded.emit(app)
 	#def _emitDataLoaded
 #class updateAppData
 
@@ -583,6 +577,10 @@ class portrait(QStackedWindowItem):
 				self._debug("Loading limited cat {}".format(categories))
 		else:
 			self._rebost.setAction("search","")
+		if self._rebost.isRunning():
+			self._rebost.quit()
+			QApplication.processEvents()
+			self._rebost.wait()
 		self._rebost.start()
 	#def _getAppList
 
@@ -611,6 +609,7 @@ class portrait(QStackedWindowItem):
 		self.setCursor(self.oldCursor)
 		self.lstCategories.setCursor(self.oldCursor)
 		self.lstCategories.setEnabled(True)
+		self.appUpdate.blockSignals(False)
 		self._return()
 		#self.progress.setVisible(False)
 	#def _endUpdate
@@ -847,6 +846,8 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setCursor(cursor)
 		self.lstCategories.setEnabled(False)
 		self._debug("LOAD CATEGORY {}".format(cat))
+		self.appUpdate.blockSignals(True)
+		self.appUpdate.stop()
 		self.rp.setVisible(False)
 		self.progress.start()
 		self.refresh=True
@@ -1003,6 +1004,8 @@ class portrait(QStackedWindowItem):
 		if app["name"] in self.pendingApps.keys():
 			self.pendingApps[app["name"]].setApp(app)
 			self.pendingApps[app["name"]].updateScreen()
+		self._rebost.setAction("updatePkgData",app)
+		self._rebost.start()
 
 	def _installBundle(self,*args):
 		app=args[0]
