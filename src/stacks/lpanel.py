@@ -71,8 +71,9 @@ class thShowApp(QThread):
 			try:
 				app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
 			except:
-				print("Error")
+				print("Error finding {}".format(self.app.get("name","")))
 				app=self.app.copy()
+				app["ERR"]=True
 			finally:
 				if isinstance(app,str):
 					app=json.loads(app)
@@ -214,6 +215,8 @@ class detailPanel(QWidget):
 					if bundle=='package':
 						continue
 		self.setCursor(self.oldcursor)
+		if "ERR" in app.keys():
+			self._onError()
 		self.updateScreen()
 	#def _endSetParms
 
@@ -652,7 +655,7 @@ class detailPanel(QWidget):
 		self._debug("Error detected")
 		qpal=QtGui.QPalette()
 		color=qpal.color(qpal.Dark)
-		self.parent.setWindowTitle("AppsEdu - {}".format("ERROR"))
+		self.parent().setWindowTitle("AppsEdu - {}".format("ERROR"))
 		if "Forbidden" not in self.app.get("categories",[]):
 			self.app["categories"]=["Forbidden"]
 		self.lstInfo.setEnabled(False)
@@ -669,6 +672,7 @@ class detailPanel(QWidget):
 		self.app["summary"]=i18n.get("APPUNKNOWN").split(".")[1]
 		self.app["pkgname"]="rebost"
 		self.app["description"]=i18n.get("APPUNKNOWN")
+		self.loaded.emit(self.app)
 	#def _onError
 
 	def _setLauncherOptions(self):

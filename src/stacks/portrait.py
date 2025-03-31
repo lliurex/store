@@ -256,6 +256,7 @@ class portrait(QStackedWindowItem):
 		self.zmdLauncher.zmdEnded.connect(self._endLaunchHelper)
 		#self.thUpgrades=chkUpgrades(self.rc)
 		#GUI related
+		self.appUrl=""
 		self.hideControlButtons()
 		self.referersHistory={}
 		self.referersShowed={}
@@ -1088,6 +1089,13 @@ class portrait(QStackedWindowItem):
 		self.setCursor(self.oldCursor)
 	#def _endLoadDetails
 
+	def setParms(self,*args):
+		appsedu=args[0]
+		if "://" in appsedu:
+			pkgname=appsedu.split("://")[-1]
+			self.appUrl=pkgname
+	#def setParms
+
 	def _updateBtn(self,*args,**kwargs):
 		QApplication.processEvents()
 		self.progress.stop()
@@ -1117,10 +1125,18 @@ class portrait(QStackedWindowItem):
 			return
 		self.setCursor(self.oldCursor)
 		self.parent.setWindowTitle("{}".format(APPNAME))
-		self.lp.hide()
-		self.rp.show()
-		self.progress.stop()
 		self.loading=False
+		if self.appUrl!="":
+			self.parent.setWindowTitle("{} - {}".format(APPNAME,self.appUrl.capitalize()))
+			self.lp.setParms({"name":self.appUrl,"icon":""})
+			self.rp.hide()
+			self.lp.show()
+			self.setCursor(self.oldCursor)
+			self.appUrl=""
+		else:
+			self.lp.hide()
+			self.rp.show()
+			self.progress.stop()
 	#def _return
 
 	def _gotoSettings(self):
