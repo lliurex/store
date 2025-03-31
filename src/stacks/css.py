@@ -189,7 +189,17 @@ def portrait():
 					border-radius:%spx;
 					padding-bottom:%spx;
 					padding-top:%spx;
-				}"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
+					outline: none;
+				}
+				#btnHome:focus {
+					border: 0px;
+					outline: 0px;
+				}
+				#btnHome:active {
+					border: 0px;
+					outline: 0px;
+				}
+				"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
 	css=css+btnBar
 	upgrades="""#upgrades{
 					color:%s;

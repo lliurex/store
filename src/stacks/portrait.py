@@ -801,7 +801,8 @@ class portrait(QStackedWindowItem):
 		self.oldTime=time.time()
 		self.loading=False
 		self._endUpdate()
-		self.progress.stop()
+		if self.init==True:
+			self.progress.stop()
 	#def _endSearchApps
 
 	def _changeSearchAppsBtnIcon(self):
@@ -895,14 +896,15 @@ class portrait(QStackedWindowItem):
 		ev=args[1]
 		if ev.type()==QEvent.Type.Resize:
 			if hasattr(self,"first")==False:
-				self.first=ev
+				self.first=True
 				ev.accept()
-			if self.first!=None:
-				self.first=None
-				self.progress.stop()
-				self.rp.setVisible(True)
 			else:
-				self.first=ev
+				if self.first==True:
+					self.first==False
+				elif self.fisrt==False:
+					self.first=None
+					self.progress.stop()
+					self.rp.setVisible(True)
 		elif isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.Paint:
 			args[0].setVisible(True)
 			self.init=True
@@ -913,6 +915,13 @@ class portrait(QStackedWindowItem):
 			if hasattr(self,"firstHide")==False:
 				self.firstHide=None
 			else:
+				if isinstance(self.firstHide,bool)==False:
+					self.firstHide=False
+					return True
+				else:
+					if self.firstHide==False:
+						self.firstHide=True
+						return True
 				self.progress.stop()
 				self.rp.table.removeEventFilter(self)
 				self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
@@ -978,7 +987,7 @@ class portrait(QStackedWindowItem):
 			QApplication.processEvents()
 		self.rp.table.flowLayout.setEnabled(True)
 		#self.rp.table.setVisible(True)
-		self.rp.setVisible(True)
+		#self.rp.setVisible(True)
 		self._endLoadData()
 	#def _loadData
 
@@ -988,8 +997,9 @@ class portrait(QStackedWindowItem):
 			#self._beginUpdate()
 			self._rebost.setAction("test")
 			self._rebost.start()
-		else:
+		elif self.init==False:
 			self.rp.setVisible(True)
+		else:
 			self.appUpdate.setApps(self.pendingApps)
 			self.appUpdate.start()
 			self._endUpdate()
@@ -1103,11 +1113,13 @@ class portrait(QStackedWindowItem):
 	#def _updateBtn
 
 	def _return(self,*args,**kwargs):
-		self.progress.stop()
+		if self.init==False:
+			return
 		self.setCursor(self.oldCursor)
 		self.parent.setWindowTitle("{}".format(APPNAME))
 		self.lp.hide()
 		self.rp.show()
+		self.progress.stop()
 		self.loading=False
 	#def _return
 
