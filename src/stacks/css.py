@@ -184,20 +184,20 @@ def portrait():
 					margin-top:%spx;
 					color:%s;
 					background:%s;
-					border:1px;
 					border-color:%s;
 					border-radius:%spx;
 					padding-bottom:%spx;
 					padding-top:%spx;
-					outline: none;
+					outline:0px;
 				}
 				#btnHome:focus {
-					border: 0px;
-					outline: 0px;
+					outline: none;
 				}
 				#btnHome:active {
-					border: 0px;
-					outline: 0px;
+					outline: none;
+				}
+				#btnHome:enabled {
+					outline: none;
 				}
 				"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
 	css=css+btnBar
