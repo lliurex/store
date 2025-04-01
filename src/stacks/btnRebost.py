@@ -107,7 +107,7 @@ class QPushButtonRebostApp(QPushButton):
 			self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu128x128.png"))
 		scaleFactor=(self.iconSize/2)
 		self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
-		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
+		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper().replace("L*","L·"),self.app.get('summary','').strip().replace("l*","·"))
 		self.setToolTip(text)
 		#text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name','').strip(),self.app.get('summary','').strip(),'')
 		self.label.setText(text)
