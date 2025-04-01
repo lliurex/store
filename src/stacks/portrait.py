@@ -247,7 +247,7 @@ class portrait(QStackedWindowItem):
 		self.getData.dataLoaded.connect(self._loadData)
 		self._rebost=storeHelper()
 		self._rebost.chkEnded.connect(self._endGetUpgradables)
-		self._rebost.test.connect(self._goHome)
+		self._rebost.test.connect(self._loadHome)
 		self._rebost.lstEnded.connect(self._endLoadCategory)
 		self._rebost.srcEnded.connect(self._endSearchApps)
 		self.epi=exehelper.appLauncher()
@@ -295,7 +295,7 @@ class portrait(QStackedWindowItem):
 	def __initScreen__(self):
 		bus=dbus.SessionBus()
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
-		#objbus.connect_to_signal("updatedSignal",self._goHome,dbus_interface="net.lliurex.rebost")
+		#objbus.connect_to_signal("updatedSignal",self._loadHome,dbus_interface="net.lliurex.rebost")
 		objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 		self.box=QGridLayout()
 		self.setLayout(self.box)
@@ -451,7 +451,7 @@ class portrait(QStackedWindowItem):
 	def _defHome(self):
 		btnHome=QPushButton(i18n.get("HOME"))
 		#btnHome.setIcon(icn)
-		btnHome.clicked.connect(self._beginGoHome)
+		btnHome.clicked.connect(self._goHome)
 		return(btnHome)
 	#def _defHome
 
@@ -622,12 +622,12 @@ class portrait(QStackedWindowItem):
 		self._rebost.start()
 	#def _endUpdate
 
-	def _beginGoHome(self,*args,**kwargs):
+	def _goHome(self,*args,**kwargs):
 		self.lstCategories.setCurrentRow(0)
 		self._loadCategory("")
-	#def _beginGoHome
+	#def _goHome
 
-	def _goHome(self,*args,**kwargs):
+	def _loadHome(self,*args,**kwargs):
 		self._debug("Rebost running: {} - {} - {}".format(self._rebost.isFinished(),self._rebost.isRunning(),self._rebost.action))
 		if self._rebost.isFinished()==True and self._rebost.isRunning()==False:
 			self._getUpgradables()
@@ -646,7 +646,7 @@ class portrait(QStackedWindowItem):
 		elif isinstance(self.lstCategories,QComboBox):
 			self.lstCategories.setCurrentIndex(0)
 		self.updateScreen()
-	#def _goHome
+	#def _loadHome
 
 	def _filterView(self,getApps=True):
 		filters={}
@@ -1141,7 +1141,7 @@ class portrait(QStackedWindowItem):
 	def _returnDetail(self,*args,**kwargs):
 		if self.appUrl!="":
 			self.appUrl=""
-			self._goHome()
+			self._loadHome()
 		else:
 			self._return()
 	#def _returnDetail
