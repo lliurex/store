@@ -308,7 +308,7 @@ class portrait(QStackedWindowItem):
 		self.rp.table.installEventFilter(self)
 		self.box.addWidget(self.rp,0,1)
 		self.lp=self._detailPane()
-		self.lp.clicked.connect(self._return)
+		self.lp.clicked.connect(self._returnDetail)
 		self.lp.loaded.connect(self._updateBtn)
 		self.lp.tagpressed.connect(self._loadCategory)
 		self.box.addWidget(self.lp,0,1)
@@ -615,6 +615,13 @@ class portrait(QStackedWindowItem):
 		#self.progress.setVisible(False)
 	#def _endUpdate
 
+	def _endReturnUpdate(self):
+		#self.progress.setVisible(False)
+		self._resetScreen()
+		self._rebost.setAction("list","")
+		self._rebost.start()
+	#def _endUpdate
+
 	def _goHome(self,*args,**kwargs):
 		self._debug("Rebost running: {} - {} - {}".format(self._rebost.isFinished(),self._rebost.isRunning(),self._rebost.action))
 		self.ruina=[]
@@ -625,9 +632,9 @@ class portrait(QStackedWindowItem):
 		self.rp.searchBox.setText("")
 		self._loadFilters()
 		#self.apps=self._getAppList()
-		self._rebost.setAction("search","")
-		self._rebost.start()
-		#self.apps=json.loads(self.rc.execute('search',""))
+		if self.appUrl=="":
+			self._rebost.setAction("search","")
+			self._rebost.start()
 		self._populateCategories()
 		self.resetScreen()
 		if isinstance(self.lstCategories,QListWidget):
@@ -832,6 +839,8 @@ class portrait(QStackedWindowItem):
 				args[1].setFont(font)
 
 	def _loadCategory(self,*args):
+		#Disable app url if any (JustInCase)
+		self.appUrl=""
 		cat=None
 		flag=""
 		if self.loading==True:
@@ -974,6 +983,8 @@ class portrait(QStackedWindowItem):
 			if appname in self.appsSeen:
 				self.appsLoaded+=1
 				continue
+			if len(appname.strip())==0:
+				continue
 			self.appsSeen.append(appname)
 			btn=QPushButtonRebostApp(jsonapp)
 			btn.clicked.connect(self._loadDetails)
@@ -1087,13 +1098,16 @@ class portrait(QStackedWindowItem):
 		self.rp.hide()
 		self.lp.show()
 		self.setCursor(self.oldCursor)
+		QApplication.processEvents()
 	#def _endLoadDetails
 
 	def setParms(self,*args):
 		appsedu=args[0]
+		print("** Detected parm on init **")
 		if "://" in appsedu:
 			pkgname=appsedu.split("://")[-1]
 			self.appUrl=pkgname
+			print("Seeking for {}".format(self.appUrl))
 	#def setParms
 
 	def _updateBtn(self,*args,**kwargs):
@@ -1120,6 +1134,14 @@ class portrait(QStackedWindowItem):
 				self.refererApp.updateScreen()
 	#def _updateBtn
 
+	def _returnDetail(self,*args,**kwargs):
+		if self.appUrl!="":
+			self.appUrl=""
+			self._goHome()
+		else:
+			self._return()
+	#def _returnDetail
+
 	def _return(self,*args,**kwargs):
 		if self.init==False:
 			return
@@ -1132,7 +1154,6 @@ class portrait(QStackedWindowItem):
 			self.rp.hide()
 			self.lp.show()
 			self.setCursor(self.oldCursor)
-			self.appUrl=""
 		else:
 			self.lp.hide()
 			self.rp.show()
@@ -1151,7 +1172,11 @@ class portrait(QStackedWindowItem):
 		if self.refresh==True:
 			for i in self.referersShowed.keys():
 				self.referersShowed[i]=None
-			self._beginLoadData(self.appsLoaded,self.appsToLoad)
+			if self.appUrl!="":
+				self.init=True
+				self._endUpdate()
+			else:
+				self._beginLoadData(self.appsLoaded,self.appsToLoad)
 		else:
 			self._endUpdate()
 	#def _updateScreen

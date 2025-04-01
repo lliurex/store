@@ -192,6 +192,7 @@ class detailPanel(QWidget):
 				self._resetScreen(name,icon)
 				self.thParmShow.setArgs(args[0])
 				self.thParmShow.start()
+		self.lblHomepage.setVisible(True)
 		#self._showSplash(icon)
 	#def setParms
 
@@ -590,7 +591,11 @@ class detailPanel(QWidget):
 				forbReason=": {}".format(self.app["summary"].split("(")[-1].replace(")",""))
 				if forbReason.lower().startswith(": no ")==True:
 					forbReason=""
-			description='<h2>{0}{4}</h2>{1} <a href="{2}">{2}</a><hr>\n{3}'.format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
+
+			if self.app.get("ERR",False)!=False:
+				description='<h2>{0}{4}</h2>{1} <a href="{2}">{2}</a><hr>\n{3}'.format(i18n.get("APPUNKNOWN").split(".")[0],i18n.get("INFO"),homepage,description,forbReason)
+			else:
+				description='<h2>{0}{4}</h2>{1} <a href="{2}">{2}</a><hr>\n{3}'.format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
 			self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setText(description)
 		self._updateScreenControls(bundles)
@@ -668,10 +673,12 @@ class detailPanel(QWidget):
 		self.opacity=QGraphicsOpacityEffect()
 		self.lblBkg.setGraphicsEffect(self.blur)
 		self.lblBkg.setStyleSheet("QLabel{background-color:rgba(%s,%s,%s,0.7);}"%(color.red(),color.green(),color.blue()))
-		self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
+		#self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
 		self.app["summary"]=i18n.get("APPUNKNOWN").split(".")[1]
 		self.app["pkgname"]="rebost"
 		self.app["description"]=i18n.get("APPUNKNOWN")
+		self.app["bundle"]={}
+		self.lblHomepage.setVisible(False)
 		self.loaded.emit(self.app)
 	#def _onError
 
