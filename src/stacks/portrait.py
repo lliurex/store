@@ -451,7 +451,7 @@ class portrait(QStackedWindowItem):
 	def _defHome(self):
 		btnHome=QPushButton(i18n.get("HOME"))
 		#btnHome.setIcon(icn)
-		btnHome.clicked.connect(self._goHome)
+		btnHome.clicked.connect(self._beginGoHome)
 		return(btnHome)
 	#def _defHome
 
@@ -622,9 +622,13 @@ class portrait(QStackedWindowItem):
 		self._rebost.start()
 	#def _endUpdate
 
+	def _beginGoHome(self,*args,**kwargs):
+		self.lstCategories.setCurrentRow(0)
+		self._loadCategory("")
+	#def _beginGoHome
+
 	def _goHome(self,*args,**kwargs):
 		self._debug("Rebost running: {} - {} - {}".format(self._rebost.isFinished(),self._rebost.isRunning(),self._rebost.action))
-		self.ruina=[]
 		if self._rebost.isFinished()==True and self._rebost.isRunning()==False:
 			self._getUpgradables()
 		self.oldTime=time.time()

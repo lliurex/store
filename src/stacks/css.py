@@ -188,16 +188,6 @@ def portrait():
 					border-radius:%spx;
 					padding-bottom:%spx;
 					padding-top:%spx;
-					outline:0px;
-				}
-				#btnHome:focus {
-					outline: none;
-				}
-				#btnHome:active {
-					outline: none;
-				}
-				#btnHome:enabled {
-					outline: none;
 				}
 				"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
 	css=css+btnBar
