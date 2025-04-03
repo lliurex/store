@@ -787,6 +787,9 @@ class portrait(QStackedWindowItem):
 	#def _sortApps
 
 	def _searchApps(self):
+		txt=self.rp.searchBox.text()
+		if txt==self.oldSearch:
+			return
 		self.lstCategories.setCurrentRow(-1)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
@@ -794,21 +797,16 @@ class portrait(QStackedWindowItem):
 		self.appUpdate.stop()
 		self.rp.setVisible(False)
 		self.progress.start()
-		txt=self.rp.searchBox.text()
-		if txt==self.oldSearch:
-			self.rp.searchBox.setText("")
-			txt=""
 		self.oldSearch=txt
-		self.appUpdate.stop()
 		if len(txt)==0:
-			self.apps=self._getAppList()
+			self._getAppList()
 		else:
 			self.apps=json.loads(self.rc.execute('search',txt))
 			self.appsRaw=self.apps.copy()
-		self.refresh=True
-		if len(self.apps)==0:
-			self.refresh=False
-		self._filterView(getApps=False)
+			self.refresh=True
+			if len(self.apps)==0:
+				self.refresh=False
+			self._filterView(getApps=False)
 	#def _searchApps
 
 	def _endSearchApps(self,*args):
