@@ -156,11 +156,12 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setText(i18n.get("UNAVAILABLE"))
 		else:
 			self.btn.setText(i18n.get("INSTALL"))
+		zmdInstalled=""
 		if "zomando" in states:
-			states.pop("zomando")
+			zmdInstalled=states.pop("zomando")
 		self.instBundle=""
 		for bundle,state in states.items():
-			if state=="0":
+			if state=="0" and zmdInstalled!="0":
 				self.btn.setText(i18n.get("REMOVE"))
 				self.instBundle=bundle
 				break
