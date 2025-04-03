@@ -166,6 +166,7 @@ class updateAppData(QThread):
 			name=apps.popitem()[0]
 			self._emitDataLoaded(name)
 			self.cont+=1
+			time.sleep(0.1)
 	#def run
 
 	def stop(self):
@@ -789,6 +790,10 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setCurrentRow(-1)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
+		self.appUpdate.blockSignals(True)
+		self.appUpdate.stop()
+		self.rp.setVisible(False)
+		self.progress.start()
 		txt=self.rp.searchBox.text()
 		if txt==self.oldSearch:
 			self.rp.searchBox.setText("")
