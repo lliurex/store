@@ -697,10 +697,11 @@ class detailPanel(QWidget):
 		self.lstInfo.setText(i18n["INSTALL"].upper())
 		states=self.app.get("state",{}).copy()
 		installed=False
+		zmdInstalled=""
 		if "zomando" in states:
-			states.pop("zomando")
+			zmdInstalled=states.pop("zomando")
 		for bundle,state in states.items():
-			if state=="0":
+			if state=="0" and zmdInstalled!="0":
 				installed=True
 				self.instBundle=bundle
 				break
