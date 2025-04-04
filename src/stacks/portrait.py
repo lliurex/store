@@ -158,15 +158,15 @@ class updateAppData(QThread):
 				#self._stop==False
 			if self._stop==True:
 				break
-			while self.cont>3:
+			while self.cont>2:
 				if self._stop==True:
 					break
-				time.sleep(0.3)
+				time.sleep(0.4)
 				QApplication.processEvents()
 			name=apps.popitem()[0]
 			self._emitDataLoaded(name)
 			self.cont+=1
-			time.sleep(0.1)
+			time.sleep(0.2)
 	#def run
 
 	def stop(self):
