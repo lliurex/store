@@ -171,6 +171,7 @@ class updateAppData(QThread):
 			time.sleep(0.2)
 			if int(self.ctl)%5==0:
 				self.rc.commitData()
+				self.ctl=0
 	#def run
 
 	def stop(self):
