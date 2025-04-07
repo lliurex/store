@@ -201,3 +201,22 @@ def portrait():
 				}"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,MARGIN)
 	css=css+upgrades
 	return(css)
+#def portrait
+
+def prgBar():
+	css=""
+	prg="""QWidget{
+					background:#002c4f;
+			}"""
+	css=css+prg
+	lblInfo="""
+				#lblInfo{
+					padding:0px;
+					border:0px;
+					margin:0px;
+					font-size:24px;
+					color:#FFFFFF;
+			}"""
+	css=css+lblInfo
+	return(css)
+#def prgBar
