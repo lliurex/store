@@ -18,7 +18,6 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 import random
-import gettext
 from btnRebost import QPushButtonRebostApp
 from prgBar import QProgressImage
 import exehelper
@@ -27,6 +26,7 @@ from lpanel import detailPanel
 import css
 from constants import *
 
+import gettext
 _ = gettext.gettext
 QString=type("")
 
@@ -941,6 +941,8 @@ class portrait(QStackedWindowItem):
 						return True
 				self.progress.stop()
 				self.rp.table.removeEventFilter(self)
+				self.progress.lblInfo.setText("")
+				self.progress.lblInfo.setVisible(False)
 				self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		elif isinstance(args[0],QListWidget):
 			if args[1].type==QEvent.Type.KeyRelease:
@@ -1035,6 +1037,7 @@ class portrait(QStackedWindowItem):
 			self.pendingApps[app["name"]].updateScreen()
 		self._rebost.setAction("updatePkgData",app)
 		self._rebost.start()
+	#def _endLoadApps
 
 	def _installBundle(self,*args):
 		app=args[0]
