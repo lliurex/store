@@ -137,6 +137,7 @@ class updateAppData(QThread):
 		self.rc=store.client()
 		self._stop=False
 		self.cont=0
+		self.ctl=0
 	#def __init__
 
 	def setApps(self,*args):
@@ -151,6 +152,7 @@ class updateAppData(QThread):
 			self.newApps={}
 		apps = dict(reversed(list(self.apps.items())))
 		while apps:
+			self.ctl+=1
 			if len(self.newApps)>0:
 				apps = dict(reversed(list(self.newApps.items())))
 				self.apps=self.newApps.copy()
@@ -167,6 +169,8 @@ class updateAppData(QThread):
 			self._emitDataLoaded(name)
 			self.cont+=1
 			time.sleep(0.2)
+			if int(self.ctl)%5==0:
+				self.rc.commitData()
 	#def run
 
 	def stop(self):
