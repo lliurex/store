@@ -213,8 +213,8 @@ class getData(QThread):
 			self.dataLoaded.emit(applist)
 	#def run
 
-	def stop(self):
-		self._stop=True
+	def stop(self,st=True):
+		self._stop=st
 	#def stop
 #class getData
 
@@ -923,7 +923,7 @@ class portrait(QStackedWindowItem):
 			else:
 				if self.first==True:
 					self.first==False
-				elif self.fisrt==False:
+				elif self.first==False:
 					self.first=None
 					self.progress.stop()
 					self.rp.setVisible(True)
@@ -931,7 +931,8 @@ class portrait(QStackedWindowItem):
 			args[0].setVisible(True)
 			self.init=True
 			if hasattr(self,"appUpdate"):
-				self.appUpdate.start()
+				if self.appUpdate.isRunning()==False:
+					self.appUpdate.start()
 			else:
 				self._debug("Event filter failed starting appUpdate")
 			if hasattr(self,"firstHide")==False:
@@ -944,17 +945,23 @@ class portrait(QStackedWindowItem):
 					if self.firstHide==False:
 						self.firstHide=True
 						return True
+				if (len(self.pendingApps)+self.appsLoaded+len(self.appsSeen))==0:
+					self._loadCategory("")
+					return True
 				self.progress.stop()
 				self.rp.table.removeEventFilter(self)
 				self.progress.lblInfo.setText("")
 				self.progress.lblInfo.setVisible(False)
+				#Ensure that if there're pendingApps the info gets loaded
+				if self.pendingApps!=0 and len(self.appUpdate.newApps)==0:
+					self.appUpdate.setApps(self.pendingApps)
 				self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		elif isinstance(args[0],QListWidget):
 			if args[1].type==QEvent.Type.KeyRelease:
 				self.released=True
 			elif args[1].type==QEvent.Type.KeyPress:
 				self.released=False
-		return(False)
+		return(True)
 	#def eventFilter(self,*args):
 
 	def _getMoreData(self):
@@ -991,26 +998,26 @@ class portrait(QStackedWindowItem):
 		if len(self.pendingApps)>0:
 			self.appUpdate.stop()
 			self.pendingApps={}
-			
-		for jsonapp in apps:
-			appname=jsonapp.get('name','')
-			if appname in self.appsSeen:
+		if len(apps)>0:
+			for jsonapp in apps:
+				appname=jsonapp.get('name','')
+				if appname in self.appsSeen:
+					self.appsLoaded+=1
+					continue
+				if len(appname.strip())==0:
+					continue
+				self.appsSeen.append(appname)
+				btn=QPushButtonRebostApp(jsonapp)
+				btn.clicked.connect(self._loadDetails)
+				btn.keypress.connect(self.tableKeyPressEvent)
+				btn.install.connect(self._installBundle)
+				if jsonapp.get("summary","")=="":
+					self.pendingApps.update({appname:btn})
+				self.rp.table.addWidget(btn)
+				if appname in self.referersHistory.keys():
+					self.referersShowed.update({appname:btn})
 				self.appsLoaded+=1
-				continue
-			if len(appname.strip())==0:
-				continue
-			self.appsSeen.append(appname)
-			btn=QPushButtonRebostApp(jsonapp)
-			btn.clicked.connect(self._loadDetails)
-			btn.keypress.connect(self.tableKeyPressEvent)
-			btn.install.connect(self._installBundle)
-			if jsonapp.get("summary","")=="":
-				self.pendingApps.update({appname:btn})
-			self.rp.table.addWidget(btn)
-			if appname in self.referersHistory.keys():
-				self.referersShowed.update({appname:btn})
-			self.appsLoaded+=1
-			QApplication.processEvents()
+				QApplication.processEvents()
 		self.rp.table.flowLayout.setEnabled(True)
 		#self.rp.table.setVisible(True)
 		#self.rp.setVisible(True)
@@ -1019,15 +1026,16 @@ class portrait(QStackedWindowItem):
 
 	def _endLoadData(self):
 		#if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
-		if self.appsLoaded==0 and self.lstCategories.count()==0:
+		if (self.appsLoaded==0 and self.lstCategories.count()==0):
 			#self._beginUpdate()
 			self._rebost.setAction("test")
 			self._rebost.start()
 		elif self.init==False:
 			self.rp.setVisible(True)
 		else:
-			self.appUpdate.setApps(self.pendingApps)
-			self.appUpdate.start()
+			if len(self.pendingApps)>0:
+				self.appUpdate.setApps(self.pendingApps)
+				self.appUpdate.start()
 			self._endUpdate()
 		self.refresh=True
 	#def _endLoadData(self):

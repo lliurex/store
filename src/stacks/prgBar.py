@@ -11,12 +11,8 @@ import gettext
 _ = gettext.gettext
 
 i18n={
-	"GETTINGAPPS":_("Getting applications"),
-	"WAITMOMENT":_("Wait a moment"),
-	"SETTINGUP":_("Setting up information"),
-	"FILLINGINFO":_("Filling caches"),
-	"WARMUP":_("Warming up engine"),
-	"ACCESINGNETWORK":_("Network checking")
+	"GETTINGINFO":_("Downloading information, wait a moment..."),
+	"UPDATINGINFO":_("Upgrading application database")
 	}
 
 class progress(QThread):
@@ -51,7 +47,7 @@ class QProgressImage(QWidget):
 		self.pxm=QPixmap(img)#.scaled(267,267,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		self.pxm2=QPixmap(self.pxm.size())
 		self.lblPxm=QLabel()
-		self.lblInfo=QLabel(i18n["SETTINGUP"])
+		self.lblInfo=QLabel(i18n["GETTINGINFO"])
 		lay.setSpacing(0)
 		lay.addWidget(self.lblPxm,Qt.AlignBottom)
 		lay.addWidget(self.lblInfo,Qt.AlignTop)
@@ -90,10 +86,12 @@ class QProgressImage(QWidget):
 	def _doProgress(self,*args):
 		self.running=True
 		if self.lblInfo.text()!="":
-			if int(time.time())-self.oldTime>3:
+			if (self.oldTime!=0) and (int(time.time())-self.oldTime>3):
 				rnd=random.randint(0,len(i18n))-1
 				key=list(i18n.keys())[rnd]
 				self.lblInfo.setText(i18n[key])
+				self.oldTime=time.time()
+			elif self.oldTime!=0:
 				self.oldTime=time.time()
 			
 		color=QColor(self.oldColor.red()+self.inc,self.oldColor.green()+self.inc,self.oldColor.blue()+self.inc)
