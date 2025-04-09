@@ -314,12 +314,14 @@ class portrait(QStackedWindowItem):
 		self.rp.table.installEventFilter(self)
 		self.box.addWidget(self.rp,0,1)
 		self.lp=self._detailPane()
+		self.lp.setObjectName("detailPanel")
 		self.lp.clicked.connect(self._returnDetail)
 		self.lp.loaded.connect(self._updateBtn)
 		self.lp.tagpressed.connect(self._loadCategory)
 		self.box.addWidget(self.lp,0,1)
 		self.lp.hide()
 		self.progress=self._defProgress()
+		self.progress.setObjectName("progress")
 		self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
 		self.btnSettings=QPushButton()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
@@ -953,8 +955,7 @@ class portrait(QStackedWindowItem):
 				self.progress.lblInfo.setText("")
 				self.progress.lblInfo.setVisible(False)
 				#Ensure that if there're pendingApps the info gets loaded
-				if self.pendingApps!=0 and len(self.appUpdate.newApps)==0:
-					self.appUpdate.setApps(self.pendingApps)
+				self.progress.setObjectName("progressNoBkg")
 				self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		elif isinstance(args[0],QListWidget):
 			if args[1].type==QEvent.Type.KeyRelease:
@@ -1119,7 +1120,6 @@ class portrait(QStackedWindowItem):
 		self.parent.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","").capitalize()))
 		self.lp.setParms({"name":args[-1].get("name",""),"icon":icn})
 		self.rp.hide()
-		self.lp.show()
 		self.setCursor(self.oldCursor)
 		QApplication.processEvents()
 	#def _endLoadDetails
@@ -1135,6 +1135,7 @@ class portrait(QStackedWindowItem):
 
 	def _updateBtn(self,*args,**kwargs):
 		QApplication.processEvents()
+		self.lp.show()
 		self.progress.stop()
 		if not hasattr(self,"refererApp"):
 			return()

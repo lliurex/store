@@ -5,10 +5,12 @@ from constants import *
 def detailPanel():
 	css=""
 	detail="""QWidget{
+					background:%s;
+			}
+			QWidget#detailPanel{
 					padding:0px;
 					border:0px;
 					margin:0px;
-					background:%s;
 					color:unset;
 			}"""%(COLOR_FONT_LIGHT)
 	css=css+detail
@@ -207,6 +209,9 @@ def prgBar():
 	css=""
 	prg="""QWidget{
 					background:#002c4f;
+					padding:0px;
+					border:0px;
+					margin:0px;
 			}"""
 	css=css+prg
 	lblInfo="""
