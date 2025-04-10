@@ -38,6 +38,7 @@ class QProgressImage(QWidget):
 		QWidget.__init__(self)
 		lay=QVBoxLayout()
 		self.setLayout(lay)
+		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("prgBar")
 		self.setStyleSheet(css.prgBar())
 		#lblProgress=QLabel(i18n["NEWDATA"])
