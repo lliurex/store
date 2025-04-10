@@ -886,7 +886,10 @@ class portrait(QStackedWindowItem):
 		#self.resetScreen()
 		self._beginUpdate()
 		if cat=="":
-			i18ncat=self.lstCategories.currentItem().text().replace(" · ","")
+			if self.lstCategories.count()==0:
+				i18ncat=self.lstCategories.currentItem().text().replace(" · ","")
+			else:
+				i18ncat=""
 		else:
 			if isinstance(cat,str):
 				i18ncat=cat.replace(" · ","")
@@ -1067,7 +1070,8 @@ class portrait(QStackedWindowItem):
 	#def _endLoadApps
 
 	def _installBundle(self,*args):
-		app=args[0]
+		app=args[1]
+		self.refererApp=args[0]
 		if isinstance(app,dict)==False:
 			return
 		bundle=""
@@ -1111,6 +1115,12 @@ class portrait(QStackedWindowItem):
 	#def _installBundle
 
 	def _endLaunchHelper(self,*args,**kwargs):
+		if self.refererApp!=None:
+			btn=self.refererApp
+			self.refererApp=None
+			app=json.loads(self.rc.showApp(args[0]["name"]))[0]
+			btn.setApp(json.loads(app))
+			btn.updateScreen()
 		self.setCursor(self.oldCursor)
 	#def _endLaunchHelper
 

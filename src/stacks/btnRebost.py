@@ -39,7 +39,7 @@ class processData(QThread):
 
 class QPushButtonRebostApp(QPushButton):
 	clicked=Signal("PyObject","PyObject")
-	install=Signal("PyObject")
+	install=Signal("PyObject","PyObject")
 	ready=Signal("PyObject")
 	keypress=Signal()
 
@@ -128,7 +128,7 @@ class QPushButtonRebostApp(QPushButton):
 		if self.instBundle!="":
 			self.app["state"]={self.instBundle:"0"}
 			self.app["bundle"]={self.instBundle:self.app["bundle"][self.instBundle]}
-		self.install.emit(self.app)
+		self.install.emit(self,self.app)
 	#def _emitInstall
 
 	def eventFilter(self,*args):
@@ -161,7 +161,7 @@ class QPushButtonRebostApp(QPushButton):
 			zmdInstalled=states.pop("zomando")
 		self.instBundle=""
 		for bundle,state in states.items():
-			if state=="0" and zmdInstalled!="0":
+			if state=="0":# and zmdInstalled!="0":
 				self.btn.setText(i18n.get("REMOVE"))
 				self.instBundle=bundle
 				break

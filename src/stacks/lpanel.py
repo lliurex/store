@@ -426,7 +426,7 @@ class detailPanel(QWidget):
 		hlay=QVBoxLayout()
 
 		self.btnInstall=QLabel(i18n.get("INSTALL"))
-		self.btnInstall.setObjectName("btnInstall")
+		#self.btnInstall.setObjectName("btnInstall")
 		self.btnInstall.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
 
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
@@ -454,7 +454,7 @@ class detailPanel(QWidget):
 		self.lstInfo.setMaximumWidth(50)
 		self.lstInfo.currentTextChanged.connect(self._setLauncherOptions)	
 		self.lstInfo.installClicked.connect(self._genericEpiInstall)
-		lay.addWidget(self.btnInstall,1,3,3,1,Qt.AlignLeft|Qt.AlignBottom)
+		lay.addWidget(self.btnInstall,1,3,3,1,Qt.AlignLeft|Qt.AlignTop)
 		lay.addWidget(self.lstInfo,2,3,1,1,Qt.AlignLeft|Qt.AlignTop)
 		lay.addWidget(self.btnRemove,2,3,1,1)
 		lay.addWidget(self.btnUnavailable,2,3,1,1)
@@ -704,7 +704,7 @@ class detailPanel(QWidget):
 		if "zomando" in states:
 			zmdInstalled=states.pop("zomando")
 		for bundle,state in states.items():
-			if state=="0" and zmdInstalled!="0":
+			if state=="0":# and zmdInstalled!="0":
 				installed=True
 				self.instBundle=bundle
 				break
