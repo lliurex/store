@@ -9,11 +9,7 @@ from PySide6 import QtGui
 from QtExtraWidgets import QStackedWindow
 import gettext
 import time
-<<<<<<<< HEAD:src/store.py
-gettext.textdomain('store')
-========
 gettext.textdomain('lliurex-store')
->>>>>>>> devel:src/lliurex-store.py
 _ = gettext.gettext
 
 def closeEvent(*args):
@@ -23,12 +19,8 @@ def closeEvent(*args):
 
 app=QApplication(["LliureX Store"])
 mw=QStackedWindow()
-<<<<<<<< HEAD:src/store.py
-icn=QtGui.QIcon.fromTheme("store")
-========
 mw.closeEvent=closeEvent
 icn=QtGui.QIcon.fromTheme("llxstore")
->>>>>>>> devel:src/lliurex-store.py
 mw.disableNavBar(True)
 mw.setIcon(icn)
 #Remove banner
@@ -48,11 +40,6 @@ mw.setMinimumWidth(1048)
 mw.setMinimumHeight(600)
 if len(sys.argv)>1:
 	if ("://") in sys.argv[1] or os.path.isfile(sys.argv[1]):
-<<<<<<<< HEAD:src/store.py
-		mw.setCurrentStack(3,parms=sys.argv[1])
-app.exec()
-========
 		wdg=mw.getCurrentStack()
 		wdg.setParms(sys.argv[1])
-app.exec_()
->>>>>>>> devel:src/lliurex-store.py
+app.exec()
