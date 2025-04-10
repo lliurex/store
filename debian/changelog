@@ -1,3 +1,9 @@
+lliurex-store (1.4.9+7lliurex25) noble; urgency=medium
+
+  * Noble release
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 10 Apr 2025 12:16:30 +0200
+
 lliurex-store (1.4.9+7lliurex23) jammy-testing; urgency=medium
 
   * Rebranded as LliureX Store
