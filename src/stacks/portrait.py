@@ -955,14 +955,14 @@ class portrait(QStackedWindowItem):
 				self.progress.lblInfo.setText("")
 				self.progress.lblInfo.setVisible(False)
 				#Ensure that if there're pendingApps the info gets loaded
-				self.progress.setObjectName("progressNoBkg")
+				#self.progress.setObjectName("progressNoBkg")
 				self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		elif isinstance(args[0],QListWidget):
 			if args[1].type==QEvent.Type.KeyRelease:
 				self.released=True
 			elif args[1].type==QEvent.Type.KeyPress:
 				self.released=False
-		return(True)
+		return(False)
 	#def eventFilter(self,*args):
 
 	def _getMoreData(self):
