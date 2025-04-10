@@ -400,6 +400,7 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setCursor(Qt.PointingHandCursor)
 		self.lstCategories.currentItemChanged.connect(self._decoreCmbCategories)
 		self.lstCategories.itemActivated.connect(self._loadCategory)
+		self.lstCategories.itemClicked.connect(self._loadCategory)
 		self.lblInfo=self._defInfo()
 		vbox.addSpacing(30)
 		vbox.addWidget(self.lblInfo,Qt.AlignBottom)
