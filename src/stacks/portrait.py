@@ -878,7 +878,7 @@ class portrait(QStackedWindowItem):
 		self._debug("LOAD CATEGORY {}".format(cat))
 		self.appUpdate.blockSignals(True)
 		self.appUpdate.stop()
-		#self.rp.setVisible(False)
+		self.rp.setVisible(False)
 		self.progress.start()
 		self.refresh=True
 		self.rp.searchBox.setText("")

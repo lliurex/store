@@ -105,7 +105,7 @@ class mainPanel(QWidget):
 		self.searchGeometry=QSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
 		self.btnSearch.setIconSize(self.searchGeometry)
 		lay.addWidget(self.searchBox)#,Qt.AlignCenter|Qt.AlignCenter)
-		lay.addWidget(self.btnSearch,Qt.Alignment(-1))
+		lay.addWidget(self.btnSearch)
 		wdg.setLayout(lay)
 		#wdg.setStyleSheet("""#wsearch{border:0px solid #FFFFFF;background:#002c4f;border-radius:20px}#search{color:#FFFFFF;background:#002c4f;border:0px solid;margin-left:12px;} #bsearch{color:#FFFFFF;background:#002c4f;border:0px;margin-right:12px}""")
 		wdg.setMaximumWidth(450)
