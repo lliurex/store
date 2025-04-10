@@ -1,0 +1,17 @@
+#/usr/bin/python3
+import os
+
+MINTIME=0.2
+LAYOUT="appsedu"
+APPNAME="LliureX Store"
+ICON_SIZE=72
+COLOR_BACKGROUND_LIGHT="#FFFFFF"
+COLOR_BACKGROUND_DARK="#002c4f"
+COLOR_BACKGROUND_DARKEST="#2e746c"
+COLOR_BORDER="#AAAAAA"
+COLOR_BORDER_DARK="#EEEEEE"
+COLOR_BORDER_DARKEST="#DDDDDD"
+COLOR_FONT_LIGHT="#FFFFFF"
+MARGIN="8"
+RADIUS="6"
+RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
