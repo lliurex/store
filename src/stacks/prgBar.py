@@ -91,7 +91,7 @@ class QProgressImage(QWidget):
 				key=list(i18n.keys())[rnd]
 				self.lblInfo.setText(i18n[key])
 				self.oldTime=time.time()
-			elif self.oldTime!=0:
+			elif self.oldTime==0:
 				self.oldTime=time.time()
 			
 		color=QColor(self.oldColor.red()+self.inc,self.oldColor.green()+self.inc,self.oldColor.blue()+self.inc)
