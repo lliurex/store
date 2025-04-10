@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=LliureX Store
+Comment=Software center
+Comment[es]=Tienda de aplicaciones
+Comment[ca]=Botiga d'aplicacions
+Comment[ca]=Botiga d'aplicacions
+Exec=/usr/bin/lliurex-store %U
+Icon=llxstore
+Type=Application
+GenericName=LliureX Store
+Categories=System;LliureX-Administration;
+MimeType=application/vnd.flatpak.ref;x-scheme-handler/appsedu;x-scheme-handler/appstream;x-scheme-handler/ocs;x-scheme-handler/ocss;x-scheme-handler/snap;

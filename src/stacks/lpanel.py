@@ -1,31 +1,31 @@
 #!/usr/bin/python3
-#!/usr/bin/python3
 import sys,signal
 import os
 import subprocess
 import json
 import html
-from app2menu import App2Menu as app2menu
 from rebost import store
 from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,\
 							QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,\
 							QAbstractScrollArea, QFrame
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
-#from appconfig.appConfigStack import appConfigStack as confStack
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QStackedWindowItem
 import gettext
 import libhelper
 import exehelper
+import css
+from cmbBtn import QComboButton
+from lblApp import QLabelRebostApp
+from lblLnk import QLabelLink
+from constants import *
 _ = gettext.gettext
 QString=type("")
-ICON_SIZE=128
 BKG_COLOR_INSTALLED=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Highlight))
-ICON_SIZE=128
-MINTIME=0.2
 
 i18n={
 	"APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
+	"APPUNKNOWN_SAI":_("For any question the SAI can be contacted at <a href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"),
 	"CHOOSE":_("Choose"),
 	"CONFIG":_("Details"),
 	"DESC":_("Navigate through all applications"),
@@ -46,6 +46,7 @@ i18n={
 	"SEEIT":_("See at Appsedu"),
 	"SITE":_("Website"),
 	"TOOLTIP":_("Details"),
+	"UNAVAILABLE":_("Unavailable"),
 	"UPGRADE":_("Upgrade"),
 	"ZMDNOTFOUND":_("Zommand not found. Open Zero-Center?"),
 	}
@@ -71,8 +72,9 @@ class thShowApp(QThread):
 			try:
 				app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
 			except:
-				print("Error")
+				print("Error finding {}".format(self.app.get("name","")))
 				app=self.app.copy()
+				app["ERR"]=True
 			finally:
 				if isinstance(app,str):
 					app=json.loads(app)
@@ -80,62 +82,6 @@ class thShowApp(QThread):
 		return True
 	#def run
 #class thShowApp
-
-class QLabelRebostApp(QLabel):
-	clicked=Signal("PyObject")
-	def __init__(self,parent=None):
-		QLabel.__init__(self, parent)
-		self.setAlignment(Qt.AlignCenter)
-		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
-	#def __init__
-
-	def loadImg(self,app):
-		img=app.get('icon','')
-		self.setMinimumWidth(1)
-		icn=''
-		if os.path.isfile(img):
-			icn=QtGui.QPixmap.fromImage(QtGui.QImage(img))
-		elif img=='':
-			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
-			icn=icn2.pixmap(ICON_SIZE,ICON_SIZE)
-		if icn:
-			wsize=ICON_SIZE
-			if "/usr/share/banners/lliurex-neu" in img:
-				wsize=int(ICON_SIZE*1.8)
-			self.setPixmap(icn.scaled(wsize,ICON_SIZE,Qt.KeepAspectRatio,Qt.SmoothTransformation))
-			self.setMinimumWidth(wsize+10)
-		elif img.startswith('http'):
-			aux=QScreenShotContainer()
-			self.scr=aux.loadScreenShot(img,self.cacheDir)
-			self.scr.start()
-			self.scr.imageLoaded.connect(self.load)
-			self.scr.wait()
-	#def loadImg
-	
-	def load(self,*args):
-		img=args[0]
-		self.setPixmap(img.scaled(ICON_SIZE,ICON_SIZE))
-		self.setMinimumWidth(ICON_SIZE+10)
-	#def load
-#class QLabelRebostApp
-
-class QLabelLink(QWidget):
-	def __init__(self,*args,**kwargs):
-		super().__init__()
-		hbox=QHBoxLayout()
-		icn=QtGui.QPixmap("rsrc/link24x24.png")
-		lblIcn=QLabel()
-		lblIcn.setPixmap(icn.scaled(16,16))
-		hbox.addWidget(lblIcn)
-		self.lbl=QLabel(args[0])
-		hbox.addWidget(self.lbl)
-		self.setLayout(hbox)
-	
-	def setOpenExternalLinks(self,*args):
-		self.lbl.setOpenExternalLinks(*args)
-
-	def setText(self,*args):
-		self.lbl.setText(*args)
 
 class detailPanel(QWidget):
 	clicked=Signal("PyObject")
@@ -145,8 +91,9 @@ class detailPanel(QWidget):
 		super().__init__()
 		self.dbg=False
 		self._debug("details load")
+		self.setObjectName("detailPanel")
 		self.setAttribute(Qt.WA_StyledBackground, True)
-		self.setStyleSheet("padding:0px;border:0px;margin:0px;background:#FFFFFF;color:unset;")
+		self.setStyleSheet(css.detailPanel())
 		self.refresh=False
 		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
 		self._connectThreads()
@@ -155,8 +102,8 @@ class detailPanel(QWidget):
 		self.launcher=""
 		self.config={}
 		self.app={}
-		self.appmenu=app2menu.app2menu()
 		self.rc=store.client()
+		self.instBundle=""
 		self.__initScreen__()
 	#def __init__
 
@@ -187,24 +134,6 @@ class detailPanel(QWidget):
 		cat=args[0][0].replace("#","")
 		self.tagpressed.emit(cat)
 	#def _tagNav(self,*args)
-
-	def _showSplash(self,icon):
-		pxm=None
-		if isinstance(icon,QtGui.QPixmap):
-			pxm=icon
-		elif len(icon)>0:
-			if os.path.isfile(icon):
-				pxm=QtGui.QPixmap(icon)
-		if not pxm:
-			icn=QtGui.QIcon.fromTheme("appedu-generic")
-			pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
-		if isinstance(pxm,QtGui.QPixmap):
-			color=QtGui.QPalette().color(QtGui.QPalette.Dark)
-			self.wdgSplash.setPixmap(pxm.scaled(int(self.width()),int(self.height()/1.1),Qt.AspectRatioMode.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
-		self.wdgSplash.setMaximumWidth(self.width()-ICON_SIZE*1.1)
-		self.wdgSplash.setMaximumHeight(self.height()-ICON_SIZE*1.1)
-		self.wdgSplash.setVisible(True)
-	#def _showSplash
 
 	def _processStreams(self,args):
 		self.app={}
@@ -264,7 +193,8 @@ class detailPanel(QWidget):
 				self._resetScreen(name,icon)
 				self.thParmShow.setArgs(args[0])
 				self.thParmShow.start()
-		self._showSplash(icon)
+		self.lblHomepage.setVisible(True)
+		#self._showSplash(icon)
 	#def setParms
 
 	def _endSetParms(self,*args):
@@ -286,13 +216,9 @@ class detailPanel(QWidget):
 				for bundle,name in (self.app.get('bundle',{}).items()):
 					if bundle=='package':
 						continue
-				#	name=self.app.get('name','')
-				#	if name!='':
-				#		status=self.rc.getAppStatus(name,bundle)
-				#		self.app['state'][bundle]=str(status)
 		self.setCursor(self.oldcursor)
-		for anim in self.anims:
-			anim.start()
+		if "ERR" in app.keys():
+			self._onError()
 		self.updateScreen()
 	#def _endSetParms
 
@@ -369,8 +295,11 @@ class detailPanel(QWidget):
 					pass
 	#def _getRunappResults
 
-	def _genericEpiInstall(self):
-		bundle=self.lstInfo.currentText().lower().split(" ")[-1]
+	def _genericEpiInstall(self,*args):
+		if self.instBundle=="":
+			bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
+		else:
+			bundle=self.instBundle
 		self.rc.enableGui(True)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
@@ -385,14 +314,18 @@ class detailPanel(QWidget):
 		self._debug("Invoking EPI for {}".format(epi))
 		if epi==None:
 			if res.get("done",0)==1 and "system package" in res.get("msg","").lower():
-				self.showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
+				self.parent().showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
 			else:
-				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
+				self.parent().showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
 			self.updateScreen()
 		else:
-			cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
-			self.epi.setArgs(self.app,cmd,bundle)
-			self.epi.start()
+			if bundle=="zomando" and self.app.get("state",{}).get("zomando","1")=="0":
+				self.zmdLauncher.setApp(self.app)
+				self.zmdLauncher.start()
+			else:
+				cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
+				self.epi.setArgs(self.app,cmd,bundle)
+				self.epi.start()
 	#def _genericEpiInstall
 	
 	def _getEpiResults(self,app,*args):
@@ -421,7 +354,9 @@ class detailPanel(QWidget):
 		self.updateScreen()
 	 #def _endGetEpiResults
 
-	def _clicked(self):
+	def _clickedBack(self):
+		if self.thParmShow.isRunning():
+			self.thParmShow.quit()
 		self.clicked.emit(self.app)
 
 	def _loaded(self):
@@ -429,132 +364,126 @@ class detailPanel(QWidget):
 
 	def __initScreen__(self):
 		self.box=QGridLayout()
+		self.setObjectName("dp")
 		self.btnBack=QPushButton()
-		self.btnBack.clicked.connect(self._clicked)
-		icn=QtGui.QIcon("rsrc/go-previous32x32.png")
+		self.btnBack.clicked.connect(self._clickedBack)
+		icn=QtGui.QIcon(os.path.join(RSRC,"go-previous32x32.png"))
 		self.btnBack.setIcon(icn)
-		#self.btnBack.setMinimumSize(QSize(int(ICON_SIZE/1.7),int(ICON_SIZE/1.7)))
 		self.btnBack.setIconSize(self.btnBack.sizeHint())
 		self.box.addWidget(self.btnBack,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
+		spacingI=QLabel("")
+		spacingE=QLabel("")
+		spacingI.setFixedWidth(16)
+		spacingE.setFixedWidth(48)
+		self.box.addWidget(spacingI,0,1,1,1)
 		self.header=self._defHeader()
-		self.header.setStyleSheet("QWidget#frame{margin:0px;padding:0px;border:1px solid #DDDDDD;bottom:0px}""")
-		self.box.addWidget(self.header,1,1,1,4)
+		self.box.addWidget(self.header,1,2,1,3)
 		self.screenShot=self._defScreenshot()
-		self.box.addWidget(self.screenShot,2,1,1,4)
+		self.screenShot.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.box.addWidget(self.screenShot,2,2,1,3)
 		resources=self._defResources()
 		resources.setObjectName("resources")
 		resources.setAttribute(Qt.WA_StyledBackground, True)
 		self.lblDesc=QScrollLabel()
+		self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		self.lblDesc.setWordWrap(True)	  
-		self.box.addWidget(resources,3,1,1,1)
-		resources.setStyleSheet("""QWidget#resources{margin-top:12px;border-right:3px solid;border-radius:1px;border-right-color:#EEEEEE;}""")
-		self.box.addWidget(self.lblDesc,3,2,2,2)
-
+		spacing=QLabel("")
+		spacing.setFixedHeight(6)
+		self.box.addWidget(spacing,3,1,1,1)
+		self.box.addWidget(resources,4,2,1,1)
+		self.box.addWidget(self.lblDesc,4,3,2,1)
 		self.setLayout(self.box)
 		self.box.setColumnStretch(0,0)
 		self.box.setColumnStretch(1,0)
 		self.box.setColumnStretch(2,0)
 		self.box.setColumnStretch(3,1)
 		self.box.setRowStretch(0,0)
-		self.box.setRowStretch(4,1)
-		self.box.setRowStretch(5,0)
-		
-		self.wdgSplash=QLabel()
+		self.box.setRowStretch(5,1)
+		self.box.setRowStretch(6,0)
+		self.box.addWidget(spacingE,0,self.box.columnCount(),1,1)
 		errorLay=QGridLayout()
-		self.wdgSplash.setLayout(errorLay)
-		color=QtGui.QPalette().color(QtGui.QPalette.Dark)
-		self.wdgSplash.setStyleSheet("background-color:rgba(%s,%s,%s,0.5);"%(color.red(),color.green(),color.blue()))
 		self.lblBkg=QLabel()
 		errorLay.addWidget(self.lblBkg,0,0,1,1)
-		self.box.addWidget(self.wdgSplash,1,0,self.box.rowCount()-1,self.box.columnCount(),Qt.AlignCenter)
-		self.anims = [QPropertyAnimation(self.wdgSplash, b"maximumWidth",parent=self),
-						QPropertyAnimation(self.wdgSplash, b"maximumHeight",parent=self)]
-		self.anims[0].setStartValue(self.wdgSplash.width())
-		for anim in self.anims:
-			anim.setEndValue(0)
-			anim.setDuration(100)
 	#def _load_screen
 
 	def _defHeader(self):
 		wdg=QWidget()
 		wdg.setObjectName("frame")
 		lay=QGridLayout()
+		lay.setSpacing(int(MARGIN)*2)
 		self.lblIcon=QLabelRebostApp()
-		lay.addWidget(self.lblIcon,1,1,2,1,Qt.AlignTop|Qt.AlignLeft)
-  
+		self.lblIcon.setObjectName("lblIcon")
+		self.lblIcon.setMaximumWidth(ICON_SIZE+6)
+		lay.addWidget(self.lblIcon,0,1,3,1)
 		self.lblName=QLabel()
-		lay.addWidget(self.lblName,1,2,1,1,Qt.AlignTop)
+		self.lblName.setObjectName("lblName")
 		self.lblSummary=QLabel()
+		self.lblName.setObjectName("lblSummary")
+		self.lblSummary.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
 		self.lblSummary.setWordWrap(True)
-		lay.addWidget(self.lblSummary,2,2,1,1,Qt.AlignTop)
-
+		lay.addWidget(self.lblSummary,0,2,3,1)
 		launchers=QWidget()
 		hlay=QVBoxLayout()
-		self.btnInstall=QPushButton(i18n.get("INSTALL"))
-		self.btnInstall.setStyleSheet("""color:#002c4f;background:#FFFFFF;border:1px solid;border-color:#AAAAAA;border-radius:5px;padding-bottom:5px;padding-top:5px""")
-		self.btnInstall.clicked.connect(self._genericEpiInstall)
+
+		self.btnInstall=QLabel(i18n.get("INSTALL"))
+		self.btnInstall.setObjectName("btnInstall")
 		self.btnInstall.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
-		#self.btnInstall.setMinimumHeight(int(ICON_SIZE/3))
-		#self.btnInstall.setMaximumHeight(int(ICON_SIZE/3))
-		hlay.addWidget(self.btnInstall,Qt.AlignRight)
+
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
+		self.btnRemove.setObjectName("lstInfo")
 		self.btnRemove.clicked.connect(self._genericEpiInstall)
-		self.btnRemove.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
-	#	hlay.addWidget(self.btnRemove,Qt.AlignLeft)
+
+		self.btnUnavailable=QPushButton(i18n.get("UNAVAILABLE"))
+		self.btnUnavailable.setObjectName("lstInfo")
 
 		self.btnZomando=QPushButton(" {} zomando ".format(i18n.get("RUN")))
 		self.btnZomando.clicked.connect(self._runZomando)
 		self.btnZomando.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
 		self.btnZomando.setVisible(False)
-	#	hlay.addWidget(self.btnZomando,Qt.AlignLeft)
 
 		self.btnLaunch=QPushButton(i18n.get("RUN"))
 		self.btnLaunch.clicked.connect(self._runApp)
 		self.btnLaunch.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
-	#	hlay.addWidget(self.btnLaunch,Qt.AlignLeft)
 		launchers.setLayout(hlay)
 		lay.addWidget(launchers,1,3,1,1,Qt.AlignTop|Qt.AlignRight)
-		for i in [self.btnInstall,self.btnRemove,self.btnLaunch,self.btnZomando]:
+		for i in [self.btnInstall,self.btnLaunch,self.btnZomando]:
 			i.setMinimumWidth(self.btnZomando.sizeHint().width()+(4*i.font().pointSize()))
 
-		self.lstInfo=QListWidget()
-		self.lstInfo=QComboBox()
-		#self.lstInfo.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.lstInfo.setStyleSheet("""QComboBox{padding:6px;margin:1px;border:1px solid;border-color:#AAAAAA;border-radius:5px;}
-								QComboBox::drop-down{ subcontrol-origin: padding;
-								subcontrol-position: top right;
-								border-top-right-radius: 3px; /* same radius as the QComboBox */
-								border-bottom-right-radius: 3px;
-								}
-								QComboBox::down-arrow {
-									image: url("rsrc/drop-down16x16.png");
-									right:10px;
-								}
-								QComboBox::down-arrow:on { /* shift the arrow when popup is open */
-									top: 1px;
-									right: 8px;
-								}
-								""")
+		self.lstInfo=QComboButton()
+		self.lstInfo.setObjectName("lstInfo")
+		self.lstInfo.setMaximumWidth(50)
 		self.lstInfo.currentTextChanged.connect(self._setLauncherOptions)	
-		lay.addWidget(self.lstInfo,2,3,2,1,Qt.AlignTop)
+		self.lstInfo.installClicked.connect(self._genericEpiInstall)
+		lay.addWidget(self.btnInstall,1,3,3,1,Qt.AlignLeft|Qt.AlignBottom)
+		lay.addWidget(self.lstInfo,2,3,1,1,Qt.AlignLeft|Qt.AlignTop)
+		lay.addWidget(self.btnRemove,2,3,1,1)
+		lay.addWidget(self.btnUnavailable,2,3,1,1)
+		self.btnRemove.setVisible(False)
+		self.btnUnavailable.setVisible(False)
+		spacing=QLabel("")
+		spacing.setFixedWidth(64)
+		lay.addWidget(spacing,0,lay.columnCount())
 		wdg.setLayout(lay)
+		lay.setColumnStretch(0,0)
+		lay.setColumnStretch(1,3)
+		lay.setColumnStretch(2,2)
 		return(wdg)
+	#def _defHeader
 
 	def _defScreenshot(self):
 		wdg=QScreenShotContainer()
+		wdg.setObjectName("screenshot")
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		wdg.setStyleSheet("margin:0px;padding:0px;")
 		return(wdg)
-		
+	#def _defScreenshot
 
 	def _defResources(self):
 		wdg=QWidget()
 		lay=QVBoxLayout()
 		self.lblTags=QScrollLabel()
+		self.lblTags.setObjectName("lblTags")
 		self.lblTags.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.lblTags.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.lblTags.setStyleSheet("margin:0px;padding:0px;border:0px;bottom:0px")
 		lay.addWidget(self.lblTags)
 		self.resources=QWidget()
 		layResources=QVBoxLayout()
@@ -566,6 +495,7 @@ class detailPanel(QWidget):
 		lay.addWidget(self.resources)
 		wdg.setLayout(lay)
 		return(wdg)
+	#def _defResources
 
 	def keyPressEvent(self,*args):
 		if args[0].key() in [Qt.Key_Escape]:
@@ -574,7 +504,9 @@ class detailPanel(QWidget):
 
 	def _setUnknownAppInfo(self):
 		if self.app.get("name","")!="":
-			self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+			#Disabled as requisite (250214-11:52)
+			#self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+			self.lblName.setText("{}".format(self.app.get('name')))
 			icn=self.app.get("icon","")
 			pxm=None
 			if isinstance(icn,QtGui.QPixmap):
@@ -591,11 +523,11 @@ class detailPanel(QWidget):
 			self.lblDesc.setText("<hr><p>{}</p><hr>".format(i18n.get("APPUNKNOWN")))
 			self.lblDesc.label.setOpenExternalLinks(True)
 			homepage="https://portal.edu.gva.es/appsedu/"
-			text='<a href="{0}">Appsedu</a>'.format(homepage)
+			text="<a href='{0}'>Appsedu</a>".format(homepage)
 			self.lblHomepage.setText(text)
 			self.lblHomepage.setToolTip(homepage)
 			#self.lblIcon.loadImg(self.app)
-			self.lstInfo.setMaximumWidth(self.lblDesc.width()/2)
+			#self.lstInfo.setMaximumWidth(self.lblDesc.width()/2)
 			if self.lblDesc.width()>self.lblTags.width():
 				self.lblTags.setMaximumWidth(self.lblDesc.width()/2)
 	#def _setUnknownAppInfo
@@ -623,17 +555,26 @@ class detailPanel(QWidget):
 		if self.app.get("bundle",None)==None:
 			self._setUnknownAppInfo()
 			return
-		self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+		#Disabled as requisite (250214-11:52)
+		#self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
+	#	self.lblName.setText("{}".format(self.app.get('name').upper()))
 		icn=self._getIconFromApp(self.app)
 		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
 		self.lblIcon.loadImg(self.app)
-		self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
+		#Disabled as requisite (250214-11:52)
+		#self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
+		summary="{}<br>{}".format(self.app["name"].upper(),self.app.get("summary",""))
+		if len(summary)>150:
+			summary="{}...".format(summary[0:150])
+		self.lblSummary.setText("{}".format(summary))
 		bundles=list(self.app.get('bundle',{}).keys())
-	#	if "eduapp" in bundles:
-	#		self.app["description"]=i18n.get("APPUNKNOWN")
-		homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
+		self.lstInfo.setEnabled(True)
+		homepage=self.app.get('infopage','')
+		if homepage=='':
+			homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
 		if not isinstance(homepage,str):
 			homepage='https://portal.edu.gva.es/appsedu/aplicacions-lliurex'
+		text=""
 		if homepage:
 			homepage=homepage.rstrip("/")
 			desc=homepage
@@ -644,7 +585,7 @@ class detailPanel(QWidget):
 			text='<a href="{0}">{1}</a> '.format(homepage,desc)
 		self.lblHomepage.setText(text)
 		self.lblHomepage.setToolTip(homepage)
-		self.lblDesc.label.setOpenExternalLinks(False)
+		#self.lblDesc.label.setOpenExternalLinks(False)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
 		if "Forbidden" in self.app.get("categories",[]):
 			forbReason=""
@@ -652,7 +593,12 @@ class detailPanel(QWidget):
 				forbReason=": {}".format(self.app["summary"].split("(")[-1].replace(")",""))
 				if forbReason.lower().startswith(": no ")==True:
 					forbReason=""
-			description='<h2>{0}{4}</h2>{1} <a href="{2}">{2}</a><hr>\n{3}'.format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
+
+			if self.app.get("ERR",False)!=False:
+				description=i18n.get("APPUNKNOWN_SAI")
+				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("APPUNKNOWN").split(".")[0],i18n.get("INFO"),homepage,description,forbReason)
+			else:
+				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
 			self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setText(description)
 		self._updateScreenControls(bundles)
@@ -661,7 +607,7 @@ class detailPanel(QWidget):
 		if applicense:
 			text="<strong>{}</strong>".format(applicense)
 		self._loadScreenshots()	
-		self._setLauncherOptions()
+		#self._setLauncherOptions()
 		self.lblTags.setText(self._generateCategoryTags())
 		self.lblTags.adjustSize()
 		self.loaded.emit(self.app)
@@ -697,13 +643,15 @@ class detailPanel(QWidget):
 				continue
 			icat=_(cat)
 			if icat not in tags:
-				tags+="<a href=\"#{0}\"><strong>{0}</strong></a> / ".format(icat)
+				#Disabled as requisite  (250214-11:52)
+				#tags+="<a href=\"#{0}\"><strong>{0}</strong></a> / ".format(icat)
+				tags+="{0} / ".format(icat)
 		return("{}".format(tags.strip(" / ")))
 	#def _generateCategoryTags
 
 	def _resetScreen(self,name,icon):
-		#self.parent.setWindowTitle("AppsEdu")
 		self.app={}
+		self.instBundle=""
 		self.app["name"]=name
 		self.app["icon"]=icon
 		self.app["summary"]=""
@@ -715,26 +663,64 @@ class detailPanel(QWidget):
 		self._debug("Error detected")
 		qpal=QtGui.QPalette()
 		color=qpal.color(qpal.Dark)
-		self.parent.setWindowTitle("AppsEdu - {}".format("ERROR"))
-		#self.wdgSplash.setVisible(True)
+		self.parent().setWindowTitle("AppsEdu - {}".format("ERROR"))
 		if "Forbidden" not in self.app.get("categories",[]):
 			self.app["categories"]=["Forbidden"]
 		self.lstInfo.setEnabled(False)
 		self.btnInstall.setEnabled(False)
 		self.btnRemove.setEnabled(False)
+		self.btnUnavailable.setEnabled(False)
 		self.btnLaunch.setEnabled(False)
 		self.blur=QGraphicsBlurEffect() 
 		self.blur.setBlurRadius(55) 
 		self.opacity=QGraphicsOpacityEffect()
 		self.lblBkg.setGraphicsEffect(self.blur)
 		self.lblBkg.setStyleSheet("QLabel{background-color:rgba(%s,%s,%s,0.7);}"%(color.red(),color.green(),color.blue()))
-		self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
+		#self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
 		self.app["summary"]=i18n.get("APPUNKNOWN").split(".")[1]
 		self.app["pkgname"]="rebost"
-		self.app["description"]=i18n.get("APPUNKNOWN")
+		self.app["description"]="{0}\n{1}".format(i18n.get("APPUNKNOWN"),i18n.get("APPUNKNOWN_SAI"))
+		self.app["bundle"]={}
+		self.lblHomepage.setVisible(False)
+		self.loaded.emit(self.app)
 	#def _onError
 
 	def _setLauncherOptions(self):
+		visible=True
+		bundle=self.lstInfo.currentText()
+		if "Forbidden" in self.app.get("categories",[]) or "eduapp" in bundle:
+			visible=False
+		self.btnInstall.setVisible(visible)
+		self.lstInfo.setVisible(visible)
+		if bundle==i18n["INSTALL"].upper():
+			return
+		bundle=bundle.split(" ")[0]
+		self.btnInstall.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
+		self.lstInfo.blockSignals(True)
+		self.lstInfo.setText(i18n["INSTALL"].upper())
+		states=self.app.get("state",{}).copy()
+		installed=False
+		zmdInstalled=""
+		if "zomando" in states:
+			zmdInstalled=states.pop("zomando")
+		for bundle,state in states.items():
+			if state=="0" and zmdInstalled!="0":
+				installed=True
+				self.instBundle=bundle
+				break
+		self.btnRemove.setVisible(installed)
+		self.btnRemove.setEnabled(installed)
+		if len(self.app.get("bundle",[]))==1 and "eduapp" in self.app.get("bundle",{}).keys():
+			self.lstInfo.setVisible(False)
+			self.btnRemove.setVisible(False)
+			self.btnRemove.setEnabled(False)
+			self.btnUnavailable.setVisible(True)
+		else:
+			self.btnUnavailable.setVisible(False)
+		self.lstInfo.blockSignals(False)
+	#def _setLauncherOptions
+
+	def _old_setLauncherOptions(self):
 		self.lstInfo.setEnabled(True)
 		self.btnInstall.setEnabled(True)
 		self.btnRemove.setEnabled(True)
@@ -757,11 +743,11 @@ class detailPanel(QWidget):
 		bundle=item.lower().split(" ")[-1].strip()
 		release=item.lower().split(" ")[0]
 		tooltip=item
-		self._setListState(item)
 		if bundle=="package":
 			bundle="app" # Only for show purposes. "App" is friendly than "package"
 		if self.lstInfo.count()>0:
-			self.btnInstall.setText("{0} {1}".format(i18n.get("INSTALL"),bundle))
+			#self.btnInstall.setText("{0} {1}".format(i18n.get("INSTALL"),bundle))
+			self.btnInstall.setText("{0} / {1}".format(bundle,self.app.get("versions",{}).get(bundle,"")))
 			self.btnRemove.setText("{0} {1}".format(i18n.get("REMOVE"),bundle))
 			self.btnLaunch.setText("{0} {1}".format(i18n.get("RUN"),bundle))
 		self.btnInstall.setToolTip("{0}: {1}\n{2}".format(i18n.get("RELEASE"),release,bundle.capitalize()))
@@ -773,44 +759,6 @@ class detailPanel(QWidget):
 			self.btnLaunch.setEnabled(False)
 			self.btnZomando.setEnabled(False)
 	#def _setLauncherOptions
-
-	def _setListState(self,item):
-		#REM 
-		# DISABLED ATM
-		self.btnInstall.setVisible(True)
-		self.btnRemove.setVisible(False)
-		self.btnLaunch.setVisible(False)
-		self.btnZomando.setVisible(False)
-		return
-		#REM 
-		bcurrent=item.background().color()
-		bcolor=BKG_COLOR_INSTALLED.toRgb()
-		if bcurrent==bcolor:
-			rgb=bcurrent.getRgb()
-			self.btnInstall.setVisible(False)
-			if self.app.get("bundle",{}).get("zomando","")!="":
-				self.btnLaunch.setVisible(False)
-				if "zomando" in item.text():
-					self.btnRemove.setVisible(False)
-				else:
-					self.btnLaunch.setVisible(True)
-					self.btnRemove.setVisible(True)
-			else:
-				self.btnRemove.setVisible(True)
-				self.btnLaunch.setVisible(True)
-			self.lstInfo.setStyleSheet("selection-color:grey;selection-background-color:rgba({0},{1},{2},0.5);".format(rgb[0],rgb[1],rgb[2]))
-		else:
-			pkgState=self.app.get('state',{}).get("package",'1')
-			if pkgState.isdigit()==True:
-				pkgState=int(pkgState)
-			else:
-				self._onError()
-				return()
-			self.lstInfo.setStyleSheet("")
-			self.btnInstall.setVisible(True)
-			self.btnRemove.setVisible(False)
-			self.btnLaunch.setVisible(False)
-	#def _setLstState
 
 	def _getIconFromApp(self,app):
 		icn=QtGui.QIcon()
@@ -840,10 +788,7 @@ class detailPanel(QWidget):
 				state=1
 			states+=state
 			if bundle=="zomando" and ((pkgState==0 or state==0) or (self.app.get("pkgname","x$%&/-1") not in self.app["bundle"]["zomando"])):
-				self.btnZomando.setVisible(True)
 				continue
-		#	elif bundle=="zomando":
-		#		continue
 		self._setReleasesInfo()
 	#def _updateScreenControls
 
@@ -855,7 +800,7 @@ class detailPanel(QWidget):
 		if len(bundles)<=0:
 			return()
 		(installed,uninstalled)=self._classifyBundles(bundles)
-		priority=["zomando","snap","flatpak","appimage","package","eduapp"]
+		priority=["zomando","flatpak","snap","package","appimage","eduapp"]
 		for i in installed+uninstalled:
 			version=self.app.get('versions',{}).get(i,'')
 			if version=="":
@@ -874,17 +819,19 @@ class detailPanel(QWidget):
 					bcolor=BKG_COLOR_INSTALLED
 					release.setBackground(bcolor)
 				release.setToolTip(version)
-				release="{} {}".format(fversion,i)
+				release="{} {}".format(i,fversion)
+				#release="{0}".format(i)
 				self.lstInfo.insertItem(idx,release)
+		self.lstInfo.setText(i18n["INSTALL"].upper())
+		for idx in range(0,len(priority)):
+			try:
+				self.lstInfo.setState(idx,False)
+			except:
+				break
 		if "eduapp" in bundles.keys():
 			bundles.pop("eduapp")
 		if len(bundles)<=0:
-			self.btnInstall.setEnabled(False)
-		#self.lstInfo.setMaximumWidth(self.lstInfo.sizeHintForColumn(0)+16)
-		#self.lstInfo.setMinimumHeight(self.lstInfo.sizeHintForRow(0)*4.1)
-		#self.lstInfo.setMaximumHeight(self.lstInfo.sizeHintForRow(0)*self.lstInfo.count()-1)
-		#self.lstInfo.setCurrentRow(0)
-		#self.lblTags.setMaximumWidth(self.lstInfo.sizeHintForColumn(0)+16)
+			self.lstInfo.setEnabled(False)
 	#def _setReleasesInfo
 
 	def _classifyBundles(self,bundles):
@@ -897,8 +844,9 @@ class detailPanel(QWidget):
 				#	continue
 				if os.path.isfile(bundles[bundle]):
 					state="0"
-			if state.isdigit()==False:
-				state="1"
+			if isinstance(state,str):
+				if state.isdigit()==False:
+					state="1"
 			if int(state)==0: #installed
 				installed.append(bundle)
 			else:
@@ -910,6 +858,7 @@ class detailPanel(QWidget):
 		#Reload config if app has been epified
 		if len(self.app)>0:
 			self.lstInfo.setVisible(True)
+			self.btnInstall.setVisible(True)
 			if self.app.get('name','')==self.epi.app.get('name',''):
 				try:
 					self.app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
@@ -928,7 +877,8 @@ class detailPanel(QWidget):
 			self.btnZomando.setVisible(False)
 			self.lblHomepage.setText("")
 			self.lblTags.setText("")
-			self.lblTags.linkActivated.connect(self._tagNav)
+			#Disabled as requisite (250214-11:52)
+			#self.lblTags.linkActivated.connect(self._tagNav)
 			self.app['name']=self.app.get('name','').replace(" ","")
 		else:
 			self._onError()

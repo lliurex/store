@@ -1,14 +1,17 @@
 #!/usr/bin/python3
+import os
 from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget,QSizePolicy,QCheckBox,QGraphicsDropShadowEffect
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread
 from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QInfoLabel,QFlowTouchWidget
+import css
 import gettext
 _ = gettext.gettext
 
 ICON_SIZE=128
 MINTIME=0.2
 LAYOUT="appsedu"
+RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
 i18n={
 	"ALL":_("All"),
 	"AVAILABLE":_("Available"),
@@ -36,46 +39,39 @@ class mainPanel(QWidget):
 		super().__init__()
 		self.maxCol=1
 		self.setAttribute(Qt.WA_StyledBackground, True)
+		self.setObjectName("mp")
+		self.setStyleSheet(css.tablePanel())
 		lay=QVBoxLayout()
+		lay.addSpacing(32)
+		lay.setSpacing(24)
+		self.searchGeometry=QSize(0,0)
 		self.search=self._defSearch()
 		hlay=QHBoxLayout()
 		wdg=QWidget()
 		wdg.setLayout(hlay)
-		self.searchBox.setVisible(False)
-		hlay.addWidget(self.search)
-		lay.addWidget(wdg)#,Qt.AlignTop,Qt.AlignCenter)
+		hlay.addWidget(self.search,Qt.AlignRight)
+		lay.addWidget(wdg)
 		if LAYOUT=="appsedu":
-			#btnHome.setVisible(False)
 			self.search.setVisible(True)
 		self.table=self._defTable()
-		#self.table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		if LAYOUT=="appsedu":
 			tableCol=1
 		else:
 			tableCol=0
-		lay.addWidget(self.table)#,2-tableCol,tableCol,1,self.box.columnCount())
+		lay.addWidget(self.table)
 		
-		#self.table.setCellWidget(0,0,self.flow)
 		self.setLayout(lay)
-		self.setObjectName("mp")
-		self.setStyleSheet("""QWidget#mp{padding:0px;border:0px;margin:0px;background:#FFFFFF}""")
+	#def __init__
 
 	def _defTable(self):
-		#table=QTableTouchWidget()
-		#table.setColumnCount(1)
-		#table.setRowCount(1)
-		#table.setAutoScroll(False)
-		table=QFlowTouchWidget()
-		table.flowLayout.setSpacing(10)
+		table=QFlowTouchWidget(self)
+		table.setObjectName("qFlow")
+		table.flowLayout.setSpacing(24)
 		table.leaveEvent=self.tableLeaveEvent
 		table.setAttribute(Qt.WA_AcceptTouchEvents)
-		#table.setColumnCount(self.maxCol)
-		#table.setShowGrid(False)
-		#table.verticalHeader().hide()
-		#table.horizontalHeader().hide()
-		#table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-		if LAYOUT=="appsedu":
-			table.setStyleSheet("""QFlowTouchWidget{border:0px; background:#FFFFFF;margin-left:20%;margin-right:1%;} QFlowTouchWidget::item{padding:2px}""")
+		table.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+		#if LAYOUT=="appsedu":
+		#	table.setStyleSheet("""QFlowTouchWidget{border:0px; background:#FFFFFF;margin-left:100%;margin-right:1%;} QFlowTouchWidget::item{padding:2px}""")
 		return(table)
 	#def _defTable
 
@@ -92,30 +88,38 @@ class mainPanel(QWidget):
 
 	def _defSearch(self):
 		wdg=QWidget()
-		wdg.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Maximum)
+		#wdg.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Maximum)
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
+		wdg.setObjectName("wsearch")
 		self.searchBox=QLineEdit()
+		self.searchBox.setObjectName("search")
 		lay=QHBoxLayout()
-		lay.setStretch(1,0)
-		lay.setStretch(0,1)
+		lay.setSpacing(0)
 		self.btnSearch=QPushButton()
-		icn=QtGui.QIcon("rsrc/search.png")
+		self.btnSearch.setObjectName("bsearch")
+		icn=QtGui.QIcon(os.path.join(RSRC,"search.png"))
 		self.btnSearch.setIcon(icn)
 		self.btnSearch.setMinimumSize(int(ICON_SIZE/4),int(ICON_SIZE/4))
 		self.searchBox.setToolTip(i18n["SEARCH"])
 		self.searchBox.setPlaceholderText(i18n["SEARCH"])
-		self.btnSearch.setIconSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
-		lay.addWidget(self.searchBox)
-		lay.addWidget(self.btnSearch)
+		self.searchGeometry=QSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
+		self.btnSearch.setIconSize(self.searchGeometry)
+		lay.addWidget(self.searchBox)#,Qt.AlignCenter|Qt.AlignCenter)
+		lay.addWidget(self.btnSearch,Qt.Alignment(-1))
 		wdg.setLayout(lay)
-		wdg.setStyleSheet("""QWidget{color:#FFFFFF;background:#002c4f;border:1px;border-color:#FFFFFF;border-radius:20px;margin-left:100%;margin-right:100%}""")
+		#wdg.setStyleSheet("""#wsearch{border:0px solid #FFFFFF;background:#002c4f;border-radius:20px}#search{color:#FFFFFF;background:#002c4f;border:0px solid;margin-left:12px;} #bsearch{color:#FFFFFF;background:#002c4f;border:0px;margin-right:12px}""")
+		wdg.setMaximumWidth(450)
 		return(wdg)
 	#def _defSearch
 
-	def _resetSearchBtnIcon(self):
-		txt=self.searchBox.text()
-		if txt==self.oldSearch:
-			icn=QtGui.QIcon.fromTheme("dialog-cancel")
+	def setBtnIcon(self,icn=""):
+		if icn!="":
+			icn=QtGui.QIcon(os.path.join(RSRC,"{}.png".format(icn)))
+		if len(self.searchBox.text())>0:
+			icn=QtGui.QIcon(os.path.join(RSRC,"cancel.png"))
+			self.btnSearch.setIconSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
 		else:
-			icn=QtGui.QIcon.fromTheme("search")
+			icn=QtGui.QIcon(os.path.join(RSRC,"search.png"))
+			self.btnSearch.setIconSize(self.searchGeometry)
+		self.btnSearch.setIcon(icn)
 	#def _resetSearchBtnIcon
