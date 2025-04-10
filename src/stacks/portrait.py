@@ -132,6 +132,7 @@ class updateAppData(QThread):
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self, None)
 		self.apps=kwargs.get("apps",{})
+		self.dbg=True
 		self.newApps={}
 		self.updates=[]
 		self.rc=store.client()
@@ -139,6 +140,10 @@ class updateAppData(QThread):
 		self.cont=0
 		self.ctl=0
 	#def __init__
+
+	def _debug(self,msg):
+		if self.dbg==True:
+			print("updateApp: {}".format(msg))
 
 	def setApps(self,*args):
 		self.newApps=args[0]
@@ -150,6 +155,7 @@ class updateAppData(QThread):
 		if len(self.newApps)>0:
 			self.apps=self.newApps.copy()
 			self.newApps={}
+		self._debug("Launching info thread for {} apps".format(len(self.apps)))
 		apps = dict(reversed(list(self.apps.items())))
 		while apps:
 			self.ctl+=1
@@ -321,7 +327,6 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(self.lp,0,1)
 		self.lp.hide()
 		self.progress=self._defProgress()
-		self.progress.setObjectName("progress")
 		self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
 		self.btnSettings=QPushButton()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
@@ -611,7 +616,7 @@ class portrait(QStackedWindowItem):
 		self.btnSettings.setVisible(False)
 		if self.init==False:
 			self.progress.start()
-		self.rp.setVisible(False)
+		#self.rp.setVisible(False)
 	#def _beginUpdate
 
 	def _endUpdate(self):
@@ -802,7 +807,7 @@ class portrait(QStackedWindowItem):
 		self.setCursor(cursor)
 		self.appUpdate.blockSignals(True)
 		self.appUpdate.stop()
-		self.rp.setVisible(False)
+		#self.rp.setVisible(False)
 		self.progress.start()
 		self.oldSearch=txt
 		if len(txt)==0:
@@ -873,7 +878,7 @@ class portrait(QStackedWindowItem):
 		self._debug("LOAD CATEGORY {}".format(cat))
 		self.appUpdate.blockSignals(True)
 		self.appUpdate.stop()
-		self.rp.setVisible(False)
+		#self.rp.setVisible(False)
 		self.progress.start()
 		self.refresh=True
 		self.rp.searchBox.setText("")
@@ -932,30 +937,37 @@ class portrait(QStackedWindowItem):
 		elif isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.Paint:
 			args[0].setVisible(True)
 			self.init=True
-			if hasattr(self,"appUpdate"):
-				if self.appUpdate.isRunning()==False:
-					self.appUpdate.start()
-			else:
-				self._debug("Event filter failed starting appUpdate")
 			if hasattr(self,"firstHide")==False:
 				self.firstHide=None
 			else:
 				if isinstance(self.firstHide,bool)==False:
+					self._debug("First hide event, discard")
 					self.firstHide=False
 					return True
 				else:
 					if self.firstHide==False:
+						self._debug("Second hide event, discard")
 						self.firstHide=True
 						return True
 				if (len(self.pendingApps)+self.appsLoaded+len(self.appsSeen))==0:
 					self._loadCategory("")
 					return True
+				self._debug("Launching app. Pending: {} Seen: {}".format(len(self.pendingApps),len(self.appsSeen)))
+
+				if hasattr(self,"appUpdate"):
+					if self.appUpdate.isRunning()==False:
+						self._debug("Starting appUpdate thread")
+						self.appUpdate.setApps(self.pendingApps)
+						self.appUpdate.start()
+				else:
+					self._debug("Event filter failed starting appUpdate")
+
+
 				self.progress.stop()
 				self.rp.table.removeEventFilter(self)
 				self.progress.lblInfo.setText("")
 				self.progress.lblInfo.setVisible(False)
-				#Ensure that if there're pendingApps the info gets loaded
-				#self.progress.setObjectName("progressNoBkg")
+				self.progress.setAttribute(Qt.WA_StyledBackground, False)
 				self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		elif isinstance(args[0],QListWidget):
 			if args[1].type==QEvent.Type.KeyRelease:
@@ -1119,7 +1131,7 @@ class portrait(QStackedWindowItem):
 		#self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
 		self.parent.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","").capitalize()))
 		self.lp.setParms({"name":args[-1].get("name",""),"icon":icn})
-		self.rp.hide()
+		#self.rp.hide()
 		self.setCursor(self.oldCursor)
 		QApplication.processEvents()
 	#def _endLoadDetails
@@ -1198,6 +1210,7 @@ class portrait(QStackedWindowItem):
 				self.referersShowed[i]=None
 			if self.appUrl!="":
 				self.init=True
+				self.progress.setAttribute(Qt.WA_StyledBackground, False)
 				self._endUpdate()
 			else:
 				self._beginLoadData(self.appsLoaded,self.appsToLoad)
