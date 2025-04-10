@@ -400,6 +400,7 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setCursor(Qt.PointingHandCursor)
 		self.lstCategories.currentItemChanged.connect(self._decoreCmbCategories)
 		self.lstCategories.itemActivated.connect(self._loadCategory)
+		self.lstCategories.itemClicked.connect(self._loadCategory)
 		self.lblInfo=self._defInfo()
 		vbox.addSpacing(30)
 		vbox.addWidget(self.lblInfo,Qt.AlignBottom)
@@ -1005,9 +1006,9 @@ class portrait(QStackedWindowItem):
 		colspan=self.maxCol
 		span=colspan
 		btn=None
-		self.rp.table.flowLayout.setEnabled(False)
+		#self.rp.table.flowLayout.setEnabled(False)
 		#self.rp.table.setVisible(False)
-		self.rp.setVisible(False)
+		#self.rp.setVisible(False)
 		if len(self.pendingApps)>0:
 			self.appUpdate.stop()
 			self.pendingApps={}

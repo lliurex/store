@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import os
 import json
-from PySide2.QtWidgets import QLabel
-from PySide2.QtCore import Qt,Signal
-from PySide2 import QtGui
+from PySide6.QtWidgets import QLabel
+from PySide6.QtCore import Qt,Signal
+from PySide6 import QtGui
 from QtExtraWidgets import QScreenShotContainer
 import gettext
 from constants import *
