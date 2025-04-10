@@ -5,11 +5,11 @@ try:
 	from lliurex import lliurexup
 except:
 	lliurexup=None
-from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox, \
+from PySide2.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox, \
 							QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget, \
 							QSizePolicy,QCheckBox,QGraphicsDropShadowEffect,QListWidgetItem
-from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation,QRect,QPoint,QEasingCurve,QEvent
+from PySide2 import QtGui
+from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation,QRect,QPoint,QEasingCurve,QEvent
 from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QStackedWindowItem,QInfoLabel,QFlowTouchWidget
 from rebost import store 
 import subprocess
