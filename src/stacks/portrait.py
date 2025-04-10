@@ -879,7 +879,7 @@ class portrait(QStackedWindowItem):
 		self._debug("LOAD CATEGORY {}".format(cat))
 		self.appUpdate.blockSignals(True)
 		self.appUpdate.stop()
-		self.rp.setVisible(False)
+		#self.rp.setVisible(False)
 		self.progress.start()
 		self.refresh=True
 		self.rp.searchBox.setText("")
@@ -1006,9 +1006,9 @@ class portrait(QStackedWindowItem):
 		colspan=self.maxCol
 		span=colspan
 		btn=None
-		self.rp.table.flowLayout.setEnabled(False)
+		#self.rp.table.flowLayout.setEnabled(False)
 		#self.rp.table.setVisible(False)
-		self.rp.setVisible(False)
+		#self.rp.setVisible(False)
 		if len(self.pendingApps)>0:
 			self.appUpdate.stop()
 			self.pendingApps={}
