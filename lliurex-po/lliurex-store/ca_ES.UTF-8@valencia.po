@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-27 12:25+0100\n"
-"PO-Revision-Date: 2025-03-27 12:26+0100\n"
+"POT-Creation-Date: 2025-04-10 06:48+0200\n"
+"PO-Revision-Date: 2025-04-10 06:52+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -190,6 +190,14 @@ msgstr "Actualitzables"
 msgid "There're upgrades available"
 msgstr "Hi han actualitzacions pendents"
 
+#: ../src/stacks/prgBar.py:14
+msgid "Downloading information, wait a moment..."
+msgstr "Descarregant informació, espere un moment..."
+
+#: ../src/stacks/prgBar.py:15
+msgid "Upgrading application database"
+msgstr "Actualitzant la base de dades de les aplicacions"
+
 msgid "2DGraphics"
 msgstr "Gràfics 2D"
 
@@ -241,6 +249,9 @@ msgstr "Documentació"
 msgid "Education"
 msgstr "Educació"
 
+msgid "Electricity"
+msgstr "Electricitat"
+
 msgid "Electronics"
 msgstr "Electrónica"
 
@@ -249,9 +260,6 @@ msgstr "Emuladors"
 
 msgid "Engineering"
 msgstr "Enginyeria"
-
-msgid "FP"
-msgstr "FP"
 
 msgid "Forbidden"
 msgstr "Bloquejades"
@@ -283,6 +291,9 @@ msgstr "Idiomes"
 msgid "LliureX"
 msgstr "LliureX"
 
+msgid "LliureX-Infantil"
+msgstr "Lliurex-Infantil"
+
 msgid "LogicGame"
 msgstr "Jocs de lògica"
 
@@ -297,9 +308,6 @@ msgstr "Midi"
 
 msgid "Mixer"
 msgstr "Mescladors"
-
-msgid "Multimedia"
-msgstr "Multimèdia"
 
 msgid "Music"
 msgstr "Música"
@@ -322,17 +330,11 @@ msgstr "Física"
 msgid "Player"
 msgstr "Reproductors"
 
-msgid "Programaci\\u00f3"
-msgstr "Desenvolupament"
-
 msgid "RasterGraphics"
 msgstr "Gràfics raster"
 
 msgid "Recorder"
 msgstr "Gravació"
-
-msgid "Resources"
-msgstr "Recursos"
 
 msgid "Robotics"
 msgstr "Robótica"
@@ -349,17 +351,11 @@ msgstr "Seqüenciadors"
 msgid "Shooter"
 msgstr "Jocs de tirs"
 
-msgid "Software"
-msgstr "Programari"
-
 msgid "System"
 msgstr "Sistema"
 
 msgid "TextEditor"
 msgstr "Editors de text"
-
-msgid "Utilitats"
-msgstr "Utilitats"
 
 msgid "Utility"
 msgstr "Utilitat"
@@ -379,65 +375,83 @@ msgstr "Desenvolupament web"
 msgid "Zomando"
 msgstr "Zomandament"
 
-msgid "accessories"
-msgstr "accesoris"
-
 msgid "admin-tools"
 msgstr "eines d'administració"
 
-msgid "collections"
-msgstr "col·leccions"
+#~ msgid "FP"
+#~ msgstr "FP"
 
-msgid "desktop-gnome"
-msgstr "escriptori gnome"
+#~ msgid "Multimedia"
+#~ msgstr "Multimèdia"
 
-msgid "desktop-kde"
-msgstr "escriptori kde"
+#~ msgid "Programaci\\u00f3"
+#~ msgstr "Desenvolupament"
 
-msgid "education"
-msgstr "educació"
+#~ msgid "Resources"
+#~ msgstr "Recursos"
 
-msgid "electronics"
-msgstr "electrónica"
+#~ msgid "Software"
+#~ msgstr "Programari"
 
-msgid "games"
-msgstr "jocs"
+#~ msgid "Utilitats"
+#~ msgstr "Utilitats"
 
-msgid "graphics"
-msgstr "gràfics"
+#~ msgid "accessories"
+#~ msgstr "accesoris"
 
-msgid "internet"
-msgstr "internet"
+#~ msgid "collections"
+#~ msgstr "col·leccions"
 
-msgid "multimedia"
-msgstr "multimèdia"
+#~ msgid "desktop-gnome"
+#~ msgstr "escriptori gnome"
 
-msgid "network"
-msgstr "xarxa"
+#~ msgid "desktop-kde"
+#~ msgstr "escriptori kde"
 
-msgid "other"
-msgstr "altres"
+#~ msgid "education"
+#~ msgstr "educació"
 
-msgid "programming"
-msgstr "programació"
+#~ msgid "electronics"
+#~ msgstr "electrónica"
 
-msgid "publishing"
-msgstr "publicació"
+#~ msgid "games"
+#~ msgstr "jocs"
 
-msgid "resources"
-msgstr "eines"
+#~ msgid "graphics"
+#~ msgstr "gràfics"
 
-msgid "science"
-msgstr "ciència"
+#~ msgid "internet"
+#~ msgstr "internet"
 
-msgid "software"
-msgstr "programari"
+#~ msgid "multimedia"
+#~ msgstr "multimèdia"
 
-msgid "system"
-msgstr "sistema"
+#~ msgid "network"
+#~ msgstr "xarxa"
 
-msgid "unknown"
-msgstr "desconegut"
+#~ msgid "other"
+#~ msgstr "altres"
+
+#~ msgid "programming"
+#~ msgstr "programació"
+
+#~ msgid "publishing"
+#~ msgstr "publicació"
+
+#~ msgid "resources"
+#~ msgstr "eines"
+
+#~ msgid "science"
+#~ msgstr "ciència"
+
+#~ msgid "software"
+#~ msgstr "programari"
+
+#~ msgid "system"
+#~ msgstr "sistema"
+
+#~ msgid "unknown"
+#~ msgstr "desconegut"
 
 #~ msgid "CAD"
 #~ msgstr "CAD"
@@ -447,9 +461,6 @@ msgstr "desconegut"
 
 #~ msgid "Disseny"
 #~ msgstr "Diseño"
-
-#~ msgid "Electricity"
-#~ msgstr "Electricitat"
 
 #~ msgid "Electr\\u00f2nica"
 #~ msgstr "Electrónica"
@@ -471,9 +482,6 @@ msgstr "desconegut"
 
 #~ msgid "Internet"
 #~ msgstr "Internet"
-
-#~ msgid "LliureX-Infantil"
-#~ msgstr "Lliurex-Infantil"
 
 #~ msgid "Matem\\u00e0tiques"
 #~ msgstr "Matemàtiques"

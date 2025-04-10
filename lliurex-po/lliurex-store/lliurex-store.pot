@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-27 12:25+0100\n"
+"POT-Creation-Date: 2025-04-10 06:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -186,6 +186,14 @@ msgstr ""
 msgid "There're upgrades available"
 msgstr ""
 
+#: ../src/stacks/prgBar.py:14
+msgid "Downloading information, wait a moment..."
+msgstr ""
+
+#: ../src/stacks/prgBar.py:15
+msgid "Upgrading application database"
+msgstr ""
+
 msgid "2DGraphics"
 msgstr ""
 
@@ -237,6 +245,9 @@ msgstr ""
 msgid "Education"
 msgstr ""
 
+msgid "Electricity"
+msgstr ""
+
 msgid "Electronics"
 msgstr ""
 
@@ -244,9 +255,6 @@ msgid "Emulator"
 msgstr ""
 
 msgid "Engineering"
-msgstr ""
-
-msgid "FP"
 msgstr ""
 
 msgid "Forbidden"
@@ -279,6 +287,9 @@ msgstr ""
 msgid "LliureX"
 msgstr ""
 
+msgid "LliureX-Infantil"
+msgstr ""
+
 msgid "LogicGame"
 msgstr ""
 
@@ -292,9 +303,6 @@ msgid "Midi"
 msgstr ""
 
 msgid "Mixer"
-msgstr ""
-
-msgid "Multimedia"
 msgstr ""
 
 msgid "Music"
@@ -318,16 +326,10 @@ msgstr ""
 msgid "Player"
 msgstr ""
 
-msgid "Programaci\u00f3"
-msgstr ""
-
 msgid "RasterGraphics"
 msgstr ""
 
 msgid "Recorder"
-msgstr ""
-
-msgid "Resources"
 msgstr ""
 
 msgid "Robotics"
@@ -345,16 +347,10 @@ msgstr ""
 msgid "Shooter"
 msgstr ""
 
-msgid "Software"
-msgstr ""
-
 msgid "System"
 msgstr ""
 
 msgid "TextEditor"
-msgstr ""
-
-msgid "Utilitats"
 msgstr ""
 
 msgid "Utility"
@@ -375,63 +371,6 @@ msgstr ""
 msgid "Zomando"
 msgstr ""
 
-msgid "accessories"
-msgstr ""
-
 msgid "admin-tools"
-msgstr ""
-
-msgid "collections"
-msgstr ""
-
-msgid "desktop-gnome"
-msgstr ""
-
-msgid "desktop-kde"
-msgstr ""
-
-msgid "education"
-msgstr ""
-
-msgid "electronics"
-msgstr ""
-
-msgid "games"
-msgstr ""
-
-msgid "graphics"
-msgstr ""
-
-msgid "internet"
-msgstr ""
-
-msgid "multimedia"
-msgstr ""
-
-msgid "network"
-msgstr ""
-
-msgid "other"
-msgstr ""
-
-msgid "programming"
-msgstr ""
-
-msgid "publishing"
-msgstr ""
-
-msgid "resources"
-msgstr ""
-
-msgid "science"
-msgstr ""
-
-msgid "software"
-msgstr ""
-
-msgid "system"
-msgstr ""
-
-msgid "unknown"
 msgstr ""
 
