@@ -25,6 +25,7 @@ BKG_COLOR_INSTALLED=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,
 
 i18n={
 	"APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
+	"APPUNKNOWN_SAI":_("For any question the SAI can be contacted at <a href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"),
 	"CHOOSE":_("Choose"),
 	"CONFIG":_("Details"),
 	"DESC":_("Navigate through all applications"),
@@ -384,6 +385,7 @@ class detailPanel(QWidget):
 		resources.setObjectName("resources")
 		resources.setAttribute(Qt.WA_StyledBackground, True)
 		self.lblDesc=QScrollLabel()
+		self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		spacing=QLabel("")
 		spacing.setFixedHeight(6)
@@ -521,7 +523,7 @@ class detailPanel(QWidget):
 			self.lblDesc.setText("<hr><p>{}</p><hr>".format(i18n.get("APPUNKNOWN")))
 			self.lblDesc.label.setOpenExternalLinks(True)
 			homepage="https://portal.edu.gva.es/appsedu/"
-			text='<a href="{0}">Appsedu</a>'.format(homepage)
+			text="<a href='{0}'>Appsedu</a>".format(homepage)
 			self.lblHomepage.setText(text)
 			self.lblHomepage.setToolTip(homepage)
 			#self.lblIcon.loadImg(self.app)
@@ -583,7 +585,7 @@ class detailPanel(QWidget):
 			text='<a href="{0}">{1}</a> '.format(homepage,desc)
 		self.lblHomepage.setText(text)
 		self.lblHomepage.setToolTip(homepage)
-		self.lblDesc.label.setOpenExternalLinks(False)
+		#self.lblDesc.label.setOpenExternalLinks(False)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
 		if "Forbidden" in self.app.get("categories",[]):
 			forbReason=""
@@ -593,9 +595,10 @@ class detailPanel(QWidget):
 					forbReason=""
 
 			if self.app.get("ERR",False)!=False:
-				description='<h2>{0}{4}</h2>{1} <a href="{2}">{2}</a><hr>\n{3}'.format(i18n.get("APPUNKNOWN").split(".")[0],i18n.get("INFO"),homepage,description,forbReason)
+				description=i18n.get("APPUNKNOWN_SAI")
+				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("APPUNKNOWN").split(".")[0],i18n.get("INFO"),homepage,description,forbReason)
 			else:
-				description='<h2>{0}{4}</h2>{1} <a href="{2}">{2}</a><hr>\n{3}'.format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
+				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
 			self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setText(description)
 		self._updateScreenControls(bundles)
@@ -676,7 +679,7 @@ class detailPanel(QWidget):
 		#self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
 		self.app["summary"]=i18n.get("APPUNKNOWN").split(".")[1]
 		self.app["pkgname"]="rebost"
-		self.app["description"]=i18n.get("APPUNKNOWN")
+		self.app["description"]="{0}\n{1}".format(i18n.get("APPUNKNOWN"),i18n.get("APPUNKNOWN_SAI"))
 		self.app["bundle"]={}
 		self.lblHomepage.setVisible(False)
 		self.loaded.emit(self.app)
