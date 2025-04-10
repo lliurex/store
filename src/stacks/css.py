@@ -207,12 +207,12 @@ def portrait():
 
 def prgBar():
 	css=""
-	prg="""QWidget{
-					background:#002c4f;
+	prg="""#prgBar{
+					background:%s;
 					padding:0px;
 					border:0px;
 					margin:0px;
-			}"""
+			}"""%(COLOR_BACKGROUND_DARK)
 	css=css+prg
 	lblInfo="""
 				#lblInfo{
@@ -220,8 +220,8 @@ def prgBar():
 					border:0px;
 					margin:0px;
 					font-size:24px;
-					color:#FFFFFF;
-			}"""
+					color:%s;
+			}"""%(COLOR_FONT_LIGHT)
 	css=css+lblInfo
 	return(css)
 #def prgBar
