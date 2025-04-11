@@ -336,6 +336,7 @@ class portrait(QStackedWindowItem):
 			self.btnSettings.setVisible(False)
 		self.box.setColumnStretch(1,1)
 		self.setObjectName("portrait")
+		self.rp.setVisible(False)
 		self.resetScreen()
 	#def _load_screen
 
@@ -886,7 +887,7 @@ class portrait(QStackedWindowItem):
 		#self.resetScreen()
 		self._beginUpdate()
 		if cat=="":
-			if self.lstCategories.count()==0:
+			if self.lstCategories.count()!=0:
 				i18ncat=self.lstCategories.currentItem().text().replace(" · ","")
 			else:
 				i18ncat=""
@@ -941,38 +942,7 @@ class portrait(QStackedWindowItem):
 		elif isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.Paint:
 			args[0].setVisible(True)
 			self.init=True
-			if hasattr(self,"firstHide")==False:
-				self.firstHide=None
-			else:
-				if isinstance(self.firstHide,bool)==False:
-					self._debug("First hide event, discard")
-					self.firstHide=False
-					return True
-				else:
-					if self.firstHide==False:
-						self._debug("Second hide event, discard")
-						self.firstHide=True
-						return True
-				if (len(self.pendingApps)+self.appsLoaded+len(self.appsSeen))==0:
-					self._loadCategory("")
-					return True
-				self._debug("Launching app. Pending: {} Seen: {}".format(len(self.pendingApps),len(self.appsSeen)))
-
-				if hasattr(self,"appUpdate"):
-					if self.appUpdate.isRunning()==False:
-						self._debug("Starting appUpdate thread")
-						self.appUpdate.setApps(self.pendingApps)
-						self.appUpdate.start()
-				else:
-					self._debug("Event filter failed starting appUpdate")
-
-
-				self.progress.stop()
-				self.rp.table.removeEventFilter(self)
-				self.progress.lblInfo.setText("")
-				self.progress.lblInfo.setVisible(False)
-				self.progress.setAttribute(Qt.WA_StyledBackground, False)
-				self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
+			self._checkInit()
 		elif isinstance(args[0],QListWidget):
 			if args[1].type==QEvent.Type.KeyRelease:
 				self.released=True
@@ -980,6 +950,41 @@ class portrait(QStackedWindowItem):
 				self.released=False
 		return(False)
 	#def eventFilter(self,*args):
+
+	def _checkInit(self,*args,**kwargs):
+		if hasattr(self,"firstHide")==False:
+			self.firstHide=None
+		else:
+			if isinstance(self.firstHide,bool)==False:
+				self._debug("First hide event, discard")
+				self.firstHide=False
+				return True
+			else:
+				if self.firstHide==False:
+					self._debug("Second hide event, discard")
+					self.firstHide=True
+					return True
+			if (len(self.pendingApps)+self.appsLoaded+len(self.appsSeen))==0:
+				self._loadCategory("")
+				return True
+			self._debug("Launching app. Pending: {} Seen: {}".format(len(self.pendingApps),len(self.appsSeen)))
+
+			if hasattr(self,"appUpdate"):
+				if self.appUpdate.isRunning()==False:
+					self._debug("Starting appUpdate thread")
+					self.appUpdate.setApps(self.pendingApps)
+					self.appUpdate.start()
+			else:
+				self._debug("Event filter failed starting appUpdate")
+
+
+			self.progress.stop()
+			self.rp.table.removeEventFilter(self)
+			self.progress.lblInfo.setText("")
+			self.progress.lblInfo.setVisible(False)
+			self.progress.setAttribute(Qt.WA_StyledBackground, False)
+			self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
+	#def _checkInit
 
 	def _getMoreData(self):
 		return
@@ -1184,7 +1189,17 @@ class portrait(QStackedWindowItem):
 	def _returnDetail(self,*args,**kwargs):
 		if self.appUrl!="":
 			self.appUrl=""
-			self._loadHome()
+			self.progress.setAttribute(Qt.WA_StyledBackground, False)
+			#self.pendingApps={}
+			#self.appsLoaded=0
+			#self.appsSeen=[]
+			self.progress.lblInfo.setVisible(False)
+			self.firstHide=True
+			#self._loadHome()
+			self.appUpdate.blockSignals(True)
+			self.appUpdate.stop()
+			self._rebost.terminate()
+			self._checkInit()
 		else:
 			self._return()
 	#def _returnDetail
@@ -1221,7 +1236,6 @@ class portrait(QStackedWindowItem):
 				self.referersShowed[i]=None
 			if self.appUrl!="":
 				self.init=True
-				self.progress.setAttribute(Qt.WA_StyledBackground, False)
 				self._endUpdate()
 			else:
 				self._beginLoadData(self.appsLoaded,self.appsToLoad)
