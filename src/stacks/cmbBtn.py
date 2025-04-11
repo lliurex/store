@@ -35,6 +35,7 @@ class QComboButton(QCheckableComboBox):
 	#def setText
 
 	def mousePressEvent(self,e):
+		#Check if event coords are inside button geometry
 		if (self.width()-e.x())>32:
 			e.accept()
 			sw=False

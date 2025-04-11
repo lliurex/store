@@ -48,6 +48,7 @@ def detailPanel():
 	css=css+btnInstall
 	lstInfo="""#lstInfo{
 					padding:%spx;
+					color:#000000;
 					margin:1px;
 					border:1px solid;
 					border-color:%s;
@@ -56,7 +57,6 @@ def detailPanel():
 					subcontrol-position: top right;
 					border-top-right-radius: %spx; /* same radius as the QComboBox */
 					border-bottom-right-radius: %spx;
-					color:'black';
 				}
 				QComboBox#lstInfo::down-arrow {
 					image: url("%s/drop-down16x16.png");
