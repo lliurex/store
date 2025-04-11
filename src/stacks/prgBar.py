@@ -45,9 +45,9 @@ class QProgressImage(QWidget):
 		#vbox.addWidget(lblProgress)#,Qt.AlignCenter|Qt.AlignBottom)
 		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","progressBar267x267.png")
 		#self.color=QColor(255,255,255)
-		self.color=QColor(COLOR_BACKGROUND_DARK)
-		self.colorEnd=QColor(COLOR_BACKGROUND_DARKEST)
-		self.colorCur=self.colorEnd
+		self.color=QColor(COLOR_BACKGROUND_DARKEST)
+		self.colorEnd=QColor(COLOR_BACKGROUND_LIGHT)
+		self.colorCur=self.color
 		self.pxm=QPixmap(img)#.scaled(267,267,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		self.pxm2=QPixmap(self.pxm.size())
 		self.lblPxm=QLabel()
@@ -65,7 +65,7 @@ class QProgressImage(QWidget):
 		#self.setPixmap(self.pxm)
 		self.lblPxm.setAlignment(Qt.AlignCenter)
 		self.lblInfo.setAlignment(Qt.AlignCenter)
-		self.inc=1
+		self.inc=-5
 		self.running=False
 
 	def start(self):
