@@ -662,7 +662,7 @@ class detailPanel(QWidget):
 	def _onError(self):
 		self._debug("Error detected")
 		qpal=QtGui.QPalette()
-		color=qpal.color(qpal.Dark)
+		color=qpal.color(QtGui.QPalette.Dark)
 		self.parent().setWindowTitle("AppsEdu - {}".format("ERROR"))
 		if "Forbidden" not in self.app.get("categories",[]):
 			self.app["categories"]=["Forbidden"]

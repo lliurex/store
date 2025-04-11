@@ -26,7 +26,7 @@ class progress(QThread):
 		self.running=True
 		while self.running==True:
 			self.updated.emit()
-			time.sleep(0.05)
+			time.sleep(0.03)
 	#def run
 
 	def stop(self):
@@ -44,7 +44,10 @@ class QProgressImage(QWidget):
 		#lblProgress=QLabel(i18n["NEWDATA"])
 		#vbox.addWidget(lblProgress)#,Qt.AlignCenter|Qt.AlignBottom)
 		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","progressBar267x267.png")
-		self.color=QColor(255,255,255)
+		#self.color=QColor(255,255,255)
+		self.color=QColor(COLOR_BACKGROUND_DARKEST)
+		self.colorEnd=QColor(COLOR_BACKGROUND_LIGHT)
+		self.colorCur=self.colorEnd
 		self.pxm=QPixmap(img)#.scaled(267,267,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		self.pxm2=QPixmap(self.pxm.size())
 		self.lblPxm=QLabel()
@@ -62,8 +65,7 @@ class QProgressImage(QWidget):
 		#self.setPixmap(self.pxm)
 		self.lblPxm.setAlignment(Qt.AlignCenter)
 		self.lblInfo.setAlignment(Qt.AlignCenter)
-		self.inc=5
-		self.oldColor=QColor(255-self.inc,255-self.inc,255-self.inc)
+		self.inc=-5
 		self.running=False
 
 	def start(self):
@@ -94,14 +96,34 @@ class QProgressImage(QWidget):
 				self.oldTime=time.time()
 			elif self.oldTime==0:
 				self.oldTime=time.time()
-			
-		color=QColor(self.oldColor.red()+self.inc,self.oldColor.green()+self.inc,self.oldColor.blue()+self.inc)
-		self.oldColor=color
-		if color.red()<150:
+		red=self.colorCur.red()+self.inc
+		blue=self.colorCur.blue()+self.inc
+		green=self.colorCur.green()+self.inc
+		finish=0
+		if self.inc>0:
+			if red>=self.colorEnd.red():
+				red=self.colorEnd.red()
+				finish+=1
+			if green>=self.colorEnd.green():
+				green=self.colorEnd.green()
+				finish+=1
+			if blue>=self.colorEnd.blue():
+				blue=self.colorEnd.blue()
+				finish+=1
+		else:
+			if red<=self.color.red()+3:
+				red=self.color.red()+3
+				finish+=1
+			if green<=self.color.green()+3:
+				green=self.color.green()+3
+				finish+=1
+			if blue<=self.color.blue()+3:
+				blue=self.color.blue()+3
+				finish+=1
+		color=QColor(red,green,blue)
+		self.colorCur=color
+		if finish==3:
 			self.inc*=-1
-		elif color.red()>254:
-			self.inc*=-1
-		#print(self.inc)
 		self.pxm2.fill(color)
 		self.pxm2.setMask(self.pxm.createMaskFromColor(Qt.transparent))
 		self.lblPxm.setPixmap(self.pxm2)
@@ -109,8 +131,3 @@ class QProgressImage(QWidget):
 		self.running=False
 	#def _doProgress
 
-	def _changeColor(*args):
-		color2=QColor(122,122,122)
-		pxm2.fill(color2)
-		pxm2.setMask(pxm.createMaskFromColor(Qt.transparent))
-		self.setPixmap(pxm2)
