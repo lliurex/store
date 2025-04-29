@@ -37,7 +37,7 @@ mw.show()
 #Get screen size available for us
 (w,h) = app.primaryScreen().size().toTuple()
 mw.setMinimumWidth(int(w*0.9))
-mw.setMinimumHeight(int(h*0.9))
+mw.setMinimumHeight(int(h*0.8))
 if len(sys.argv)>1:
 	if ("://") in sys.argv[1] or os.path.isfile(sys.argv[1]):
 		wdg=mw.getCurrentStack()
