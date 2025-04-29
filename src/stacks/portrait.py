@@ -191,8 +191,15 @@ class updateAppData(QThread):
 		app={}
 		if self._stop==False:
 			if len(args)>0 and isinstance(args[0],str):
-				app=json.loads(self.rc.showApp(args[0]))
-				self.dataLoaded.emit(app)
+				try:
+					app=json.loads(self.rc.showApp(args[0]))
+				except:
+					try:
+						app=json.loads(self.rc.showApp(args[0]))
+					except:
+						app={}
+				finally:
+					self.dataLoaded.emit(app)
 		self.cont-=1
 	#def _emitDataLoaded
 #class updateAppData
@@ -226,7 +233,6 @@ class getData(QThread):
 
 class portrait(QStackedWindowItem):
 	def __init_stack__(self):
-		self.aux=[]
 		self.init=False
 		self.minTime=1
 		self.oldTime=0
@@ -344,6 +350,7 @@ class portrait(QStackedWindowItem):
 		if hasattr(self,"progress"):
 			self.progress.stop()
 		if hasattr(self,"appUpdate"):
+			self.appUpdate.blockSignals(True)
 			self.appUpdate.stop()
 			self.appUpdate.quit()
 			self.appUpdate.wait()
@@ -655,6 +662,7 @@ class portrait(QStackedWindowItem):
 			self._rebost.setAction("search","")
 			self._rebost.start()
 		self._populateCategories()
+		QApplication.processEvents()
 		self.resetScreen()
 		if isinstance(self.lstCategories,QListWidget):
 			self.lstCategories.setCurrentRow(0)
@@ -714,6 +722,7 @@ class portrait(QStackedWindowItem):
 				appsFiltered.append(app)
 				break
 		self.apps=appsFiltered.copy()
+		self.appUpdate.blockSignals(False)
 		self.appUpdate.start()
 		self.appsRaw=self.apps.copy()
 		self.refresh=True
@@ -880,6 +889,7 @@ class portrait(QStackedWindowItem):
 		self._debug("LOAD CATEGORY {}".format(cat))
 		self.appUpdate.blockSignals(True)
 		self.appUpdate.stop()
+		self.progress.stop()
 		#self.rp.setVisible(False)
 		self.progress.start()
 		self.refresh=True
@@ -965,18 +975,21 @@ class portrait(QStackedWindowItem):
 					self.firstHide=True
 					return True
 			if (len(self.pendingApps)+self.appsLoaded+len(self.appsSeen))==0:
-				self._loadCategory("")
-				return True
+				self._rebost.setAction("search","")
+				if self._rebost.isRunning():
+					self._rebost.quit()
+					self._rebost.wait()
+				QApplication.processEvents()
+				self._rebost.start()
+		#		return True
 			self._debug("Launching app. Pending: {} Seen: {}".format(len(self.pendingApps),len(self.appsSeen)))
 
 			if hasattr(self,"appUpdate"):
-				if self.appUpdate.isRunning()==False:
+				if self.appUpdate.isRunning()==False and len(self.pendingApps)>0:
 					self._debug("Starting appUpdate thread")
 					self.appUpdate.setApps(self.pendingApps)
+					self.appUpdate.blockSignals(False)
 					self.appUpdate.start()
-			else:
-				self._debug("Event filter failed starting appUpdate")
-
 
 			self.progress.stop()
 			self.rp.table.removeEventFilter(self)
@@ -987,7 +1000,6 @@ class portrait(QStackedWindowItem):
 	#def _checkInit
 
 	def _getMoreData(self):
-		return
 		if (self.rp.table.verticalScrollBar().value()==self.rp.table.verticalScrollBar().maximum()) and self.appsLoaded!=len(self.apps):
 			self._beginLoadData(self.appsLoaded,self.appsLoaded+self.appsToLoad)
 			for wdg in self.wdgs:
@@ -1018,6 +1030,7 @@ class portrait(QStackedWindowItem):
 		#self.rp.table.setVisible(False)
 		#self.rp.setVisible(False)
 		if len(self.pendingApps)>0:
+			self.appUpdate.blockSignals(True)
 			self.appUpdate.stop()
 			self.pendingApps={}
 		if len(apps)>0:
@@ -1048,6 +1061,8 @@ class portrait(QStackedWindowItem):
 
 	def _endLoadData(self):
 		#if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
+		self.appUpdate.blockSignals(True)
+		self.appUpdate.stop() # Just in case
 		if (self.appsLoaded==0 and self.lstCategories.count()==0):
 			#self._beginUpdate()
 			self._rebost.setAction("test")
@@ -1057,6 +1072,7 @@ class portrait(QStackedWindowItem):
 		else:
 			if len(self.pendingApps)>0:
 				self.appUpdate.setApps(self.pendingApps)
+				self.appUpdate.blockSignals(False)
 				self.appUpdate.start()
 			self._endUpdate()
 		self.refresh=True
@@ -1154,11 +1170,11 @@ class portrait(QStackedWindowItem):
 
 	def setParms(self,*args):
 		appsedu=args[0]
-		print("** Detected parm on init **")
+		self._debug("** Detected parm on init **")
 		if "://" in appsedu:
 			pkgname=appsedu.split("://")[-1]
 			self.appUrl=pkgname
-			print("Seeking for {}".format(self.appUrl))
+			self._debug("Seeking for {}".format(self.appUrl))
 	#def setParms
 
 	def _updateBtn(self,*args,**kwargs):

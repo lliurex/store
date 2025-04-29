@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 import sys
-import subprocess
-import os,shutil
+import os
 import json
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Qt
 from PySide6 import QtGui
 from QtExtraWidgets import QStackedWindow
 import gettext
-import time
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
@@ -36,8 +34,10 @@ mw.setObjectName("MAIN")
 mw.layout().setContentsMargins(0,0,0,0)
 mw.setStyleSheet("""QWidget#MAIN{background:#002c4f; color:#FFFFFF;margin:0px;padding:0px;border:0px;}""")
 mw.show()
-mw.setMinimumWidth(1110)
-mw.setMinimumHeight(700)
+#Get screen size available for us
+(w,h) = app.primaryScreen().size().toTuple()
+mw.setMinimumWidth(int(w*0.9))
+mw.setMinimumHeight(int(h*0.9))
 if len(sys.argv)>1:
 	if ("://") in sys.argv[1] or os.path.isfile(sys.argv[1]):
 		wdg=mw.getCurrentStack()
