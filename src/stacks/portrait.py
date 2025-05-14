@@ -272,7 +272,7 @@ class portrait(QStackedWindowItem):
 		self.i18nCat={}
 		self.oldCat=""
 		self.catI18n={}
-		self.appsToLoad=1000
+		self.appsToLoad=500
 		self.appsLoaded=0
 		self.appsSeen=[]
 		self.appsRaw=[]
@@ -347,6 +347,7 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(wdg,0,0,Qt.AlignLeft)
 		self.rp=self._mainPane()
 		self.rp.table.installEventFilter(self)
+		#self.rp.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
 		self.box.addWidget(self.rp,0,1)
 		self.lp=self._detailPane()
 		self.lp.setObjectName("detailPanel")
@@ -1065,15 +1066,23 @@ class portrait(QStackedWindowItem):
 	#def _checkInit
 
 	def _getMoreData(self):
-		if (self.rp.table.verticalScrollBar().value()==self.rp.table.verticalScrollBar().maximum()) and self.appsLoaded!=len(self.apps):
-			self._beginLoadData(self.appsLoaded,self.appsLoaded+self.appsToLoad)
-			for wdg in self.wdgs:
-				self.rp.table.addWidget(wdg)
-				#self.rp.table.setCellWidget(wdg[0],wdg[1],wdg[2])
+		if (self.rp.table.verticalScrollBar().value()>=self.rp.table.verticalScrollBar().maximum()-30) and self.appsLoaded!=len(self.apps):
+		#if  self.appsLoaded!=len(self.apps):
+			print("RELOAD")
+			self.getData.stop()
+			self.getData.wait()
+			apps=[]
+			for app in self.apps[self.appsLoaded:self.appsLoaded+self.appsToLoad]:
+				apps.append(json.loads(app))
+			self._loadData(apps)
+			#for wdg in self.wdgs:
+			#	self.rp.table.addWidget(wdg)
+			#	#self.rp.table.setCellWidget(wdg[0],wdg[1],wdg[2])
 	#def _getMoreData
 
 	def _beginLoadData(self,idx,idxEnd,applist=None):
 		#appData=getData(apps)
+		self.appsToLoad=len(self.apps)
 		if self.getData.isRunning()==False:
 			self._beginUpdate()
 			if applist==None:
@@ -1091,13 +1100,20 @@ class portrait(QStackedWindowItem):
 		colspan=self.maxCol
 		span=colspan
 		btn=None
-		#self.rp.table.flowLayout.setEnabled(False)
-		#self.rp.table.setVisible(False)
-		#self.rp.setVisible(False)
+		if len(self.apps)>1000:
+			self.appsToLoad=len(self.apps)
+			self.rp.table.flowLayout.setEnabled(False)
+			self.rp.table.setVisible(False)
+			self.rp.setVisible(False)
 		if len(self.pendingApps)>0:
 			self.appUpdate.blockSignals(True)
 			self.appUpdate.stop()
 			self.pendingApps={}
+		print("************************")
+		print("************************")
+		print("From {} To {} of {}".format(self.appsLoaded,self.appsLoaded+self.appsToLoad,len(self.apps)))
+		print("************************")
+		print("************************")
 		if len(apps)>0:
 			for jsonapp in apps:
 				appname=jsonapp.get('name','')
@@ -1119,8 +1135,9 @@ class portrait(QStackedWindowItem):
 				self.appsLoaded+=1
 				QApplication.processEvents()
 		self.rp.table.flowLayout.setEnabled(True)
-		#self.rp.table.setVisible(True)
-		#self.rp.setVisible(True)
+		if len(self.apps)>1000:
+			self.rp.table.setVisible(True)
+			self.rp.setVisible(True)
 		self._endLoadData()
 	#def _loadData
 
