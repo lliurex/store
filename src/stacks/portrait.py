@@ -132,11 +132,21 @@ class storeHelper(QThread):
 	#def _updatePkgData
 
 	def _lock(self):
-		subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py"])
+		apps=[]
+		cmd=subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py","lock"])
+		if cmd.returncode==0:
+			self.rc.update(True)
+			apps=json.loads(self.rc.execute("search",self.args[0]))
+		self.srcEnded.emit(apps)
 	#def _lock
 
 	def _unlock(self):
-		subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py","lock"])
+		apps=[]
+		cmd=subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py"])
+		if cmd.returncode==0:
+			self.rc.update(True)
+			apps=json.loads(self.rc.execute("search",self.args[0]))
+		self.srcEnded.emit(apps)
 	#def _unlock
 #class rebostHelper
 
@@ -569,11 +579,29 @@ class portrait(QStackedWindowItem):
 	#def _launchLlxUp
 
 	def _unlockRebost(self,*args):
+		self.appUpdate.blockSignals(True)
+		self.appUpdate.stop()
+		self.progress.stop()
+		#self.rp.setVisible(False)
+		self.progress.start()
+		self.refresh=True
+		self.rp.searchBox.setText("")
+		#self.resetScreen()
+		self._beginUpdate()
+		#if args[0]==0:
+		#	subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py"])
+		#else:
+		#	subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py","lock"])
+		#self.rc.update(True)
 		if args[0]==0:
-			subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py"])
+			self._rebost.setAction("unlock","")
 		else:
-			subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py","lock"])
-		self.rc.update(True)
+			self._rebost.setAction("lock","")
+		if self._rebost.isRunning():
+			self._rebost.quit()
+			QApplication.processEvents()
+			self._rebost.wait()
+		self._rebost.start()
 	#def _unlockRebost
 
 	def _loadFilters(self):
