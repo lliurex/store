@@ -85,6 +85,10 @@ class storeHelper(QThread):
 			self._search()
 		elif self.action=="updatePkgData":
 			self._updatePkgData()
+		elif self.action=="unlock":
+			self._unlock()
+		elif self.action=="lock":
+			self._lock()
 	#def run
 
 	def _chkUpgrades(self):
@@ -125,6 +129,15 @@ class storeHelper(QThread):
 	def _updatePkgData(self):
 		if len(self.args)>0:
 			self.rc.updatePkgData(self.args[0].get("pkgname"),self.args[0])
+	#def _updatePkgData
+
+	def _lock(self):
+		subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py"])
+	#def _lock
+
+	def _unlock(self):
+		subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py","lock"])
+	#def _unlock
 #class rebostHelper
 
 class updateAppData(QThread):
@@ -313,7 +326,7 @@ class portrait(QStackedWindowItem):
 	def __initScreen__(self):
 		bus=dbus.SessionBus()
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
-		#objbus.connect_to_signal("updatedSignal",self._loadHome,dbus_interface="net.lliurex.rebost")
+	#	objbus.connect_to_signal("reloadSignal",self._reload,dbus_interface="net.lliurex.rebost")
 		objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 		self.box=QGridLayout()
 		self.setLayout(self.box)
@@ -345,6 +358,17 @@ class portrait(QStackedWindowItem):
 		self.rp.setVisible(False)
 		self.resetScreen()
 	#def _load_screen
+
+	def _reload(self,*args,**kwargs):
+		self.appUpdate.blockSignals(True)
+		self.appUpdate.stop()
+		self.progress.stop()
+		#self.rp.setVisible(False)
+		self.progress.start()
+		self.refresh=True
+		self.rp.searchBox.setText("")
+		#self.resetScreen()
+		self._beginUpdate()
 
 	def _closeEvent(self,*args):
 		if hasattr(self,"progress"):
@@ -457,16 +481,20 @@ class portrait(QStackedWindowItem):
 		lbl.setPixmap(pxm)
 		lbl.setAlignment(Qt.AlignCenter|Qt.AlignCenter)
 		lay.addWidget(lbl,Qt.AlignRight)
-		chk.setChecked(True)
-		chk.setEnabled(False)
+		chk.setChecked(self.rc.getLockStatus())
+		chk.stateChanged.connect(self._unlockRebost)
+		#chk.setEnabled(False)
 		lay.addWidget(chk,Qt.AlignLeft)
 		wdg.setLayout(lay)
+		wdg.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		return(wdg)
 	#def _appseduCertified
 
 	def _defInst(self):
 		btnInst=QPushButton(i18n.get("INSTALLED"))
 		btnInst.clicked.connect(self._filterInstalled)
+		btnInst.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+
 		return(btnInst)
 	#def _defHome
 
@@ -474,6 +502,7 @@ class portrait(QStackedWindowItem):
 		btnHome=QPushButton(i18n.get("HOME"))
 		#btnHome.setIcon(icn)
 		btnHome.clicked.connect(self._goHome)
+		btnHome.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		return(btnHome)
 	#def _defHome
 
@@ -538,6 +567,14 @@ class portrait(QStackedWindowItem):
 		subprocess.run(["pkexec","lliurex-up"])
 		self.parent.setVisible(True)
 	#def _launchLlxUp
+
+	def _unlockRebost(self,*args):
+		if args[0]==0:
+			subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py"])
+		else:
+			subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py","lock"])
+		self.rc.update(True)
+	#def _unlockRebost
 
 	def _loadFilters(self):
 		if hasattr(self,"btnFilters"):
@@ -1079,6 +1116,8 @@ class portrait(QStackedWindowItem):
 	#def _endLoadData(self):
 
 	def _endLoadApps(self,args):
+		if len(args)==0:
+			self._loadHome()
 		if isinstance(args[0],str):
 			app=json.loads(args[0])
 		else:
