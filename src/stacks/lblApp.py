@@ -21,18 +21,20 @@ class QLabelRebostApp(QLabel):
 	#def __init__
 
 	def loadImg(self,app):
+		wsize=ICON_SIZE
 		img=app.get('icon','')
 		self.setMinimumWidth(1)
 		icn=''
-		if os.path.isfile(img):
+		if isinstance(img,QtGui.QPixmap):
+			icn=img
+		elif os.path.isfile(img):
+			if "/usr/share/banners/lliurex-neu" in img:
+				wsize=int(ICON_SIZE*1.8)
 			icn=QtGui.QPixmap.fromImage(QtGui.QImage(img))
 		elif img=='':
 			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
 			icn=icn2.pixmap(ICON_SIZE,ICON_SIZE)
 		if icn:
-			wsize=ICON_SIZE
-			if "/usr/share/banners/lliurex-neu" in img:
-				wsize=int(ICON_SIZE*1.8)
 			self.setPixmap(icn.scaled(wsize,ICON_SIZE,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 			self.setMinimumWidth(wsize+10)
 		elif img.startswith('http'):
@@ -40,7 +42,7 @@ class QLabelRebostApp(QLabel):
 			self.scr=aux.loadScreenShot(img,self.cacheDir)
 			self.scr.start()
 			self.scr.imageLoaded.connect(self.load)
-			self.scr.wait()
+			#self.scr.wait()
 	#def loadImg
 	
 	def load(self,*args):
