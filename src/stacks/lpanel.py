@@ -559,6 +559,8 @@ class detailPanel(QWidget):
 		#self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
 	#	self.lblName.setText("{}".format(self.app.get('name').upper()))
 		icn=self._getIconFromApp(self.app)
+		if isinstance(icn,QtGui.QIcon):
+			icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
 		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
 		self.lblIcon.loadImg(self.app)
 		#Disabled as requisite (250214-11:52)
