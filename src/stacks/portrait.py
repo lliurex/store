@@ -272,7 +272,7 @@ class portrait(QStackedWindowItem):
 		self.i18nCat={}
 		self.oldCat=""
 		self.catI18n={}
-		self.appsToLoad=500
+		self.appsToLoad=50
 		self.appsLoaded=0
 		self.appsSeen=[]
 		self.appsRaw=[]
@@ -307,9 +307,13 @@ class portrait(QStackedWindowItem):
 		self.released=True
 		self.setStyleSheet(css.portrait())
 		#self.epi.runEnded.connect(self._getEpiResults)
-		#DBUS
-		signal.signal(signal.SIGUSR1,self._signals)
+		#DBUS loop
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+		#DBUS connections
+		bus=dbus.SessionBus()
+		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
+		objbus.connect_to_signal("reloadSignal",self._reload,dbus_interface="net.lliurex.rebost")
+	#	objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 	#def __init__
 
 	def _signals(self,*args):
@@ -334,10 +338,6 @@ class portrait(QStackedWindowItem):
 	#def _debug
 
 	def __initScreen__(self):
-		bus=dbus.SessionBus()
-		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
-	#	objbus.connect_to_signal("reloadSignal",self._reload,dbus_interface="net.lliurex.rebost")
-		objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 		self.box=QGridLayout()
 		self.setLayout(self.box)
 		self.box.setContentsMargins(0,0,0,0)
@@ -347,7 +347,7 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(wdg,0,0,Qt.AlignLeft)
 		self.rp=self._mainPane()
 		self.rp.table.installEventFilter(self)
-		#self.rp.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
+		self.rp.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
 		self.box.addWidget(self.rp,0,1)
 		self.lp=self._detailPane()
 		self.lp.setObjectName("detailPanel")
@@ -734,6 +734,7 @@ class portrait(QStackedWindowItem):
 			self.lstCategories.setCurrentRow(0)
 		elif isinstance(self.lstCategories,QComboBox):
 			self.lstCategories.setCurrentIndex(0)
+		print("###########################")
 		self.updateScreen()
 	#def _loadHome
 
@@ -743,14 +744,17 @@ class portrait(QStackedWindowItem):
 		self.apps=self.appsRaw
 		self._debug("Checking {} apps".format(len(self.apps)))
 		self.resetScreen()
+		print("RESET")
 		filters=self._readFilters()
 		if getApps==True:
+			print("GETAPPS")
 			if len(filters)==0:
 				filters['package']=True
 			if filters.get("lliurex",False)==True:
 				self.apps=self._getAppList(["\"Lliurex\"","\"Lliurex-Administration\"","\"Lliurex-Infantil\""])
 			if filters.get("zomando",False)==True:
 				self.apps=self._getAppList(["Zomando"])
+		print("FILTERS")
 		self.apps=self._applyFilters(filters)
 		self.updateScreen()
 	#def _filterView
@@ -794,10 +798,11 @@ class portrait(QStackedWindowItem):
 		self.refresh=True
 		if len(self.apps)==0:
 			self.refresh=False
-		self.updateScreen()
+		#self.updateScreen()
 	#def _filterInstalled
 
 	def _applyFilters(self,filters):
+		return(self.appsRaw)
 		appsFiltered=[]
 		filterList=False
 		if filters.get(i18n.get("ALL").lower(),False)!=True:
@@ -933,9 +938,11 @@ class portrait(QStackedWindowItem):
 				font=args[1].font()
 				font.setBold(False)
 				args[1].setFont(font)
+	#def _decoreCmbCategories
 
 	def _loadCategory(self,*args):
 		#Disable app url if any (JustInCase)
+
 		self.appUrl=""
 		cat=None
 		flag=""
@@ -1066,15 +1073,25 @@ class portrait(QStackedWindowItem):
 	#def _checkInit
 
 	def _getMoreData(self):
-		if (self.rp.table.verticalScrollBar().value()>=self.rp.table.verticalScrollBar().maximum()-30) and self.appsLoaded!=len(self.apps):
-		#if  self.appsLoaded!=len(self.apps):
-			print("RELOAD")
+		#if (self.rp.table.verticalScrollBar().value()>=self.rp.table.verticalScrollBar().maximum()-30) and self.appsLoaded!=len(self.apps):
+		if (self.rp.table.verticalScrollBar().value()>=self.rp.table.verticalScrollBar().maximum()/2) and self.appsLoaded!=len(self.apps):
+			if hasattr(self,"loading")==False:
+				self.loading=True
+			if self.loading==True:
+				return
+			self.loading=True
+			self.appsToLoad=int(self.appsToLoad*2.90)
+			if self.appsToLoad+self.appsLoaded>len(self.apps):
+				self.appsToLoad=len(self.apps)-self.appsLoaded
+			print("T: {}".format(self.appsToLoad))
 			self.getData.stop()
 			self.getData.wait()
-			apps=[]
-			for app in self.apps[self.appsLoaded:self.appsLoaded+self.appsToLoad]:
-				apps.append(json.loads(app))
-			self._loadData(apps)
+			moreApps=[]
+			apps=self.apps[self.appsLoaded:self.appsLoaded+self.appsToLoad]
+			for app in apps:
+				moreApps.append(json.loads(app))
+			self._loadData(moreApps)
+			self.loading=False
 			#for wdg in self.wdgs:
 			#	self.rp.table.addWidget(wdg)
 			#	#self.rp.table.setCellWidget(wdg[0],wdg[1],wdg[2])
@@ -1082,14 +1099,13 @@ class portrait(QStackedWindowItem):
 
 	def _beginLoadData(self,idx,idxEnd,applist=None):
 		#appData=getData(apps)
-		self.appsToLoad=len(self.apps)
 		if self.getData.isRunning()==False:
 			self._beginUpdate()
-			if applist==None:
-				apps=self.apps[idx:idxEnd]
-			else:
-				apps=applist[idx:idxEnd]
-			self.getData.setApps(apps)
+	#		if applist==None:
+	#			apps=self.apps[idx:idxEnd]
+	#		else:
+	#			apps=applist[idx:idxEnd]
+			self.getData.setApps(self.apps)
 			self.getData.start()
 	#def _beginLoadData
 
@@ -1100,11 +1116,14 @@ class portrait(QStackedWindowItem):
 		colspan=self.maxCol
 		span=colspan
 		btn=None
+		if self.loading==True:
+			return
+		self.loading=True
 		if len(self.apps)>1000:
+		#	self.rp.table.flowLayout.setEnabled(False)
+		#	self.rp.table.setVisible(False)
+		#	self.rp.setVisible(False)
 			self.appsToLoad=len(self.apps)
-			self.rp.table.flowLayout.setEnabled(False)
-			self.rp.table.setVisible(False)
-			self.rp.setVisible(False)
 		if len(self.pendingApps)>0:
 			self.appUpdate.blockSignals(True)
 			self.appUpdate.stop()
@@ -1112,11 +1131,13 @@ class portrait(QStackedWindowItem):
 		print("************************")
 		print("************************")
 		print("From {} To {} of {}".format(self.appsLoaded,self.appsLoaded+self.appsToLoad,len(self.apps)))
-		print("************************")
-		print("************************")
+		a=time.time()
+		print("Start: {}".format(a))
+		self.readyApps=[]
 		if len(apps)>0:
 			for jsonapp in apps:
-				appname=jsonapp.get('name','')
+				b=time.time()
+				appname=jsonapp['name']
 				if appname in self.appsSeen:
 					self.appsLoaded+=1
 					continue
@@ -1127,18 +1148,26 @@ class portrait(QStackedWindowItem):
 				btn.clicked.connect(self._loadDetails)
 				btn.keypress.connect(self.tableKeyPressEvent)
 				btn.install.connect(self._installBundle)
-				if jsonapp.get("summary","")=="":
+				if jsonapp["summary"]=="":
 					self.pendingApps.update({appname:btn})
+				else:
+					self.readyApps.append(btn)
+				#print("Int: {}".format(time.time()-b))
 				self.rp.table.addWidget(btn)
 				if appname in self.referersHistory.keys():
 					self.referersShowed.update({appname:btn})
 				self.appsLoaded+=1
+				#print("Add: {}".format(time.time()-b))
 				QApplication.processEvents()
-		self.rp.table.flowLayout.setEnabled(True)
+		print("End: {}".format(time.time()-a))
+		print("************************")
+		print("************************")
 		if len(self.apps)>1000:
-			self.rp.table.setVisible(True)
-			self.rp.setVisible(True)
+			self.rp.table.flowLayout.setEnabled(True)
+		#	self.rp.table.setVisible(True)
+		#	self.rp.setVisible(True)
 		self._endLoadData()
+		self.loading=False
 	#def _loadData
 
 	def _endLoadData(self):
@@ -1153,7 +1182,6 @@ class portrait(QStackedWindowItem):
 			self.rp.setVisible(True)
 		else:
 			if len(self.pendingApps)>0:
-				self.appUpdate.setApps(self.pendingApps)
 				self.appUpdate.blockSignals(False)
 				self.appUpdate.start()
 			self._endUpdate()
@@ -1345,7 +1373,9 @@ class portrait(QStackedWindowItem):
 	#def _updateScreen
 
 	def resetScreen(self):
+		print("CLEAN TABLE")
 		self.rp.table.clean()
+		print("CLEARED")
 		self.appsLoaded=0
 		if len(self.rp.searchBox.text())==0:
 			self.oldSearch=""
