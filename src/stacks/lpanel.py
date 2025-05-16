@@ -559,6 +559,8 @@ class detailPanel(QWidget):
 		#self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
 	#	self.lblName.setText("{}".format(self.app.get('name').upper()))
 		icn=self._getIconFromApp(self.app)
+		if isinstance(icn,QtGui.QIcon):
+			icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
 		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
 		self.lblIcon.loadImg(self.app)
 		#Disabled as requisite (250214-11:52)
@@ -762,12 +764,16 @@ class detailPanel(QWidget):
 
 	def _getIconFromApp(self,app):
 		icn=QtGui.QIcon()
-		if os.path.exists(app.get("icon")):
-			icn=QtGui.QPixmap.fromImage(QtGui.QImage(app.get('icon','')))
-		if icn.isNull():
+		appIcn=app.get("icon")
+		if isinstance(appIcn,str):
+			if os.path.exists(app.get("icon")):
+				icn=QtGui.QPixmap.fromImage(QtGui.QImage(appIcn))
+		elif icn.isNull():
 		#something went wrong. Perhaps img it's gzipped
 			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'))
 			icn=icn2.pixmap(ICON_SIZE,ICON_SIZE)
+		elif isinstance(appIcn,QtGui.QPixmap):
+			icn=appIcn
 		return(icn)
 	#def _getIconFromApp
 
