@@ -236,6 +236,7 @@ class getData(QThread):
 
 	def setApps(self,apps):
 		self.apps=apps
+		self._stop=False
 	#def setApps
 	
 	def run(self):
@@ -279,6 +280,7 @@ class portrait(QStackedWindowItem):
 		self.oldSearch=""
 		self.maxCol=5
 		#Threads related
+		self.stopAdding=False
 		self.loading=False
 		self.pendingApps={}
 		self.rc=store.client()
@@ -371,6 +373,8 @@ class portrait(QStackedWindowItem):
 	#def _load_screen
 
 	def _reload(self,*args,**kwargs):
+		self.getData.stop()
+		self.getData.wait()
 		self.appUpdate.blockSignals(True)
 		self.appUpdate.stop()
 		self.progress.stop()
@@ -649,7 +653,8 @@ class portrait(QStackedWindowItem):
 	#def _populateCategories
 
 	def _getAppList(self,cat=[]):
-		self.loading=True
+		self.getData.stop()
+		self.getData.wait()
 		if isinstance(cat,str):
 			cat=cat.split()
 		if len(cat)>0:
@@ -734,7 +739,6 @@ class portrait(QStackedWindowItem):
 			self.lstCategories.setCurrentRow(0)
 		elif isinstance(self.lstCategories,QComboBox):
 			self.lstCategories.setCurrentIndex(0)
-		print("###########################")
 		self.updateScreen()
 	#def _loadHome
 
@@ -743,18 +747,15 @@ class portrait(QStackedWindowItem):
 		appsFiltered=[]
 		self.apps=self.appsRaw
 		self._debug("Checking {} apps".format(len(self.apps)))
-		self.resetScreen()
-		print("RESET")
+		#self.resetScreen()
 		filters=self._readFilters()
 		if getApps==True:
-			print("GETAPPS")
 			if len(filters)==0:
 				filters['package']=True
 			if filters.get("lliurex",False)==True:
 				self.apps=self._getAppList(["\"Lliurex\"","\"Lliurex-Administration\"","\"Lliurex-Infantil\""])
 			if filters.get("zomando",False)==True:
 				self.apps=self._getAppList(["Zomando"])
-		print("FILTERS")
 		self.apps=self._applyFilters(filters)
 		self.updateScreen()
 	#def _filterView
@@ -798,11 +799,10 @@ class portrait(QStackedWindowItem):
 		self.refresh=True
 		if len(self.apps)==0:
 			self.refresh=False
-		#self.updateScreen()
+		self.updateScreen()
 	#def _filterInstalled
 
 	def _applyFilters(self,filters):
-		return(self.appsRaw)
 		appsFiltered=[]
 		filterList=False
 		if filters.get(i18n.get("ALL").lower(),False)!=True:
@@ -942,8 +942,8 @@ class portrait(QStackedWindowItem):
 
 	def _loadCategory(self,*args):
 		#Disable app url if any (JustInCase)
-
 		self.appUrl=""
+		self.appsLoaded=0
 		cat=None
 		flag=""
 		if self.loading==True:
@@ -967,7 +967,7 @@ class portrait(QStackedWindowItem):
 		self.progress.start()
 		self.refresh=True
 		self.rp.searchBox.setText("")
-		#self.resetScreen()
+		self.resetScreen()
 		self._beginUpdate()
 		if cat=="":
 			if self.lstCategories.count()!=0:
@@ -1083,14 +1083,13 @@ class portrait(QStackedWindowItem):
 			self.appsToLoad=int(self.appsToLoad*2.90)
 			if self.appsToLoad+self.appsLoaded>len(self.apps):
 				self.appsToLoad=len(self.apps)-self.appsLoaded
-			print("T: {}".format(self.appsToLoad))
 			self.getData.stop()
 			self.getData.wait()
 			moreApps=[]
 			apps=self.apps[self.appsLoaded:self.appsLoaded+self.appsToLoad]
 			for app in apps:
 				moreApps.append(json.loads(app))
-			self._loadData(moreApps)
+			#self._loadData(moreApps)
 			self.loading=False
 			#for wdg in self.wdgs:
 			#	self.rp.table.addWidget(wdg)
@@ -1100,6 +1099,7 @@ class portrait(QStackedWindowItem):
 	def _beginLoadData(self,idx,idxEnd,applist=None):
 		#appData=getData(apps)
 		if self.getData.isRunning()==False:
+			self.loading=False
 			self._beginUpdate()
 	#		if applist==None:
 	#			apps=self.apps[idx:idxEnd]
@@ -1128,14 +1128,16 @@ class portrait(QStackedWindowItem):
 			self.appUpdate.blockSignals(True)
 			self.appUpdate.stop()
 			self.pendingApps={}
-		print("************************")
-		print("************************")
-		print("From {} To {} of {}".format(self.appsLoaded,self.appsLoaded+self.appsToLoad,len(self.apps)))
+		QApplication.processEvents()
+		self._debug("************************")
+		self._debug("************************")
+		self._debug("From {} To {} of {}".format(self.appsLoaded,self.appsLoaded+self.appsToLoad,len(self.apps)))
 		a=time.time()
-		print("Start: {}".format(a))
-		self.readyApps=[]
+		self._debug("Start: {}".format(a))
 		if len(apps)>0:
 			for jsonapp in apps:
+				if self.stopAdding==True:
+					break
 				b=time.time()
 				appname=jsonapp['name']
 				if appname in self.appsSeen:
@@ -1150,18 +1152,20 @@ class portrait(QStackedWindowItem):
 				btn.install.connect(self._installBundle)
 				if jsonapp["summary"]=="":
 					self.pendingApps.update({appname:btn})
-				else:
-					self.readyApps.append(btn)
-				#print("Int: {}".format(time.time()-b))
 				self.rp.table.addWidget(btn)
 				if appname in self.referersHistory.keys():
 					self.referersShowed.update({appname:btn})
 				self.appsLoaded+=1
 				#print("Add: {}".format(time.time()-b))
 				QApplication.processEvents()
-		print("End: {}".format(time.time()-a))
-		print("************************")
-		print("************************")
+		if self.stopAdding==True:
+			self.stopAdding=False
+			self.loading=False
+			apps=[json.loads(item) for item in self.apps]
+			self._loadData(apps)
+		self._debug("End: {}".format(time.time()-a))
+		self._debug("************************")
+		self._debug("************************")
 		if len(self.apps)>1000:
 			self.rp.table.flowLayout.setEnabled(True)
 		#	self.rp.table.setVisible(True)
@@ -1358,6 +1362,10 @@ class portrait(QStackedWindowItem):
 	#def _gotoSettings
 
 	def updateScreen(self):
+		if hasattr(self,"stopAdding")==False:
+			self.stopAdding=True
+		if self.loading==True:
+			self.stopAdding=True
 		self.btnFilters.setMaximumWidth(self.btnFilters.sizeHint().width())
 		self._debug("Reload data (self.refresh={})".format(self.refresh))
 		if self.refresh==True:
@@ -1367,15 +1375,14 @@ class portrait(QStackedWindowItem):
 				self.init=True
 				self._endUpdate()
 			else:
+				self._debug("Update from {} to {} of {}".format(self.appsLoaded,self.appsToLoad,len(self.apps)))
 				self._beginLoadData(self.appsLoaded,self.appsToLoad)
 		else:
 			self._endUpdate()
 	#def _updateScreen
 
 	def resetScreen(self):
-		print("CLEAN TABLE")
 		self.rp.table.clean()
-		print("CLEARED")
 		self.appsLoaded=0
 		if len(self.rp.searchBox.text())==0:
 			self.oldSearch=""
