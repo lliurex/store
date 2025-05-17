@@ -907,6 +907,7 @@ class portrait(QStackedWindowItem):
 	#def _searchApps
 
 	def _endSearchApps(self,*args):
+		self.resetScreen()
 		self.appsRaw=args[0]
 		self.appsRaw.sort()
 		self._filterView(getApps=False)

@@ -168,7 +168,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.setToolTip(text)
 		self.label.setText(text)
 		self.loadImg(self.app)
-		states=self.app.get("state").copy()
+		states=self.app.get("state",{}).copy()
 		if "Forbidden" in self.app.get("categories",[]):
 			self.btn.setText(i18n.get("UNAUTHORIZED"))
 		elif ("eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))==1) or len(self.app.get("bundle",[]))==0:
