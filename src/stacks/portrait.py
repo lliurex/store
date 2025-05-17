@@ -890,6 +890,7 @@ class portrait(QStackedWindowItem):
 		self.appUpdate.blockSignals(True)
 		self.appUpdate.stop()
 		#self.rp.setVisible(False)
+		self.resetScreen()
 		self.progress.start()
 		self.oldSearch=txt
 		if len(txt)==0:
@@ -900,6 +901,8 @@ class portrait(QStackedWindowItem):
 			self.refresh=True
 			if len(self.apps)==0:
 				self.refresh=False
+			if self.init==True:
+				self.progress.stop()
 			self._filterView(getApps=False)
 	#def _searchApps
 
@@ -910,8 +913,6 @@ class portrait(QStackedWindowItem):
 		self.oldTime=time.time()
 		self.loading=False
 		self._endUpdate()
-		if self.init==True:
-			self.progress.stop()
 	#def _endSearchApps
 
 	def _changeSearchAppsBtnIcon(self):
@@ -946,8 +947,8 @@ class portrait(QStackedWindowItem):
 		self.appsLoaded=0
 		cat=None
 		flag=""
-		if self.loading==True:
-			return
+		#if self.loading==True:
+		#	return
 		if isinstance(args[0],QListWidgetItem):
 			cat=args[0].text()
 		elif isinstance(args[0],str):
