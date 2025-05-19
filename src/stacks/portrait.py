@@ -624,7 +624,7 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setSizeAdjustPolicy(self.lstCategories.SizeAdjustPolicy.AdjustToContents)
 		self.i18nCat={}
 		self.catI18n={}
-		catList=json.loads(self.rc.execute('getCategories'))
+		catTree=json.loads(self.rc.execute('getFreedesktopCategories'))[0]
 		self.lstCategories.addItem(i18n.get('ALL'))
 		item=self.lstCategories.itemAt(0,0)
 		if item!=None:
@@ -634,7 +634,7 @@ class portrait(QStackedWindowItem):
 		seenCats={}
 		#Sort categories
 		translatedCategories=[]
-		for cat in catList:
+		for cat in catTree.keys():
 			#if cat.islower() it's a category from system without appstream info 
 			if _(cat).capitalize() in self.i18nCat.keys() or cat.islower():
 				continue
