@@ -348,6 +348,7 @@ class portrait(QStackedWindowItem):
 		wdg.setObjectName("wdg")
 		self.box.addWidget(wdg,0,0,Qt.AlignLeft)
 		self.rp=self._mainPane()
+		self.rp.tagpressed.connect(self._loadCategory)
 		self.rp.table.installEventFilter(self)
 		self.rp.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
 		self.box.addWidget(self.rp,0,1)
@@ -624,7 +625,7 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setSizeAdjustPolicy(self.lstCategories.SizeAdjustPolicy.AdjustToContents)
 		self.i18nCat={}
 		self.catI18n={}
-		catTree=json.loads(self.rc.execute('getFreedesktopCategories'))[0]
+		self.categoriesTree=json.loads(self.rc.execute('getFreedesktopCategories'))[0]
 		self.lstCategories.addItem(i18n.get('ALL'))
 		item=self.lstCategories.itemAt(0,0)
 		if item!=None:
@@ -634,7 +635,7 @@ class portrait(QStackedWindowItem):
 		seenCats={}
 		#Sort categories
 		translatedCategories=[]
-		for cat in catTree.keys():
+		for cat in self.categoriesTree.keys():
 			#if cat.islower() it's a category from system without appstream info 
 			if _(cat).capitalize() in self.i18nCat.keys() or cat.islower():
 				continue
@@ -651,6 +652,33 @@ class portrait(QStackedWindowItem):
 					item.setToolTip(cat)
 				lowercats.append(cat.lower())
 	#def _populateCategories
+
+	def _getRawCategory(self,cat):
+		if cat=="":
+			if self.lstCategories.count()!=0:
+				i18ncat=self.lstCategories.currentItem().text().replace(" · ","")
+			else:
+				i18ncat=""
+		else:
+			if isinstance(cat,str):
+				i18ncat=cat.replace(" · ","")
+			elif isinstance(cat,QListWidgetItem):
+				i18ncat=cat.text().replace(" · ","")
+			elif cat!=None:
+				i18ncat=cat.text().replace(" · ","")
+			flag=Qt.MatchFlags(Qt.MatchFlag.MatchContains)
+			items=self.lstCategories.findItems(i18ncat,flag)
+			for item in items:
+				if item.text().replace(" · ","").lower()==i18ncat.lower():
+					self.lstCategories.setCurrentItem(item)
+					break
+		if self.oldCat!=i18ncat:
+			self.oldCat=i18ncat
+		cat=self.i18nCat.get(i18ncat,i18ncat)
+		if cat==i18n.get("ALL"):
+			cat=""
+		return(cat)
+	#def _getRawCategory
 
 	def _getAppList(self,cat=[]):
 		self.getData.stop()
@@ -964,36 +992,21 @@ class portrait(QStackedWindowItem):
 		self._debug("LOAD CATEGORY {}".format(cat))
 		self.appUpdate.blockSignals(True)
 		self.appUpdate.stop()
+		self.appUpdate.wait()
 		self.progress.stop()
 		#self.rp.setVisible(False)
+		self.rp.topBar.clean()
+		cat=self._getRawCategory(cat)
+		if cat!="":
+			self.rp.populateCategories(self.categoriesTree[cat])
+			self.rp.topBar.setVisible(True)
+		else:
+			self.rp.topBar.setVisible(False)
 		self.progress.start()
 		self.refresh=True
 		self.rp.searchBox.setText("")
 		self.resetScreen()
 		self._beginUpdate()
-		if cat=="":
-			if self.lstCategories.count()!=0:
-				i18ncat=self.lstCategories.currentItem().text().replace(" · ","")
-			else:
-				i18ncat=""
-		else:
-			if isinstance(cat,str):
-				i18ncat=cat.replace(" · ","")
-			elif isinstance(cat,QListWidgetItem):
-				i18ncat=cat.text().replace(" · ","")
-			elif cat!=None:
-				i18ncat=cat.text().replace(" · ","")
-			flag=Qt.MatchFlags(Qt.MatchFlag.MatchContains)
-			items=self.lstCategories.findItems(i18ncat,flag)
-			for item in items:
-				if item.text().replace(" · ","").lower()==i18ncat.lower():
-					self.lstCategories.setCurrentItem(item)
-					break
-		if self.oldCat!=i18ncat:
-			self.oldCat=i18ncat
-		cat=self.i18nCat.get(i18ncat,i18ncat)
-		if cat==i18n.get("ALL"):
-			cat=""
 		self._getAppList(cat)
 		#self.apps=self._getAppList(cat)
 		#self._filterView(getApps=False)

@@ -131,6 +131,17 @@ def tablePanel():
 					margin-bottom:%spx;
 				}"""%(int(MARGIN)*1.5,int(MARGIN)*1.5,int(MARGIN)*1.5)
 	css=css+iconUri
+
+	categoriesBar="""#categoriesBar{border:0px;
+					margin-left:%spx;
+					margin-right:%spx;
+					margin-bottom:%spx;
+				}"""%(int(MARGIN*2),MARGIN,int(MARGIN)/4)
+	css=css+categoriesBar
+
+	categoryTag="""#categoryTag{text-decoration:none;background:%s;color:%s;padding:1px;padding-bottom:3px;border-radius:10;}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT)
+	css=css+categoryTag
+
 	return(css)
 #def tablePanel
 
