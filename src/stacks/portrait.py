@@ -998,7 +998,13 @@ class portrait(QStackedWindowItem):
 		self.rp.topBar.clean()
 		cat=self._getRawCategory(cat)
 		if cat!="":
-			self.rp.populateCategories(self.categoriesTree[cat])
+			fcat=cat
+			if cat not in self.categoriesTree.keys():
+				fcat=self._getRawCategory("")
+			cats=self.categoriesTree[fcat]
+			if cat not in cats:
+				cats.insert(0,cat)
+			self.rp.populateCategories(cats)
 			self.rp.topBar.setVisible(True)
 		else:
 			self.rp.topBar.setVisible(False)

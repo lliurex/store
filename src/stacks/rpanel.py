@@ -89,7 +89,7 @@ class mainPanel(QWidget):
 	def populateCategories(self,cats):
 		self.topBar.clean()
 		for cat in cats:
-			wdg=QLabel("<a href=\"#{0}\">#{0}</a>".format(_(cat),css))
+			wdg=QLabel("<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'>#{0}</a>".format(_(cat)))
 			wdg.setAttribute(Qt.WA_StyledBackground, True)
 			wdg.setOpenExternalLinks(False)
 			wdg.setObjectName("categoryTag")
