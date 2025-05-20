@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from functools import partial
 import os
 import json
 from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy
@@ -49,6 +50,7 @@ class QPushButtonRebostApp(QPushButton):
 	def __init__(self,strapp,appname="",parent=None,**kwargs):
 		QPushButton.__init__(self, parent)
 		self.iconSize=kwargs.get("iconSize",96)
+		self.destroyed.connect(partial(QPushButtonRebostApp._stop,self.__dict__))
 		if LAYOUT=="appsedu":
 			self.iconSize=self.iconSize/2
 		self.margin=12
@@ -91,10 +93,17 @@ class QPushButtonRebostApp(QPushButton):
 		self.layout().addWidget(self.btn,2,0,Qt.AlignCenter|Qt.AlignBottom)
 		self.installEventFilter(self)
 		self.scrCnt=QScreenShotContainer()
+		self.th=[]
 		self.data=processData(strapp,autoUpdate=True)
 		self.data.processed.connect(self._renderGui)
 		self.data.start()
 	#def __init__
+
+	def _stopThreads(self):
+		for th in self.th:
+			if th.isRunning():
+				th.quit()
+				th.wait()
 
 	def setData(self,data):
 		self.data.setData(data)
@@ -156,6 +165,7 @@ class QPushButtonRebostApp(QPushButton):
 				if self.init==False:
 					self.init=True
 					self.updateScreen()
+	
 		return(False)
 	#def eventFilter
 
@@ -195,15 +205,14 @@ class QPushButtonRebostApp(QPushButton):
 		if app.get("name","")=="":
 			return
 		img=app.get('icon','')
-		#icn=''
-		#if os.path.isfile(img):
-		#	icn=QPixmap.fromImage(QImage(img))
-		#	icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
-		#elif img=='':
-		#if img=='':
-		#	icn=QIcon.fromTheme(app.get('pkgname'),QIcon.fromTheme("appedu-generic"))
-		#	img=icn.getFile()
-		#	icn=icn2.pixmap(self.iconSize,self.iconSize)
+		icn=''
+		if os.path.isfile(img):
+			icn=QPixmap.fromImage(QImage(img))
+			icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
+		elif img=='':
+			icn=QIcon.fromTheme(app.get('pkgname'),QIcon.fromTheme("appedu-generic"))
+			img=icn.getFile()
+			icn=icn2.pixmap(self.iconSize,self.iconSize)
 		if isinstance(img,str):
 			if "flathub" in img:
 				tmp=img.split("/")
@@ -221,11 +230,23 @@ class QPushButtonRebostApp(QPushButton):
 		#		wsize*=2
 		#	#self.iconUri.setPixmap(icn.scaled(wsize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation))
 		#elif img.startswith('http'):
-		self.scr=self.scrCnt.loadScreenShot(img,self.cacheDir)
-		self.scr.imageLoaded.connect(self.load)
-		self.scr.start()
+		scr=self.scrCnt.loadScreenShot(img,self.cacheDir)
+		scr.imageReady.connect(self.load)
+		scr.start()
+		self.th.append(scr)
+		#self.scr.wait()
 		#self._applyDecoration(app)
 	#def loadImg
+
+	@staticmethod
+	def _stop(*args):
+		self=args[0]
+		if "scr" in self.keys():
+			self["scr"].blockSignals(True)
+			self["scr"].requestInterruption()
+			self["scr"].deleteLater()
+			self["scr"].wait()
+	#def _stop
 
 	def _getStats(self,app):
 		stats={}
