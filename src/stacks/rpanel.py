@@ -80,7 +80,6 @@ class mainPanel(QWidget):
 	#def _defCategoriesBar
 
 	def _tagNav(self,*args):
-		print(args)
 		cat=args[0].replace("#","")
 		self.tagpressed.emit(cat)
 	#def _tagNav(self,*args)
