@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import sys,signal
 import os
+from functools import partial
 import subprocess
 import json
 import html
@@ -10,7 +11,7 @@ from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidge
 							QAbstractScrollArea, QFrame
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
-from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QStackedWindowItem
+from QtExtraWidgets import QScreenShotContainer,QScrollLabel
 import gettext
 import libhelper
 import exehelper
@@ -79,7 +80,6 @@ class thShowApp(QThread):
 				if isinstance(app,str):
 					app=json.loads(app)
 				self.showEnded.emit(app)
-		return True
 	#def run
 #class thShowApp
 
@@ -104,6 +104,7 @@ class detailPanel(QWidget):
 		self.app={}
 		self.rc=store.client()
 		self.instBundle=""
+		self.th=[]
 		self.__initScreen__()
 	#def __init__
 
@@ -514,7 +515,7 @@ class detailPanel(QWidget):
 			elif len(icn)>0:
 				if os.path.isfile(icn):
 					pxm=QtGui.QPixmap(icn)
-			if not pxm:
+			if not pxm :
 				icn=QtGui.QIcon.fromTheme(self.app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
 				pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
 			if pxm:
@@ -548,6 +549,10 @@ class detailPanel(QWidget):
 				print(e)
 	#def _loadScreenshots
 
+	def _updateIcon(self,*args):
+		icn=args[0]
+		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
+
 	def updateScreen(self):
 		if self.stream!="":
 			return
@@ -558,8 +563,13 @@ class detailPanel(QWidget):
 		#Disabled as requisite (250214-11:52)
 		#self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
 	#	self.lblName.setText("{}".format(self.app.get('name').upper()))
-		icn=self._getIconFromApp(self.app)
+		icn=self.app["icon"]
 		if isinstance(icn,QtGui.QIcon):
+			icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
+		elif isinstance(icn,QtGui.QPixmap):
+			icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
+		else:
+			icn=self._getIconFromApp(self.app)
 			icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
 		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
 		self.lblIcon.loadImg(self.app)
@@ -659,7 +669,7 @@ class detailPanel(QWidget):
 		self.app["summary"]=""
 		self.app["pkgname"]=""
 		self.app["description"]=""
-	#def _resetScreen(self):
+	#def _resetScreen
 
 	def _onError(self):
 		self._debug("Error detected")
