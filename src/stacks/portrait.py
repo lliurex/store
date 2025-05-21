@@ -1040,44 +1040,6 @@ class portrait(QStackedWindowItem):
 		return(False)
 	#def eventFilter(self,*args):
 
-	def _checkInit(self,*args,**kwargs):
-		if hasattr(self,"firstHide")==False:
-			self.firstHide=None
-		else:
-			if isinstance(self.firstHide,bool)==False:
-				self._debug("First hide event, discard")
-				self.firstHide=False
-				return True
-			else:
-				if self.firstHide==False:
-					self._debug("Second hide event, discard")
-					self.firstHide=True
-					return True
-			if (len(self.pendingApps)+self.appsLoaded+len(self.appsSeen))==0:
-				self._rebost.setAction("search","")
-				if self._rebost.isRunning():
-					self._rebost.quit()
-					self._rebost.wait()
-				self._rebost.blockSignals(False)
-				self._rebost.start()
-		#		return True
-			self._debug("Launching app. Pending: {} Seen: {}".format(len(self.pendingApps),len(self.appsSeen)))
-
-			if hasattr(self,"appUpdate"):
-				if self.appUpdate.isRunning()==False and len(self.pendingApps)>0:
-					self._debug("Starting appUpdate thread")
-					self.appUpdate.setApps(self.pendingApps)
-					self.appUpdate.blockSignals(False)
-					self.appUpdate.start()
-
-			self.progress.stop()
-			self.rp.table.removeEventFilter(self)
-			self.progress.lblInfo.setText("")
-			self.progress.lblInfo.setVisible(False)
-			self.progress.setAttribute(Qt.WA_StyledBackground, False)
-			self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
-	#def _checkInit
-
 	def _getMoreData(self):
 		#if (self.rp.table.verticalScrollBar().value()>=self.rp.table.verticalScrollBar().maximum()-30) and self.appsLoaded!=len(self.apps):
 		if (self.rp.table.verticalScrollBar().value()>=self.rp.table.verticalScrollBar().maximum()/2) and self.appsLoaded!=len(self.apps):
@@ -1339,7 +1301,6 @@ class portrait(QStackedWindowItem):
 			#self._loadHome()
 			self._stopThreads()
 			self._rebost.terminate()
-			#self._checkInit()
 		else:
 			self._return()
 	#def _returnDetail
