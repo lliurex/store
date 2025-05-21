@@ -2,7 +2,7 @@
 import os
 from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget,QSizePolicy,QCheckBox,QGraphicsDropShadowEffect
 from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread
+from PySide6.QtCore import Qt,QSize,Signal
 from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QInfoLabel,QFlowTouchWidget
 from lblLnk import QLabelLink
 import css

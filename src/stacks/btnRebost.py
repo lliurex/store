@@ -99,10 +99,21 @@ class QPushButtonRebostApp(QPushButton):
 		self.data.start()
 	#def __init__
 
+	@staticmethod
+	def _onDestroy(*args):
+		selfDict=args[0]
+		if selfDict.get("data","")!="":
+			self["data"].blockSignals(True)
+			self["data"].requestInterruption()
+			self["data"].deleteLater()
+			self["data"].wait()
+
 	def _stopThreads(self):
 		for th in self.th:
 			if th.isRunning():
-				th.quit()
+				th.blockSignals(True)
+				th.requestInterruption()
+				th.deleteLater()
 				th.wait()
 
 	def setData(self,data):
@@ -225,6 +236,8 @@ class QPushButtonRebostApp(QPushButton):
 						img=iconPath
 			#			icn=QPixmap.fromImage(iconPath)
 			#			icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
+			elif os.path.exists(os.path.join(self.cacheDir,os.path.basename(img))):
+				img=os.path.join(self.cacheDir,os.path.basename(img))
 		#if icn:
 		#	wsize=self.iconSize
 		#	if "/usr/share/banners/lliurex-neu" in img or os.path.basename(img).startswith("zero-lliurex-"):
@@ -241,12 +254,17 @@ class QPushButtonRebostApp(QPushButton):
 
 	@staticmethod
 	def _stop(*args):
-		self=args[0]
-		if "scr" in self.keys():
+		selfDict=args[0]
+		if "scr" in selfDict.keys():
 			self["scr"].blockSignals(True)
 			self["scr"].requestInterruption()
 			self["scr"].deleteLater()
 			self["scr"].wait()
+		for th in selfDict.get("th",[]):
+			th.blockSignals(True)
+			th.requestInterruption()
+			th.deleteLater()
+			th.wait()
 	#def _stop
 
 	def _getStats(self,app):

@@ -67,7 +67,11 @@ class storeHelper(QThread):
 		self.rc=store.client()
 		self.args=[]
 		self.action="upgrade"
+		self.destroyed.connect(storeHelper._onDestroy)
 	#def __init__
+
+	def _onDestroy(*args):
+		pass
 
 	def setAction(self,action,*args):
 		self.action=action
@@ -163,6 +167,11 @@ class updateAppData(QThread):
 		self.cont=0
 		self.ctl=0
 	#def __init__
+		self.destroyed.connect(updateAppData._onDestroy)
+	#def __init__
+
+	def _onDestroy(*args):
+		pass
 
 	def _debug(self,msg):
 		if self.dbg==True:
@@ -233,6 +242,12 @@ class getData(QThread):
 		QThread.__init__(self, None)
 		self._stop=False
 	#def __init__
+		self.destroyed.connect(getData._onDestroy)
+	#def __init__
+
+	@staticmethod
+	def _onDestroy(*args):
+		pass
 
 	def setApps(self,apps):
 		self.apps=apps
@@ -352,7 +367,6 @@ class portrait(QStackedWindowItem):
 		self._rebost.quit()
 		self._rebost.wait()
 		self.progress.stop()
-		self.apps={}
 	#def _stopThreads
 
 	def __initScreen__(self):
@@ -692,7 +706,6 @@ class portrait(QStackedWindowItem):
 
 	#def _getAppList(self,cat=""):
 	def _getAppList(self,cat="",limitBy=0):
-		self._stopThreads()
 		if len(cat)>0:
 			cat=self.i18nCat.get(cat,cat)
 			if limitBy==0:
@@ -740,7 +753,6 @@ class portrait(QStackedWindowItem):
 	def _endUpdate(self):
 		self.setCursor(self.oldCursor)
 		self.lstCategories.setCursor(self.oldCursor)
-		self.lstCategories.setEnabled(True)
 		self.appUpdate.blockSignals(False)
 		self._return()
 		#self.progress.setVisible(False)
@@ -989,12 +1001,13 @@ class portrait(QStackedWindowItem):
 			return
 		if time.time()-self.oldTime<MINTIME:
 			return
+		#self._stopThreads()
 		self.oldTime=time.time()
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.lstCategories.setCursor(cursor)
 		self.lstCategories.setEnabled(False)
 		self._debug("LOAD CATEGORY {}".format(cat))
-		self.rp.setVisible(False)
+		#self.rp.setVisible(False)
 		self.rp.topBar.clean()
 		cat=self._getRawCategory(cat)
 		#self.progress.start()
@@ -1123,13 +1136,12 @@ class portrait(QStackedWindowItem):
 		QApplication.processEvents()
 		self._debug("************************")
 		self._debug("************************")
-		self._debug("From {} To {} of {}".format(self.appsLoaded,self.appsLoaded+self.appsToLoad,len(self.apps)))
+		self._debug("From {} To {} of {}".format(self.appsLoaded,self.appsLoaded+self.appsToLoad,len(apps)))
 		a=time.time()
 		self._debug("Start: {}".format(a))
 		if len(apps)>0:
 			if self.stopAdding==True:
 				self.appsLoaded=0
-				self._stopThreads()
 				apps=[json.loads(item) for item in self.apps]
 			self._addAppsToGrid(apps)
 		self._debug("End: {}".format(time.time()-a))
@@ -1143,9 +1155,6 @@ class portrait(QStackedWindowItem):
 
 	def _addAppsToGrid(self,apps):
 		for jsonapp in apps:
-			if self.stopAdding==True:
-				self._stopThreads()
-				break
 			b=time.time()
 			appname=jsonapp['name']
 			if appname in self.appsSeen:
@@ -1165,11 +1174,12 @@ class portrait(QStackedWindowItem):
 				self.referersShowed.update({appname:btn})
 			self.appsLoaded+=1
 			#self._debug("Add: {}".format(time.time()-b))
-			QApplication.processEvents()
+			#QApplication.processEvents()
+	#def _addAppsToGrid
 
 	def _endLoadData(self):
 		#if self.appsLoaded==0 and self._readFilters().get(i18n.get("ALL").lower(),False)==True:
-		self._stopThreads()
+		#self._stopThreads()
 		if (self.appsLoaded==0 and self.lstCategories.count()==0):
 			#self._beginUpdate()
 			self._rebost.setAction("test")
@@ -1180,7 +1190,7 @@ class portrait(QStackedWindowItem):
 		else:
 			if len(self.pendingApps)>0:
 				self.appUpdate.blockSignals(False)
-				self.appUpdate.start()
+				#self.appUpdate.start()
 			self._endUpdate()
 		self.refresh=True
 	#def _endLoadData(self):
@@ -1338,7 +1348,7 @@ class portrait(QStackedWindowItem):
 		self.setCursor(self.oldCursor)
 		self.parent.setWindowTitle("{}".format(APPNAME))
 		self.loading=False
-		QApplication.processEvents()
+		#QApplication.processEvents()
 		if self.appUrl!="":
 			self.parent.setWindowTitle("{} - {}".format(APPNAME,self.appUrl.capitalize()))
 			self.lp.setParms({"name":self.appUrl,"icon":""})
@@ -1349,6 +1359,7 @@ class portrait(QStackedWindowItem):
 			self.lp.hide()
 			self.rp.show()
 			self.progress.stop()
+		self.lstCategories.setEnabled(True)
 	#def _return
 
 	def _gotoSettings(self):
@@ -1384,7 +1395,6 @@ class portrait(QStackedWindowItem):
 				self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 				self._populateCategories()
 				self._getAppList()
-				return
 			self._endUpdate()
 	#def _updateScreen
 

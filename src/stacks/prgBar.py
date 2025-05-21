@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os,time
+from functools import partial
 import json
 from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy,QWidget,QVBoxLayout
 from PySide6.QtCore import Qt,Signal,QThread,QCoreApplication,QTimer
@@ -67,6 +68,16 @@ class QProgressImage(QWidget):
 		self.lblInfo.setAlignment(Qt.AlignCenter)
 		self.inc=-5
 		self.running=False
+		self.destroyed.connect(partial(QProgressImage._onDestroy,self.__dict__))
+
+	@staticmethod
+	def _onDestroy(*args):
+		selfDict=args[0]
+		if "updateTimer" in selfDict:
+			selfDict["updateTimer"].blockSignals(True)
+			selfDict["updateTimer"].requestInterruption()
+			selfDict["updateTimer"].deleteLater()
+			selfDict["updateTimer"].wait()
 
 	def start(self):
 		self.updateTimer.start()
