@@ -371,7 +371,7 @@ class portrait(QStackedWindowItem):
 		self.lp=self._detailPane()
 		self.lp.setObjectName("detailPanel")
 		self.lp.clicked.connect(self._returnDetail)
-		self.lp.loaded.connect(self._updateBtn)
+		self.lp.loaded.connect(self._detailLoaded)
 		self.lp.tagpressed.connect(self._loadCategory)
 		self.box.addWidget(self.lp,0,1)
 		self.lp.hide()
@@ -1019,22 +1019,6 @@ class portrait(QStackedWindowItem):
 	#def _endLoadCategory
 
 	def eventFilter(self,*args):
-		ev=args[1]
-	#	if ev.type()==QEvent.Type.Resize:
-	#		if hasattr(self,"first")==False:
-	#			self.first=True
-	#			ev.accept()
-	#		else:
-	#			if self.first==True:
-	#				self.first==False
-	#			elif self.first==False:
-	#				self.first=None
-	#				self.progress.stop()
-	#				self.rp.setVisible(True)
-	#	elif isinstance(args[0],QFlowTouchWidget) and ev.type()==QEvent.Type.Paint:
-	#		args[0].setVisible(True)
-	#		self.init=True
-	#		self._checkInit()
 		if isinstance(args[0],QListWidget):
 			if args[1].type==QEvent.Type.KeyRelease:
 				self.released=True
@@ -1303,8 +1287,8 @@ class portrait(QStackedWindowItem):
 			self.appUrl=pkgname
 			self._debug("Seeking for {}".format(self.appUrl))
 	#def setParms
-
-	def _updateBtn(self,*args,**kwargs):
+	
+	def _detailLoaded(self,*args,**kwargs):
 		QApplication.processEvents()
 		self.lp.show()
 		self.progress.stop()
@@ -1312,12 +1296,14 @@ class portrait(QStackedWindowItem):
 			return()
 		if self.refererApp==None:
 			return()
+
+	def _updateBtn(self,*args,**kwargs):
 		#for arg in args:
 		#	if isinstance(arg,dict):
 		#		for key,item in arg.items():
 		#			kwargs[key]=item
 		#self.refresh=kwargs.get("refresh",False)
-		#app=kwargs.get("app",{})
+		app=kwargs.get("app",{})
 		app={}
 		if isinstance(args[0],dict):
 			app=args[0]
@@ -1331,6 +1317,7 @@ class portrait(QStackedWindowItem):
 	#def _updateBtn
 
 	def _returnDetail(self,*args,**kwargs):
+		self._updateBtn(args[0])
 		if self.appUrl!="":
 			self.appUrl=""
 			self.progress.setAttribute(Qt.WA_StyledBackground, False)
@@ -1390,6 +1377,11 @@ class portrait(QStackedWindowItem):
 				self._beginLoadData(self.appsLoaded,self.appsToLoad)
 		else:
 			if self.appsToLoad==-1: #Init 
+				self.rp.table.removeEventFilter(self)
+				self.progress.lblInfo.setText("")
+				self.progress.lblInfo.setVisible(False)
+				self.progress.setAttribute(Qt.WA_StyledBackground, False)
+				self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 				self._populateCategories()
 				self._getAppList()
 				return
