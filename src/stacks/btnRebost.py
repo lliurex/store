@@ -154,8 +154,8 @@ class QPushButtonRebostApp(QPushButton):
 
 	def eventFilter(self,*args):
 		ev=args[1]
-		if isinstance(ev,QMouseEvent):
-			self.activate()
+		#if isinstance(ev,QMouseEvent):
+		#	self.activate()
 		if isinstance(ev,QEvent):
 			if ev.type()==QEvent.Type.Hide:
 				if hasattr(self,"data"):
@@ -170,8 +170,6 @@ class QPushButtonRebostApp(QPushButton):
 	#def eventFilter
 
 	def updateScreen(self):
-		#self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
-		#text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name',''),self.app.get('summary'),'')
 		if hasattr(self,"app")==False:
 			return
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
@@ -206,7 +204,10 @@ class QPushButtonRebostApp(QPushButton):
 			return
 		img=app.get('icon','')
 		icn=''
-		if os.path.isfile(img):
+		if isinstance(img,QPixmap):
+			self.load(img)
+			return
+		elif os.path.isfile(img):
 			icn=QPixmap.fromImage(QImage(img))
 			icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
 		elif img=='':
