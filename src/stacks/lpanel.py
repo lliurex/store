@@ -200,6 +200,8 @@ class detailPanel(QWidget):
 
 	def _endSetParms(self,*args):
 		if len(args)>0:
+			#Preserve icon 
+			icn=self.app.get("icon")
 			app=args[0]
 			if isinstance(app,dict):
 				self.app=app
@@ -358,6 +360,12 @@ class detailPanel(QWidget):
 	def _clickedBack(self):
 		if self.thParmShow.isRunning():
 			self.thParmShow.quit()
+		pxm=self.lblIcon.pixmap()
+		if pxm.isNull()==False:
+			self.app["icon"]=pxm
+		for th in self.th:
+			th.quit()
+			th.wait()
 		self.clicked.emit(self.app)
 
 	def _loaded(self):
@@ -563,16 +571,18 @@ class detailPanel(QWidget):
 		#Disabled as requisite (250214-11:52)
 		#self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
 	#	self.lblName.setText("{}".format(self.app.get('name').upper()))
-		icn=self.app["icon"]
-		if isinstance(icn,QtGui.QIcon):
-			icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
-		elif isinstance(icn,QtGui.QPixmap):
-			icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
-		else:
-			icn=self._getIconFromApp(self.app)
-			icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
-		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
+	#	icn=self.app["icon"]
+	#	if isinstance(icn,QtGui.QIcon):
+	#		icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
+	#	elif isinstance(icn,QtGui.QPixmap)==False:
+	#		icn=self._getIconFromApp(self.app)
+	#		if isinstance(icn,QtGui.QIcon):
+	#			icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
+		#self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
 		self.lblIcon.loadImg(self.app)
+		pxm=self.lblIcon.pixmap()
+		if pxm.isNull()==False:
+			self.app["icon"]=pxm
 		#Disabled as requisite (250214-11:52)
 		#self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
 		summary="{}<br>{}".format(self.app["name"].upper(),self.app.get("summary",""))
