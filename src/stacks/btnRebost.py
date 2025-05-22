@@ -134,15 +134,15 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setText(i18n.get("UNAUTHORIZED"))
 		elif "eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))==1:
 			self.btn.setText(i18n.get("UNAVAILABLE"))
-	#	self.flyIcon=""
-	#	if self.app.get("name","").startswith("zero-"):
-	#		self.flyIcon=QPixmap(os.path.join(RSRC,"zero-center128x128.png"))
-	#	elif self.app.get("infopage")!=None:
-	#		if "appsedu" in self.app["infopage"].lower():
-	#			self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu128x128.png"))
-	#	scaleFactor=(self.iconSize/2)
-	#	if isinstance(self.flyIcon,QPixmap):
-	#		self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
+		self.flyIcon=""
+		if self.app.get("name","").startswith("zero-"):
+			self.flyIcon=QPixmap(os.path.join(RSRC,"zero-center128x128.png"))
+		elif self.app.get("infopage")!=None:
+			if "appsedu" in self.app["infopage"].lower():
+				self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu128x128.png"))
+		scaleFactor=(self.iconSize/2)
+		if isinstance(self.flyIcon,QPixmap):
+			self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper().replace("L*","L·"),self.app.get('summary','').strip().replace("l*","·"))
 		self.setToolTip(text)
 		#text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name','').strip(),self.app.get('summary','').strip(),'')
@@ -223,8 +223,7 @@ class QPushButtonRebostApp(QPushButton):
 			icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
 		elif img=='':
 			icn=QIcon.fromTheme(app.get('pkgname'),QIcon.fromTheme("appedu-generic"))
-			img=icn.getFile()
-			icn=icn2.pixmap(self.iconSize,self.iconSize)
+			img=icn.pixmap(self.iconSize,self.iconSize)
 		if isinstance(img,str):
 			if "flathub" in img:
 				tmp=img.split("/")
@@ -383,8 +382,10 @@ class QPushButtonRebostApp(QPushButton):
 	#def _removeDecoration
 	
 	def load(self,*args):
+		oldPxm=self.iconUri.pixmap()
 		img=args[0]
-		self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
+		if oldPxm.isNull()==True:
+			self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
 	#def load
 	
 	def activate(self):
