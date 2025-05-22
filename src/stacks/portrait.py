@@ -947,26 +947,29 @@ class portrait(QStackedWindowItem):
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self._stopThreads()
+		self.stopAdding=True
 		#self.rp.setVisible(False)
 		self.resetScreen()
 		self.progress.start()
 		self.oldSearch=txt
+		self.lstCategories.setCurrentRow(0)
 		if len(txt)==0:
 			self._getAppList()
 		else:
-			self.apps=json.loads(self.rc.execute('search',txt))
-			self.appsRaw=self.apps.copy()
-			self.refresh=True
-			if len(self.apps)==0:
-				self.refresh=False
-			if self.init==True:
-				self.progress.stop()
-			self._filterView(getApps=False)
+			self._rebost.setAction("search",txt)
+			self._rebost.blockSignals(False)
+			self._rebost.start()
+		#	self.apps=json.loads(self.rc.execute('search',txt))
+		#	self.appsRaw=self.apps.copy()
+		#	self.refresh=True
+		#	if len(self.apps)==0:
+		#		self.refresh=False
+		#	if self.init==True:
+		#		self.progress.stop()
+		#	self._filterView(getApps=False)
 	#def _searchApps
 
 	def _endSearchApps(self,*args):
-		self.resetScreen()
-		self._stopThreads()
 		self.appsRaw=args[0]
 		self.apps=self.appsRaw
 		self.appsRaw.sort()
@@ -1023,7 +1026,6 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setCursor(cursor)
 		self.lstCategories.setEnabled(False)
 		self._debug("LOAD CATEGORY {}".format(cat))
-		self.rp.topBar.clean()
 		cat=self._getRawCategory(cat)
 		self.progress.start()
 		QApplication.processEvents()
@@ -1031,6 +1033,11 @@ class portrait(QStackedWindowItem):
 		self.resetScreen()
 		self._beginUpdate()
 		self._getAppList(cat)
+		if cat in self.categoriesTree.keys():
+			self.rp.populateCategories(self.categoriesTree[cat])
+		elif cat!="":
+			self.rp.topBar.setVisible(True)
+		print("CAT {}".format(cat))
 	#def _loadCategory
 
 	def _endLoadCategory(self,*args):
@@ -1157,7 +1164,8 @@ class portrait(QStackedWindowItem):
 				self.referersShowed.update({appname:btn})
 			self.appsLoaded+=1
 			#self._debug("Add: {}".format(time.time()-b))
-			QApplication.processEvents()
+			if self.appsLoaded%15==0:
+				QApplication.processEvents()
 	#def _addAppsToGrid
 
 	def _endLoadData(self):
@@ -1388,6 +1396,7 @@ class portrait(QStackedWindowItem):
 			self.oldSearch=""
 		self.appsSeen=[]
 		self.rp.table.clean()
+		self.rp.topBar.setVisible(False)
 	#def resetScreen
 
 	def _updateConfig(self,key):
