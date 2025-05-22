@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from functools import partial
 import os
 import json
 from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy
@@ -49,6 +50,7 @@ class QPushButtonRebostApp(QPushButton):
 	def __init__(self,strapp,appname="",parent=None,**kwargs):
 		QPushButton.__init__(self, parent)
 		self.iconSize=kwargs.get("iconSize",96)
+		self.destroyed.connect(partial(QPushButtonRebostApp._stop,self.__dict__))
 		if LAYOUT=="appsedu":
 			self.iconSize=self.iconSize/2
 		self.margin=12
@@ -91,10 +93,28 @@ class QPushButtonRebostApp(QPushButton):
 		self.layout().addWidget(self.btn,2,0,Qt.AlignCenter|Qt.AlignBottom)
 		self.installEventFilter(self)
 		self.scrCnt=QScreenShotContainer()
+		self.th=[]
 		self.data=processData(strapp,autoUpdate=True)
 		self.data.processed.connect(self._renderGui)
 		self.data.start()
 	#def __init__
+
+	@staticmethod
+	def _onDestroy(*args):
+		selfDict=args[0]
+		if selfDict.get("data","")!="":
+			self["data"].blockSignals(True)
+			self["data"].requestInterruption()
+			self["data"].deleteLater()
+			self["data"].wait()
+
+	def _stopThreads(self):
+		for th in self.th:
+			if th.isRunning():
+				th.blockSignals(True)
+				th.requestInterruption()
+				th.deleteLater()
+				th.wait()
 
 	def setData(self,data):
 		self.data.setData(data)
@@ -114,15 +134,15 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setText(i18n.get("UNAUTHORIZED"))
 		elif "eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))==1:
 			self.btn.setText(i18n.get("UNAVAILABLE"))
-	#	self.flyIcon=""
-	#	if self.app.get("name","").startswith("zero-"):
-	#		self.flyIcon=QPixmap(os.path.join(RSRC,"zero-center128x128.png"))
-	#	elif self.app.get("infopage")!=None:
-	#		if "appsedu" in self.app["infopage"].lower():
-	#			self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu128x128.png"))
-	#	scaleFactor=(self.iconSize/2)
-	#	if isinstance(self.flyIcon,QPixmap):
-	#		self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
+		self.flyIcon=""
+		if self.app.get("name","").startswith("zero-"):
+			self.flyIcon=QPixmap(os.path.join(RSRC,"zero-center128x128.png"))
+		elif self.app.get("infopage")!=None:
+			if "appsedu" in self.app["infopage"].lower():
+				self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu128x128.png"))
+		scaleFactor=(self.iconSize/2)
+		if isinstance(self.flyIcon,QPixmap):
+			self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper().replace("L*","L·"),self.app.get('summary','').strip().replace("l*","·"))
 		self.setToolTip(text)
 		#text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name','').strip(),self.app.get('summary','').strip(),'')
@@ -145,8 +165,8 @@ class QPushButtonRebostApp(QPushButton):
 
 	def eventFilter(self,*args):
 		ev=args[1]
-		if isinstance(ev,QMouseEvent):
-			self.activate()
+		#if isinstance(ev,QMouseEvent):
+		#	self.activate()
 		if isinstance(ev,QEvent):
 			if ev.type()==QEvent.Type.Hide:
 				if hasattr(self,"data"):
@@ -156,12 +176,11 @@ class QPushButtonRebostApp(QPushButton):
 				if self.init==False:
 					self.init=True
 					self.updateScreen()
+	
 		return(False)
 	#def eventFilter
 
 	def updateScreen(self):
-		#self.setToolTip("<p>{0}</p>".format(self.app.get('summary',self.app.get('name'))))
-		#text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name',''),self.app.get('summary'),'')
 		if hasattr(self,"app")==False:
 			return
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
@@ -195,15 +214,16 @@ class QPushButtonRebostApp(QPushButton):
 		if app.get("name","")=="":
 			return
 		img=app.get('icon','')
-		#icn=''
-		#if os.path.isfile(img):
-		#	icn=QPixmap.fromImage(QImage(img))
-		#	icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
-		#elif img=='':
-		#if img=='':
-		#	icn=QIcon.fromTheme(app.get('pkgname'),QIcon.fromTheme("appedu-generic"))
-		#	img=icn.getFile()
-		#	icn=icn2.pixmap(self.iconSize,self.iconSize)
+		icn=''
+		if isinstance(img,QPixmap):
+			self.load(img)
+			return
+		elif os.path.isfile(img):
+			icn=QPixmap.fromImage(QImage(img))
+			icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
+		elif img=='':
+			icn=QIcon.fromTheme(app.get('pkgname'),QIcon.fromTheme("appedu-generic"))
+			img=icn.pixmap(self.iconSize,self.iconSize)
 		if isinstance(img,str):
 			if "flathub" in img:
 				tmp=img.split("/")
@@ -215,17 +235,36 @@ class QPushButtonRebostApp(QPushButton):
 						img=iconPath
 			#			icn=QPixmap.fromImage(iconPath)
 			#			icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
+			elif os.path.exists(os.path.join(self.cacheDir,os.path.basename(img))):
+				img=os.path.join(self.cacheDir,os.path.basename(img))
 		#if icn:
 		#	wsize=self.iconSize
 		#	if "/usr/share/banners/lliurex-neu" in img or os.path.basename(img).startswith("zero-lliurex-"):
 		#		wsize*=2
 		#	#self.iconUri.setPixmap(icn.scaled(wsize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation))
 		#elif img.startswith('http'):
-		self.scr=self.scrCnt.loadScreenShot(img,self.cacheDir)
-		self.scr.imageLoaded.connect(self.load)
-		self.scr.start()
+		scr=self.scrCnt.loadScreenShot(img,self.cacheDir)
+		scr.imageReady.connect(self.load)
+		scr.start()
+		self.th.append(scr)
+		#self.scr.wait()
 		#self._applyDecoration(app)
 	#def loadImg
+
+	@staticmethod
+	def _stop(*args):
+		selfDict=args[0]
+		if "scr" in selfDict.keys():
+			self["scr"].blockSignals(True)
+			self["scr"].requestInterruption()
+			self["scr"].deleteLater()
+			self["scr"].wait()
+		for th in selfDict.get("th",[]):
+			th.blockSignals(True)
+			th.requestInterruption()
+			th.deleteLater()
+			th.wait()
+	#def _stop
 
 	def _getStats(self,app):
 		stats={}
@@ -343,8 +382,10 @@ class QPushButtonRebostApp(QPushButton):
 	#def _removeDecoration
 	
 	def load(self,*args):
+		oldPxm=self.iconUri.pixmap()
 		img=args[0]
-		self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
+		if oldPxm.isNull()==True:
+			self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
 	#def load
 	
 	def activate(self):

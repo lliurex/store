@@ -2,8 +2,9 @@
 import os
 from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget,QSizePolicy,QCheckBox,QGraphicsDropShadowEffect
 from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread
+from PySide6.QtCore import Qt,QSize,Signal
 from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QInfoLabel,QFlowTouchWidget
+from lblLnk import QLabelLink
 import css
 import gettext
 _ = gettext.gettext
@@ -35,6 +36,7 @@ i18n={
 	}
 
 class mainPanel(QWidget):
+	tagpressed=Signal(str)
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.maxCol=1
@@ -53,6 +55,13 @@ class mainPanel(QWidget):
 		lay.addWidget(wdg)
 		if LAYOUT=="appsedu":
 			self.search.setVisible(True)
+
+		self.topBar=self._defCategoriesBar()
+		self.topBar.setObjectName("categoriesBar")
+		self.topBar.setVisible(False)
+		self.topBar.setAttribute(Qt.WA_StyledBackground, True)
+		lay.addWidget(self.topBar,Qt.AlignTop|Qt.AlignCenter)
+
 		self.table=self._defTable()
 		if LAYOUT=="appsedu":
 			tableCol=1
@@ -62,6 +71,35 @@ class mainPanel(QWidget):
 		
 		self.setLayout(lay)
 	#def __init__
+
+	def _defCategoriesBar(self):
+		wdg=QFlowTouchWidget(self)
+		lbl=QLabel("#{}".format(_("ALL")))
+		wdg.addWidget(lbl)
+		return(wdg)
+	#def _defCategoriesBar
+
+	def _tagNav(self,*args):
+		cat=args[0].replace("#","")
+		self.tagpressed.emit(cat)
+	#def _tagNav(self,*args)
+
+
+	def populateCategories(self,cats):
+		self.topBar.clean()
+		for cat in cats:
+			wdg=QLabel("<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'>#{0}</a>".format(_(cat)))
+			wdg.setAttribute(Qt.WA_StyledBackground, True)
+			wdg.setOpenExternalLinks(False)
+			wdg.setObjectName("categoryTag")
+			wdg.setStyleSheet("""text-decoration:none;color:#FFFFFF""")
+			wdg.linkActivated.connect(self._tagNav)
+			self.topBar.addWidget(wdg)
+		if len(cats)>1:
+			self.topBar.setVisible(True)
+		else:
+			self.topBar.setVisible(False)
+	#def populateCategories
 
 	def _defTable(self):
 		table=QFlowTouchWidget(self)
@@ -111,6 +149,7 @@ class mainPanel(QWidget):
 		wdg.setMaximumWidth(450)
 		return(wdg)
 	#def _defSearch
+
 
 	def setBtnIcon(self,icn=""):
 		if icn!="":

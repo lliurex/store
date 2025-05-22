@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os
+from functools import partial
 import json
 from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import Qt,Signal
@@ -18,7 +19,20 @@ class QLabelRebostApp(QLabel):
 		QLabel.__init__(self, parent)
 		self.setAlignment(Qt.AlignCenter)
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
+		self.scrCnt=QScreenShotContainer()
+		self.th=[]
+		self.destroyed.connect(partial(QLabelRebostApp._stop,self.__dict__))
 	#def __init__
+
+	@staticmethod
+	def _stop(*args):
+		self=args[0]
+		if "scr" in self.keys():
+			self["scr"].blockSignals(True)
+			self["scr"].requestInterruption()
+			self["scr"].deleteLater()
+			self["scr"].wait()
+	#def _stop(*args):
 
 	def loadImg(self,app):
 		wsize=ICON_SIZE
@@ -38,16 +52,16 @@ class QLabelRebostApp(QLabel):
 			self.setPixmap(icn.scaled(wsize,ICON_SIZE,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 			self.setMinimumWidth(wsize+10)
 		elif img.startswith('http'):
-			aux=QScreenShotContainer()
-			self.scr=aux.loadScreenShot(img,self.cacheDir)
-			self.scr.start()
-			self.scr.imageLoaded.connect(self.load)
-			#self.scr.wait()
+			scr=self.scrCnt.loadScreenShot(img,self.cacheDir)
+			scr.imageReady.connect(self.load)
+			scr.start()
+			self.th.append(scr)
 	#def loadImg
 	
 	def load(self,*args):
 		img=args[0]
-		self.setPixmap(img.scaled(ICON_SIZE,ICON_SIZE))
+		wsize=ICON_SIZE
+		self.setPixmap(img.scaled(wsize,ICON_SIZE,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 		self.setMinimumWidth(ICON_SIZE+10)
 	#def load
 #class QLabelRebostApp

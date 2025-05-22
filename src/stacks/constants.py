@@ -1,7 +1,7 @@
 #/usr/bin/python3
 import os
 
-MINTIME=0.2
+MINTIME=0.5
 LAYOUT="appsedu"
 APPNAME="LliureX Store"
 ICON_SIZE=72
