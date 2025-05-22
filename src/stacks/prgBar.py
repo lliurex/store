@@ -11,9 +11,13 @@ import random
 import gettext
 _ = gettext.gettext
 
-i18n={
+i18nLoad={
 	"GETTINGINFO":_("Downloading information, wait a moment..."),
 	"UPDATINGINFO":_("Upgrading application database")
+	}
+
+i18nUnlock={
+	"UNLOCKINGDB":_("Loading available applications"),
 	}
 
 class progress(QThread):
@@ -39,6 +43,7 @@ class QProgressImage(QWidget):
 		QWidget.__init__(self)
 		lay=QVBoxLayout()
 		self.setLayout(lay)
+		self.unlocking=False
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("prgBar")
 		self.setStyleSheet(css.prgBar())
@@ -52,7 +57,7 @@ class QProgressImage(QWidget):
 		self.pxm=QPixmap(img)#.scaled(267,267,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		self.pxm2=QPixmap(self.pxm.size())
 		self.lblPxm=QLabel()
-		self.lblInfo=QLabel(i18n["GETTINGINFO"])
+		self.lblInfo=QLabel(i18nLoad["GETTINGINFO"])
 		lay.setSpacing(0)
 		lay.addWidget(self.lblPxm,Qt.AlignBottom)
 		lay.addWidget(self.lblInfo,Qt.AlignTop)
@@ -100,6 +105,10 @@ class QProgressImage(QWidget):
 	def _doProgress(self,*args):
 		self.running=True
 		if self.lblInfo.text()!="":
+			if self.unlocking==False:
+				i18n=i18nUnlock
+			else:
+				i18n=i18nLoad
 			if (self.oldTime!=0) and (int(time.time())-self.oldTime>3):
 				rnd=random.randint(0,len(i18n))-1
 				key=list(i18n.keys())[rnd]
