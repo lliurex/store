@@ -95,8 +95,9 @@ class mainPanel(QWidget):
 			wdg.setStyleSheet("""text-decoration:none;color:#FFFFFF""")
 			wdg.linkActivated.connect(self._tagNav)
 			self.topBar.addWidget(wdg)
-		if len(cats)>1:
+		if len(cats)>0:
 			self.topBar.setVisible(True)
+			self.topBar.setMaximumHeight(wdg.sizeHint().height()*2.3)
 		else:
 			self.topBar.setVisible(False)
 	#def populateCategories
