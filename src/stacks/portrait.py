@@ -528,12 +528,21 @@ class portrait(QStackedWindowItem):
 		#img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner128x32.png")
 		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","appsedu128x64.png")
 		pxm=QtGui.QPixmap(img).scaled(132,40,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
+		cmd=["pkexec","/usr/share/rebost/helper/test-rebost.py"]
+		try:
+			proc=subprocess.run(cmd)
+			if proc.returncode==0:
+				unlock=True
+		except:
+			unlock=False
+		finally:
+			chk.setEnabled(unlock)
+			
 		lbl.setPixmap(pxm)
 		lbl.setAlignment(Qt.AlignCenter|Qt.AlignCenter)
 		lay.addWidget(lbl,Qt.AlignRight)
 		chk.setChecked(self.rc.getLockStatus())
 		chk.stateChanged.connect(self._unlockRebost)
-		#chk.setEnabled(False)
 		lay.addWidget(chk,Qt.AlignLeft)
 		wdg.setLayout(lay)
 		wdg.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
