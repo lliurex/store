@@ -151,6 +151,13 @@ class storeHelper(QThread):
 			self.rc.update(True)
 		self.lckEnded.emit()
 	#def _unlock
+
+	def _permissions(self):
+		permissions=False
+		cmd=subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py","test"])
+		if cmd.returncode==0:
+			permissions=True
+		return(permissions)
 #class rebostHelper
 
 class updateAppData(QThread):
