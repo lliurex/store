@@ -145,18 +145,16 @@ class portrait(QStackedWindowItem):
 	#def _debug
 
 	def _endRestart(self,*args):
-		self.apps=[]
-		self.stopAdding=True
-		self._getAppList()
+		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
+		self.progress.setAttribute(Qt.WA_StyledBackground, False)
+		self.progress.stop()
+		self._goHome()
 	#def _endRestart
 
 	def _endLock(self,*args):
-		self.apps=[]
-		self.stopAdding=True
 		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		self.progress.setAttribute(Qt.WA_StyledBackground, False)
-		self.progress.lblInfo.setVisible(False)
-		QApplication.processEvents()
+		self.progress.stop()
 		self._goHome()
 
 	def _stopThreads(self):
@@ -164,13 +162,14 @@ class portrait(QStackedWindowItem):
 		self.getData.blockSignals(True)
 		self._rebost.blockSignals(True)
 		self.appUpdate.stop()
-		self.appUpdate.quit()
+		self.appUpdate.requestInterruption()
 		self.appUpdate.wait()
 		self.getData.stop()
-		self.getData.quit()
+		self.getData.requestInterruption()
 		self.getData.wait()
-		self._rebost.quit()
+		self._rebost.requestInterruption()
 		self._rebost.wait()
+		self._rebost.blockSignals(False)
 		self.progress.stop()
 	#def _stopThreads
 
@@ -183,6 +182,7 @@ class portrait(QStackedWindowItem):
 		wdg.setObjectName("wdg")
 		self.box.addWidget(wdg,0,0,Qt.AlignLeft)
 		self.rp=self._mainPane()
+		self.rp.tagpressed.connect(self._loadCategory)
 		self.box.addWidget(self.rp,0,1)
 		self.lp=self._detailPane()
 		self.lp.setObjectName("detailPanel")
@@ -386,11 +386,9 @@ class portrait(QStackedWindowItem):
 		else:
 			self._rebost.setAction("lock","")
 		if self._rebost.isRunning():
-			self._rebost.quit()
+			self._rebost.requestInterruption()
 			self._rebost.wait()
-		self._rebost.blockSignals(False)
 		self._rebost.start()
-		QApplication.processEvents()
 	#def _unlockRebost
 
 	def _populateCategories(self): 
@@ -477,10 +475,8 @@ class portrait(QStackedWindowItem):
 		else:
 			self._rebost.setAction("search","")
 		if self._rebost.isRunning():
-			self._rebost.quit()
-			QApplication.processEvents()
+			self._rebost.requestInterruption()
 			self._rebost.wait()
-		self._rebost.blockSignals(False)
 		self._rebost.start()
 	#def _getAppList
 
@@ -492,7 +488,6 @@ class portrait(QStackedWindowItem):
 
 	def _getUpgradables(self):
 		self.lblInfo.setVisible(False)
-		self._rebost.blockSignals(False)
 		self._rebost.setAction("upgrade")
 		self._rebost.start()
 	#def _getUpgradables
@@ -529,7 +524,6 @@ class portrait(QStackedWindowItem):
 			self._rebost.setAction("search","")
 			self._rebost.start()
 		self._populateCategories()
-		QApplication.processEvents()
 		self.resetScreen()
 		self.lstCategories.setCurrentRow(0)
 		self.updateScreen(True)
@@ -641,19 +635,19 @@ class portrait(QStackedWindowItem):
 			return
 		if time.time()-self.oldTime<MINTIME:
 			return
+		cursor=QtGui.QCursor(Qt.WaitCursor)
+		self.setCursor(cursor)
+		self.lstCategories.setEnabled(False)
+		self._stopThreads()
+		self.stopAdding=True
+		self.resetScreen()
 		self.progress.start()
 		self.oldTime=time.time()
-		cursor=QtGui.QCursor(Qt.WaitCursor)
-		self.lstCategories.setCursor(cursor)
-		self.lstCategories.setEnabled(False)
 		cat=self._getRawCategory(cat)
-		QApplication.processEvents()
 		self.rp.searchBox.setText("")
-		self.resetScreen()
-		self._beginUpdate()
 		self._getAppList(cat)
 		if cat in self.categoriesTree.keys():
-			self.rp.populateCategories(self.categoriesTree[cat])
+			self.rp.populateCategories(self.categoriesTree[cat],cat)
 		elif cat!="":
 			self.rp.topBar.setVisible(True)
 	#def _loadCategory
@@ -731,7 +725,6 @@ class portrait(QStackedWindowItem):
 		self.appsToLoad=len(self.apps)
 		if len(self.pendingApps)>0:
 			self._stopThreads()
-		QApplication.processEvents()
 		self._debug("************************")
 		self._debug("************************")
 		self._debug("From {} To {} of {}".format(self.appsLoaded,self.appsLoaded+self.appsToLoad,len(apps)))
@@ -741,7 +734,6 @@ class portrait(QStackedWindowItem):
 			if self.stopAdding==True:
 				self.appsLoaded=0
 				apps=[json.loads(item) for item in self.apps]
-				QApplication.processEvents()
 				self.stopAdding=False
 				self.pendingApps={}
 			self._addAppsToGrid(apps)
@@ -783,8 +775,8 @@ class portrait(QStackedWindowItem):
 				self.referersShowed.update({appname:btn})
 			self.appsLoaded+=1
 			#self._debug("Add: {}".format(time.time()-b))
-			if self.appsLoaded%15==0:
-				QApplication.processEvents()
+			#if self.appsLoaded%15==0:
+			QApplication.processEvents()
 	#def _addAppsToGrid
 
 	def _endLoadData(self):
@@ -876,8 +868,6 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
 		self.progress.setAttribute(Qt.WA_StyledBackground, False)
 		self.progress.start()
-		QApplication.processEvents()
-		self._rebost.blockSignals(False)
 		self._rebost.setAction("restart")
 		self._rebost.start()
 	#def _loadLockedRebost
@@ -904,7 +894,6 @@ class portrait(QStackedWindowItem):
 		self.lp.setParms({"name":args[-1].get("name",""),"icon":icn})
 		#self.rp.hide()
 		self.setCursor(self.oldCursor)
-		QApplication.processEvents()
 	#def _endLoadDetails
 
 	def setParms(self,*args):
@@ -917,7 +906,6 @@ class portrait(QStackedWindowItem):
 	#def setParms
 	
 	def _detailLoaded(self,*args,**kwargs):
-		QApplication.processEvents()
 		self.lp.show()
 		self.progress.stop()
 		if not hasattr(self,"refererApp"):
@@ -1020,6 +1008,7 @@ class portrait(QStackedWindowItem):
 		self.appsSeen=[]
 		self.rp.table.clean()
 		self.rp.topBar.setVisible(False)
+		QApplication.processEvents()
 	#def resetScreen
 
 	def _updateConfig(self,key):
