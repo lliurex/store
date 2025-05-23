@@ -1377,7 +1377,7 @@ class portrait(QStackedWindowItem):
 		self.setCursor(self.oldCursor)
 		self.parent.setWindowTitle("{}".format(APPNAME))
 		self.loading=False
-		#QApplication.processEvents()
+		QApplication.processEvents()
 		if self.appUrl!="":
 			self.parent.setWindowTitle("{} - {}".format(APPNAME,self.appUrl.capitalize()))
 			self.lp.setParms({"name":self.appUrl,"icon":""})
