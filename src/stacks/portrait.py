@@ -416,25 +416,21 @@ class portrait(QStackedWindowItem):
 		wdg.setObjectName("wdg")
 		self.box.addWidget(wdg,0,0,Qt.AlignLeft)
 		self.rp=self._mainPane()
-		self.rp.tagpressed.connect(self._loadCategory)
-		self.rp.table.installEventFilter(self)
+		#self.rp.tagpressed.connect(self._loadCategory)
+		#self.rp.table.installEventFilter(self)
 		#self.rp.table.verticalScrollBar().valueChanged.connect(self._getMoreData)
 		self.box.addWidget(self.rp,0,1)
 		self.lp=self._detailPane()
 		self.lp.setObjectName("detailPanel")
 		self.lp.clicked.connect(self._returnDetail)
 		self.lp.loaded.connect(self._detailLoaded)
-		self.lp.tagpressed.connect(self._loadCategory)
+		#self.lp.tagpressed.connect(self._loadCategory)
 		self.box.addWidget(self.lp,0,1)
 		self.lp.hide()
 		self.progress=self._defProgress()
 		self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
 		self.btnSettings=QPushButton()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
-		self.btnSettings.setIcon(icn)
-		self.btnSettings.clicked.connect(self._gotoSettings)
-		if LAYOUT=="appsedu":
-			self.btnSettings.setVisible(False)
 		self.box.setColumnStretch(1,1)
 		self.setObjectName("portrait")
 		self.rp.setVisible(False)
@@ -1394,12 +1390,6 @@ class portrait(QStackedWindowItem):
 			self.progress.stop()
 		self.lstCategories.setEnabled(True)
 	#def _return
-
-	def _gotoSettings(self):
-		cursor=QtGui.QCursor(Qt.WaitCursor)
-		self.setCursor(cursor)
-		self.parent.setCurrentStack(idx=2,parms="")
-	#def _gotoSettings
 
 	def updateScreen(self,addEnable=None):
 		if isinstance(addEnable,bool):
