@@ -85,17 +85,19 @@ class mainPanel(QWidget):
 	#def _tagNav(self,*args)
 
 
-	def populateCategories(self,cats):
+	def populateCategories(self,subcats,cat=""):
 		self.topBar.clean()
-		for cat in cats:
-			wdg=QLabel("<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'>#{0}</a>".format(_(cat)))
+		if cat not in subcats and cat!="":
+			subcats.insert(0,cat)
+		for subcat in subcats:
+			wdg=QLabel("<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'>#{0}</a>".format(_(subcat)))
 			wdg.setAttribute(Qt.WA_StyledBackground, True)
 			wdg.setOpenExternalLinks(False)
 			wdg.setObjectName("categoryTag")
 			wdg.setStyleSheet("""text-decoration:none;color:#FFFFFF""")
 			wdg.linkActivated.connect(self._tagNav)
 			self.topBar.addWidget(wdg)
-		if len(cats)>0:
+		if len(subcats)>1:
 			self.topBar.setVisible(True)
 			self.topBar.setMaximumHeight(wdg.sizeHint().height()*2.3)
 		else:
