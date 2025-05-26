@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-10 06:48+0200\n"
+"POT-Creation-Date: 2025-05-26 08:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,360 +17,710 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/stacks/btnRebost.py:14 ../src/stacks/cmbBtn.py:11
-#: ../src/stacks/lblApp.py:13 ../src/stacks/lpanel.py:39
+#: ../src/stacks/btnRebost.py:15 ../src/stacks/cmbBtn.py:11
+#: ../src/stacks/lblApp.py:14 ../src/stacks/lpanel.py:41
 msgid "Install"
 msgstr ""
 
-#: ../src/stacks/btnRebost.py:15 ../src/stacks/lpanel.py:43
+#: ../src/stacks/btnRebost.py:16 ../src/stacks/lpanel.py:45
 msgid "Remove"
 msgstr ""
 
-#: ../src/stacks/btnRebost.py:16
+#: ../src/stacks/btnRebost.py:17
 msgid "Blocked"
 msgstr ""
 
-#: ../src/stacks/btnRebost.py:17 ../src/stacks/lpanel.py:48
+#: ../src/stacks/btnRebost.py:18 ../src/stacks/lpanel.py:50
 msgid "Unavailable"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:27
+#: ../src/stacks/lpanel.py:28
 msgid ""
 "The app could not be loaded. Until included in LliureX catalogue it can't be "
 "installed"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:28
+#: ../src/stacks/lpanel.py:29
+msgid ""
+"For any question the SAI can be contacted at <a href='https://portal.edu.gva."
+"es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
+msgstr ""
+
+#: ../src/stacks/lpanel.py:30
 msgid "Choose"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:29 ../src/stacks/lpanel.py:47
+#: ../src/stacks/lpanel.py:31 ../src/stacks/lpanel.py:49
 msgid "Details"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:30 ../src/stacks/portrait.py:39
-#: ../src/stacks/rpanel.py:21
+#: ../src/stacks/lpanel.py:32 ../src/stacks/portrait.py:40
+#: ../src/stacks/rpanel.py:22
 msgid "Navigate through all applications"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:31 ../src/stacks/portrait.py:40
+#: ../src/stacks/lpanel.py:33 ../src/stacks/portrait.py:41
 msgid "Could not open"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:32 ../src/stacks/portrait.py:41
+#: ../src/stacks/lpanel.py:34 ../src/stacks/portrait.py:42
 msgid "Error opening"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:33 ../src/stacks/portrait.py:42
+#: ../src/stacks/lpanel.py:35 ../src/stacks/portrait.py:43
 msgid "System apps can't be removed"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:34 ../src/stacks/portrait.py:43
+#: ../src/stacks/lpanel.py:36 ../src/stacks/portrait.py:44
 msgid "Unknown error"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:35
+#: ../src/stacks/lpanel.py:37
 msgid "App unauthorized"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:36
+#: ../src/stacks/lpanel.py:38
 msgid "Format"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:37
+#: ../src/stacks/lpanel.py:39
 msgid "Info"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:38
+#: ../src/stacks/lpanel.py:40
 msgid "For more info go to"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:40
+#: ../src/stacks/lpanel.py:42
 msgid "Show application detail"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:41
+#: ../src/stacks/lpanel.py:43
 msgid "Opening"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:42
+#: ../src/stacks/lpanel.py:44
 msgid "Release"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:44
+#: ../src/stacks/lpanel.py:46
 msgid "Open"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:45
+#: ../src/stacks/lpanel.py:47
 msgid "See at Appsedu"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:46
+#: ../src/stacks/lpanel.py:48
 msgid "Website"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:49
+#: ../src/stacks/lpanel.py:51
 msgid "Upgrade"
 msgstr ""
 
-#: ../src/stacks/lpanel.py:50
+#: ../src/stacks/lpanel.py:52
 msgid "Zommand not found. Open Zero-Center?"
 msgstr ""
 
-#: ../src/stacks/portrait.py:34 ../src/stacks/rpanel.py:16
+#: ../src/stacks/portrait.py:35 ../src/stacks/rpanel.py:17
 msgid "All"
 msgstr ""
 
-#: ../src/stacks/portrait.py:35 ../src/stacks/rpanel.py:17
+#: ../src/stacks/portrait.py:36 ../src/stacks/rpanel.py:18
 msgid "Available"
 msgstr ""
 
-#: ../src/stacks/portrait.py:36 ../src/stacks/rpanel.py:18
+#: ../src/stacks/portrait.py:37 ../src/stacks/rpanel.py:19
 msgid "Filter by category"
 msgstr ""
 
-#: ../src/stacks/portrait.py:37 ../src/stacks/rpanel.py:19
+#: ../src/stacks/portrait.py:38 ../src/stacks/rpanel.py:20
 msgid "Certified by Appsedu"
 msgstr ""
 
-#: ../src/stacks/portrait.py:38 ../src/stacks/portrait.py:54
-#: ../src/stacks/rpanel.py:20 ../src/stacks/rpanel.py:32
+#: ../src/stacks/portrait.py:39 ../src/stacks/portrait.py:55
+#: ../src/stacks/rpanel.py:21 ../src/stacks/rpanel.py:33
 msgid "Portrait"
 msgstr ""
 
-#: ../src/stacks/portrait.py:44 ../src/stacks/rpanel.py:22
+#: ../src/stacks/portrait.py:45 ../src/stacks/rpanel.py:23
 msgid "Filters"
 msgstr ""
 
-#: ../src/stacks/portrait.py:45 ../src/stacks/rpanel.py:23
+#: ../src/stacks/portrait.py:46 ../src/stacks/rpanel.py:24
 msgid "Filter by formats and states"
 msgstr ""
 
-#: ../src/stacks/portrait.py:46 ../src/stacks/rpanel.py:24
+#: ../src/stacks/portrait.py:47 ../src/stacks/rpanel.py:25
 msgid "Home"
 msgstr ""
 
-#: ../src/stacks/portrait.py:47 ../src/stacks/rpanel.py:25
+#: ../src/stacks/portrait.py:48 ../src/stacks/rpanel.py:26
 msgid "Main page"
 msgstr ""
 
-#: ../src/stacks/portrait.py:48 ../src/stacks/rpanel.py:26
+#: ../src/stacks/portrait.py:49 ../src/stacks/rpanel.py:27
 msgid "Installed"
 msgstr ""
 
-#: ../src/stacks/portrait.py:49 ../src/stacks/rpanel.py:27
+#: ../src/stacks/portrait.py:50 ../src/stacks/rpanel.py:28
 msgid "Launch LliurexUp"
 msgstr ""
 
-#: ../src/stacks/portrait.py:50 ../src/stacks/rpanel.py:28
+#: ../src/stacks/portrait.py:51 ../src/stacks/rpanel.py:29
 msgid "Show applications"
 msgstr ""
 
-#: ../src/stacks/portrait.py:51 ../src/stacks/rpanel.py:29
+#: ../src/stacks/portrait.py:52 ../src/stacks/rpanel.py:30
 msgid "Updating info"
 msgstr ""
 
-#: ../src/stacks/portrait.py:52 ../src/stacks/rpanel.py:30
+#: ../src/stacks/portrait.py:53 ../src/stacks/rpanel.py:31
 msgid "Search"
 msgstr ""
 
-#: ../src/stacks/portrait.py:53 ../src/stacks/rpanel.py:31
+#: ../src/stacks/portrait.py:54 ../src/stacks/rpanel.py:32
 msgid "Sort alphabetically"
 msgstr ""
 
-#: ../src/stacks/portrait.py:55 ../src/stacks/rpanel.py:33
+#: ../src/stacks/portrait.py:56 ../src/stacks/rpanel.py:34
 msgid "Upgradables"
 msgstr ""
 
-#: ../src/stacks/portrait.py:56 ../src/stacks/rpanel.py:34
+#: ../src/stacks/portrait.py:57 ../src/stacks/rpanel.py:35
 msgid "There're upgrades available"
 msgstr ""
 
-#: ../src/stacks/prgBar.py:14
+#: ../src/stacks/prgBar.py:15
 msgid "Downloading information, wait a moment..."
 msgstr ""
 
-#: ../src/stacks/prgBar.py:15
+#: ../src/stacks/prgBar.py:16
 msgid "Upgrading application database"
 msgstr ""
 
-msgid "2DGraphics"
+#: ../src/stacks/prgBar.py:20
+msgid "Loading available applications"
 msgstr ""
 
-msgid "3DGraphics"
-msgstr ""
-
-msgid "Accessibility"
-msgstr ""
-
-msgid "Art"
-msgstr ""
-
-msgid "ArtificialIntelligence"
-msgstr ""
-
-msgid "Astronomy"
-msgstr ""
-
-msgid "Audio"
+#: ../src/stacks/rpanel.py:77
+msgid "ALL"
 msgstr ""
 
 msgid "AudioVideo"
 msgstr ""
-
-msgid "AudioVideoEditing"
+#
+msgid ": "
 msgstr ""
-
-msgid "Chart"
+#
+msgid "DiscBurning"
 msgstr ""
-
-msgid "Chat"
+#
+msgid "Audio"
 msgstr ""
-
-msgid "Chemistry"
+#
+msgid ": "
 msgstr ""
-
-msgid "ComputerScience"
-msgstr ""
-
-msgid "Debugger"
-msgstr ""
-
-msgid "Development"
-msgstr ""
-
-msgid "Documentation"
-msgstr ""
-
-msgid "Education"
-msgstr ""
-
-msgid "Electricity"
-msgstr ""
-
-msgid "Electronics"
-msgstr ""
-
-msgid "Emulator"
-msgstr ""
-
-msgid "Engineering"
-msgstr ""
-
-msgid "Forbidden"
-msgstr ""
-
-msgid "Game"
-msgstr ""
-
-msgid "Geography"
-msgstr ""
-
-msgid "Geoscience"
-msgstr ""
-
-msgid "Graphics"
-msgstr ""
-
-msgid "IDE"
-msgstr ""
-
-msgid "ImageProcessing"
-msgstr ""
-
-msgid "KidsGame"
-msgstr ""
-
-msgid "Languages"
-msgstr ""
-
-msgid "LliureX"
-msgstr ""
-
-msgid "LliureX-Infantil"
-msgstr ""
-
-msgid "LogicGame"
-msgstr ""
-
-msgid "Maps"
-msgstr ""
-
-msgid "Math"
-msgstr ""
-
+#
 msgid "Midi"
 msgstr ""
-
+#
 msgid "Mixer"
 msgstr ""
-
-msgid "Music"
-msgstr ""
-
-msgid "Network"
-msgstr ""
-
-msgid "OCR"
-msgstr ""
-
-msgid "Office"
-msgstr ""
-
-msgid "Photography"
-msgstr ""
-
-msgid "Physics"
-msgstr ""
-
-msgid "Player"
-msgstr ""
-
-msgid "RasterGraphics"
-msgstr ""
-
-msgid "Recorder"
-msgstr ""
-
-msgid "Robotics"
-msgstr ""
-
-msgid "Scanning"
-msgstr ""
-
-msgid "Science"
-msgstr ""
-
+#
 msgid "Sequencer"
 msgstr ""
-
-msgid "Shooter"
+#
+msgid "Tuner"
 msgstr ""
-
-msgid "System"
+#
+msgid "Recorder"
 msgstr ""
-
-msgid "TextEditor"
+#
+msgid "Player"
 msgstr ""
-
-msgid "Utility"
-msgstr ""
-
-msgid "VectorGraphics"
-msgstr ""
-
+#
 msgid "Video"
 msgstr ""
-
-msgid "WebBrowser"
+#
+msgid ": "
 msgstr ""
-
+#
+msgid "AudioVideoEditing"
+msgstr ""
+#
+msgid "Player"
+msgstr ""
+#
+msgid "Recorder"
+msgstr ""
+#
+msgid "TV"
+msgstr ""
+#
+msgid "Development"
+msgstr ""
+#
+msgid ": "
+msgstr ""
+#
+msgid "Building"
+msgstr ""
+#
+msgid "Debugger"
+msgstr ""
+#
+msgid "IDE"
+msgstr ""
+#
+msgid "GUIDesigner"
+msgstr ""
+#
+msgid "Profiling"
+msgstr ""
+#
+msgid "RevisionControl"
+msgstr ""
+#
+msgid "Translation"
+msgstr ""
+#
+msgid "Database"
+msgstr ""
+#
+msgid "ProjectManagement"
+msgstr ""
+#
 msgid "WebDevelopment"
 msgstr ""
-
-msgid "Zomando"
+#
+msgid "Education"
 msgstr ""
-
-msgid "admin-tools"
+#
+msgid ": "
 msgstr ""
-
+#
+msgid "Art"
+msgstr ""
+#
+msgid "Construction"
+msgstr ""
+#
+msgid "Music"
+msgstr ""
+#
+msgid "Languages"
+msgstr ""
+#
+msgid "ArtificialIntelligence"
+msgstr ""
+#
+msgid "Astronomy"
+msgstr ""
+#
+msgid "Biology"
+msgstr ""
+#
+msgid "Chemistry"
+msgstr ""
+#
+msgid "ComputerScience"
+msgstr ""
+#
+msgid "DataVisualization"
+msgstr ""
+#
+msgid "Economy"
+msgstr ""
+#
+msgid "Electricity"
+msgstr ""
+#
+msgid "Geography"
+msgstr ""
+#
+msgid "Geology"
+msgstr ""
+#
+msgid "Geoscience"
+msgstr ""
+#
+msgid "History"
+msgstr ""
+#
+msgid "Humanities"
+msgstr ""
+#
+msgid "ImageProcessing"
+msgstr ""
+#
+msgid "Literature"
+msgstr ""
+#
+msgid "Maps"
+msgstr ""
+#
+msgid "Math"
+msgstr ""
+#
+msgid "NumericalAnalysis"
+msgstr ""
+#
+msgid "MedicalSoftware"
+msgstr ""
+#
+msgid "Physics"
+msgstr ""
+#
+msgid "Robotics"
+msgstr ""
+#
+msgid "Spirituality"
+msgstr ""
+#
+msgid "Sports"
+msgstr ""
+#
+msgid "ParallelComputing"
+msgstr ""
+#
+msgid "Game"
+msgstr ""
+#
+msgid ": "
+msgstr ""
+#
+msgid "ActionGame"
+msgstr ""
+#
+msgid "AdventureGame"
+msgstr ""
+#
+msgid "ArcadeGame"
+msgstr ""
+#
+msgid "BoardGame"
+msgstr ""
+#
+msgid "BlocksGame"
+msgstr ""
+#
+msgid "CardGame"
+msgstr ""
+#
+msgid "Emulator"
+msgstr ""
+#
+msgid "KidsGame"
+msgstr ""
+#
+msgid "LogicGame"
+msgstr ""
+#
+msgid "RolePlaying"
+msgstr ""
+#
+msgid "Shooter"
+msgstr ""
+#
+msgid "Simulation"
+msgstr ""
+#
+msgid "SportsGame"
+msgstr ""
+#
+msgid "StrategyGame"
+msgstr ""
+#
+msgid "LauncherStore"
+msgstr ""
+#
+msgid "Graphics"
+msgstr ""
+#
+msgid ": "
+msgstr ""
+#
+msgid "2DGraphics"
+msgstr ""
+#
+msgid "VectorGraphics"
+msgstr ""
+#
+msgid "RasterGraphics"
+msgstr ""
+#
+msgid "3DGraphics"
+msgstr ""
+#
+msgid "Scanning"
+msgstr ""
+#
+msgid "OCR"
+msgstr ""
+#
+msgid "Photography"
+msgstr ""
+#
+msgid "Publishing"
+msgstr ""
+#
+msgid "Viewer"
+msgstr ""
+#
+msgid "Network"
+msgstr ""
+#
+msgid ": "
+msgstr ""
+#
+msgid "Email"
+msgstr ""
+#
+msgid "Dialup"
+msgstr ""
+#
+msgid "InstantMessaging"
+msgstr ""
+#
+msgid "Chat"
+msgstr ""
+#
+msgid "IRCCLient"
+msgstr ""
+#
+msgid "Feed"
+msgstr ""
+#
+msgid "FileTransfer"
+msgstr ""
+#
+msgid "HamRadio"
+msgstr ""
+#
+msgid "News"
+msgstr ""
+#
+msgid "P2P"
+msgstr ""
+#
+msgid "RemoteAcces"
+msgstr ""
+#
+msgid "Telephony"
+msgstr ""
+#
+msgid "TelephonyTools"
+msgstr ""
+#
+msgid "VideoConference"
+msgstr ""
+#
+msgid "WebBrowser"
+msgstr ""
+#
+msgid "WebDevelopment"
+msgstr ""
+#
+msgid "Office"
+msgstr ""
+#
+msgid ": "
+msgstr ""
+#
+msgid "Calendar"
+msgstr ""
+#
+msgid "ContactManagement"
+msgstr ""
+#
+msgid "Database"
+msgstr ""
+#
+msgid "Dictionary"
+msgstr ""
+#
+msgid "Chart"
+msgstr ""
+#
+msgid "Email"
+msgstr ""
+#
+msgid "Finance"
+msgstr ""
+#
+msgid "FlowChart"
+msgstr ""
+#
+msgid "PDA"
+msgstr ""
+#
+msgid "ProjectManagement"
+msgstr ""
+#
+msgid "Presentation"
+msgstr ""
+#
+msgid "Spreadsheet"
+msgstr ""
+#
+msgid "WordProcessor"
+msgstr ""
+#
+msgid "Photography"
+msgstr ""
+#
+msgid "Publishing"
+msgstr ""
+#
+msgid "Viewer"
+msgstr ""
+#
+msgid "Science"
+msgstr ""
+#
+msgid ": "
+msgstr ""
+#
+msgid "Construction"
+msgstr ""
+#
+msgid "Languages"
+msgstr ""
+#
+msgid "ArtificialIntelligence"
+msgstr ""
+#
+msgid "Astronomy"
+msgstr ""
+#
+msgid "Biology"
+msgstr ""
+#
+msgid "Chemistry"
+msgstr ""
+#
+msgid "ComputerScience"
+msgstr ""
+#
+msgid "DataVisualization"
+msgstr ""
+#
+msgid "Economy"
+msgstr ""
+#
+msgid "Electricity"
+msgstr ""
+#
+msgid "Geography"
+msgstr ""
+#
+msgid "Geology"
+msgstr ""
+#
+msgid "Geoscience"
+msgstr ""
+#
+msgid "History"
+msgstr ""
+#
+msgid "Humanities"
+msgstr ""
+#
+msgid "Literature"
+msgstr ""
+#
+msgid "Math"
+msgstr ""
+#
+msgid "NumericalAnalysis"
+msgstr ""
+#
+msgid "MedicalSoftware"
+msgstr ""
+#
+msgid "Physics"
+msgstr ""
+#
+msgid "Robotics"
+msgstr ""
+#
+msgid "ParallelComputing"
+msgstr ""
+#
+msgid "Settings"
+msgstr ""
+#
+msgid ": "
+msgstr ""
+#
+msgid "Security"
+msgstr ""
+#
+msgid "Accessibility"
+msgstr ""
+#
+msgid "System"
+msgstr ""
+#
+msgid ": "
+msgstr ""
+#
+msgid "Security"
+msgstr ""
+#
+msgid "Emulator"
+msgstr ""
+#
+msgid "FileTools"
+msgstr ""
+#
+msgid "FileManager"
+msgstr ""
+#
+msgid "TerminalEmulator"
+msgstr ""
+#
+msgid "FileSystem"
+msgstr ""
+#
+msgid "Monitor"
+msgstr ""
+#
+msgid "Utility"
+msgstr ""
+#
+msgid ": "
+msgstr ""
+#
+msgid "TextTools"
+msgstr ""
+#
+msgid "TelephonyTools"
+msgstr ""
+#
+msgid "Maps"
+msgstr ""
+#
+msgid "Archiving"
+msgstr ""
+#
+msgid "Compression"
+msgstr ""
+#
+msgid "FileTools"
+msgstr ""
+#
+msgid "Accessibility"
+msgstr ""
+#
+msgid "Calculator"
+msgstr ""
+#
+msgid "Clock"
+msgstr ""
+#
+msgid "TextEditor"
+msgstr ""
+#
