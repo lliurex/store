@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os,time
+from functools import partial
 import json
 from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy,QWidget,QVBoxLayout
 from PySide2.QtCore import Qt,Signal,QThread,QCoreApplication,QTimer
@@ -10,9 +11,13 @@ import random
 import gettext
 _ = gettext.gettext
 
-i18n={
+i18nLoad={
 	"GETTINGINFO":_("Downloading information, wait a moment..."),
 	"UPDATINGINFO":_("Upgrading application database")
+	}
+
+i18nUnlock={
+	"UNLOCKINGDB":_("Loading available applications"),
 	}
 
 class progress(QThread):
@@ -38,6 +43,7 @@ class QProgressImage(QWidget):
 		QWidget.__init__(self)
 		lay=QVBoxLayout()
 		self.setLayout(lay)
+		self.unlocking=False
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("prgBar")
 		self.setStyleSheet(css.prgBar())
@@ -47,11 +53,11 @@ class QProgressImage(QWidget):
 		#self.color=QColor(255,255,255)
 		self.color=QColor(COLOR_BACKGROUND_DARKEST)
 		self.colorEnd=QColor(COLOR_BACKGROUND_LIGHT)
-		self.colorCur=self.color
+		self.colorCur=self.colorEnd
 		self.pxm=QPixmap(img)#.scaled(267,267,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		self.pxm2=QPixmap(self.pxm.size())
 		self.lblPxm=QLabel()
-		self.lblInfo=QLabel(i18n["GETTINGINFO"])
+		self.lblInfo=QLabel(i18nLoad["GETTINGINFO"])
 		lay.setSpacing(0)
 		lay.addWidget(self.lblPxm,Qt.AlignBottom)
 		lay.addWidget(self.lblInfo,Qt.AlignTop)
@@ -67,6 +73,16 @@ class QProgressImage(QWidget):
 		self.lblInfo.setAlignment(Qt.AlignCenter)
 		self.inc=-5
 		self.running=False
+		self.destroyed.connect(partial(QProgressImage._onDestroy,self.__dict__))
+
+	@staticmethod
+	def _onDestroy(*args):
+		selfDict=args[0]
+		if "updateTimer" in selfDict:
+			selfDict["updateTimer"].blockSignals(True)
+			selfDict["updateTimer"].requestInterruption()
+			selfDict["updateTimer"].deleteLater()
+			selfDict["updateTimer"].wait()
 
 	def start(self):
 		self.updateTimer.start()
@@ -89,6 +105,10 @@ class QProgressImage(QWidget):
 	def _doProgress(self,*args):
 		self.running=True
 		if self.lblInfo.text()!="":
+			if self.unlocking==False:
+				i18n=i18nUnlock
+			else:
+				i18n=i18nLoad
 			if (self.oldTime!=0) and (int(time.time())-self.oldTime>3):
 				rnd=random.randint(0,len(i18n))-1
 				key=list(i18n.keys())[rnd]
