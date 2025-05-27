@@ -387,6 +387,8 @@ class QPushButtonRebostApp(QPushButton):
 		if oldPxm!=None:
 			if oldPxm.isNull()==True:
 				self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
+		else:
+			self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
 	#def load
 	
 	def activate(self):
