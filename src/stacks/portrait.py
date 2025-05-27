@@ -815,7 +815,7 @@ class portrait(QStackedWindowItem):
 		if isinstance(app,dict)==False:
 			return
 		bundle=""
-		priority=["flatpak","snap","package","appimage","eduapp"]
+		priority=["zomando","flatpak","snap","package","appimage","eduapp"]
 		for bund in priority:
 			if app.get("bundle",{}).get(bund,"")!="":
 				bundle=bund
