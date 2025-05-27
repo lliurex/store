@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from PySide6.QtCore import Signal,QThread
+from PySide2.QtCore import Signal,QThread
 import json,time,subprocess
 
 class storeHelper(QThread):
