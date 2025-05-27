@@ -38,6 +38,7 @@ class helper():
 			cmd=self._getCmdFromZmd(zmdPath)
 			#subprocess.run(["pkexec",zmdPath])
 			try:
+				cmd.append(app["name"])
 				proc=subprocess.run(cmd)
 				ret=proc.returncode
 			except Exception as e:
