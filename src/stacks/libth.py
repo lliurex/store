@@ -2,12 +2,17 @@
 
 from PySide2.QtCore import Signal,QThread
 import json,time,subprocess
+try:
+	from lliurex import lliurexup
+except:
+	lliurexup=None
 
 class storeHelper(QThread):
 	chkEnded=Signal("PyObject")
 	test=Signal("PyObject")
 	lstEnded=Signal("PyObject")
 	srcEnded=Signal("PyObject")
+	staEnded=Signal(bool,bool)
 	lckEnded=Signal()
 	rstEnded=Signal()
 	def __init__(self,*args,**kwargs):
@@ -43,6 +48,8 @@ class storeHelper(QThread):
 			self._lock()
 		elif self.action=="restart":
 			self._restart()
+		elif self.action=="status":
+			self._isLocked()
 	#def run
 
 	def _chkUpgrades(self):
@@ -106,7 +113,7 @@ class storeHelper(QThread):
 		self.rstEnded.emit()
 	#def _unlock
 
-	def isLocked(self):
+	def _isLocked(self):
 		lock=True
 		userLock=True
 		try:
@@ -116,6 +123,8 @@ class storeHelper(QThread):
 		except:
 			userLock=True
 		lock=self.rc.getLockStatus()
+		print("EMIT STAT")
+		self.staEnded.emit(lock,userLock)
 		return(lock,userLock)
 #class rebostHelper
 

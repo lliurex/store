@@ -1,10 +1,6 @@
 #!/usr/bin/python3
 import sys,time,signal
 import os
-try:
-	from lliurex import lliurexup
-except:
-	lliurexup=None
 from PySide2.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox, \
 							QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget, \
 							QSizePolicy,QCheckBox,QGraphicsDropShadowEffect,QListWidgetItem
@@ -75,6 +71,7 @@ class portrait(QStackedWindowItem):
 		self.i18nCat={}
 		self.oldCat=""
 		self.catI18n={}
+		self.apps={}
 		self.appsToLoad=-1
 		self.appsLoaded=0
 		self.appsSeen=[]
@@ -97,6 +94,7 @@ class portrait(QStackedWindowItem):
 		self._rebost.srcEnded.connect(self._endSearchApps)
 		self._rebost.lckEnded.connect(self._endLock)
 		self._rebost.rstEnded.connect(self._endRestart)
+		self._rebost.staEnded.connect(self._endGetStatus)
 		self.epi=exehelper.appLauncher()
 		self.epi.runEnded.connect(self._endLaunchHelper)
 		self.zmdLauncher=exehelper.zmdLauncher()
@@ -120,7 +118,9 @@ class portrait(QStackedWindowItem):
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
 		objbus.connect_to_signal("reloadSignal",self._reload,dbus_interface="net.lliurex.rebost")
 	#	objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
-		(self.locked,self.userLocked)=self._rebost.isLocked()
+		self._rebost.setAction("status")
+		self._rebost.start()
+		self._rebost.wait()
 	#def __init__
 
 	def _signals(self,*args):
@@ -144,6 +144,10 @@ class portrait(QStackedWindowItem):
 			print("Portrait: {}".format(msg))
 	#def _debug
 
+	def _endGetStatus(self,*args):
+		self.locked=args[0]
+		self.userLocked=args[1]
+
 	def _endRestart(self,*args):
 		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		self.progress.setAttribute(Qt.WA_StyledBackground, False)
@@ -158,6 +162,8 @@ class portrait(QStackedWindowItem):
 		self._goHome()
 
 	def _stopThreads(self):
+		if hasattr(self,"locked")==False:
+			return
 		self.appUpdate.blockSignals(True)
 		self.getData.blockSignals(True)
 		self._rebost.blockSignals(True)
@@ -174,6 +180,7 @@ class portrait(QStackedWindowItem):
 	#def _stopThreads
 
 	def __initScreen__(self):
+		print("-------------------------")
 		self.box=QGridLayout()
 		self.setLayout(self.box)
 		self.box.setContentsMargins(0,0,0,0)
@@ -202,10 +209,12 @@ class portrait(QStackedWindowItem):
 
 	def _reload(self,*args,**kwargs):
 		self._stopThreads()
-		self.progress.start()
-		self.refresh=True
 		self.rp.searchBox.setText("")
+		self.progress.stop()
+		QApplication.processEvents()
 		self._beginUpdate()
+		self._loadHome()
+	#def _reload
 
 	def _closeEvent(self,*args):
 		self._stopThreads()
@@ -275,6 +284,7 @@ class portrait(QStackedWindowItem):
 		lbl=QLabel()
 		chk=QCheckBox()
 		chk.setObjectName("certifiedChk")
+		QApplication.processEvents()
 		chk.setChecked(self.rc.getLockStatus())
 		if self.userLocked==True:
 			chk.setChecked(True)
@@ -1004,6 +1014,9 @@ class portrait(QStackedWindowItem):
 	#def _return
 
 	def updateScreen(self,addEnable=None):
+		if hasattr(self,"locked")==False:
+			print("EXITING")
+			return
 		if isinstance(addEnable,bool):
 			adding=addEnable
 		else:
