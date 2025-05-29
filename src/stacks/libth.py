@@ -10,6 +10,7 @@ class storeHelper(QThread):
 	srcEnded=Signal("PyObject")
 	lckEnded=Signal()
 	rstEnded=Signal()
+	staEnded=Signal(bool,bool)
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self, None)
 		self.rc=kwargs["rc"]
@@ -43,6 +44,8 @@ class storeHelper(QThread):
 			self._lock()
 		elif self.action=="restart":
 			self._restart()
+		elif self.action=="status":
+			self._getLockStatus()
 	#def run
 
 	def _chkUpgrades(self):
@@ -106,7 +109,7 @@ class storeHelper(QThread):
 		self.rstEnded.emit()
 	#def _unlock
 
-	def isLocked(self):
+	def _getLockStatus(self):
 		lock=True
 		userLock=True
 		try:
@@ -116,7 +119,7 @@ class storeHelper(QThread):
 		except:
 			userLock=True
 		lock=self.rc.getLockStatus()
-		return(lock,userLock)
+		self.staEnded.emit(lock,userLock)
 #class rebostHelper
 
 class updateAppData(QThread):
