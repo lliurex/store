@@ -79,6 +79,8 @@ class portrait(QStackedWindowItem):
 		bus=dbus.SessionBus()
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
 		objbus.connect_to_signal("reloadSignal",self._reload,dbus_interface="net.lliurex.rebost")
+		self._rebost.setAction("status")
+		self._rebost.start()
 	#	objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 	#	(self.locked,self.userLocked)=self._rebost.isLocked()
 	#def __init__
