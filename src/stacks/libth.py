@@ -1,11 +1,10 @@
 #!/usr/bin/python3
-
 from PySide2.QtCore import Signal,QThread
 import json,time,subprocess
 try:
-	from lliurex import lliurexup
+       from lliurex import lliurexup
 except:
-	lliurexup=None
+       lliurexup=None
 
 class storeHelper(QThread):
 	chkEnded=Signal("PyObject")
@@ -119,11 +118,7 @@ class storeHelper(QThread):
 		self.rstEnded.emit()
 	#def _unlock
 
-<<<<<<< HEAD
-	def _isLocked(self):
-=======
 	def _getLockStatus(self):
->>>>>>> master_jammy
 		lock=True
 		userLock=True
 		try:
@@ -133,11 +128,6 @@ class storeHelper(QThread):
 		except:
 			userLock=True
 		lock=self.rc.getLockStatus()
-<<<<<<< HEAD
-		print("EMIT STAT")
-		self.staEnded.emit(lock,userLock)
-		return(lock,userLock)
-=======
 		self.staEnded.emit(lock,userLock)
 	#def _getLockStatus
 
@@ -149,7 +139,6 @@ class storeHelper(QThread):
 			print("Th for categories failed: {}".format(e))
 		self.catEnded.emit(cats)
 	#def _getFreedesktopCategories
->>>>>>> master_jammy
 #class rebostHelper
 
 class updateAppData(QThread):
