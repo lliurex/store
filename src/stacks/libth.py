@@ -1,7 +1,10 @@
 #!/usr/bin/python3
-
 from PySide2.QtCore import Signal,QThread
 import json,time,subprocess
+try:
+       from lliurex import lliurexup
+except:
+       lliurexup=None
 
 class storeHelper(QThread):
 	chkEnded=Signal("PyObject")
