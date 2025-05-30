@@ -384,7 +384,10 @@ class QPushButtonRebostApp(QPushButton):
 	def load(self,*args):
 		oldPxm=self.iconUri.pixmap()
 		img=args[0]
-		if oldPxm.isNull()==True:
+		if oldPxm!=None:
+			if oldPxm.isNull()==True:
+				self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
+		else:
 			self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
 	#def load
 	
