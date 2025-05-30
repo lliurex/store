@@ -564,7 +564,7 @@ msgid "Monitor"
 msgstr "Monitores"
 
 msgid "Utility"
-msgstr "Utildad"
+msgstr "Utilidad"
 
 msgid "TextTools"
 msgstr "Herramientas de texto"
