@@ -15,6 +15,8 @@ class storeHelper(QThread):
 	staEnded=Signal(bool,bool)
 	lckEnded=Signal()
 	rstEnded=Signal()
+	staEnded=Signal(bool,bool)
+	catEnded=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self, None)
 		self.rc=kwargs["rc"]
@@ -30,6 +32,8 @@ class storeHelper(QThread):
 		self.action=action
 		if len(args)>0:
 			self.args=args
+		else:
+			self.args=[]
 	
 	def run(self):
 		if self.action=="upgrade":
@@ -49,7 +53,9 @@ class storeHelper(QThread):
 		elif self.action=="restart":
 			self._restart()
 		elif self.action=="status":
-			self._isLocked()
+			self._getLockStatus()
+		elif self.action=="getCategories":
+			self._getFreedesktopCategories()
 	#def run
 
 	def _chkUpgrades(self):
@@ -82,7 +88,7 @@ class storeHelper(QThread):
 		self.lstEnded.emit(apps)
 	#def _list
 
-	def _search(self):
+	def _search(self,*args):
 		apps=json.loads(self.rc.execute("search",self.args[0]))
 		self.srcEnded.emit(apps)
 	#def _search(self):
@@ -113,7 +119,11 @@ class storeHelper(QThread):
 		self.rstEnded.emit()
 	#def _unlock
 
+<<<<<<< HEAD
 	def _isLocked(self):
+=======
+	def _getLockStatus(self):
+>>>>>>> master_jammy
 		lock=True
 		userLock=True
 		try:
@@ -123,9 +133,23 @@ class storeHelper(QThread):
 		except:
 			userLock=True
 		lock=self.rc.getLockStatus()
+<<<<<<< HEAD
 		print("EMIT STAT")
 		self.staEnded.emit(lock,userLock)
 		return(lock,userLock)
+=======
+		self.staEnded.emit(lock,userLock)
+	#def _getLockStatus
+
+	def _getFreedesktopCategories(self):
+		cats=[]
+		try:
+			cats=json.loads(self.rc.execute('getFreedesktopCategories'))[0]
+		except Exeption as e:
+			print("Th for categories failed: {}".format(e))
+		self.catEnded.emit(cats)
+	#def _getFreedesktopCategories
+>>>>>>> master_jammy
 #class rebostHelper
 
 class updateAppData(QThread):
