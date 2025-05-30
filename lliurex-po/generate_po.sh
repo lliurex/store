@@ -7,7 +7,7 @@ mkdir -p lliurex-store
 xgettext $GUI_FILES -o lliurex-store/lliurex-store.pot
 
 #Categories
-CATs=$(qdbus6 net.lliurex.rebost /net/lliurex/rebost net.lliurex.rebost.getFreedesktopCategories)
+CATs=$(qdbus net.lliurex.rebost /net/lliurex/rebost net.lliurex.rebost.getFreedesktopCategories)
 if [[ $? -eq 0 ]]
 then
 	CATs=${CATs//[/}
@@ -29,4 +29,14 @@ then
 	done
 fi
 
+#Polkit
 
+PK_FILES="../src/polkit/*policy"
+for pk_file in ${PK_FILES}
+do
+	msg=$(grep gettext-domain ${pk_file} | sed -e 's/.*\">//g;s/<\/.*//g')
+	echo "msgid \"${msg//_/}\""  >> lliurex-store/lliurex-store.pot
+	echo "msgstr \"\"" >> lliurex-store/lliurex-store.pot
+	echo "#">> lliurex-store/lliurex-store.pot
+done
+	

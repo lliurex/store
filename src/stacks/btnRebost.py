@@ -2,9 +2,9 @@
 from functools import partial
 import os
 import json
-from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy
-from PySide6.QtCore import Qt,Signal,QThread,QEvent
-from PySide6.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy
+from PySide2.QtCore import Qt,Signal,QThread,QEvent
+from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
 from QtExtraWidgets import QScreenShotContainer
 import css
 from constants import *
@@ -384,7 +384,10 @@ class QPushButtonRebostApp(QPushButton):
 	def load(self,*args):
 		oldPxm=self.iconUri.pixmap()
 		img=args[0]
-		if oldPxm.isNull()==True:
+		if oldPxm!=None:
+			if oldPxm.isNull()==True:
+				self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
+		else:
 			self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize))
 	#def load
 	

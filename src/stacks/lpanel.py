@@ -6,11 +6,11 @@ import subprocess
 import json
 import html
 from rebost import store
-from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,\
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,\
 							QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,\
 							QAbstractScrollArea, QFrame
-from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
+from PySide2 import QtGui
+from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel
 import gettext
 import libhelper
@@ -336,7 +336,7 @@ class detailPanel(QWidget):
 		self.setCursor(cursor)
 		self.setEnabled(False)
 		self.refresh=False
-		signal.raise_signal(signal.SIGUSR1)
+		#signal.raise_signal(signal.SIGUSR1)
 		self.thEpiShow.setArgs(app)
 		self.thEpiShow.start()
 	#def _getEpiResults
@@ -581,8 +581,9 @@ class detailPanel(QWidget):
 		#self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
 		self.lblIcon.loadImg(self.app)
 		pxm=self.lblIcon.pixmap()
-		if pxm.isNull()==False:
-			self.app["icon"]=pxm
+		if pxm!=None:
+			if pxm.isNull()==False:
+				self.app["icon"]=pxm
 		#Disabled as requisite (250214-11:52)
 		#self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
 		summary="{}<br>{}".format(self.app["name"].upper(),self.app.get("summary",""))

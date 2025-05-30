@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os
 import json
-from PySide6.QtCore import Qt,Signal
+from PySide2.QtCore import Qt,Signal
 from QtExtraWidgets import QCheckableComboBox
 from constants import *
 import gettext
@@ -35,6 +35,7 @@ class QComboButton(QCheckableComboBox):
 	#def setText
 
 	def mousePressEvent(self,e):
+		#Check if event coords are inside button geometry
 		if (self.width()-e.x())>32:
 			e.accept()
 			sw=False
