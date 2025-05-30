@@ -165,6 +165,7 @@ class portrait(QStackedWindowItem):
 		self._debug("<-------- Rebost status acquired")
 		self._rebost.setAction("getCategories")
 		self._rebost.start()
+		self._rebost.wait()
 		QApplication.processEvents()
 		if self.locked==False and self.userLocked==True:
 			self._loadLockedRebost()
@@ -419,9 +420,9 @@ class portrait(QStackedWindowItem):
 		self.rp.searchBox.setText("")
 		self.progress.start()
 		self._beginUpdate()
-		if self.certified.isChecked()==False and self.userLocked==True and self.locked==True:
+		if self.certified.isChecked()==False and self.userLocked==False and self.locked==True:
 			self._rebost.setAction("unlock","")
-		elif self.locked==True:
+		elif self.locked==False:
 			self._rebost.setAction("lock","")
 		if self._rebost.isRunning():
 			self._rebost.requestInterruption()
@@ -1016,6 +1017,7 @@ class portrait(QStackedWindowItem):
 				self.progress.start()
 				self._rebost.setAction("status")
 				self._rebost.start()
+				QApplication.processEvents()
 				self.rp.table.removeEventFilter(self)
 				self.appsToLoad=0
 	#def _updateScreen
