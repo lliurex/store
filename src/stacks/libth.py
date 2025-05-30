@@ -11,6 +11,7 @@ class storeHelper(QThread):
 	lckEnded=Signal()
 	rstEnded=Signal()
 	staEnded=Signal(bool,bool)
+	catEnded=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self, None)
 		self.rc=kwargs["rc"]
@@ -26,6 +27,8 @@ class storeHelper(QThread):
 		self.action=action
 		if len(args)>0:
 			self.args=args
+		else:
+			self.args=[]
 	
 	def run(self):
 		if self.action=="upgrade":
@@ -46,6 +49,8 @@ class storeHelper(QThread):
 			self._restart()
 		elif self.action=="status":
 			self._getLockStatus()
+		elif self.action=="getCategories":
+			self._getFreedesktopCategories()
 	#def run
 
 	def _chkUpgrades(self):
@@ -78,7 +83,7 @@ class storeHelper(QThread):
 		self.lstEnded.emit(apps)
 	#def _list
 
-	def _search(self):
+	def _search(self,*args):
 		apps=json.loads(self.rc.execute("search",self.args[0]))
 		self.srcEnded.emit(apps)
 	#def _search(self):
@@ -120,6 +125,16 @@ class storeHelper(QThread):
 			userLock=True
 		lock=self.rc.getLockStatus()
 		self.staEnded.emit(lock,userLock)
+	#def _getLockStatus
+
+	def _getFreedesktopCategories(self):
+		cats=[]
+		try:
+			cats=json.loads(self.rc.execute('getFreedesktopCategories'))[0]
+		except Exeption as e:
+			print("Th for categories failed: {}".format(e))
+		self.catEnded.emit(cats)
+	#def _getFreedesktopCategories
 #class rebostHelper
 
 class updateAppData(QThread):
