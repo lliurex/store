@@ -579,16 +579,16 @@ class portrait(QStackedWindowItem):
 		appsFiltered=[]
 		for app in self.apps:
 			japp=json.loads(app)
-			bundles=japp.get("bundle")
 			states=japp.get("state",{}).copy()
-			zmd="1"
-			if "zomando" in states.keys():
-				zmd=states.pop("zomando")
-			for bun in bundles.keys():
-				if states.get(bun,"1")!="0" or zmd!="0":
-					continue
-				appsFiltered.append(app)
-				break
+			bundles=japp.get("bundle",{}).copy()
+			if "package" in states.keys():
+				states["package"]=states.get("zomando",states["package"])
+			for bundle in bundles:
+				print("{}".format(states.get(bundle)))
+				if states.get(bundle,"1")=="0":
+					if "accessi" in japp.get("name").lower():
+						print(japp)
+					appsFiltered.append(app)
 		self.apps=appsFiltered.copy()
 		self.appUpdate.blockSignals(False)
 		self.appUpdate.start()
