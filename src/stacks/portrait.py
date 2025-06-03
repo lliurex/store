@@ -49,6 +49,7 @@ i18n={
 	"LLXUP":_("Launch LliurexUp"),
 	"MENU":_("Show applications"),
 	"NEWDATA":_("Updating info"),
+	"REMOVE":_("Remove"),
 	"SEARCH":_("Search"),
 	"SORTDSC":_("Sort alphabetically"),
 	"TOOLTIP":_("Portrait"),
@@ -100,6 +101,7 @@ class portrait(QStackedWindowItem):
 		self.locked=True
 		self.userLocked=True
 		self.stopAdding=False
+		self.filters={"installed":False}
 		self.loading=False
 	#def _initCatalogue
 
@@ -566,6 +568,9 @@ class portrait(QStackedWindowItem):
 
 	def _loadInstalled(self):
 		#Disable app url if any (JustInCase)
+		self.filters["installed"]=True
+		self._goHome()
+		return
 		self.appUrl=""
 		self.appsLoaded=0
 		flag=""
@@ -584,10 +589,7 @@ class portrait(QStackedWindowItem):
 			if "package" in states.keys():
 				states["package"]=states.get("zomando",states["package"])
 			for bundle in bundles:
-				print("{}".format(states.get(bundle)))
 				if states.get(bundle,"1")=="0":
-					if "accessi" in japp.get("name").lower():
-						print(japp)
 					appsFiltered.append(app)
 		self.apps=appsFiltered.copy()
 		self.appUpdate.blockSignals(False)
@@ -788,6 +790,9 @@ class portrait(QStackedWindowItem):
 	#def _loadData
 
 	def _addAppsToGrid(self,apps):
+		if self.filters.get("installed",False)==True:
+			self.rp.table.setEnabled(False)
+			print("WARNING!!!!: INSTALLED FILTER APPLIED")
 		while apps:
 			jsonapp=apps.pop(0)
 			if self.stopAdding==True:
@@ -799,6 +804,16 @@ class portrait(QStackedWindowItem):
 				continue
 			if len(appname.strip())==0:
 				continue
+			if self.filters["installed"]==True:
+				state="1"
+				for bun,state in jsonapp["state"].items():
+					if bun=="zomando":
+						continue
+					if state=="0":
+						state="3"
+						break
+				if state!="3":
+					continue
 			self.appsSeen.append(appname)
 			btn=QPushButtonRebostApp(jsonapp)
 			btn.clicked.connect(self._loadDetails)
@@ -813,6 +828,9 @@ class portrait(QStackedWindowItem):
 			#self._debug("Add: {}".format(time.time()-b))
 			#Force btn show
 			QApplication.processEvents()
+		if self.filters.get("installed",False)==True:
+			self.rp.table.setEnabled(True)
+		self.filters["installed"]=False
 	#def _addAppsToGrid
 
 	def _endLoadData(self):
@@ -823,9 +841,9 @@ class portrait(QStackedWindowItem):
 		elif self.init==False:
 			self.rp.setVisible(True)
 		else:
-			if len(self.pendingApps)>0:
-				self.appUpdate.blockSignals(False)
-				self.appUpdate.start()
+			#if len(self.pendingApps)>0:
+			#	self.appUpdate.blockSignals(False)
+			#	self.appUpdate.start()
 			self._endUpdate()
 		self.refresh=True
 	#def _endLoadData(self):
