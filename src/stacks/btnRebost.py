@@ -199,7 +199,7 @@ class QPushButtonRebostApp(QPushButton):
 			if "package" in states.keys():
 				states["package"]=states.get("zomando",states["package"])
 			for bundle in bundles:
-				if bundle=="zomando":
+				if bundle=="zomando" and len(bundles)>1:
 					continue
 				if states.get(bundle,"1")=="0":
 					self.btn.setText(i18n.get("REMOVE"))

@@ -724,13 +724,19 @@ class detailPanel(QWidget):
 		states=self.app.get("state",{}).copy()
 		installed=False
 		zmdInstalled=""
+		print(states)
 		if "zomando" in states:
 			zmdInstalled=states.pop("zomando")
-		for bundle,state in states.items():
-			if state=="0":# and zmdInstalled!="0":
+		if len(states)>0:
+			for bundle,state in states.items():
+				if state=="0":# and zmdInstalled!="0":
+					installed=True
+					self.instBundle=bundle
+					break
+		else:
+			if zmdInstalled=="0":
 				installed=True
-				self.instBundle=bundle
-				break
+				self.instBundle="zomando"
 		self.btnRemove.setVisible(installed)
 		self.btnRemove.setEnabled(installed)
 		if len(self.app.get("bundle",[]))==1 and "eduapp" in self.app.get("bundle",{}).keys():
