@@ -322,7 +322,7 @@ class detailPanel(QWidget):
 				self.parent().showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
 			self.updateScreen()
 		else:
-			if bundle=="zomando" and self.app.get("state",{}).get("zomando","1")=="0":
+			if bundle=="zomando":
 				self.zmdLauncher.setApp(self.app)
 				self.zmdLauncher.start()
 			else:
