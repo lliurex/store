@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from PySide6.QtCore import Signal,QThread
+from PySide2.QtCore import Signal,QThread
 import json,time,subprocess
 try:
        from lliurex import lliurexup
@@ -140,6 +140,7 @@ class storeHelper(QThread):
 	#def _getFreedesktopCategories
 #class rebostHelper
 
+#This class loads data from arguments and updates the db
 class updateAppData(QThread):
 	dataLoaded=Signal("PyObject")
 	def __init__(self,*args,**kwargs):

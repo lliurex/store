@@ -6,11 +6,11 @@ import subprocess
 import json
 import html
 from rebost import store
-from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,\
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,\
 							QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,\
 							QAbstractScrollArea, QFrame
-from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
+from PySide2 import QtGui
+from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel
 import gettext
 import libhelper
@@ -711,6 +711,7 @@ class detailPanel(QWidget):
 	def _setLauncherOptions(self):
 		visible=True
 		bundle=self.lstInfo.currentText()
+		print(self.app)
 		if "Forbidden" in self.app.get("categories",[]) or "eduapp" in bundle:
 			visible=False
 		self.btnInstall.setVisible(visible)
