@@ -879,6 +879,7 @@ class portrait(QStackedWindowItem):
 				bundle="zomando"
 			elif len(bundle)==0:
 				return
+		print(app)
 		self.rc.enableGui(True)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
@@ -899,7 +900,7 @@ class portrait(QStackedWindowItem):
 				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(app["name"]),timeout=4)
 			self.updateScreen(True)
 		else:
-			if bundle=="zomando" and app.get("state",{}).get("zomando","0")=="1":
+			if bundle=="zomando":# and app.get("state",{}).get("zomando","0")=="1":
 				self.zmdLauncher.setApp(app)
 				self.zmdLauncher.start()
 			else:
