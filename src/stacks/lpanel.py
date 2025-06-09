@@ -322,7 +322,7 @@ class detailPanel(QWidget):
 				self.parent().showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
 			self.updateScreen()
 		else:
-			if bundle=="zomando" and self.app.get("state",{}).get("zomando","1")=="0":
+			if bundle=="zomando":
 				self.zmdLauncher.setApp(self.app)
 				self.zmdLauncher.start()
 			else:
@@ -711,6 +711,7 @@ class detailPanel(QWidget):
 	def _setLauncherOptions(self):
 		visible=True
 		bundle=self.lstInfo.currentText()
+		print(self.app)
 		if "Forbidden" in self.app.get("categories",[]) or "eduapp" in bundle:
 			visible=False
 		self.btnInstall.setVisible(visible)
@@ -723,14 +724,16 @@ class detailPanel(QWidget):
 		self.lstInfo.setText(i18n["INSTALL"].upper())
 		states=self.app.get("state",{}).copy()
 		installed=False
-		zmdInstalled=""
-		if "zomando" in states:
-			zmdInstalled=states.pop("zomando")
-		for bundle,state in states.items():
-			if state=="0":# and zmdInstalled!="0":
-				installed=True
-				self.instBundle=bundle
-				break
+		zmd=states.get("zomando","0")
+		if len(states)>0:
+			for bundle,state in states.items():
+				if bundle=="package" and zmd=="1":
+					if self.app["bundle"]["package"].startswith("zero"):
+						continue
+				if state=="0":# and zmdInstalled!="0":
+					installed=True
+					self.instBundle=bundle
+					break
 		self.btnRemove.setVisible(installed)
 		self.btnRemove.setEnabled(installed)
 		if len(self.app.get("bundle",[]))==1 and "eduapp" in self.app.get("bundle",{}).keys():

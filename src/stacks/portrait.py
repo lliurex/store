@@ -49,6 +49,7 @@ i18n={
 	"LLXUP":_("Launch LliurexUp"),
 	"MENU":_("Show applications"),
 	"NEWDATA":_("Updating info"),
+	"REMOVE":_("Remove"),
 	"SEARCH":_("Search"),
 	"SORTDSC":_("Sort alphabetically"),
 	"TOOLTIP":_("Portrait"),
@@ -101,6 +102,7 @@ class portrait(QStackedWindowItem):
 		self.locked=True
 		self.userLocked=True
 		self.stopAdding=False
+		self.filters={"installed":False}
 		self.loading=False
 	#def _initCatalogue
 
@@ -167,6 +169,7 @@ class portrait(QStackedWindowItem):
 		self._rebost.setAction("getCategories")
 		self._rebost.start()
 		self._rebost.wait()
+		self._getUpgradables()
 		QApplication.processEvents()
 		if self.locked==False and self.userLocked==True:
 			self._loadLockedRebost()
@@ -526,8 +529,10 @@ class portrait(QStackedWindowItem):
 
 	def _getUpgradables(self):
 		self.lblInfo.setVisible(False)
+		print("GETTING AVAILABLE UPGRADES")
 		self._rebost.setAction("upgrade")
 		self._rebost.start()
+		self._rebost.wait()
 	#def _getUpgradables
 
 	def _beginUpdate(self):
@@ -552,8 +557,6 @@ class portrait(QStackedWindowItem):
 
 	def _loadHome(self,*args,**kwargs):
 		self._debug("Rebost running: {} - {} - {}".format(self._rebost.isFinished(),self._rebost.isRunning(),self._rebost.action))
-		if self._rebost.isFinished()==True and self._rebost.isRunning()==False:
-			self._getUpgradables()
 		self.oldTime=time.time()
 		self.sortAsc=False
 		self.rp.searchBox.setText("")
@@ -568,6 +571,9 @@ class portrait(QStackedWindowItem):
 
 	def _loadInstalled(self):
 		#Disable app url if any (JustInCase)
+		self.filters["installed"]=True
+		self._goHome()
+		return
 		self.appUrl=""
 		self.appsLoaded=0
 		flag=""
@@ -581,16 +587,13 @@ class portrait(QStackedWindowItem):
 		appsFiltered=[]
 		for app in self.apps:
 			japp=json.loads(app)
-			bundles=japp.get("bundle")
 			states=japp.get("state",{}).copy()
-			zmd="1"
-			if "zomando" in states.keys():
-				zmd=states.pop("zomando")
-			for bun in bundles.keys():
-				if states.get(bun,"1")!="0" or zmd!="0":
-					continue
-				appsFiltered.append(app)
-				break
+			bundles=japp.get("bundle",{}).copy()
+			if "package" in states.keys():
+				states["package"]=states.get("zomando",states["package"])
+			for bundle in bundles:
+				if states.get(bundle,"1")=="0":
+					appsFiltered.append(app)
 		self.apps=appsFiltered.copy()
 		self.appUpdate.blockSignals(False)
 		self.appUpdate.start()
@@ -790,6 +793,9 @@ class portrait(QStackedWindowItem):
 	#def _loadData
 
 	def _addAppsToGrid(self,apps):
+		if self.filters.get("installed",False)==True:
+			self.rp.table.setEnabled(False)
+			print("WARNING!!!!: INSTALLED FILTER APPLIED")
 		while apps:
 			jsonapp=apps.pop(0)
 			if self.stopAdding==True:
@@ -801,6 +807,16 @@ class portrait(QStackedWindowItem):
 				continue
 			if len(appname.strip())==0:
 				continue
+			if self.filters["installed"]==True:
+				state="1"
+				for bun,state in jsonapp["state"].items():
+					if bun=="zomando":
+						continue
+					if state=="0":
+						state="3"
+						break
+				if state!="3":
+					continue
 			self.appsSeen.append(appname)
 			btn=QPushButtonRebostApp(jsonapp)
 			btn.clicked.connect(self._loadDetails)
@@ -815,6 +831,9 @@ class portrait(QStackedWindowItem):
 			#self._debug("Add: {}".format(time.time()-b))
 			#Force btn show
 			QApplication.processEvents()
+		if self.filters.get("installed",False)==True:
+			self.rp.table.setEnabled(True)
+		self.filters["installed"]=False
 	#def _addAppsToGrid
 
 	def _endLoadData(self):
@@ -825,9 +844,9 @@ class portrait(QStackedWindowItem):
 		elif self.init==False:
 			self.rp.setVisible(True)
 		else:
-			if len(self.pendingApps)>0:
-				self.appUpdate.blockSignals(False)
-				self.appUpdate.start()
+			#if len(self.pendingApps)>0:
+			#	self.appUpdate.blockSignals(False)
+			#	self.appUpdate.start()
 			self._endUpdate()
 		self.refresh=True
 	#def _endLoadData(self):
@@ -863,6 +882,7 @@ class portrait(QStackedWindowItem):
 				bundle="zomando"
 			elif len(bundle)==0:
 				return
+		print(app)
 		self.rc.enableGui(True)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
@@ -883,7 +903,7 @@ class portrait(QStackedWindowItem):
 				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(app["name"]),timeout=4)
 			self.updateScreen(True)
 		else:
-			if bundle=="zomando" and app.get("state",{}).get("zomando","1")=="0":
+			if bundle=="zomando":# and app.get("state",{}).get("zomando","0")=="1":
 				self.zmdLauncher.setApp(app)
 				self.zmdLauncher.start()
 			else:

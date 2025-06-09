@@ -30,42 +30,46 @@ class helper():
 	#def _getCmdFromZmd
 
 	def runZmd(self,app):
-		ret=0
-		zmdPath=os.path.join("/usr/share/zero-center/zmds",app.get('bundle',{}).get('zomando',''))
-		if zmdPath.endswith(".zmd")==False:
-			zmdPath="{}.zmd".format(zmdPath)
-		if os.path.isfile(zmdPath):
-			cmd=self._getCmdFromZmd(zmdPath)
-			#subprocess.run(["pkexec",zmdPath])
-			try:
-				cmd.append(app["name"])
-				proc=subprocess.run(cmd)
-				ret=proc.returncode
-			except Exception as e:
-				print(e)
-				ret=-1
-			if ret>0:
-				#Zmd could depend on a zmd-installer so let's search
-				zmdFolder=os.path.dirname(zmdPath)
-				searchZmd=".".join(zmdPath.split(".")[:-1])
-				newPath=zmdPath
-				for f in os.scandir(zmdFolder):
-					if searchZmd in f.path and f.path!=zmdPath:
-						newPath=f.path
-						break
-				if zmdPath!=newPath:
-					cmd=self._getCmdFromZmd(newPath)
-					#subprocess.run(["pkexec",zmdPath])
-					try:
-						proc=subprocess.run(cmd)
-					except Exception as e:
-						print(e)
-						ret=-1
+		ret=-1
+		cmd=[]
+		zmdCmd=app.get('bundle',{}).get('zomando','')
+		if zmdCmd.endswith(".zmd")==True:
+			zmdPath=os.path.join("/usr/share/zero-center/zmds",zmdCmd)
+			if os.path.isfile(zmdPath):
+				cmd=self._getCmdFromZmd(zmdPath)
+				#subprocess.run(["pkexec",zmdPath])
+				try:
+					cmd.append(app["name"])
+					proc=subprocess.run(cmd)
+					ret=proc.returncode
+				except Exception as e:
+					print(e)
+					ret=-1
+				if ret>0:
+					#Zmd could depend on a zmd-installer so let's search
+					zmdFolder=os.path.dirname(zmdPath)
+					searchZmd=".".join(zmdPath.split(".")[:-1])
+					newPath=zmdPath
+					for f in os.scandir(zmdFolder):
+						if searchZmd in f.path and f.path!=zmdPath:
+							newPath=f.path
+							break
+					if zmdPath!=newPath:
+						cmd=self._getCmdFromZmd(newPath)
+						#subprocess.run(["pkexec",zmdPath])
+		elif zmdCmd.endswith(".epi"):
+			cmd=["pkexec","epi-gtk",zmdCmd]
+			if len(cmd)>0:
+				try:
+					proc=subprocess.run(cmd,env=os.environ)
+				except Exception as e:
+					print(e)
+					ret=-1
 
-			if ret>=0:
-				ret=proc.returncode
-		else:
-			self._zmdNotFound(zmdPath)
+				if ret>=0:
+					ret=proc.returncode
+			else:
+				self._zmdNotFound(zmdPath)
 		return(ret)
 	#def runZmd
 

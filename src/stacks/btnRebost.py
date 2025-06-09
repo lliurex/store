@@ -122,11 +122,14 @@ class QPushButtonRebostApp(QPushButton):
 
 	def _renderGui(self,*args):
 		self.app=args[0]
-		states=self.app.get("state",{}).copy()
+		states=self.app.get("state",{})
+		zmd=""
 		if "zomando" in states:
-			states.pop("zomando")
+			zmd=states.pop("zomando")
 		for bundle,state in states.items():
 			if state=="0":
+				if bundle=="package" and zmd=="1":
+					continue
 				self.btn.setText(i18n.get("REMOVE"))
 				self.instBundle=bundle
 				break
@@ -157,9 +160,9 @@ class QPushButtonRebostApp(QPushButton):
 	#def __init__
 
 	def _emitInstall(self,*args):
-		if self.instBundle!="":
-			self.app["state"]={self.instBundle:"0"}
-			self.app["bundle"]={self.instBundle:self.app["bundle"][self.instBundle]}
+	#	if self.instBundle!="":
+	#		self.app["state"]={self.instBundle:"0"}
+	#		self.app["bundle"]={self.instBundle:self.app["bundle"][self.instBundle]}
 		self.install.emit(self,self.app)
 	#def _emitInstall
 
@@ -194,15 +197,24 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setText(i18n.get("UNAVAILABLE"))
 		else:
 			self.btn.setText(i18n.get("INSTALL"))
-		zmdInstalled=""
-		if "zomando" in states:
-			zmdInstalled=states.pop("zomando")
-		self.instBundle=""
-		for bundle,state in states.items():
-			if state=="0":# and zmdInstalled!="0":
-				self.btn.setText(i18n.get("REMOVE"))
-				self.instBundle=bundle
-				break
+			states=self.app.get("state",{}).copy()
+			bundles=self.app.get("bundle",{}).copy()
+			if "package" in states.keys():
+				states["package"]=states.get("zomando",states["package"])
+			for bundle in bundles:
+				if states.get(bundle,"1")=="0":
+					self.btn.setText(i18n.get("REMOVE"))
+					self.instBundle=bundle
+					break
+		#zmdInstalled=""
+		#if "zomando" in states:
+		#	zmdInstalled=states.pop("zomando")
+		#self.instBundle=""
+		#for bundle,state in states.items():
+		#	if state=="0":# and zmdInstalled!="0":
+		#		self.btn.setText(i18n.get("REMOVE"))
+		#		self.instBundle=bundle
+		#		break
 		self._applyDecoration()
 	#def updateScreen
 

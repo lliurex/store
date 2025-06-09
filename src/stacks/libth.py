@@ -94,7 +94,7 @@ class storeHelper(QThread):
 
 	def _updatePkgData(self):
 		if len(self.args)>0:
-			self.rc.updatePkgData(self.args[0].get("pkgname"),self.args[0])
+			self.rc.updatePkgData(self.args[0].get("name"),self.args[0])
 	#def _updatePkgData
 
 	def _lock(self):
@@ -141,6 +141,7 @@ class storeHelper(QThread):
 	#def _getFreedesktopCategories
 #class rebostHelper
 
+#This class loads data from arguments and updates the db
 class updateAppData(QThread):
 	dataLoaded=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
@@ -152,7 +153,6 @@ class updateAppData(QThread):
 		self.updates=[]
 		self._stop=False
 		self.cont=0
-		self.ctl=0
 	#def __init__
 		self.destroyed.connect(updateAppData._onDestroy)
 	#def __init__
@@ -177,7 +177,6 @@ class updateAppData(QThread):
 		self._debug("Launching info thread for {} apps".format(len(self.apps)))
 		apps = dict(reversed(list(self.apps.items())))
 		while apps:
-			self.ctl+=1
 			if len(self.newApps)>0:
 				apps = dict(reversed(list(self.newApps.items())))
 				self.apps=self.newApps.copy()
@@ -189,13 +188,13 @@ class updateAppData(QThread):
 				if self._stop==True:
 					break
 				time.sleep(0.4)
-			name=apps.popitem()[0]
-			self._emitDataLoaded(name)
+			data=apps.popitem()
+			name=data[0]
+			app=data[1].app #btnRebost app 
 			self.cont+=1
+			self.rc.updatePkgData(app["name"],app)
 			time.sleep(0.2)
-			if int(self.ctl)%5==0:
-				self.rc.commitData()
-				self.ctl=0
+			self._emitDataLoaded(name)
 	#def run
 
 	def stop(self):
