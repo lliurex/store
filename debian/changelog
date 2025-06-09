@@ -1,3 +1,9 @@
+lliurex-store (1.4.9.10+4lliurex23) jammy; urgency=medium
+
+  * Sync with noble
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 09 Jun 2025 13:09:07 +0200
+
 lliurex-store (1.4.9+15lliurex23) jammy; urgency=medium
 
   * Rebranded as LliureX Store
