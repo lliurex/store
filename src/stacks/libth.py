@@ -93,7 +93,7 @@ class storeHelper(QThread):
 
 	def _updatePkgData(self):
 		if len(self.args)>0:
-			self.rc.updatePkgData(self.args[0].get("pkgname"),self.args[0])
+			self.rc.updatePkgData(self.args[0].get("name"),self.args[0])
 	#def _updatePkgData
 
 	def _lock(self):
@@ -191,7 +191,7 @@ class updateAppData(QThread):
 			name=data[0]
 			app=data[1].app #btnRebost app 
 			self.cont+=1
-			self.rc.updatePkgData(app["pkgname"],app)
+			self.rc.updatePkgData(app["name"],app)
 			time.sleep(0.2)
 			self._emitDataLoaded(name)
 	#def run

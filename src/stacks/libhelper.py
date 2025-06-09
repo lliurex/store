@@ -59,17 +59,17 @@ class helper():
 						#subprocess.run(["pkexec",zmdPath])
 		elif zmdCmd.endswith(".epi"):
 			cmd=["pkexec","epi-gtk",zmdCmd]
-		if len(cmd)>0:
-			try:
-				proc=subprocess.run(cmd,env=os.environ)
-			except Exception as e:
-				print(e)
-				ret=-1
+			if len(cmd)>0:
+				try:
+					proc=subprocess.run(cmd,env=os.environ)
+				except Exception as e:
+					print(e)
+					ret=-1
 
-			if ret>=0:
-				ret=proc.returncode
-		else:
-			self._zmdNotFound(zmdPath)
+				if ret>=0:
+					ret=proc.returncode
+			else:
+				self._zmdNotFound(zmdPath)
 		return(ret)
 	#def runZmd
 

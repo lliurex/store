@@ -122,11 +122,14 @@ class QPushButtonRebostApp(QPushButton):
 
 	def _renderGui(self,*args):
 		self.app=args[0]
-		states=self.app.get("state",{}).copy()
+		states=self.app.get("state",{})
+		zmd=""
 		if "zomando" in states:
-			states.pop("zomando")
+			zmd=states.pop("zomando")
 		for bundle,state in states.items():
 			if state=="0":
+				if bundle=="package" and zmd=="1":
+					continue
 				self.btn.setText(i18n.get("REMOVE"))
 				self.instBundle=bundle
 				break
@@ -157,9 +160,9 @@ class QPushButtonRebostApp(QPushButton):
 	#def __init__
 
 	def _emitInstall(self,*args):
-		if self.instBundle!="":
-			self.app["state"]={self.instBundle:"0"}
-			self.app["bundle"]={self.instBundle:self.app["bundle"][self.instBundle]}
+	#	if self.instBundle!="":
+	#		self.app["state"]={self.instBundle:"0"}
+	#		self.app["bundle"]={self.instBundle:self.app["bundle"][self.instBundle]}
 		self.install.emit(self,self.app)
 	#def _emitInstall
 

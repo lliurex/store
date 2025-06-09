@@ -168,6 +168,7 @@ class portrait(QStackedWindowItem):
 		self._rebost.setAction("getCategories")
 		self._rebost.start()
 		self._rebost.wait()
+		self._getUpgradables()
 		QApplication.processEvents()
 		if self.locked==False and self.userLocked==True:
 			self._loadLockedRebost()
@@ -526,8 +527,10 @@ class portrait(QStackedWindowItem):
 
 	def _getUpgradables(self):
 		self.lblInfo.setVisible(False)
+		print("GETTING AVAILABLE UPGRADES")
 		self._rebost.setAction("upgrade")
 		self._rebost.start()
+		self._rebost.wait()
 	#def _getUpgradables
 
 	def _beginUpdate(self):
@@ -552,8 +555,6 @@ class portrait(QStackedWindowItem):
 
 	def _loadHome(self,*args,**kwargs):
 		self._debug("Rebost running: {} - {} - {}".format(self._rebost.isFinished(),self._rebost.isRunning(),self._rebost.action))
-		if self._rebost.isFinished()==True and self._rebost.isRunning()==False:
-			self._getUpgradables()
 		self.oldTime=time.time()
 		self.sortAsc=False
 		self.rp.searchBox.setText("")
@@ -879,6 +880,7 @@ class portrait(QStackedWindowItem):
 				bundle="zomando"
 			elif len(bundle)==0:
 				return
+		print(app)
 		self.rc.enableGui(True)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
@@ -899,7 +901,7 @@ class portrait(QStackedWindowItem):
 				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(app["name"]),timeout=4)
 			self.updateScreen(True)
 		else:
-			if bundle=="zomando" and app.get("state",{}).get("zomando","0")=="1":
+			if bundle=="zomando":# and app.get("state",{}).get("zomando","0")=="1":
 				self.zmdLauncher.setApp(app)
 				self.zmdLauncher.start()
 			else:
