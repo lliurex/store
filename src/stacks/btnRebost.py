@@ -67,8 +67,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.btn.setText(i18n.get("INSTALL"))
 		self.btn.setObjectName("btnInstall")
 		self.btn.clicked.connect(self._emitInstall)
-		if LAYOUT!="appsedu":
-			self.btn.setVisible(False)
+		self.btn.setVisible(False)
 		self.lblFlyIcon=QLabel()
 		self.lblFlyIcon.setObjectName("flyIcon")
 		#self.lblFlyIcon.setStyleSheet("""background:transparent""")
@@ -177,8 +176,8 @@ class QPushButtonRebostApp(QPushButton):
 					self.data.wait()
 			if ev.type()==QEvent.Type.Paint:
 				if self.init==False:
-					self.init=True
 					self.updateScreen()
+					self.init=True
 	
 		return(False)
 	#def eventFilter
@@ -216,6 +215,8 @@ class QPushButtonRebostApp(QPushButton):
 		#		self.instBundle=bundle
 		#		break
 		self._applyDecoration()
+		if self.app.get("summary","")!="":
+			self.btn.setVisible(True)
 	#def updateScreen
 
 	def enterEvent(self,*args):
