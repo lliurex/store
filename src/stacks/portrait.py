@@ -879,7 +879,6 @@ class portrait(QStackedWindowItem):
 				bundle="zomando"
 			elif len(bundle)==0:
 				return
-		print(app)
 		self.rc.enableGui(True)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)

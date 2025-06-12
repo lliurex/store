@@ -711,7 +711,6 @@ class detailPanel(QWidget):
 	def _setLauncherOptions(self):
 		visible=True
 		bundle=self.lstInfo.currentText()
-		print(self.app)
 		if "Forbidden" in self.app.get("categories",[]) or "eduapp" in bundle:
 			visible=False
 		self.btnInstall.setVisible(visible)
