@@ -183,17 +183,17 @@ class updateAppData(QThread):
 				#self._stop==False
 			if self._stop==True:
 				break
-			while self.cont>2:
+			while self.cont>4:
 				if self._stop==True:
 					break
-				time.sleep(0.4)
+				time.sleep(0.3)
 			data=apps.popitem()
 			name=data[0]
 			app=data[1].app #btnRebost app 
 			self.cont+=1
 			if isinstance(app,dict):
 				self.rc.updatePkgData(app["name"],app)
-			time.sleep(0.2)
+			time.sleep(0.1)
 			self._emitDataLoaded(name)
 	#def run
 

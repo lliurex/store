@@ -362,7 +362,7 @@ class detailPanel(QWidget):
 			self.thParmShow.quit()
 		pxm=self.lblIcon.pixmap()
 		if pxm.isNull()==False:
-			self.app["icon"]=pxm
+			self.app["icon"]=self.lblIcon.pixmapPath
 		for th in self.th:
 			th.quit()
 			th.wait()
@@ -583,7 +583,7 @@ class detailPanel(QWidget):
 		pxm=self.lblIcon.pixmap()
 		if pxm!=None:
 			if pxm.isNull()==False:
-				self.app["icon"]=pxm
+				self.app["icon"]=self.lblIcon.pixmapPath
 		#Disabled as requisite (250214-11:52)
 		#self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
 		summary="{}<br>{}".format(self.app["name"].upper(),self.app.get("summary",""))
@@ -907,7 +907,7 @@ class detailPanel(QWidget):
 			self.lblHomepage.setText("")
 			self.lblTags.setText("")
 			#Disabled as requisite (250214-11:52)
-			#self.lblTags.linkActivated.connect(self._tagNav)
+			self.lblTags.linkActivated.connect(self._tagNav)
 			self.app['name']=self.app.get('name','').replace(" ","")
 		else:
 			self._onError()
