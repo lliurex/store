@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from PySide2.QtCore import Signal,QThread
+from PySide6.QtCore import Signal,QThread
 import json,time,subprocess
 try:
        from lliurex import lliurexup
@@ -191,7 +191,8 @@ class updateAppData(QThread):
 			name=data[0]
 			app=data[1].app #btnRebost app 
 			self.cont+=1
-			self.rc.updatePkgData(app["name"],app)
+			if isinstance(app,dict):
+				self.rc.updatePkgData(app["name"],app)
 			time.sleep(0.2)
 			self._emitDataLoaded(name)
 	#def run
