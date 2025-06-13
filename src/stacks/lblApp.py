@@ -83,7 +83,7 @@ class QLabelRebostApp(QLabel):
 		if not os.path.exists(fPath):
 			pxm=pxm.scaled(256,256,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
 			pxm.save(fPath,"PNG")#,quality=5)
-		print("Saving {}".format(fPath))
+			self._debug("Saving {}".format(fPath))
 		self.pixmapPath=fPath
 	#def _savePixmap
 #class QLabelRebostApp
