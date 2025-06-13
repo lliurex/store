@@ -140,6 +140,7 @@ class storeHelper(QThread):
 	#def _getFreedesktopCategories
 #class rebostHelper
 
+#This class loads data from arguments and updates the db
 class updateAppData(QThread):
 	dataLoaded=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
@@ -182,16 +183,17 @@ class updateAppData(QThread):
 				#self._stop==False
 			if self._stop==True:
 				break
-			while self.cont>2:
+			while self.cont>4:
 				if self._stop==True:
 					break
-				time.sleep(0.4)
+				time.sleep(0.3)
 			data=apps.popitem()
 			name=data[0]
 			app=data[1].app #btnRebost app 
 			self.cont+=1
-			self.rc.updatePkgData(app["name"],app)
-			time.sleep(0.2)
+			if isinstance(app,dict):
+				self.rc.updatePkgData(app["name"],app)
+			time.sleep(0.1)
 			self._emitDataLoaded(name)
 	#def run
 
@@ -252,3 +254,34 @@ class getData(QThread):
 		self._stop=st
 	#def stop
 #class getData
+
+class thShowApp(QThread):
+	showEnded=Signal("PyObject")
+	def __init__(self,*args,**kwargs):
+		QThread.__init__(self, None)
+		self.rc=kwargs["rc"]
+		self.app={}
+	#def __init__
+
+	def setArgs(self,*args):
+		if isinstance(args[0],str):
+			self.app={}
+			self.app["name"]=args[0]
+		else:
+			self.app=args[0]
+	#def setArgs(self:
+
+	def run(self):
+		if len(self.app.keys())>0:
+			try:
+				app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
+			except:
+				print("Error finding {}".format(self.app.get("name","")))
+				app=self.app.copy()
+				app["ERR"]=True
+			finally:
+				if isinstance(app,str):
+					app=json.loads(app)
+				self.showEnded.emit(app)
+	#def run
+#class thShowApp

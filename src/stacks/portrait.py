@@ -168,7 +168,6 @@ class portrait(QStackedWindowItem):
 		self._rebost.setAction("getCategories")
 		self._rebost.start()
 		self._rebost.wait()
-		self._getUpgradables()
 		QApplication.processEvents()
 		if self.locked==False and self.userLocked==True:
 			self._loadLockedRebost()
@@ -471,6 +470,7 @@ class portrait(QStackedWindowItem):
 				if item!=None:
 					item.setToolTip(cat)
 				lowercats.append(cat.lower())
+		self._getUpgradables()
 	#def _populateCategories
 
 	def _getRawCategory(self,cat):
@@ -522,7 +522,6 @@ class portrait(QStackedWindowItem):
 	def _endGetUpgradables(self,*args):
 		if args[0]==True:
 			self.lblInfo.setVisible(True)
-		self._rebost.terminate()
 	#def _endGetUpgradables(self,*args):
 
 	def _getUpgradables(self):
@@ -880,7 +879,6 @@ class portrait(QStackedWindowItem):
 				bundle="zomando"
 			elif len(bundle)==0:
 				return
-		print(app)
 		self.rc.enableGui(True)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)

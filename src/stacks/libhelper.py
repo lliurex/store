@@ -33,13 +33,16 @@ class helper():
 		ret=-1
 		cmd=[]
 		zmdCmd=app.get('bundle',{}).get('zomando','')
+		appName=app.get("alias","")
+		if appName=="":
+			appName=app["name"]
 		if zmdCmd.endswith(".zmd")==True:
 			zmdPath=os.path.join("/usr/share/zero-center/zmds",zmdCmd)
 			if os.path.isfile(zmdPath):
 				cmd=self._getCmdFromZmd(zmdPath)
 				#subprocess.run(["pkexec",zmdPath])
 				try:
-					cmd.append(app["name"])
+					cmd.append(appName)
 					proc=subprocess.run(cmd)
 					ret=proc.returncode
 				except Exception as e:
@@ -58,7 +61,7 @@ class helper():
 						cmd=self._getCmdFromZmd(newPath)
 						#subprocess.run(["pkexec",zmdPath])
 		elif zmdCmd.endswith(".epi"):
-			cmd=["pkexec","epi-gtk",zmdCmd]
+			cmd=["pkexec","epi-gtk",zmdCmd,appName]
 			if len(cmd)>0:
 				try:
 					proc=subprocess.run(cmd,env=os.environ)
