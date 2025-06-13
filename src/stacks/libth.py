@@ -254,3 +254,34 @@ class getData(QThread):
 		self._stop=st
 	#def stop
 #class getData
+
+class thShowApp(QThread):
+	showEnded=Signal("PyObject")
+	def __init__(self,*args,**kwargs):
+		QThread.__init__(self, None)
+		self.rc=kwargs["rc"]
+		self.app={}
+	#def __init__
+
+	def setArgs(self,*args):
+		if isinstance(args[0],str):
+			self.app={}
+			self.app["name"]=args[0]
+		else:
+			self.app=args[0]
+	#def setArgs(self:
+
+	def run(self):
+		if len(self.app.keys())>0:
+			try:
+				app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
+			except:
+				print("Error finding {}".format(self.app.get("name","")))
+				app=self.app.copy()
+				app["ERR"]=True
+			finally:
+				if isinstance(app,str):
+					app=json.loads(app)
+				self.showEnded.emit(app)
+	#def run
+#class thShowApp

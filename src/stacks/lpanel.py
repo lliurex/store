@@ -19,6 +19,7 @@ import css
 from cmbBtn import QComboButton
 from lblApp import QLabelRebostApp
 from lblLnk import QLabelLink
+from libth import thShowApp
 from constants import *
 _ = gettext.gettext
 QString=type("")
@@ -52,36 +53,6 @@ i18n={
 	"ZMDNOTFOUND":_("Zommand not found. Open Zero-Center?"),
 	}
 
-class thShowApp(QThread):
-	showEnded=Signal("PyObject")
-	def __init__(self,parent=None):
-		QThread.__init__(self, parent)
-		self.rc=store.client()
-		self.app={}
-	#def __init__
-
-	def setArgs(self,*args):
-		if isinstance(args[0],str):
-			self.app={}
-			self.app["name"]=args[0]
-		else:
-			self.app=args[0]
-	#def setArgs(self:
-
-	def run(self):
-		if len(self.app.keys())>0:
-			try:
-				app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
-			except:
-				print("Error finding {}".format(self.app.get("name","")))
-				app=self.app.copy()
-				app["ERR"]=True
-			finally:
-				if isinstance(app,str):
-					app=json.loads(app)
-				self.showEnded.emit(app)
-	#def run
-#class thShowApp
 
 class detailPanel(QWidget):
 	clicked=Signal("PyObject")
@@ -96,15 +67,14 @@ class detailPanel(QWidget):
 		self.setStyleSheet(css.detailPanel())
 		self.refresh=False
 		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
-		self._connectThreads()
+		self.rc=store.client()
 		self.oldcursor=self.cursor()
 		self.stream=""
 		self.launcher=""
 		self.config={}
 		self.app={}
-		self.rc=store.client()
 		self.instBundle=""
-		self.th=[]
+		self._connectThreads()
 		self.__initScreen__()
 	#def __init__
 
@@ -114,9 +84,9 @@ class detailPanel(QWidget):
 		self.epi.runEnded.connect(self._getEpiResults)
 		self.runapp=exehelper.appLauncher()
 		self.runapp.runEnded.connect(self._getRunappResults)
-		self.thEpiShow=thShowApp()
+		self.thEpiShow=thShowApp(rc=self.rc)
 		self.thEpiShow.showEnded.connect(self._endGetEpiResults)
-		self.thParmShow=thShowApp()
+		self.thParmShow=thShowApp(rc=self.rc)
 		self.thParmShow.showEnded.connect(self._endSetParms)
 		self.zmdLauncher=exehelper.zmdLauncher()
 		self.zmdLauncher.finished.connect(self._endRunZomando)
@@ -363,13 +333,8 @@ class detailPanel(QWidget):
 		pxm=self.lblIcon.pixmap()
 		if pxm.isNull()==False:
 			self.app["icon"]=self.lblIcon.pixmapPath
-		for th in self.th:
-			th.quit()
-			th.wait()
 		self.clicked.emit(self.app)
-
-	def _loaded(self):
-		self.loaded.emit(self.app)
+	#def _clickedBack
 
 	def __initScreen__(self):
 		self.box=QGridLayout()
