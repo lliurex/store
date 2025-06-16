@@ -151,8 +151,8 @@ class updateAppData(QThread):
 		self.newApps={}
 		self.updates=[]
 		self._stop=False
+		self._pause=False
 		self.cont=0
-	#def __init__
 		self.destroyed.connect(updateAppData._onDestroy)
 	#def __init__
 
@@ -167,6 +167,13 @@ class updateAppData(QThread):
 		self.newApps=args[0]
 	#def setApps
 
+	def addApps(self,*args):
+		self._pause=True
+		self.apps.update(args[0])
+		time.sleep(0.2)
+		self._pause=False
+	#def addApp(self,*args)
+
 	def run(self):
 		app={}
 		self._stop=False
@@ -174,10 +181,13 @@ class updateAppData(QThread):
 			self.apps=self.newApps.copy()
 			self.newApps={}
 		self._debug("Launching info thread for {} apps".format(len(self.apps)))
-		apps = dict(reversed(list(self.apps.items())))
-		while apps:
+		#apps = dict(reversed(list(self.apps.items())))
+		while self.apps:
+			if self._pause==True:
+				while self._pause==True:
+					time.sleep(0.2)
 			if len(self.newApps)>0:
-				apps = dict(reversed(list(self.newApps.items())))
+				#apps = dict(reversed(list(self.newApps.items())))
 				self.apps=self.newApps.copy()
 				self.newApps={}
 				#self._stop==False
@@ -187,11 +197,12 @@ class updateAppData(QThread):
 				if self._stop==True:
 					break
 				time.sleep(0.3)
-			data=apps.popitem()
+			data=self.apps.popitem()
 			name=data[0]
 			app=data[1].app #btnRebost app 
 			self.cont+=1
 			if isinstance(app,dict):
+				print("Update for {}".format(app["name"]))
 				self.rc.updatePkgData(app["name"],app)
 			time.sleep(0.1)
 			self._emitDataLoaded(name)
