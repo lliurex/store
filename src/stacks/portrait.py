@@ -569,8 +569,8 @@ class portrait(QStackedWindowItem):
 	def _loadInstalled(self):
 		#Disable app url if any (JustInCase)
 		self.filters["installed"]=True
-		self._goHome()
-		return
+		#self._goHome()
+		#return
 		self.appUrl=""
 		self.appsLoaded=0
 		flag=""
