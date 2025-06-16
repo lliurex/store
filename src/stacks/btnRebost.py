@@ -31,12 +31,12 @@ class processData(QThread):
 
 	def run(self):
 		if isinstance(self.data,str):
-			self.app=json.loads(self.data)
+			app=json.loads(self.data)
 		else:
-			self.app=self.data
+			app=self.data
 #		if self.autoUpdate==True:
 #			self._getAppseduInfo()
-		self.processed.emit(self.app)
+		self.processed.emit(app)
 		return True
 	#def run
 #class processData
@@ -93,9 +93,14 @@ class QPushButtonRebostApp(QPushButton):
 		self.installEventFilter(self)
 		self.scrCnt=QScreenShotContainer()
 		self.th=[]
-		self.data=processData(strapp,autoUpdate=True)
-		self.data.processed.connect(self._renderGui)
-		self.data.start()
+		if isinstance(strapp,str):
+			self.app=json.loads(strapp)
+		else:
+			self.app=strapp
+		self._renderGui()
+		#self.data=processData(strapp,autoUpdate=True)
+		#self.data.processed.connect(self._renderGui)
+		#self.data.start()
 	#def __init__
 
 	@staticmethod
@@ -120,7 +125,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.data.start()
 
 	def _renderGui(self,*args):
-		self.app=args[0]
+	#	self.app=args[0]
 		states=self.app.get("state",{})
 		zmd=""
 		if "zomando" in states:
