@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from PySide6.QtCore import Signal,QThread
-import json,time,subprocess
+import json,time,subprocess,random
 try:
        from lliurex import lliurexup
 except:
@@ -169,8 +169,10 @@ class updateAppData(QThread):
 
 	def addApps(self,*args):
 		self._pause=True
-		self.apps.update(args[0])
+		apps=list(args[0].items())
 		time.sleep(0.2)
+		random.shuffle(apps)
+		self.apps.update(dict(apps))
 		self._pause=False
 	#def addApp(self,*args)
 
@@ -197,7 +199,8 @@ class updateAppData(QThread):
 				if self._stop==True:
 					break
 				time.sleep(0.3)
-			data=self.apps.popitem()
+			key=list(self.apps.keys())[0]
+			data=(key,self.apps.pop(key))
 			name=data[0]
 			app=data[1].app #btnRebost app 
 			self.cont+=1
