@@ -571,8 +571,8 @@ class portrait(QStackedWindowItem):
 	def _loadInstalled(self):
 		#Disable app url if any (JustInCase)
 		self.filters["installed"]=True
-		self._goHome()
-		return
+		#self._goHome()
+		#return
 		self.appUrl=""
 		self.appsLoaded=0
 		flag=""
@@ -782,11 +782,11 @@ class portrait(QStackedWindowItem):
 		self._debug("End: {}".format(time.time()-a))
 		self._debug("************************")
 		self._debug("************************")
-		if len(self.pendingApps)>0:
-			self._debug("Pending: {}".format(len(self.pendingApps)))
-			self.appUpdate.blockSignals(False)
-			self.appUpdate.setApps(self.pendingApps)
-			self.appUpdate.start()
+		#if len(self.pendingApps)>0:
+		#	self._debug("Pending: {}".format(len(self.pendingApps)))
+		#	self.appUpdate.blockSignals(False)
+		#	self.appUpdate.setApps(self.pendingApps)
+		#	self.appUpdate.start()
 		self._endLoadData()
 		self.loading=False
 	#def _loadData
@@ -795,6 +795,7 @@ class portrait(QStackedWindowItem):
 		if self.filters.get("installed",False)==True:
 			self.rp.table.setEnabled(False)
 			print("WARNING!!!!: INSTALLED FILTER APPLIED")
+		pendingApps={}
 		while apps:
 			jsonapp=apps.pop(0)
 			if self.stopAdding==True:
@@ -816,13 +817,14 @@ class portrait(QStackedWindowItem):
 						break
 				if state!="3":
 					continue
+				self._debug("State for {}: {}".format(jsonapp["name"],jsonapp["state"]))
 			self.appsSeen.append(appname)
 			btn=QPushButtonRebostApp(jsonapp)
 			btn.clicked.connect(self._loadDetails)
 			btn.keypress.connect(self.tableKeyPressEvent)
 			btn.install.connect(self._installBundle)
 			if jsonapp["summary"]=="":
-				self.pendingApps.update({appname:btn})
+				pendingApps.update({appname:btn})
 			self.rp.table.addWidget(btn)
 			if appname in self.referersHistory.keys():
 				self.referersShowed.update({appname:btn})
@@ -830,6 +832,19 @@ class portrait(QStackedWindowItem):
 			#self._debug("Add: {}".format(time.time()-b))
 			#Force btn show
 			QApplication.processEvents()
+			if len(pendingApps)>9:
+				self.appUpdate.addApps(pendingApps)
+				self.pendingApps.update(pendingApps)
+				if self.appUpdate.isRunning()==False:
+					self.appUpdate.start()
+				pendingApps={}
+
+		if len(pendingApps)>0:
+			self.appUpdate.addApps(pendingApps)
+			self.pendingApps.update(pendingApps)
+			if self.appUpdate.isRunning()==False:
+				self.appUpdate.start()
+			pendingApps={}
 		if self.filters.get("installed",False)==True:
 			self.rp.table.setEnabled(True)
 		self.filters["installed"]=False
@@ -900,6 +915,7 @@ class portrait(QStackedWindowItem):
 			else:
 				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(app["name"]),timeout=4)
 			self.updateScreen(True)
+			self.progress.stop()
 		else:
 			if bundle=="zomando":# and app.get("state",{}).get("zomando","0")=="1":
 				self.zmdLauncher.setApp(app)
