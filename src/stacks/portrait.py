@@ -837,6 +837,12 @@ class portrait(QStackedWindowItem):
 					self.appUpdate.start()
 				pendingApps={}
 
+		if len(pendingApps)>0:
+			self.appUpdate.addApps(pendingApps)
+			self.pendingApps.update(pendingApps)
+			if self.appUpdate.isRunning()==False:
+				self.appUpdate.start()
+			pendingApps={}
 		if self.filters.get("installed",False)==True:
 			self.rp.table.setEnabled(True)
 		self.filters["installed"]=False
@@ -907,6 +913,7 @@ class portrait(QStackedWindowItem):
 			else:
 				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(app["name"]),timeout=4)
 			self.updateScreen(True)
+			self.progress.stop()
 		else:
 			if bundle=="zomando":# and app.get("state",{}).get("zomando","0")=="1":
 				self.zmdLauncher.setApp(app)
