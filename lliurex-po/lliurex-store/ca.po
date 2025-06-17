@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-05-26 08:00+0200\n"
-"PO-Revision-Date: 2025-05-26 08:15+0200\n"
+"PO-Revision-Date: 2025-06-17 08:50+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -29,11 +29,11 @@ msgstr "Elimina"
 
 #: ../src/stacks/btnRebost.py:17
 msgid "Blocked"
-msgstr "Bloqueada"
+msgstr "Bloquejades"
 
 #: ../src/stacks/btnRebost.py:18 ../src/stacks/lpanel.py:50
 msgid "Unavailable"
-msgstr "Pendiente"
+msgstr "Pendent"
 
 #: ../src/stacks/lpanel.py:28
 msgid ""
@@ -41,7 +41,7 @@ msgid ""
 "installed"
 msgstr ""
 "No es pot carregar la app. Fins que no estiga catalogada a appsedu no estarà "
-"disponible. Mès informació a https://portal.edu.gva.es/appsedu/aplicacions-"
+"disponible. Més informació a https://portal.edu.gva.es/appsedu/aplicacions-"
 "lliurex"
 
 #: ../src/stacks/lpanel.py:29
@@ -49,7 +49,7 @@ msgid ""
 "For any question the SAI can be contacted at <a href='https://portal.edu.gva."
 "es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
 msgstr ""
-"Per a qualsevol questió el web del SAI es troba disponible a <a "
+"Per a qualsevol qüestió el web del SAI es troba disponible a <a "
 "href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/"
 "sai/es/inicio/</a>"
 
@@ -76,7 +76,7 @@ msgstr "Error carregant"
 
 #: ../src/stacks/lpanel.py:35 ../src/stacks/portrait.py:43
 msgid "System apps can't be removed"
-msgstr "Aplicación de base. No se desinstalará"
+msgstr "Aplicació de base. No es desinstal·larà"
 
 #: ../src/stacks/lpanel.py:36 ../src/stacks/portrait.py:44
 msgid "Unknown error"
@@ -92,7 +92,7 @@ msgstr "Format"
 
 #: ../src/stacks/lpanel.py:39
 msgid "Info"
-msgstr "Información"
+msgstr "Informació"
 
 #: ../src/stacks/lpanel.py:40
 msgid "For more info go to"
@@ -120,7 +120,7 @@ msgstr "Mostrar en Appsedu"
 
 #: ../src/stacks/lpanel.py:48
 msgid "Website"
-msgstr "Sitio web"
+msgstr "Lloc web"
 
 #: ../src/stacks/lpanel.py:51
 msgid "Upgrade"
@@ -140,11 +140,11 @@ msgstr "Disponibles"
 
 #: ../src/stacks/portrait.py:37 ../src/stacks/rpanel.py:19
 msgid "Filter by category"
-msgstr "Filtrar per categoría"
+msgstr "Filtrar per categoria"
 
 #: ../src/stacks/portrait.py:38 ../src/stacks/rpanel.py:20
 msgid "Certified by Appsedu"
-msgstr "Certificadas por Appsedu"
+msgstr "Certificades per Appsedu"
 
 #: ../src/stacks/portrait.py:39 ../src/stacks/portrait.py:55
 #: ../src/stacks/rpanel.py:21 ../src/stacks/rpanel.py:33
@@ -161,7 +161,7 @@ msgstr "Filtrar per formats i estats"
 
 #: ../src/stacks/portrait.py:47 ../src/stacks/rpanel.py:25
 msgid "Home"
-msgstr "Inicio"
+msgstr "Inici"
 
 #: ../src/stacks/portrait.py:48 ../src/stacks/rpanel.py:26
 msgid "Main page"
@@ -216,17 +216,17 @@ msgid "ALL"
 msgstr "Tot"
 
 msgid "AudioVideo"
-msgstr "Video i só"
+msgstr "Vídeo i so"
 
 #
 msgid ": "
 msgstr ": "
 
 msgid "DiscBurning"
-msgstr "Grabació de discs"
+msgstr "Gravació de discs"
 
 msgid "Audio"
-msgstr "Só"
+msgstr "So"
 
 msgid "Midi"
 msgstr "Midi"
@@ -247,10 +247,10 @@ msgid "Player"
 msgstr "Reproductors"
 
 msgid "Video"
-msgstr "Video"
+msgstr "Vídeo"
 
 msgid "AudioVideoEditing"
-msgstr "Edició de só i video"
+msgstr "Edició de so i vídeo"
 
 msgid "TV"
 msgstr "TV"
@@ -268,7 +268,7 @@ msgid "IDE"
 msgstr "IDE"
 
 msgid "GUIDesigner"
-msgstr "Disseny d'interficies"
+msgstr "Disseny d'interfícies"
 
 msgid "Profiling"
 msgstr "Perfils"
@@ -295,7 +295,7 @@ msgid "Art"
 msgstr "Art"
 
 msgid "Construction"
-msgstr "Construció"
+msgstr "Construcció"
 
 msgid "Music"
 msgstr "Música"
@@ -304,10 +304,10 @@ msgid "Languages"
 msgstr "Idiomes"
 
 msgid "ArtificialIntelligence"
-msgstr "Inteligencia artificial"
+msgstr "Intel·ligència artificial"
 
 msgid "Astronomy"
-msgstr "Astronomía"
+msgstr "Astronomia"
 
 msgid "Biology"
 msgstr "Biologia"
@@ -316,7 +316,7 @@ msgid "Chemistry"
 msgstr "Química"
 
 msgid "ComputerScience"
-msgstr "Ciencia computacional"
+msgstr "Ciència computacional"
 
 msgid "DataVisualization"
 msgstr "Visualització de dades"
@@ -334,7 +334,7 @@ msgid "Geology"
 msgstr "Geologia"
 
 msgid "Geoscience"
-msgstr "Geociencia"
+msgstr "Geociència"
 
 #
 msgid "History"
@@ -344,7 +344,7 @@ msgid "Humanities"
 msgstr "Humanitats"
 
 msgid "ImageProcessing"
-msgstr "Procesament d'imatges"
+msgstr "Processament d'imatges"
 
 msgid "Literature"
 msgstr "Literatura"
@@ -356,7 +356,7 @@ msgid "Math"
 msgstr "Matemàtiques"
 
 msgid "NumericalAnalysis"
-msgstr "Anàlisi numéric"
+msgstr "Anàlisi numèric"
 
 msgid "MedicalSoftware"
 msgstr "Programari mèdic"
@@ -365,7 +365,7 @@ msgid "Physics"
 msgstr "Física"
 
 msgid "Robotics"
-msgstr "Robótica"
+msgstr "Robòtica"
 
 msgid "Spirituality"
 msgstr "Espiritualitat"
@@ -374,7 +374,7 @@ msgid "Sports"
 msgstr "Esports"
 
 msgid "ParallelComputing"
-msgstr "Computació paralela"
+msgstr "Computació paral·lela"
 
 msgid "Game"
 msgstr "Joc"
@@ -419,7 +419,7 @@ msgid "SportsGame"
 msgstr "Jocs d'esports"
 
 msgid "StrategyGame"
-msgstr "Jocs d'estrategia"
+msgstr "Jocs d'estratègia"
 
 #
 msgid "LauncherStore"
@@ -466,7 +466,7 @@ msgid "Dialup"
 msgstr "Dial"
 
 msgid "InstantMessaging"
-msgstr "Missatgeria instantànea"
+msgstr "Missatgeria instantània"
 
 msgid "Chat"
 msgstr "Xat"
@@ -475,10 +475,10 @@ msgid "IRCCLient"
 msgstr "IRC"
 
 msgid "Feed"
-msgstr "Orígen"
+msgstr "Origen RSS"
 
 msgid "FileTransfer"
-msgstr "Transferencia de fitxers"
+msgstr "Transferència de fitxers"
 
 msgid "HamRadio"
 msgstr "Radio"
@@ -499,7 +499,7 @@ msgid "TelephonyTools"
 msgstr "Eines de telefonia"
 
 msgid "VideoConference"
-msgstr "Videoconferencia"
+msgstr "Videoconferència"
 
 msgid "WebBrowser"
 msgstr "Fullejadors web"
@@ -548,7 +548,7 @@ msgid "Security"
 msgstr "Seguretat"
 
 msgid "Accessibility"
-msgstr "Accesibilitat"
+msgstr "Accessibilitat"
 
 msgid "System"
 msgstr "Sistema"
@@ -575,13 +575,13 @@ msgid "TextTools"
 msgstr "Eines de text"
 
 msgid "Archiving"
-msgstr "Compressió"
+msgstr "Arxiu"
 
 msgid "Compression"
 msgstr "Compressió"
 
 msgid "Calculator"
-msgstr "Cálcul"
+msgstr "Càlcul"
 
 msgid "Clock"
 msgstr "Rellotge"
