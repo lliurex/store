@@ -53,7 +53,7 @@ class storeRunner(dbus.service.Object):
 			if installed==True:
 				continue
 			icon="lliurex-stores"
-			match.update({japp["name"]:(japp["name"],"Installiere {}".format(japp["name"]),icon,100,1.0,{"subtext":japp["summary"]})})
+			match.update({japp["name"]:(japp["name"],"Install {}".format(japp["name"]),icon,100,1.0,{"subtext":japp["summary"]})})
 		matches.extend(match.values())
 		return (matches)
 
