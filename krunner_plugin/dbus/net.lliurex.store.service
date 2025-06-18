@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=net.lliurex.store
+Exec=/usr/bin/python3 "/usr/share/store/dbus-store.py"
