@@ -25,7 +25,5 @@ Description: Application store for LliureX with appsedu integration
 Package: lliurex-store-dbus
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, 
-		rebost (>=2.6.0-14lliurex23), 
-		rebost-data (>=24.09.17-0lliurex23), 
-		python3-rebost (>=1.9.1-0lliurex23), 
+		lliurex-store(>=1.4.9.12)
 Description: Krunner plugin for lliurex-store
