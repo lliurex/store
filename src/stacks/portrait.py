@@ -338,8 +338,6 @@ class portrait(QStackedWindowItem):
 	def _defInst(self):
 		btnInst=QPushButton(i18n.get("INSTALLED"))
 		btnInst.clicked.connect(self._loadInstalled)
-		btnInst.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
-
 		return(btnInst)
 	#def _defHome
 
@@ -602,7 +600,7 @@ class portrait(QStackedWindowItem):
 			self.refresh=False
 		self.loading=False
 		self.updateScreen(True)
-		self.progress.stop()
+		self._endUpdate()
 	#def _loadInstalled
 
 	def _resetSearchBtnIcon(self):

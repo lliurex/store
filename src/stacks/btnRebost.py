@@ -168,6 +168,11 @@ class QPushButtonRebostApp(QPushButton):
 	#	if self.instBundle!="":
 	#		self.app["state"]={self.instBundle:"0"}
 	#		self.app["bundle"]={self.instBundle:self.app["bundle"][self.instBundle]}
+		if self.btn.text()==i18n["REMOVE"]:
+			#Remove, get installed bundle
+			for bun,state in self.app["state"].items():
+				if state=="0":
+					self.app["bundle"]={bun:self.app["bundle"][bun]}
 		self.install.emit(self,self.app)
 	#def _emitInstall
 
