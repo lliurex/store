@@ -10,3 +10,4 @@ X-KDE-PluginInfo-Name=LliureX Store
 X-Plasma-API=DBus
 X-Plasma-DBusRunner-Service=net.lliurex.store
 X-Plasma-DBusRunner-Path=/
+X-KDE-PluginInfo-EnabledByDefault=true
