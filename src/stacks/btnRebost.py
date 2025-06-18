@@ -127,16 +127,17 @@ class QPushButtonRebostApp(QPushButton):
 	def _renderGui(self,*args):
 	#	self.app=args[0]
 		states=self.app.get("state",{})
-		zmd=""
-		if "zomando" in states:
-			zmd=states.pop("zomando")
-		for bundle,state in states.items():
-			if state=="0":
+		zmd=states.get("zomando","0")
+		if len(states)>0:
+			for bundle,state in states.items():
 				if bundle=="package" and zmd=="1":
-					continue
-				self.btn.setText(i18n.get("REMOVE"))
-				self.instBundle=bundle
-				break
+					if self.app["bundle"]["package"].startswith("zero"):
+						continue
+				if state=="0":# and zmdInstalled!="0":
+					installed=True
+					self.btn.setText(i18n.get("REMOVE"))
+					self.instBundle=bundle
+					break
 		if "Forbidden" in self.app.get("categories",[]):
 			self.btn.setText(i18n.get("UNAUTHORIZED"))
 		elif "eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))==1:
@@ -203,22 +204,20 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setText(i18n.get("INSTALL"))
 			states=self.app.get("state",{}).copy()
 			bundles=self.app.get("bundle",{}).copy()
-			if "package" in states.keys():
-				states["package"]=states.get("zomando",states["package"])
-			for bundle in bundles:
-				if states.get(bundle,"1")=="0":
-					self.btn.setText(i18n.get("REMOVE"))
-					self.instBundle=bundle
-					break
-		#zmdInstalled=""
-		#if "zomando" in states:
-		#	zmdInstalled=states.pop("zomando")
-		#self.instBundle=""
-		#for bundle,state in states.items():
-		#	if state=="0":# and zmdInstalled!="0":
-		#		self.btn.setText(i18n.get("REMOVE"))
-		#		self.instBundle=bundle
-		#		break
+
+
+
+			zmd=states.get("zomando","0")
+			if len(states)>0:
+				for bundle,state in states.items():
+					if bundle=="package" and zmd=="1":
+						if self.app["bundle"]["package"].startswith("zero"):
+							continue
+					if state=="0":# and zmdInstalled!="0":
+						installed=True
+						self.btn.setText(i18n.get("REMOVE"))
+						self.instBundle=bundle
+						break
 		self._applyDecoration()
 		if self.app.get("summary","")!="":
 			self.btn.setVisible(True)

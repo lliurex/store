@@ -528,7 +528,7 @@ class portrait(QStackedWindowItem):
 
 	def _getUpgradables(self):
 		self.lblInfo.setVisible(False)
-		print("GETTING AVAILABLE UPGRADES")
+		self._debug("Get available upgrades")
 		self._rebost.setAction("upgrade")
 		self._rebost.start()
 		self._rebost.wait()
