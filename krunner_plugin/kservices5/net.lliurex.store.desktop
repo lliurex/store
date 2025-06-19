@@ -1,11 +1,13 @@
 [Desktop Entry]
-Name=LliureX-Store
+Name=LliureX Store
+Name[es]=Tienda de Lliurex
+Name[ca]=Botiga de Lliurex
 Comment=Get apps from store
 Comment[es]=Busca aplicaciones disponibles
 Comment[ca]=Cerca aplicacions disponibles
 X-KDE-ServiceTypes=Plasma/Runner
 Type=Service
-Icon=lliurex-store
+Icon=llxstore
 X-KDE-PluginInfo-Name=LliureX Store
 X-Plasma-API=DBus
 X-Plasma-DBusRunner-Service=net.lliurex.store
