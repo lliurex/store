@@ -153,6 +153,10 @@ def portrait():
 					margin:0px;
 			}"""
 	css=css+port
+	error="""#errorMsg{
+			background: %s;
+			}"""%(COLOR_BACKGROUND_LIGHT)
+	css=css+error
 	banner="""#banner{
 					margin-top:%spx;
 					margin-bottom:%spx;

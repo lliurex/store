@@ -54,7 +54,9 @@ i18n={
 	"SORTDSC":_("Sort alphabetically"),
 	"TOOLTIP":_("Portrait"),
 	"UPGRADABLE":_("Upgradables"),
-	"UPGRADES":_("There're upgrades available")
+	"UPGRADES":_("There're upgrades available"),
+	"CHK_NETWORK":"Store was unable to get information from internet",
+	"OPN_NETWORK":"Open network settings"
 	}
 
 class portrait(QStackedWindowItem):
@@ -84,6 +86,7 @@ class portrait(QStackedWindowItem):
 		#DBUS connections
 		bus=dbus.SessionBus()
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
+		self._getUpgradables()
 	#	objbus.connect_to_signal("reloadSignal",self._reload,dbus_interface="net.lliurex.rebost")
 	#	objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 	#	(self.locked,self.userLocked)=self._rebost.isLocked()
@@ -104,6 +107,9 @@ class portrait(QStackedWindowItem):
 		self.stopAdding=False
 		self.filters={"installed":False}
 		self.loading=False
+		self.categoriesTree={}
+		self.chkUpdates=False
+		self.isConnected=self._chkNetwork()
 	#def _initCatalogue
 
 	def _initThreads(self):
@@ -158,6 +164,21 @@ class portrait(QStackedWindowItem):
 			print("Portrait: {}".format(msg))
 	#def _debug
 
+	def _chkNetwork(self):
+		state=False
+		bus=dbus.SystemBus()
+		try:
+			objbus=bus.get_object("org.freedesktop.NetworkManager","/org/freedesktop/NetworkManager")
+			proxbus=dbus.Interface(objbus,"org.freedesktop.NetworkManager")
+			status=proxbus.state()
+		except:
+			state=True
+		else:
+			if status==70:
+				state=True
+		return(state)
+	#def _chkNetwork
+
 	def _endGetLockStatus(self,*args):
 		self.certified.blockSignals(True)
 		self.locked=args[0]
@@ -166,6 +187,7 @@ class portrait(QStackedWindowItem):
 			self.certified.setChecked(False)
 		self.certified.blockSignals(False)
 		self._debug("<-------- Rebost status acquired")
+		time.sleep(0.1)
 		self._rebost.setAction("getCategories")
 		self._rebost.start()
 		self._rebost.wait()
@@ -205,7 +227,7 @@ class portrait(QStackedWindowItem):
 		self.getData.requestInterruption()
 		self.getData.wait()
 		self._rebost.requestInterruption()
-		self._rebost.wait()
+		self._rebost.quit()
 		self._rebost.blockSignals(False)
 		self.progress.stop()
 	#def _stopThreads
@@ -235,6 +257,10 @@ class portrait(QStackedWindowItem):
 		self.box.setColumnStretch(1,1)
 		self.setObjectName("portrait")
 		self.rp.setVisible(False)
+		self.errTab=self._defError()
+		self.errTab.setObjectName("errorMsg")
+		self.errTab.setVisible(not(self.isConnected))
+		self.box.addWidget(self.errTab,0,1,self.box.rowCount(),self.box.columnCount(),Qt.AlignCenter)
 	#	self.resetScreen()
 	#def _load_screen
 
@@ -371,7 +397,26 @@ class portrait(QStackedWindowItem):
 		wdg.clicked.connect(self._launchLlxUp)
 		wdg.setVisible(False)
 		return(wdg)
-	#def _defInfo(self):
+	#def _defInfo
+	
+	def _defError(self):
+		wdg=QWidget()
+		wdg.setAttribute(Qt.WA_StyledBackground, True)
+		box=QVBoxLayout()
+		wdg.setLayout(box)
+		icn=QtGui.QIcon.fromTheme("network-wireless")
+		pxm=QtGui.QPixmap()
+		pxm=icn.pixmap(QSize(256,256))
+		lblIcn=QLabel()
+		lblIcn.setPixmap(pxm)
+		box.addWidget(lblIcn,Qt.AlignBottom,Qt.AlignCenter)
+		lblTxt=QLabel(i18n["CHK_NETWORK"])
+		box.addWidget(lblTxt,Qt.AlignCenter,Qt.AlignCenter)
+		btnCnf=QPushButton(i18n["OPN_NETWORK"])
+		btnCnf.clicked.connect(self._launchNetworkSettings)
+		box.addWidget(btnCnf,Qt.AlignTop,Qt.AlignCenter)
+		return(wdg)
+	#def _defError
 
 	def _defProgress(self):
 		wdg=QProgressImage(self)
@@ -403,6 +448,14 @@ class portrait(QStackedWindowItem):
 		dp=detailPanel()
 		return(dp)
 	#def _detailPane
+
+	def _launchNetworkSettings(self,*args):
+		self.parent.setVisible(False)
+		QApplication.processEvents()
+		cmd=["systemsettings","kcm_networkmanagement"]
+		subprocess.run(cmd)
+		self.parent.setVisible(True)
+	#def _launchNetworkSettings
 
 	def _launchLlxUp(self):
 		self.parent.setVisible(False)
@@ -470,7 +523,6 @@ class portrait(QStackedWindowItem):
 				if item!=None:
 					item.setToolTip(cat)
 				lowercats.append(cat.lower())
-		self._getUpgradables()
 	#def _populateCategories
 
 	def _getRawCategory(self,cat):
@@ -515,21 +567,21 @@ class portrait(QStackedWindowItem):
 			self._rebost.setAction("search","")
 		if self._rebost.isRunning():
 			self._rebost.requestInterruption()
-			self._rebost.wait()
+			#self._rebost.wait()
 		self._rebost.start()
 	#def _getAppList
 
 	def _endGetUpgradables(self,*args):
 		if args[0]==True:
+			QApplication.processEvents()
 			self.lblInfo.setVisible(True)
 	#def _endGetUpgradables(self,*args):
 
 	def _getUpgradables(self):
-		self.lblInfo.setVisible(False)
 		self._debug("Get available upgrades")
 		self._rebost.setAction("upgrade")
 		self._rebost.start()
-		self._rebost.wait()
+		#self._rebost.wait()
 	#def _getUpgradables
 
 	def _beginUpdate(self):
@@ -554,6 +606,9 @@ class portrait(QStackedWindowItem):
 
 	def _loadHome(self,*args,**kwargs):
 		self._debug("Rebost running: {} - {} - {}".format(self._rebost.isFinished(),self._rebost.isRunning(),self._rebost.action))
+		if isinstance(args[0],bool):
+			if args[0]==False:
+				return
 		self.oldTime=time.time()
 		self.sortAsc=False
 		self.rp.searchBox.setText("")
@@ -780,11 +835,6 @@ class portrait(QStackedWindowItem):
 		self._debug("End: {}".format(time.time()-a))
 		self._debug("************************")
 		self._debug("************************")
-		#if len(self.pendingApps)>0:
-		#	self._debug("Pending: {}".format(len(self.pendingApps)))
-		#	self.appUpdate.blockSignals(False)
-		#	self.appUpdate.setApps(self.pendingApps)
-		#	self.appUpdate.start()
 		self._endLoadData()
 		self.loading=False
 	#def _loadData
@@ -855,6 +905,7 @@ class portrait(QStackedWindowItem):
 			self._rebost.start()
 		elif self.init==False:
 			self.rp.setVisible(True)
+			self.init=True
 		else:
 			#if len(self.pendingApps)>0:
 			#	self.appUpdate.blockSignals(False)
@@ -1030,9 +1081,18 @@ class portrait(QStackedWindowItem):
 	#def _return
 
 	def updateScreen(self,addEnable=None):
-		if hasattr(self,"locked")==False:
-			print("EXITING")
+		self.isConnected=self._chkNetwork()
+		self.rp.setVisible(self.isConnected)
+		self.errTab.setVisible(not(self.isConnected))
+		if self.isConnected==False:
+			self._endUpdate()
+			self._stopThreads()
 			return
+		if self.lstCategories.count()==0:
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
+			self._rebost.wait()
+
 		if isinstance(addEnable,bool):
 			adding=addEnable
 		else:
@@ -1049,8 +1109,7 @@ class portrait(QStackedWindowItem):
 			else:
 				self._debug("Update from {} to {} of {}".format(self.appsLoaded,self.appsToLoad,len(self.apps)))
 				self._beginLoadData(self.appsLoaded,self.appsToLoad)
-		else:
-			if self.appsToLoad==-1: #Init 
+		elif self.appsToLoad==-1: #Init 
 				self.progress.start()
 				self._rebost.setAction("status")
 				self._rebost.start()
