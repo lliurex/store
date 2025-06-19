@@ -61,7 +61,7 @@ class storeHelper(QThread):
 		apps=json.loads(self.rc.getUpgradableApps())
 		if len(apps)>0:
 			upgrades=True
-		else:
+		if upgrades==False:
 			if lliurexup!=None:
 				llxup=lliurexup.LliurexUpCore()
 				if len(llxup.getPackagesToUpdate())>0:
