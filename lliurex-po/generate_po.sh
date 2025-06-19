@@ -15,6 +15,8 @@ then
 	CATs=${CATs//\{/}
 	CATs=${CATs//\}/}
 	CATs=${CATs//,/}
+	CATs=${CATs//:/}
+	SEEN=""
 	#CAT=($CAT)
 	echo "" >> lliurex-store/lliurex-store.pot
 	IFS=$'\"'
@@ -22,9 +24,11 @@ then
 	do
 		if [[ x${i// /} != "x" ]]
 		then
+			[ $(grep msgid.*"$i" lliurex-store/lliurex-store.pot >/dev/null 2>&1;echo $?) -eq 0 ] && continue
+			echo "">> lliurex-store/lliurex-store.pot
+			echo "#">> lliurex-store/lliurex-store.pot
 			echo "msgid \"${i//_/}\""  >> lliurex-store/lliurex-store.pot
 			echo "msgstr \"\"" >> lliurex-store/lliurex-store.pot
-			echo "#">> lliurex-store/lliurex-store.pot
 		fi
 	done
 fi

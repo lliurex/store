@@ -55,8 +55,8 @@ i18n={
 	"TOOLTIP":_("Portrait"),
 	"UPGRADABLE":_("Upgradables"),
 	"UPGRADES":_("There're upgrades available"),
-	"CHK_NETWORK":"Store was unable to get information from internet",
-	"OPN_NETWORK":"Open network settings"
+	"CHK_NETWORK":_("Store was unable to get information from internet"),
+	"OPN_NETWORK":_("Open network settings")
 	}
 
 class portrait(QStackedWindowItem):
