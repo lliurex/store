@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-26 08:00+0200\n"
-"PO-Revision-Date: 2025-06-17 08:50+0200\n"
+"POT-Creation-Date: 2025-06-19 12:35+0200\n"
+"PO-Revision-Date: 2025-06-19 12:39+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -16,14 +16,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.0.1\n"
 
 #: ../src/stacks/btnRebost.py:15 ../src/stacks/cmbBtn.py:11
-#: ../src/stacks/lblApp.py:14 ../src/stacks/lpanel.py:41
+#: ../src/stacks/lblApp.py:14 ../src/stacks/lpanel.py:37
 msgid "Install"
 msgstr "Instal·la"
 
-#: ../src/stacks/btnRebost.py:16 ../src/stacks/lpanel.py:45
+#: ../src/stacks/btnRebost.py:16 ../src/stacks/lpanel.py:40
+#: ../src/stacks/portrait.py:52
 msgid "Remove"
 msgstr "Elimina"
 
@@ -31,11 +32,11 @@ msgstr "Elimina"
 msgid "Blocked"
 msgstr "Bloquejades"
 
-#: ../src/stacks/btnRebost.py:18 ../src/stacks/lpanel.py:50
+#: ../src/stacks/btnRebost.py:18 ../src/stacks/lpanel.py:44
 msgid "Unavailable"
 msgstr "Pendent"
 
-#: ../src/stacks/lpanel.py:28
+#: ../src/stacks/lpanel.py:29
 msgid ""
 "The app could not be loaded. Until included in LliureX catalogue it can't be "
 "installed"
@@ -44,7 +45,7 @@ msgstr ""
 "disponible. Més informació a https://portal.edu.gva.es/appsedu/aplicacions-"
 "lliurex"
 
-#: ../src/stacks/lpanel.py:29
+#: ../src/stacks/lpanel.py:30
 msgid ""
 "For any question the SAI can be contacted at <a href='https://portal.edu.gva."
 "es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
@@ -53,133 +54,104 @@ msgstr ""
 "href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/"
 "sai/es/inicio/</a>"
 
-#: ../src/stacks/lpanel.py:30
-msgid "Choose"
-msgstr "Triar"
-
-#: ../src/stacks/lpanel.py:31 ../src/stacks/lpanel.py:49
-msgid "Details"
-msgstr "Detalls"
-
-#: ../src/stacks/lpanel.py:32 ../src/stacks/portrait.py:40
-#: ../src/stacks/rpanel.py:22
-msgid "Navigate through all applications"
-msgstr "Mostra totes les aplicacions"
-
-#: ../src/stacks/lpanel.py:33 ../src/stacks/portrait.py:41
+#: ../src/stacks/lpanel.py:31 ../src/stacks/portrait.py:40
 msgid "Could not open"
 msgstr "No s'ha pogut obrir"
 
-#: ../src/stacks/lpanel.py:34 ../src/stacks/portrait.py:42
+#: ../src/stacks/lpanel.py:32 ../src/stacks/portrait.py:41
 msgid "Error opening"
 msgstr "Error carregant"
 
-#: ../src/stacks/lpanel.py:35 ../src/stacks/portrait.py:43
+#: ../src/stacks/lpanel.py:33 ../src/stacks/portrait.py:42
 msgid "System apps can't be removed"
 msgstr "Aplicació de base. No es desinstal·larà"
 
-#: ../src/stacks/lpanel.py:36 ../src/stacks/portrait.py:44
+#: ../src/stacks/lpanel.py:34 ../src/stacks/portrait.py:43
 msgid "Unknown error"
 msgstr "Error desconegut"
 
-#: ../src/stacks/lpanel.py:37
+#: ../src/stacks/lpanel.py:35
 msgid "App unauthorized"
 msgstr "App no autoritzada"
 
-#: ../src/stacks/lpanel.py:38
-msgid "Format"
-msgstr "Format"
-
-#: ../src/stacks/lpanel.py:39
-msgid "Info"
-msgstr "Informació"
-
-#: ../src/stacks/lpanel.py:40
+#: ../src/stacks/lpanel.py:36
 msgid "For more info go to"
 msgstr "Per a més informació anar a"
 
-#: ../src/stacks/lpanel.py:42
-msgid "Show application detail"
-msgstr "Mostra els detalls"
-
-#: ../src/stacks/lpanel.py:43
+#: ../src/stacks/lpanel.py:38
 msgid "Opening"
 msgstr "Obrint"
 
-#: ../src/stacks/lpanel.py:44
+#: ../src/stacks/lpanel.py:39
 msgid "Release"
 msgstr "Versió"
 
-#: ../src/stacks/lpanel.py:46
+#: ../src/stacks/lpanel.py:41
 msgid "Open"
 msgstr "Obri"
 
-#: ../src/stacks/lpanel.py:47
+#: ../src/stacks/lpanel.py:42
 msgid "See at Appsedu"
 msgstr "Mostrar en Appsedu"
 
-#: ../src/stacks/lpanel.py:48
+#: ../src/stacks/lpanel.py:43
 msgid "Website"
 msgstr "Lloc web"
 
-#: ../src/stacks/lpanel.py:51
-msgid "Upgrade"
-msgstr "Actualitza"
-
-#: ../src/stacks/lpanel.py:52
-msgid "Zommand not found. Open Zero-Center?"
-msgstr "No trobat. Obrir el Zero-Center?"
-
-#: ../src/stacks/portrait.py:35 ../src/stacks/rpanel.py:17
+#: ../src/stacks/portrait.py:34 ../src/stacks/rpanel.py:17
 msgid "All"
 msgstr "Tot"
 
-#: ../src/stacks/portrait.py:36 ../src/stacks/rpanel.py:18
+#: ../src/stacks/portrait.py:35 ../src/stacks/rpanel.py:18
 msgid "Available"
 msgstr "Disponibles"
 
-#: ../src/stacks/portrait.py:37 ../src/stacks/rpanel.py:19
+#: ../src/stacks/portrait.py:36 ../src/stacks/rpanel.py:19
 msgid "Filter by category"
 msgstr "Filtrar per categoria"
 
-#: ../src/stacks/portrait.py:38 ../src/stacks/rpanel.py:20
+#: ../src/stacks/portrait.py:37 ../src/stacks/rpanel.py:20
 msgid "Certified by Appsedu"
 msgstr "Certificades per Appsedu"
 
-#: ../src/stacks/portrait.py:39 ../src/stacks/portrait.py:55
+#: ../src/stacks/portrait.py:38 ../src/stacks/portrait.py:55
 #: ../src/stacks/rpanel.py:21 ../src/stacks/rpanel.py:33
 msgid "Portrait"
 msgstr "Portada"
 
-#: ../src/stacks/portrait.py:45 ../src/stacks/rpanel.py:23
+#: ../src/stacks/portrait.py:39 ../src/stacks/rpanel.py:22
+msgid "Navigate through all applications"
+msgstr "Mostra totes les aplicacions"
+
+#: ../src/stacks/portrait.py:44 ../src/stacks/rpanel.py:23
 msgid "Filters"
 msgstr "Filtres"
 
-#: ../src/stacks/portrait.py:46 ../src/stacks/rpanel.py:24
+#: ../src/stacks/portrait.py:45 ../src/stacks/rpanel.py:24
 msgid "Filter by formats and states"
 msgstr "Filtrar per formats i estats"
 
-#: ../src/stacks/portrait.py:47 ../src/stacks/rpanel.py:25
+#: ../src/stacks/portrait.py:46 ../src/stacks/rpanel.py:25
 msgid "Home"
 msgstr "Inici"
 
-#: ../src/stacks/portrait.py:48 ../src/stacks/rpanel.py:26
+#: ../src/stacks/portrait.py:47 ../src/stacks/rpanel.py:26
 msgid "Main page"
 msgstr "Pàgina principal"
 
-#: ../src/stacks/portrait.py:49 ../src/stacks/rpanel.py:27
+#: ../src/stacks/portrait.py:48 ../src/stacks/rpanel.py:27
 msgid "Installed"
 msgstr "Instal·lats"
 
-#: ../src/stacks/portrait.py:50 ../src/stacks/rpanel.py:28
+#: ../src/stacks/portrait.py:49 ../src/stacks/rpanel.py:28
 msgid "Launch LliurexUp"
 msgstr "LliurexUp"
 
-#: ../src/stacks/portrait.py:51 ../src/stacks/rpanel.py:29
+#: ../src/stacks/portrait.py:50 ../src/stacks/rpanel.py:29
 msgid "Show applications"
 msgstr "Mostra les aplicacions"
 
-#: ../src/stacks/portrait.py:52 ../src/stacks/rpanel.py:30
+#: ../src/stacks/portrait.py:51 ../src/stacks/rpanel.py:30
 msgid "Updating info"
 msgstr "Actualitzant dades"
 
@@ -198,6 +170,14 @@ msgstr "Actualitzables"
 #: ../src/stacks/portrait.py:57 ../src/stacks/rpanel.py:35
 msgid "There're upgrades available"
 msgstr "Hi han actualitzacions pendents"
+
+#: ../src/stacks/portrait.py:58
+msgid "Store was unable to get information from internet"
+msgstr "Sembla que no hi ha connexió a internet"
+
+#: ../src/stacks/portrait.py:59
+msgid "Open network settings"
+msgstr "Configurar accés a la xarxa"
 
 #: ../src/stacks/prgBar.py:15
 msgid "Downloading information, wait a moment..."
@@ -218,15 +198,8 @@ msgstr "Tot"
 msgid "AudioVideo"
 msgstr "Vídeo i so"
 
-#
-msgid ": "
-msgstr ": "
-
 msgid "DiscBurning"
 msgstr "Gravació de discs"
-
-msgid "Audio"
-msgstr "So"
 
 msgid "Midi"
 msgstr "Midi"
@@ -245,9 +218,6 @@ msgstr "Gravació"
 
 msgid "Player"
 msgstr "Reproductors"
-
-msgid "Video"
-msgstr "Vídeo"
 
 msgid "AudioVideoEditing"
 msgstr "Edició de so i vídeo"
@@ -538,9 +508,6 @@ msgstr "Fulles de càlcul"
 msgid "WordProcessor"
 msgstr "Processadors de text"
 
-msgid "Science"
-msgstr "Ciència"
-
 msgid "Settings"
 msgstr "Configuracions"
 
@@ -549,9 +516,6 @@ msgstr "Seguretat"
 
 msgid "Accessibility"
 msgstr "Accessibilitat"
-
-msgid "System"
-msgstr "Sistema"
 
 msgid "FileTools"
 msgstr "Eines de fitxers"
@@ -588,6 +552,46 @@ msgstr "Rellotge"
 
 msgid "TextEditor"
 msgstr "Editors de text"
+
+msgid "Authentication is required to manage software"
+msgstr "Cal autenticar-se per a gestionar l'aplicació"
+
+#~ msgid "Choose"
+#~ msgstr "Triar"
+
+#~ msgid "Details"
+#~ msgstr "Detalls"
+
+#~ msgid "Format"
+#~ msgstr "Format"
+
+#~ msgid "Info"
+#~ msgstr "Informació"
+
+#~ msgid "Show application detail"
+#~ msgstr "Mostra els detalls"
+
+#~ msgid "Upgrade"
+#~ msgstr "Actualitza"
+
+#~ msgid "Zommand not found. Open Zero-Center?"
+#~ msgstr "No trobat. Obrir el Zero-Center?"
+
+#
+#~ msgid ": "
+#~ msgstr ": "
+
+#~ msgid "Audio"
+#~ msgstr "So"
+
+#~ msgid "Video"
+#~ msgstr "Vídeo"
+
+#~ msgid "Science"
+#~ msgstr "Ciència"
+
+#~ msgid "System"
+#~ msgstr "Sistema"
 
 #~ msgid "Documentation"
 #~ msgstr "Documentació"
