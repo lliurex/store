@@ -71,8 +71,11 @@ class storeHelper(QThread):
 
 	def _test(self):
 		if self.rc!=None:
-			self.rc.execute("list","lliurex")
-			self.test.emit(True)
+			apps=self.rc.execute("list","lliurex")
+			if len(apps)==2:
+				self.test.emit(False)
+			else:
+				self.test.emit(True)
 		else:
 			self.test.emit(False)
 	#def _test
