@@ -16,9 +16,14 @@ Depends: ${misc:Depends}, ${python3:Depends},
 		python3-qtextrawidgets(>=0.5.2.4-0llx23),
 		python3-pyside2.qtgui, 
 		python3-pyside2.qtcore,
-		python3-pyside2.qtuitools
+		lliurex-store-dbus
 Provides: appsedu
 Conflicts: appsedu
 Replaces: appsedu
 Description: Application store for LliureX with appsedu integration
 
+Package: lliurex-store-dbus
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, 
+		lliurex-store(>=1.4.9.12)
+Description: Krunner plugin for lliurex-store
