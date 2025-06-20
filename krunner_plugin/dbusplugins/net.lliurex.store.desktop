@@ -12,4 +12,11 @@ X-KDE-PluginInfo-Name=LliureX Store
 X-Plasma-API=DBus
 X-Plasma-DBusRunner-Service=net.lliurex.store
 X-Plasma-DBusRunner-Path=/
+X-Plasma-Runner-Min-Letter-Count=3
 X-KDE-PluginInfo-EnabledByDefault=true
+X-KDE-PluginInfo-Author=juanma1980
+X-KDE-PluginInfo-Email=kde@broulik.de
+X-KDE-PluginInfo-Name=lliurexstore
+X-KDE-PluginInfo-Version=1.0
+X-KDE-PluginInfo-License=GPL3
+
