@@ -1,0 +1,3 @@
+krunner_plugin/dbus-store.py /usr/share/store/
+krunner_plugin/dbus/* /usr/share/dbus-1/services/
+krunner_plugin/dbusplugins/* /usr/share/krunner/dbusplugins/
