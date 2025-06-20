@@ -52,7 +52,7 @@ class storeRunner(dbus.service.Object):
 						installed=True
 			if installed==True:
 				continue
-			icon="lliurex-stores"
+			icon="llxstore"
 			match.update({japp["name"]:(japp["name"],"Install {}".format(japp["name"]),icon,100,1.0,{"subtext":japp["summary"]})})
 		matches.extend(match.values())
 		return (matches)
