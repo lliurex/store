@@ -106,6 +106,8 @@ class mainPanel(QWidget):
 
 	def _defTable(self):
 		table=QFlowTouchWidget(self)
+		table.setFocusPolicy(Qt.NoFocus)
+		table.clearFocus()
 		table.setObjectName("qFlow")
 		table.flowLayout.setSpacing(24)
 		table.leaveEvent=self.tableLeaveEvent
