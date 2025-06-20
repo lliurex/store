@@ -103,7 +103,8 @@ def tablePanel():
 				} 
 				#qFlow::item{
 					padding:%spx;
-				}"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN*2),MARGIN,int(MARGIN)/4)
+				}
+				"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN*2),MARGIN,int(MARGIN)/4)
 	css=css+qflow
 	search="""#wsearch{
 					border:0px solid %s;
