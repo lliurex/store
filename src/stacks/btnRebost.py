@@ -3,7 +3,7 @@ from functools import partial
 import os
 import json
 from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy
-from PySide2.QtCore import Qt,Signal,QThread,QEvent
+from PySide2.QtCore import Qt,Signal,QThread,QEvent,QSize
 from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
 from QtExtraWidgets import QScreenShotContainer
 import css
@@ -86,10 +86,17 @@ class QPushButtonRebostApp(QPushButton):
 		self.setDefault(True)
 		self.setLayout(lay)
 		self.init=False
+		self.focusFrame=QLabel("")
+		self.focusFrame.setVisible(False)
+		self.focusFrame.setFixedSize(QSize(self.sizeHint().width(),int(MARGIN)/2))
+		self.focusFrame.setAttribute(Qt.WA_StyledBackground, True)
+		#self.focusFrame.setVisible(False)
+		self.focusFrame.setStyleSheet("background: %s"%(COLOR_BACKGROUND_DARK))
 		self.layout().addWidget(self.iconUri,0,0,Qt.AlignCenter|Qt.AlignTop)
 		self.layout().addWidget(self.lblFlyIcon,0,0,Qt.AlignRight|Qt.AlignTop)
 		self.layout().addWidget(self.label,1,0,Qt.AlignCenter|Qt.AlignTop)
 		self.layout().addWidget(self.btn,2,0,Qt.AlignCenter|Qt.AlignBottom)
+		self.layout().addWidget(self.focusFrame,0,0,3,1,Qt.AlignCenter|Qt.AlignBottom)
 		self.installEventFilter(self)
 		self.scrCnt=QScreenShotContainer()
 		self.th=[]
@@ -189,6 +196,10 @@ class QPushButtonRebostApp(QPushButton):
 				if self.init==False:
 					self.updateScreen()
 					self.init=True
+			if ev.type()==QEvent.Type.FocusIn:
+				self.focusFrame.setVisible(True)
+			if ev.type()==QEvent.Type.FocusOut:
+				self.focusFrame.setVisible(False)
 	
 		return(False)
 	#def eventFilter

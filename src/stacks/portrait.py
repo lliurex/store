@@ -440,10 +440,6 @@ class portrait(QStackedWindowItem):
 		return(False)
 	#def enterEvent
 
-	def tableKeyPressEvent(self,*args):
-		return(False)
-	#def tableKeyPressEvent
-
 	def _detailPane(self):
 		dp=detailPanel()
 		return(dp)
@@ -766,6 +762,30 @@ class portrait(QStackedWindowItem):
 	#def _endLoadCategory
 
 	def eventFilter(self,*args):
+		if isinstance(args[0],QPushButtonRebostApp):
+			if isinstance(args[1],QtGui.QKeyEvent):
+				if args[1].type()==QEvent.Type.KeyPress:
+					newPos=-1
+					if args[1].key()==Qt.Key_Left or args[1].key()==Qt.Key_Up:
+						idx=self.rp.table.currentIndex()
+						elements=1
+						if args[1].key()==Qt.Key_Up:
+							elements=int(self.rp.width()/(args[0].width()+int(MARGIN)*2))-1
+						newPos=idx-elements
+					elif args[1].key()==Qt.Key_Right or args[1].key()==Qt.Key_Down:
+						idx=self.rp.table.currentIndex()
+						elements=1
+						if args[1].key()==Qt.Key_Down:
+							elements=int(self.rp.width()/(args[0].width()+int(MARGIN)*2))-1
+						newPos=idx+elements
+						#Ugly hack for autoscroll to focused item
+					if newPos!=-1:
+						if newPos<self.rp.table.count() and newPos>=0:
+							btn=self.rp.table.itemAt(newPos)
+							btn.widget().setFocus()
+							btn.widget().setEnabled(False)
+							btn.widget().setEnabled(True)
+							btn.widget().setFocus()
 		if isinstance(args[0],QListWidget):
 			if args[1].type==QEvent.Type.KeyRelease:
 				self.released=True
@@ -869,7 +889,7 @@ class portrait(QStackedWindowItem):
 			self.appsSeen.append(appname)
 			btn=QPushButtonRebostApp(jsonapp)
 			btn.clicked.connect(self._loadDetails)
-			btn.keypress.connect(self.tableKeyPressEvent)
+			btn.installEventFilter(self)
 			btn.install.connect(self._installBundle)
 			if jsonapp["summary"]=="":
 				pendingApps.update({appname:btn})

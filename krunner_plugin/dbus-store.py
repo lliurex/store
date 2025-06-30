@@ -4,8 +4,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
 
 from rebost import store
-import json
-import subprocess
+import json,os,subprocess
 
 DBusGMainLoop(set_as_default=True)
 OBJPATH = "/"
@@ -52,7 +51,25 @@ class storeRunner(dbus.service.Object):
 						installed=True
 			if installed==True:
 				continue
-			icon="lliurex-stores"
+			icon="llxstore"
+			if isinstance(japp["icon"],str):
+				if "://" not in japp["icon"]:
+					icon=japp["icon"]
+				else:
+					stripName=''.join(ch for ch in os.path.basename(japp["icon"]) if ch.isalnum())
+					MAX=96
+					if (len(stripName)>MAX):
+						stripName=os.path.basename(stripName[len(stripName)-MAX:])
+					if stripName.endswith(".png")==False:
+						if stripName.endswith("png")==True:
+							stripName=stripName.replace("png",".png")
+						else:
+							stripName+=".png"
+					cacheDirs=[os.path.join(os.environ["HOME"],".cache","rebost","imgs")]
+					for d in cacheDirs:
+						candidate=os.path.join(d,stripName)
+						if os.path.exists(candidate) or os.path.exists(candidate.lower()):
+							icon=os.path.join(d,stripName)
 			match.update({japp["name"]:(japp["name"],"Install {}".format(japp["name"]),icon,100,1.0,{"subtext":japp["summary"]})})
 		matches.extend(match.values())
 		return (matches)
@@ -62,7 +79,6 @@ class storeRunner(dbus.service.Object):
 	
 	@dbus.service.method(IFACE, in_signature="ss")
 	def Run(self, matchId, actionId):
-		print(matchId)
 		subprocess.run(["/usr/bin/lliurex-store","appsedu://{}".format(matchId)])
 		return
 
