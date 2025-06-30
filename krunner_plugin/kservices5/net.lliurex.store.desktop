@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=LliureX-Store
+Comment=Get apps from store
+Comment[es]=Busca aplicaciones disponibles
+Comment[ca]=Cerca aplicacions disponibles
+X-KDE-ServiceTypes=Plasma/Runner
+Type=Service
+Icon=lliurex-store
+X-KDE-PluginInfo-Name=LliureX Store
+X-Plasma-API=DBus
+X-Plasma-DBusRunner-Service=net.lliurex.store
+X-Plasma-DBusRunner-Path=/
+X-KDE-PluginInfo-EnabledByDefault=true
