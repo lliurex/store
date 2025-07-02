@@ -7,17 +7,13 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 import random
-try:
-	from lliurex import lliurexup
-except:
-	lliurexup=None
 from PySide2.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
 							QCheckBox,QListWidgetItem
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread,QEvent
 from QtExtraWidgets import QSearchBox,QStackedWindowItem,QFlowTouchWidget
 from rebost import store 
-from libth import storeHelper,updateAppData,getData
+from libth import storeHelper,updateAppData,getData,llxup
 from btnRebost import QPushButtonRebostApp
 from prgBar import QProgressImage
 import exehelper
@@ -77,6 +73,7 @@ class portrait(QStackedWindowItem):
 		self.rc=store.client()
 		self.getData=getData()
 		self._rebost=storeHelper(rc=self.rc)
+		self._llxup=llxup()
 		self.epi=exehelper.appLauncher()
 		self._initRegisters()
 		self._initThreads()
@@ -116,7 +113,7 @@ class portrait(QStackedWindowItem):
 		self.appUpdate=updateAppData(rc=self.rc)
 		self.appUpdate.dataLoaded.connect(self._endLoadApps)
 		self.getData.dataLoaded.connect(self._loadData)
-		self._rebost.chkEnded.connect(self._endGetUpgradables)
+		self._llxup.chkEnded.connect(self._endGetUpgradables)
 		self._rebost.test.connect(self._loadHome)
 		self._rebost.lstEnded.connect(self._endLoadCategory)
 		self._rebost.srcEnded.connect(self._endSearchApps)
@@ -220,6 +217,7 @@ class portrait(QStackedWindowItem):
 		self.appUpdate.blockSignals(True)
 		self.getData.blockSignals(True)
 		self._rebost.blockSignals(True)
+		self._llxup.blockSignals(True)
 		self.appUpdate.stop()
 		self.appUpdate.requestInterruption()
 		self.appUpdate.wait()
@@ -229,6 +227,9 @@ class portrait(QStackedWindowItem):
 		self._rebost.requestInterruption()
 		self._rebost.quit()
 		self._rebost.blockSignals(False)
+		self._llxup.wait()
+		self._llxup.quit()
+		self._llxup.blockSignals(False)
 		self.progress.stop()
 	#def _stopThreads
 
@@ -575,8 +576,7 @@ class portrait(QStackedWindowItem):
 
 	def _getUpgradables(self):
 		self._debug("Get available upgrades")
-		self._rebost.setAction("upgrade")
-		self._rebost.start()
+		self._llxup.start()
 		#self._rebost.wait()
 	#def _getUpgradables
 

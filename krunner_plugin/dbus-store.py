@@ -6,6 +6,10 @@ from gi.repository import GLib
 from rebost import store
 import json,os,subprocess
 
+import gettext
+gettext.textdomain('lliurex-store')
+_ = gettext.gettext
+
 DBusGMainLoop(set_as_default=True)
 OBJPATH = "/"
 IFACE="org.kde.krunner1"
@@ -70,11 +74,9 @@ class storeRunner(dbus.service.Object):
 						candidate=os.path.join(d,stripName)
 						if os.path.exists(candidate) or os.path.exists(candidate.lower()):
 							icon=os.path.join(d,stripName)
-			match.update({japp["name"]:(japp["name"],"Install {}".format(japp["name"]),icon,100,1.0,{"subtext":japp["summary"]})})
+			match.update({japp["name"]:(japp["name"],"{} {}".format(_("Install"),japp["name"]),icon,100,1.0,{"subtext":japp["summary"]})})
 		matches.extend(match.values())
 		return (matches)
-
-		return(matches)
 		#return [["action1", "Action Text", "document-edit", 100, 1.0, {}]]
 	
 	@dbus.service.method(IFACE, in_signature="ss")
