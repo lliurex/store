@@ -6,8 +6,24 @@ try:
 except:
        lliurexup=None
 
-class storeHelper(QThread):
+class llxup(QThread):
 	chkEnded=Signal("PyObject")
+
+	def __init__(self,*args,**kwargs):
+		QThread.__init__(self, None)
+	#def __init__
+
+	def run(self):
+		upgrades=False
+		if lliurexup!=None:
+			llxup=lliurexup.LliurexUpCore()
+			if len(llxup.getPackagesToUpdate())>0:
+				upgrades=True
+		self.chkEnded.emit(upgrades)
+	#def run(self):
+#class llxUp
+
+class storeHelper(QThread):
 	test=Signal("PyObject")
 	lstEnded=Signal("PyObject")
 	srcEnded=Signal("PyObject")
@@ -15,6 +31,7 @@ class storeHelper(QThread):
 	rstEnded=Signal()
 	staEnded=Signal(bool,bool)
 	catEnded=Signal("PyObject")
+
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self, None)
 		self.rc=kwargs["rc"]
@@ -34,9 +51,7 @@ class storeHelper(QThread):
 			self.args=[]
 	
 	def run(self):
-		if self.action=="upgrade":
-			self._chkUpgrades()
-		elif self.action=="test":
+		if  self.action=="test":
 			self._test()
 		elif self.action=="list":
 			self._list()
@@ -55,19 +70,6 @@ class storeHelper(QThread):
 		elif self.action=="getCategories":
 			self._getFreedesktopCategories()
 	#def run
-
-	def _chkUpgrades(self):
-		upgrades=False
-		apps=json.loads(self.rc.getUpgradableApps())
-		if len(apps)>0:
-			upgrades=True
-		if upgrades==False:
-			if lliurexup!=None:
-				llxup=lliurexup.LliurexUpCore()
-				if len(llxup.getPackagesToUpdate())>0:
-					upgrades=True
-		self.chkEnded.emit(upgrades)
-	#def _chkUpgrades(self):
 
 	def _test(self):
 		if self.rc!=None:
