@@ -30,6 +30,7 @@ i18n={
 	"APPUNKNOWN_SAI":_("For any question the SAI can be contacted at <a href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"),
 	"ERRNOTFOUND":_("Could not open"),
 	"ERRLAUNCH":_("Error opening"),
+	"ERRMORETHANONE":_("There's another action in progress"),
 	"ERRSYSTEMAPP":_("System apps can't be removed"),
 	"ERRUNKNOWN":_("Unknown error"),
 	"FORBIDDEN":_("App unauthorized"),
@@ -65,6 +66,7 @@ class detailPanel(QWidget):
 		self.config={}
 		self.app={}
 		self.instBundle=""
+		self.installing=False
 		self._connectThreads()
 		self.__initScreen__()
 	#def __init__
@@ -260,6 +262,9 @@ class detailPanel(QWidget):
 	#def _getRunappResults
 
 	def _genericEpiInstall(self,*args):
+		if self.installing==True:
+			self.parent().showMsg(summary=i18n.get("ERRMORETHANONE",""),msg="",timeout=4)
+			return
 		if self.instBundle=="":
 			bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
 		else:
