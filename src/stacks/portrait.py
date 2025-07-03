@@ -265,7 +265,6 @@ class portrait(QStackedWindowItem):
 		self.errTab.setObjectName("errorMsg")
 		self.errTab.setVisible(not(self.isConnected))
 		self.box.addWidget(self.errTab,0,1,self.box.rowCount(),self.box.columnCount(),Qt.AlignCenter)
-	#	self.resetScreen()
 	#def _load_screen
 
 	def _reload(self,*args,**kwargs):
@@ -274,11 +273,15 @@ class portrait(QStackedWindowItem):
 		self.refresh=True
 		self.rp.searchBox.setText("")
 		self._beginUpdate()
+	#def _reload
 
 	def _closeEvent(self,*args):
 		self._stopThreads()
 		if self.installingApp!=None:
 			self.installingApp.progress.stop()
+		if self._llxup.isRunning():
+			self._llxup.quit()
+			self._llxup.wait()
 	#def _closeEvent
 	
 	def _navPane(self):
@@ -800,7 +803,6 @@ class portrait(QStackedWindowItem):
 	#def eventFilter(self,*args):
 
 	def _getMoreData(self):
-		#if (self.rp.table.verticalScrollBar().value()>=self.rp.table.verticalScrollBar().maximum()-30) and self.appsLoaded!=len(self.apps):
 		if (self.rp.table.verticalScrollBar().value()>=self.rp.table.verticalScrollBar().maximum()/2) and self.appsLoaded!=len(self.apps):
 			if hasattr(self,"loading")==False:
 				self.loading=True
@@ -816,11 +818,7 @@ class portrait(QStackedWindowItem):
 			apps=self.apps[self.appsLoaded:self.appsLoaded+self.appsToLoad]
 			for app in apps:
 				moreApps.append(json.loads(app))
-			#self._loadData(moreApps)
 			self.loading=False
-			#for wdg in self.wdgs:
-			#	self.rp.table.addWidget(wdg)
-			#	#self.rp.table.setCellWidget(wdg[0],wdg[1],wdg[2])
 	#def _getMoreData
 
 	def _beginLoadData(self,idx,idxEnd,applist=None):
@@ -902,7 +900,6 @@ class portrait(QStackedWindowItem):
 			if appname in self.referersHistory.keys():
 				self.referersShowed.update({appname:btn})
 			self.appsLoaded+=1
-			#self._debug("Add: {}".format(time.time()-b))
 			#Force btn show
 			QApplication.processEvents()
 			if len(pendingApps)>9:
@@ -932,9 +929,6 @@ class portrait(QStackedWindowItem):
 			self.rp.setVisible(True)
 			self.init=True
 		else:
-			#if len(self.pendingApps)>0:
-			#	self.appUpdate.blockSignals(False)
-			#	self.appUpdate.start()
 			self._endUpdate()
 		self.refresh=True
 	#def _endLoadData(self):
@@ -1036,7 +1030,6 @@ class portrait(QStackedWindowItem):
 		self._rebost.start()
 	#def _loadLockedRebost
 
-
 	def _loadDetails(self,*args,**kwargs):
 		#self._stopThreads()
 		self.progress.start()
@@ -1053,10 +1046,8 @@ class portrait(QStackedWindowItem):
 		self.referersHistory.update({self.refererApp.app["name"]:self.refererApp})
 		self.referersShowed.update({self.refererApp.app["name"]:self.refererApp})
 		self.setChanged(False)
-		#self.parent.setCurrentStack(idx=3,parms={"name":args[-1].get("name",""),"icon":icn})
 		self.parent.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","").capitalize()))
 		self.lp.setParms({"name":args[-1].get("name",""),"icon":icn})
-		#self.rp.hide()
 		self.setCursor(self.oldCursor)
 	#def _endLoadDetails
 
