@@ -132,6 +132,7 @@ class portrait(QStackedWindowItem):
 		self.referersHistory={}
 		self.referersShowed={}
 		self.installingApp=None
+		self.refererApp=None
 		self.level='user'
 		self.oldCursor=self.cursor()
 		self.refresh=True
@@ -276,6 +277,8 @@ class portrait(QStackedWindowItem):
 
 	def _closeEvent(self,*args):
 		self._stopThreads()
+		if self.installingApp!=None:
+			self.installingApp.progress.stop()
 	#def _closeEvent
 	
 	def _navPane(self):
@@ -698,6 +701,8 @@ class portrait(QStackedWindowItem):
 			self.rp.setBtnIcon("cancel")
 		else:
 			self.rp.setBtnIcon("search")
+	#def _changeSearchAppsBtnIcon(self):
+
 	def _searchAppsBtn(self):
 		txt=self.rp.searchBox.text()
 		if txt==self.oldSearch:
@@ -955,10 +960,16 @@ class portrait(QStackedWindowItem):
 		if self.zmdLauncher.isRunning() or self.epi.isRunning():
 			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),msg="{}".format(app["name"]),timeout=4)
 			refererApp.progress.stop()
+			refererApp.btn.setEnabled(True)
+			self.installingApp.setFocus()
+			self.installingApp.setEnabled(False)
+			self.installingApp.setEnabled(True)
 			self.installingApp.setFocus()
 			return
 		self.installingApp=refererApp
-		self.refererApp=refererApp
+		self.installingApp.blockSignals(True)
+		if self.refererApp==None:
+			self.refererApp=refererApp
 		if isinstance(app,dict)==False:
 			return
 		bundle=""
@@ -1011,7 +1022,9 @@ class portrait(QStackedWindowItem):
 			btn.setApp(json.loads(app))
 			btn.updateScreen()
 		self.referererApp=None
-		self.installingApp=None
+		if self.installingApp!=None:
+			self.installingApp.blockSignals(False)
+			self.installingApp=None
 		self.setCursor(self.oldCursor)
 	#def _endLaunchHelper
 
