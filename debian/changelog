@@ -1,6 +1,7 @@
-lliurex-store (1.4.9.12+3lliurex23) jammy; urgency=medium
+lliurex-store (1.4.9.13+0lliurex23) jammy; urgency=medium
 
   * Add krunner plugin
+  * Add visual feedback for operations in progress
 
  -- Juanma1980 <juanma1980@gmail.com>  Wed, 18 Jun 2025 11:43:29 +0200
 
