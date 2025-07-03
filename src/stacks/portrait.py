@@ -949,6 +949,7 @@ class portrait(QStackedWindowItem):
 	#def _endLoadApps
 
 	def _installBundle(self,*args):
+		QApplication.processEvents()
 		app=args[1]
 		refererApp=args[0]
 		if self.zmdLauncher.isRunning() or self.epi.isRunning():
