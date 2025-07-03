@@ -1050,6 +1050,7 @@ class portrait(QStackedWindowItem):
 		self.parent.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","").capitalize()))
 		self.lp.setParms({"name":args[-1].get("name",""),"icon":icn})
 		self.setCursor(self.oldCursor)
+		self.lp.setFocus()
 	#def _endLoadDetails
 
 	def setParms(self,*args):

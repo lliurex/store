@@ -463,8 +463,8 @@ class detailPanel(QWidget):
 	#def _defResources
 
 	def keyPressEvent(self,*args):
-		if args[0].key() in [Qt.Key_Escape]:
-			self._return()
+		if args[0].key()==Qt.Key_Escape:
+			self._clickedBack()
 	#def keyPressEvent
 
 	def _setUnknownAppInfo(self):
