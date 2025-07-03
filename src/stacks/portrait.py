@@ -35,6 +35,7 @@ i18n={
 	"DESC":_("Navigate through all applications"),
 	"ERRNOTFOUND":_("Could not open"),
 	"ERRLAUNCH":_("Error opening"),
+	"ERRMORETHANONE":_("There's another action in progress"),
 	"ERRSYSTEMAPP":_("System apps can't be removed"),
 	"ERRUNKNOWN":_("Unknown error"),
 	"FILTERS":_("Filters"),
@@ -130,6 +131,7 @@ class portrait(QStackedWindowItem):
 		self.hideControlButtons()
 		self.referersHistory={}
 		self.referersShowed={}
+		self.installingApp=None
 		self.level='user'
 		self.oldCursor=self.cursor()
 		self.refresh=True
@@ -949,7 +951,14 @@ class portrait(QStackedWindowItem):
 
 	def _installBundle(self,*args):
 		app=args[1]
-		self.refererApp=args[0]
+		refererApp=args[0]
+		if self.zmdLauncher.isRunning() or self.epi.isRunning():
+			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),msg="{}".format(app["name"]),timeout=4)
+			refererApp.progress.stop()
+			self.installingApp.setFocus()
+			return
+		self.installingApp=refererApp
+		self.refererApp=refererApp
 		if isinstance(app,dict)==False:
 			return
 		bundle=""
@@ -994,12 +1003,15 @@ class portrait(QStackedWindowItem):
 	#def _installBundle
 
 	def _endLaunchHelper(self,*args,**kwargs):
-		if self.refererApp!=None:
-			btn=self.refererApp
-			self.refererApp=None
+		for app in [self.refererApp,self.installingApp]:
+			if app==None:
+				continue
+			btn=app
 			app=json.loads(self.rc.showApp(args[0]["name"]))[0]
 			btn.setApp(json.loads(app))
 			btn.updateScreen()
+		self.referererApp=None
+		self.installingApp=None
 		self.setCursor(self.oldCursor)
 	#def _endLaunchHelper
 
