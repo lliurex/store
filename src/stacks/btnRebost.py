@@ -2,12 +2,13 @@
 from functools import partial
 import os
 import json
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy,QApplication
 from PySide2.QtCore import Qt,Signal,QThread,QEvent,QSize
 from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
 from QtExtraWidgets import QScreenShotContainer
 import css
 from constants import *
+from prgBar import QProgressImage
 import gettext
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext
@@ -61,7 +62,6 @@ class QPushButtonRebostApp(QPushButton):
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setAttribute(Qt.WA_AcceptTouchEvents)
 		self.setAutoFillBackground(True)
-		#self.btn.setIcon(QIcon.fromTheme("download"))
 		self.instBundle=""
 		self.btn=QPushButton()
 		self.btn.setText(i18n.get("INSTALL"))
@@ -70,7 +70,6 @@ class QPushButtonRebostApp(QPushButton):
 		self.btn.setVisible(False)
 		self.lblFlyIcon=QLabel()
 		self.lblFlyIcon.setObjectName("flyIcon")
-		#self.lblFlyIcon.setStyleSheet("""background:transparent""")
 		if os.path.exists(self.cacheDir)==False:
 			os.makedirs(self.cacheDir)
 		self.label=QLabel()
@@ -78,10 +77,8 @@ class QPushButtonRebostApp(QPushButton):
 		self.label.setAlignment(Qt.AlignCenter)
 		self.iconUri=QLabel()
 		self.iconUri.setObjectName("iconUri")
-		#self.iconUri.setStyleSheet("""margin-top: %spx;margin-right:%spx;margin-bottom:%spx;"""%(self.margin,self.margin,self.margin))
 		self.setCursor(QCursor(Qt.PointingHandCursor))
 		lay=QGridLayout()
-		#lay.setAlignment(Qt.AlignCenter)
 		self.refererApp=None
 		self.setDefault(True)
 		self.setLayout(lay)
@@ -89,9 +86,18 @@ class QPushButtonRebostApp(QPushButton):
 		self.focusFrame=QLabel("")
 		self.focusFrame.setVisible(False)
 		self.focusFrame.setFixedSize(QSize(self.sizeHint().width(),int(MARGIN)/2))
-		self.focusFrame.setAttribute(Qt.WA_StyledBackground, True)
-		#self.focusFrame.setVisible(False)
 		self.focusFrame.setStyleSheet("background: %s"%(COLOR_BACKGROUND_DARK))
+		#Progress indicator
+		self.progress=QProgressImage(self)
+		self.progress.setAttribute(Qt.WA_StyledBackground, False)
+		self.progress.lblInfo.setMinimumWidth(self.sizeHint().width())
+		pxm=QPixmap(QSize(self.sizeHint().width(),int(MARGIN)/2))
+		pxm.fill(Qt.black)
+		self.progress.setPixmap(pxm)
+		self.progress.setInc(3)
+		self.progress.setColor(COLOR_BACKGROUND_DARK,COLOR_BORDER)
+		self.layout().addWidget(self.progress,0,0,3,1,Qt.AlignCenter|Qt.AlignBottom)
+		#Btn Layout
 		self.layout().addWidget(self.iconUri,0,0,Qt.AlignCenter|Qt.AlignTop)
 		self.layout().addWidget(self.lblFlyIcon,0,0,Qt.AlignRight|Qt.AlignTop)
 		self.layout().addWidget(self.label,1,0,Qt.AlignCenter|Qt.AlignTop)
@@ -105,9 +111,6 @@ class QPushButtonRebostApp(QPushButton):
 		else:
 			self.app=strapp
 		self._renderGui()
-		#self.data=processData(strapp,autoUpdate=True)
-		#self.data.processed.connect(self._renderGui)
-		#self.data.start()
 	#def __init__
 
 	@staticmethod
@@ -118,6 +121,7 @@ class QPushButtonRebostApp(QPushButton):
 			self["data"].requestInterruption()
 			self["data"].deleteLater()
 			self["data"].wait()
+	#def _onDestroy
 
 	def _stopThreads(self):
 		for th in self.th:
@@ -126,13 +130,14 @@ class QPushButtonRebostApp(QPushButton):
 				th.requestInterruption()
 				th.deleteLater()
 				th.wait()
+	#def _stopThreads
 
 	def setData(self,data):
 		self.data.setData(data)
 		self.data.start()
+	#def setData
 
 	def _renderGui(self,*args):
-	#	self.app=args[0]
 		states=self.app.get("state",{})
 		zmd=states.get("zomando","0")
 		if len(states)>0:
@@ -160,21 +165,13 @@ class QPushButtonRebostApp(QPushButton):
 			self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper().replace("L*","L·"),self.app.get('summary','').strip().replace("l*","·"))
 		self.setToolTip(text)
-		#text="<strong>{0}</strong><p>{1}</p>".format(self.app.get('name','').strip(),self.app.get('summary','').strip(),'')
 		self.label.setText(text)
 		img=self.app.get('icon','')
-	#	self.loadImg(self.app)
-		#shadow=QGraphicsDropShadowEffect()
-		#shadow.setOffset(0, 3)
-		#shadow.setBlurRadius(5)
-		#shadow.setColor(QColor(0, 0, 0, 128))
-		#self.setGraphicsEffect(shadow)
 	#def __init__
 
 	def _emitInstall(self,*args):
-	#	if self.instBundle!="":
-	#		self.app["state"]={self.instBundle:"0"}
-	#		self.app["bundle"]={self.instBundle:self.app["bundle"][self.instBundle]}
+		self.btn.setEnabled(False)
+		self.progress.start()
 		if self.btn.text()==i18n["REMOVE"]:
 			#Remove, get installed bundle
 			for bun,state in self.app["state"].items():
@@ -205,6 +202,7 @@ class QPushButtonRebostApp(QPushButton):
 	#def eventFilter
 
 	def updateScreen(self):
+		self.progress.stop()
 		if hasattr(self,"app")==False:
 			return
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
@@ -235,6 +233,7 @@ class QPushButtonRebostApp(QPushButton):
 						self.instBundle=bundle
 						break
 		self._applyDecoration()
+		self.iconUri.setVisible(True)
 		if self.app.get("summary","")!="":
 			self.btn.setVisible(True)
 	#def updateScreen
@@ -402,6 +401,7 @@ class QPushButtonRebostApp(QPushButton):
 				margin:12px;
 			}
 			"""%(style["bkgColor"],style["brdColor"],brdWidth,focusedBrdWidth,style["frgColor"],style["bkgColor"],style["frgColor"],style["bkgBtnColor"],style["brdBtnColor"]))
+		self.btn.setEnabled(True)
 		if (style.get("forbidden",False)==True) or (self.btn.text()==i18n.get("UNAVAILABLE","")):
 			if self.btn.text()!=i18n.get("UNAVAILABLE",""):
 				self.iconUri.setEnabled(False)
