@@ -3,8 +3,8 @@ import os,time
 from functools import partial
 import json
 from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy,QWidget,QVBoxLayout
-from PySide2.QtCore import Qt,Signal,QThread,QCoreApplication,QTimer
-from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor,QMovie
+from PySide2.QtCore import Qt,Signal,QThread,QCoreApplication,QTimer,QSize
+from PySide2.QtGui import QPixmap,QColor
 import css
 from constants import *
 import random
@@ -55,7 +55,7 @@ class QProgressImage(QWidget):
 		self.colorEnd=QColor(COLOR_BACKGROUND_LIGHT)
 		self.colorCur=self.colorEnd
 		self.pxm=QPixmap(img)#.scaled(267,267,Qt.KeepAspectRatio,Qt.SmoothTransformation)
-		self.pxm2=QPixmap(self.pxm.size())
+		self.pxmOverlay=QPixmap(self.pxm.size())
 		self.lblPxm=QLabel()
 		self.lblInfo=QLabel(i18nLoad["GETTINGINFO"])
 		lay.setSpacing(0)
@@ -74,6 +74,35 @@ class QProgressImage(QWidget):
 		self.inc=-5
 		self.running=False
 		self.destroyed.connect(partial(QProgressImage._onDestroy,self.__dict__))
+
+	def setColor(self,colorStart,colorEnd,colorIni=""):
+		self.color=QColor(colorStart)
+		self.colorEnd=QColor(colorEnd)
+		if colorIni=="":
+			self.colorCur=self.colorEnd
+		else:
+			self.colorCur=QColor(colorIni)
+	#def setColor
+
+	def setPixmap(self,pxm,size=None):
+		if size!=None:
+			self.pxm=pxm.scaled(size,size)
+			self.pxmOverlay=QPixmap(size,size)
+		else:
+			self.pxm=pxm
+			sizex=pxm.width()
+			sizey=pxm.height()
+			self.pxmOverlay=QPixmap(sizex,sizey)
+	#def setPixmap
+
+	def adjustSize(self):
+		self.setFixedSize(QSize(self.pxm.width(),self.pxm.height()*2))
+	#def adjustSize
+
+	def setInc(self,inc):
+		if inc>0:
+			inc=0-inc
+		self.inc=inc
 
 	@staticmethod
 	def _onDestroy(*args):
@@ -144,9 +173,9 @@ class QProgressImage(QWidget):
 		self.colorCur=color
 		if finish==3:
 			self.inc*=-1
-		self.pxm2.fill(color)
-		self.pxm2.setMask(self.pxm.createMaskFromColor(Qt.transparent))
-		self.lblPxm.setPixmap(self.pxm2)
+		self.pxmOverlay.fill(color)
+		self.pxmOverlay.setMask(self.pxm.createMaskFromColor(Qt.transparent))
+		self.lblPxm.setPixmap(self.pxmOverlay)
 		self.update()
 		self.running=False
 	#def _doProgress
