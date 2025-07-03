@@ -1051,6 +1051,10 @@ class portrait(QStackedWindowItem):
 		self.lp.setParms({"name":args[-1].get("name",""),"icon":icn})
 		self.setCursor(self.oldCursor)
 		self.lp.setFocus()
+		self.lp.installing=False
+		if self.zmdLauncher.isRunning() or self.epi.isRunning():
+			QApplication.processEvents()
+			self.lp.installing=True
 	#def _endLoadDetails
 
 	def setParms(self,*args):
