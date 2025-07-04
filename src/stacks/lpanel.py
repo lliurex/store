@@ -66,7 +66,6 @@ class detailPanel(QWidget):
 		self.config={}
 		self.app={}
 		self.instBundle=""
-		self.installing=False
 		self._connectThreads()
 		self.__initScreen__()
 	#def __init__
@@ -262,9 +261,10 @@ class detailPanel(QWidget):
 	#def _getRunappResults
 
 	def _genericEpiInstall(self,*args):
-		if self.installing==True:
+		if self.parent().installingApp!=None:
 			self.parent().showMsg(summary=i18n.get("ERRMORETHANONE",""),msg="",timeout=4)
 			return
+		self.parent().installingAppDetail=self.app
 		if self.instBundle=="":
 			bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
 		else:
@@ -320,7 +320,12 @@ class detailPanel(QWidget):
 			self.rc.commitInstall(app.get('name'),bundle,state)
 			self.refresh=True
 		self.setEnabled(True)
-		self.updateScreen()
+		if self.parent().installingAppDetail!=None:
+			self.parent().installingAppDetail=None
+			self.parent().installingApp.progress.stop()
+			self.parent().installingApp=None
+		if self.isVisible()==True:
+			self.updateScreen()
 	 #def _endGetEpiResults
 
 	def _clickedBack(self):
