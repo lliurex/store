@@ -961,7 +961,11 @@ class portrait(QStackedWindowItem):
 			self.installingApp.setEnabled(False)
 			self.installingApp.setEnabled(True)
 			self.installingApp.setFocus()
+			self.installingApp.pulse()
 			return
+
+
+
 		self.installingApp=refererApp
 		self.installingApp.blockSignals(True)
 		if self.refererApp==None:
