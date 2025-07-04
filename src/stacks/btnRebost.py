@@ -241,6 +241,7 @@ class QPushButtonRebostApp(QPushButton):
 
 	def pulse(self):
 		self.setStyleSheet("opacity:0")
+	#def pulse
 
 	def enterEvent(self,*args):
 	   self.setFocus()
