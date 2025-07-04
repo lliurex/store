@@ -133,6 +133,7 @@ class portrait(QStackedWindowItem):
 		self.referersHistory={}
 		self.referersShowed={}
 		self.installingApp=None
+		self.installingAppDetail=None
 		self.refererApp=None
 		self.level='user'
 		self.oldCursor=self.cursor()
@@ -952,7 +953,7 @@ class portrait(QStackedWindowItem):
 		QApplication.processEvents()
 		app=args[1]
 		refererApp=args[0]
-		if self.zmdLauncher.isRunning() or self.epi.isRunning():
+		if self.installingApp!=None:
 			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),msg="{}".format(app["name"]),timeout=4)
 			refererApp.progress.stop()
 			refererApp.btn.setEnabled(True)
@@ -1013,13 +1014,15 @@ class portrait(QStackedWindowItem):
 			if app==None:
 				continue
 			btn=app
-			app=json.loads(self.rc.showApp(args[0]["name"]))[0]
+			#app=json.loads(self.rc.showApp(args[0]["name"]))[0]
+			app=json.loads(self.rc.showApp(btn.app["name"]))[0]
 			btn.setApp(json.loads(app))
 			btn.updateScreen()
 		self.referererApp=None
 		if self.installingApp!=None:
 			self.installingApp.blockSignals(False)
 			self.installingApp=None
+			self.installingAppDetail=None
 		self.setCursor(self.oldCursor)
 	#def _endLaunchHelper
 
@@ -1051,10 +1054,8 @@ class portrait(QStackedWindowItem):
 		self.lp.setParms({"name":args[-1].get("name",""),"icon":icn})
 		self.setCursor(self.oldCursor)
 		self.lp.setFocus()
-		self.lp.installing=False
 		if self.zmdLauncher.isRunning() or self.epi.isRunning():
 			QApplication.processEvents()
-			self.lp.installing=True
 	#def _endLoadDetails
 
 	def setParms(self,*args):
@@ -1075,7 +1076,6 @@ class portrait(QStackedWindowItem):
 			return()
 
 	def _updateBtn(self,*args,**kwargs):
-		app=kwargs.get("app",{})
 		app={}
 		if isinstance(args[0],dict):
 			app=args[0]
@@ -1089,7 +1089,13 @@ class portrait(QStackedWindowItem):
 	#def _updateBtn
 
 	def _returnDetail(self,*args,**kwargs):
-		self._updateBtn(args[0])
+		if self.installingAppDetail!=None:
+			self.installingApp=self.referersShowed[self.installingAppDetail["name"]]
+			self._updateBtn(self.installingApp)
+			self.installingAppDetail==None
+			self.installingApp.progress.start()
+		else:
+			self._updateBtn(args[0])
 		if self.appUrl!="":
 			self.appUrl=""
 			self.progress.setAttribute(Qt.WA_StyledBackground, False)
