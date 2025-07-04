@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 from functools import partial
-import os
+import os,time
 import json
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy,QApplication
-from PySide2.QtCore import Qt,Signal,QThread,QEvent,QSize
-from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsOpacityEffect,QSizePolicy,QApplication
+from PySide2.QtCore import Qt,Signal,QThread,QEvent,QSize,QPropertyAnimation
+from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor,QPainter
 from QtExtraWidgets import QScreenShotContainer
 import css
 from constants import *
@@ -87,16 +87,6 @@ class QPushButtonRebostApp(QPushButton):
 		self.focusFrame.setVisible(False)
 		self.focusFrame.setFixedSize(QSize(self.sizeHint().width(),int(MARGIN)/2))
 		self.focusFrame.setStyleSheet("background: %s"%(COLOR_BACKGROUND_DARK))
-		#Progress indicator
-		self.progress=QProgressImage(self)
-		self.progress.setAttribute(Qt.WA_StyledBackground, False)
-		self.progress.lblInfo.setMinimumWidth(self.sizeHint().width())
-		pxm=QPixmap(QSize(self.sizeHint().width(),int(MARGIN)/2))
-		pxm.fill(Qt.black)
-		self.progress.setPixmap(pxm)
-		self.progress.setInc(3)
-		self.progress.setColor(COLOR_BACKGROUND_DARK,COLOR_BORDER)
-		self.layout().addWidget(self.progress,0,0,3,1,Qt.AlignCenter|Qt.AlignBottom)
 		#Btn Layout
 		self.layout().addWidget(self.iconUri,0,0,Qt.AlignCenter|Qt.AlignTop)
 		self.layout().addWidget(self.lblFlyIcon,0,0,Qt.AlignRight|Qt.AlignTop)
@@ -110,6 +100,17 @@ class QPushButtonRebostApp(QPushButton):
 			self.app=json.loads(strapp)
 		else:
 			self.app=strapp
+		#Progress indicator
+		self.progress=QProgressImage(self)
+		self.progress.setAttribute(Qt.WA_StyledBackground, False)
+		self.progress.lblInfo.setMinimumWidth(self.rect().width()+int(MARGIN)*2)
+		self.progress.lblInfo.setText("")
+		pxm=QPixmap(QSize(self.focusFrame.width(),self.focusFrame.size().height()))
+		pxm.fill(QColor(COLOR_BACKGROUND_DARK))
+		self.progress.setPixmap(pxm)
+		self.progress.setInc(3)
+		self.progress.setColor(COLOR_BACKGROUND_DARK,COLOR_BORDER)
+		self.layout().addWidget(self.progress,0,0,3,1,Qt.AlignBottom)
 		self._renderGui()
 	#def __init__
 
@@ -237,6 +238,9 @@ class QPushButtonRebostApp(QPushButton):
 		if self.app.get("summary","")!="":
 			self.btn.setVisible(True)
 	#def updateScreen
+
+	def pulse(self):
+		self.setStyleSheet("opacity:0")
 
 	def enterEvent(self,*args):
 	   self.setFocus()
