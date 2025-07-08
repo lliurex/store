@@ -248,6 +248,7 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(wdg,0,0,Qt.AlignLeft)
 		self.rp=self._mainPane()
 		self.rp.tagpressed.connect(self._loadCategory)
+		#self.rp.topBar.currentItemChanged.connect(self._decoreTopCategories)
 		self.box.addWidget(self.rp,0,1)
 		self.lp=self._detailPane()
 		self.lp.setObjectName("detailPanel")
@@ -716,6 +717,12 @@ class portrait(QStackedWindowItem):
 		self._searchApps(resetOld=False)
 	#def _searchAppsBtn
 
+	def _decoreTopCategories(self,*args):
+		for idx in range(0,self.rp.topBar.count()):
+			wdg=self.rp.topBar.indexAt(idx)
+			print(wdg.text())
+	#def _decoreTopCategories
+
 	def _decoreCmbCategories(self,*args):
 		if isinstance(args[0],QListWidgetItem):
 			font=args[0].font()
@@ -744,6 +751,7 @@ class portrait(QStackedWindowItem):
 			return
 		if time.time()-self.oldTime<MINTIME:
 			return
+
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.lstCategories.setEnabled(False)
@@ -758,6 +766,13 @@ class portrait(QStackedWindowItem):
 		if cat in self.categoriesTree.keys():
 			self.rp.populateCategories(self.categoriesTree[cat],cat)
 		elif cat!="":
+			wdg=self.rp.topBar.currentItem()
+			font=wdg.font()
+			font.setBold(False)
+			for idx in range(0,self.rp.topBar.count()):
+				self.rp.topBar.itemAt(idx).widget().setFont(font)
+			font.setBold(True)
+			wdg.setFont(font)
 			self.rp.topBar.setVisible(True)
 	#def _loadCategory
 
