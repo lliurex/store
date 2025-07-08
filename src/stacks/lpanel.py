@@ -322,7 +322,8 @@ class detailPanel(QWidget):
 		self.setEnabled(True)
 		if self.parent().installingAppDetail!=None:
 			self.parent().installingAppDetail=None
-			self.parent().installingApp.progress.stop()
+			if self.parent().installingApp!=None:
+				self.parent().installingApp.progress.stop()
 			self.parent().installingApp=None
 		if self.isVisible()==True:
 			self.updateScreen()
