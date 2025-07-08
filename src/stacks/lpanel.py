@@ -262,7 +262,7 @@ class detailPanel(QWidget):
 
 	def _genericEpiInstall(self,*args):
 		if self.parent().installingApp!=None:
-			self.parent().showMsg(summary=i18n.get("ERRMORETHANONE",""),msg="",timeout=4)
+			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.parent().installingApp.app["name"].capitalize(),timeout=4)
 			return
 		self.parent().installingAppDetail=self.app
 		if self.instBundle=="":
@@ -283,9 +283,9 @@ class detailPanel(QWidget):
 		self._debug("Invoking EPI for {}".format(epi))
 		if epi==None:
 			if res.get("done",0)==1 and "system package" in res.get("msg","").lower():
-				self.parent().showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
+				self.showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
 			else:
-				self.parent().showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
+				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
 			self.updateScreen()
 		else:
 			if bundle=="zomando":
@@ -851,6 +851,7 @@ class detailPanel(QWidget):
 
 	def _initScreen(self):
 		#Reload config if app has been epified
+		self.showMsg=self.parent().showMsg
 		if len(self.app)>0:
 			self.lstInfo.setVisible(True)
 			self.btnInstall.setVisible(True)

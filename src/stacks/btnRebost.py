@@ -175,9 +175,11 @@ class QPushButtonRebostApp(QPushButton):
 		self.progress.start()
 		if self.btn.text()==i18n["REMOVE"]:
 			#Remove, get installed bundle
-			for bun,state in self.app["state"].items():
-				if state=="0":
-					self.app["bundle"]={bun:self.app["bundle"][bun]}
+			priority=["zomando","flatpak","snap","package","appimage","eduapp"]
+			for bundle in priority:
+				if self.app["state"].get(bundle,"1")=="0" and self.app["bundle"].get("bundle","")!="":
+					self.app["bundle"]={bundle:self.app["bundle"][bundle]}
+					break
 		self.install.emit(self,self.app)
 	#def _emitInstall
 
