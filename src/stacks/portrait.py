@@ -954,7 +954,7 @@ class portrait(QStackedWindowItem):
 		app=args[1]
 		refererApp=args[0]
 		if self.installingApp!=None:
-			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),msg="{}".format(app["name"]),timeout=4)
+			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.installingApp.app["name"].capitalize(),timeout=4)
 			refererApp.progress.stop()
 			refererApp.btn.setEnabled(True)
 			self.installingApp.setFocus()

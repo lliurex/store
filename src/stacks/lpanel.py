@@ -262,7 +262,7 @@ class detailPanel(QWidget):
 
 	def _genericEpiInstall(self,*args):
 		if self.parent().installingApp!=None:
-			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),msg=self.installingApp,timeout=4)
+			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.parent().installingApp.app["name"].capitalize(),timeout=4)
 			return
 		self.parent().installingAppDetail=self.app
 		if self.instBundle=="":
