@@ -207,7 +207,8 @@ class QPushButtonRebostApp(QPushButton):
 	def updateScreen(self):
 		if hasattr(self,"app")==False:
 			return
-		self.progress.stop()
+		if self.progress.isVisible()==True:
+			self.progress.stop()
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
 		self.setToolTip(text)
 		self.label.setText(text)
