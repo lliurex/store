@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import sys,time,signal
+from functools import partial
 import os
 import subprocess
 import json
@@ -70,6 +71,7 @@ class portrait(QStackedWindowItem):
 			tooltip=i18n.get("TOOLTIP"),
 			index=1,
 			visible=True)
+		self.destroyed.connect(partial(QStackedWindowItem._onDestroy,self.__dict__))
 		self.pendingApps={}
 		self.rc=store.client()
 		self.getData=getData()
@@ -89,6 +91,7 @@ class portrait(QStackedWindowItem):
 	#	objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 	#	(self.locked,self.userLocked)=self._rebost.isLocked()
 	#def __init__
+
 
 	def _initRegisters(self):
 		#Catalogue related
@@ -720,7 +723,6 @@ class portrait(QStackedWindowItem):
 	def _decoreTopCategories(self,*args):
 		for idx in range(0,self.rp.topBar.count()):
 			wdg=self.rp.topBar.indexAt(idx)
-			print(wdg.text())
 	#def _decoreTopCategories
 
 	def _decoreCmbCategories(self,*args):
@@ -870,7 +872,8 @@ class portrait(QStackedWindowItem):
 				apps=[json.loads(item) for item in self.apps]
 				self.stopAdding=False
 				self.pendingApps={}
-			self._addAppsToGrid(apps)
+			if len(apps)>0:
+				self._addAppsToGrid(apps)
 		self._debug("End: {}".format(time.time()-a))
 		self._debug("************************")
 		self._debug("************************")
@@ -1187,6 +1190,7 @@ class portrait(QStackedWindowItem):
 		self._stopThreads()
 		self.appsLoaded=0
 		self.pendingApps={}
+		self.refererApp=None
 		if len(self.rp.searchBox.text())==0:
 			self.oldSearch=""
 		self.appsSeen=[]
