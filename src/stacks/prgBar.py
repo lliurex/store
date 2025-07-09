@@ -75,6 +75,16 @@ class QProgressImage(QWidget):
 		self.running=False
 		self.destroyed.connect(partial(QProgressImage._onDestroy,self.__dict__))
 
+	@staticmethod
+	def _onDestroy(*args):
+		selfDict=args[0]
+		if "updateTimer" in selfDict:
+			selfDict["updateTimer"].blockSignals(True)
+			selfDict["updateTimer"].requestInterruption()
+			selfDict["updateTimer"].deleteLater()
+			selfDict["updateTimer"].wait()
+
+
 	def setColor(self,colorStart,colorEnd,colorIni=""):
 		self.color=QColor(colorStart)
 		self.colorEnd=QColor(colorEnd)
@@ -103,15 +113,6 @@ class QProgressImage(QWidget):
 		if inc>0:
 			inc=0-inc
 		self.inc=inc
-
-	@staticmethod
-	def _onDestroy(*args):
-		selfDict=args[0]
-		if "updateTimer" in selfDict:
-			selfDict["updateTimer"].blockSignals(True)
-			selfDict["updateTimer"].requestInterruption()
-			selfDict["updateTimer"].deleteLater()
-			selfDict["updateTimer"].wait()
 
 	def start(self):
 		self.updateTimer.start()
