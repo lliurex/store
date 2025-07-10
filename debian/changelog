@@ -1,4 +1,4 @@
-lliurex-store (1.4.9.14+0lliurex23) jammy; urgency=medium
+lliurex-store (1.4.9.14+1lliurex23) jammy; urgency=medium
 
   * Add feedback for category navigation
   * Improve error message when one action is running
