@@ -30,6 +30,7 @@ i18n={
 	"APPUNKNOWN_SAI":_("For any question the SAI can be contacted at <a href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"),
 	"ERRNOTFOUND":_("Could not open"),
 	"ERRLAUNCH":_("Error opening"),
+	"ERRMORETHANONE":_("There's another action in progress"),
 	"ERRSYSTEMAPP":_("System apps can't be removed"),
 	"ERRUNKNOWN":_("Unknown error"),
 	"FORBIDDEN":_("App unauthorized"),
@@ -260,6 +261,10 @@ class detailPanel(QWidget):
 	#def _getRunappResults
 
 	def _genericEpiInstall(self,*args):
+		if self.parent().installingApp!=None:
+			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.parent().installingApp.app["name"].capitalize(),timeout=4)
+			return
+		self.parent().installingAppDetail=self.app
 		if self.instBundle=="":
 			bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
 		else:
@@ -278,9 +283,9 @@ class detailPanel(QWidget):
 		self._debug("Invoking EPI for {}".format(epi))
 		if epi==None:
 			if res.get("done",0)==1 and "system package" in res.get("msg","").lower():
-				self.parent().showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
+				self.showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
 			else:
-				self.parent().showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
+				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
 			self.updateScreen()
 		else:
 			if bundle=="zomando":
@@ -315,7 +320,13 @@ class detailPanel(QWidget):
 			self.rc.commitInstall(app.get('name'),bundle,state)
 			self.refresh=True
 		self.setEnabled(True)
-		self.updateScreen()
+		if self.parent().installingAppDetail!=None:
+			self.parent().installingAppDetail=None
+			if self.parent().installingApp!=None:
+				self.parent().installingApp.progress.stop()
+			self.parent().installingApp=None
+		if self.isVisible()==True:
+			self.updateScreen()
 	 #def _endGetEpiResults
 
 	def _clickedBack(self):
@@ -463,8 +474,8 @@ class detailPanel(QWidget):
 	#def _defResources
 
 	def keyPressEvent(self,*args):
-		if args[0].key() in [Qt.Key_Escape]:
-			self._return()
+		if args[0].key()==Qt.Key_Escape:
+			self._clickedBack()
 	#def keyPressEvent
 
 	def _setUnknownAppInfo(self):
@@ -841,6 +852,7 @@ class detailPanel(QWidget):
 
 	def _initScreen(self):
 		#Reload config if app has been epified
+		self.showMsg=self.parent().showMsg
 		if len(self.app)>0:
 			self.lstInfo.setVisible(True)
 			self.btnInstall.setVisible(True)

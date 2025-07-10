@@ -6,8 +6,24 @@ try:
 except:
        lliurexup=None
 
-class storeHelper(QThread):
+class llxup(QThread):
 	chkEnded=Signal("PyObject")
+
+	def __init__(self,*args,**kwargs):
+		QThread.__init__(self, None)
+	#def __init__
+
+	def run(self):
+		upgrades=False
+		if lliurexup!=None:
+			llxup=lliurexup.LliurexUpCore()
+			if len(llxup.getPackagesToUpdate())>0:
+				upgrades=True
+		self.chkEnded.emit(upgrades)
+	#def run(self):
+#class llxUp
+
+class storeHelper(QThread):
 	test=Signal("PyObject")
 	lstEnded=Signal("PyObject")
 	srcEnded=Signal("PyObject")
@@ -15,6 +31,7 @@ class storeHelper(QThread):
 	rstEnded=Signal()
 	staEnded=Signal(bool,bool)
 	catEnded=Signal("PyObject")
+
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self, None)
 		self.rc=kwargs["rc"]
@@ -34,9 +51,7 @@ class storeHelper(QThread):
 			self.args=[]
 	
 	def run(self):
-		if self.action=="upgrade":
-			self._chkUpgrades()
-		elif self.action=="test":
+		if  self.action=="test":
 			self._test()
 		elif self.action=="list":
 			self._list()
@@ -55,19 +70,6 @@ class storeHelper(QThread):
 		elif self.action=="getCategories":
 			self._getFreedesktopCategories()
 	#def run
-
-	def _chkUpgrades(self):
-		upgrades=False
-		apps=json.loads(self.rc.getUpgradableApps())
-		if len(apps)>0:
-			upgrades=True
-		if upgrades==False:
-			if lliurexup!=None:
-				llxup=lliurexup.LliurexUpCore()
-				if len(llxup.getPackagesToUpdate())>0:
-					upgrades=True
-		self.chkEnded.emit(upgrades)
-	#def _chkUpgrades(self):
 
 	def _test(self):
 		if self.rc!=None:
@@ -150,17 +152,13 @@ class updateAppData(QThread):
 		QThread.__init__(self, None)
 		self.apps=kwargs.get("apps",{})
 		self.rc=kwargs["rc"]
-		self.dbg=True
+		self.dbg=False
 		self.newApps={}
 		self.updates=[]
 		self._stop=False
 		self._pause=False
 		self.cont=0
-		self.destroyed.connect(updateAppData._onDestroy)
 	#def __init__
-
-	def _onDestroy(*args):
-		pass
 
 	def _debug(self,msg):
 		if self.dbg==True:
@@ -208,7 +206,7 @@ class updateAppData(QThread):
 			app=data[1].app #btnRebost app 
 			self.cont+=1
 			if isinstance(app,dict):
-				print("Update for {}".format(app["name"]))
+				self._debug("Update for {}".format(app["name"]))
 				self.rc.updatePkgData(app["name"],app)
 			time.sleep(0.1)
 			self._emitDataLoaded(name)
