@@ -158,16 +158,7 @@ class updateAppData(QThread):
 		self._stop=False
 		self._pause=False
 		self.cont=0
-		self.destroyed.connect(updateAppData._onDestroy)
 	#def __init__
-
-	def _debug(self,msg):
-		if self.dbg==True:
-			print("libth: {}".format(msg))
-	#def _debug
-
-	def _onDestroy(*args):
-		pass
 
 	def _debug(self,msg):
 		if self.dbg==True:

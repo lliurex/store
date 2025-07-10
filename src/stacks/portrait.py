@@ -62,7 +62,7 @@ class portrait(QStackedWindowItem):
 		self.init=False
 		self.minTime=1
 		self.oldTime=0
-		self.dbg=True
+		self.dbg=False
 		self.enabled=True
 		self._debug("portrait load")
 		self.setProps(shortDesc=i18n.get("DESC"),

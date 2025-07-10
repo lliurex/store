@@ -4,7 +4,7 @@ import subprocess
 
 class helper():
 	def __init__(self):
-		self.dbg=True
+		self.dbg=False
 	#def __init__
 
 	def _debug(self,msg):
