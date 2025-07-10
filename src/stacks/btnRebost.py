@@ -2,9 +2,9 @@
 from functools import partial
 import os,time
 import json
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsOpacityEffect,QSizePolicy,QApplication
-from PySide2.QtCore import Qt,Signal,QThread,QEvent,QSize,QPropertyAnimation
-from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor,QPainter
+from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsOpacityEffect,QSizePolicy,QApplication
+from PySide6.QtCore import Qt,Signal,QThread,QEvent,QSize,QPropertyAnimation
+from PySide6.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor,QPainter
 from QtExtraWidgets import QScreenShotContainer
 import css
 from constants import *
