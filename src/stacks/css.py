@@ -132,6 +132,13 @@ def tablePanel():
 					margin-bottom:%spx;
 				}"""%(int(MARGIN)*1.5,int(MARGIN)*1.5,int(MARGIN)*1.5)
 	css=css+iconUri
+	iconPrg="""#iconPrg{
+					margin-top: %spx;
+					margin-right:%spx;
+					margin-bottom:%spx;
+					margin-left:%spx;
+				}"""%(int(MARGIN)/2,int(MARGIN)/2,int(MARGIN)/2,int(MARGIN)/2)
+	css=css+iconPrg
 
 	categoriesBar="""#categoriesBar{border:0px;
 					margin-left:%spx;
