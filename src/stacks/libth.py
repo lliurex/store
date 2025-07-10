@@ -153,17 +153,13 @@ class updateAppData(QThread):
 		QThread.__init__(self, None)
 		self.apps=kwargs.get("apps",{})
 		self.rc=kwargs["rc"]
-		self.dbg=True
+		self.dbg=False
 		self.newApps={}
 		self.updates=[]
 		self._stop=False
 		self._pause=False
 		self.cont=0
-		self.destroyed.connect(updateAppData._onDestroy)
 	#def __init__
-
-	def _onDestroy(*args):
-		pass
 
 	def _debug(self,msg):
 		if self.dbg==True:
@@ -211,7 +207,7 @@ class updateAppData(QThread):
 			app=data[1].app #btnRebost app 
 			self.cont+=1
 			if isinstance(app,dict):
-				print("Update for {}".format(app["name"]))
+				self._debug("Update for {}".format(app["name"]))
 				self.rc.updatePkgData(app["name"],app)
 			time.sleep(0.1)
 			self._emitDataLoaded(name)
