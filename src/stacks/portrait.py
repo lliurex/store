@@ -62,7 +62,7 @@ class portrait(QStackedWindowItem):
 		self.init=False
 		self.minTime=1
 		self.oldTime=0
-		self.dbg=False
+		self.dbg=True
 		self.enabled=True
 		self._debug("portrait load")
 		self.setProps(shortDesc=i18n.get("DESC"),
@@ -193,8 +193,8 @@ class portrait(QStackedWindowItem):
 		time.sleep(0.1)
 		self._rebost.setAction("getCategories")
 		self._rebost.start()
-		self._rebost.wait()
 		QApplication.processEvents()
+		self._rebost.wait()
 		if self.locked==False and self.userLocked==True:
 			self._loadLockedRebost()
 		else:
@@ -1156,10 +1156,6 @@ class portrait(QStackedWindowItem):
 			self._endUpdate()
 			self._stopThreads()
 			return
-		if self.lstCategories.count()==0:
-			self._rebost.setAction("getCategories")
-			self._rebost.start()
-			self._rebost.wait()
 
 		if isinstance(addEnable,bool):
 			adding=addEnable
@@ -1184,6 +1180,10 @@ class portrait(QStackedWindowItem):
 				QApplication.processEvents()
 				self.rp.table.removeEventFilter(self)
 				self.appsToLoad=0
+		#This blocks the gui
+		if self.lstCategories.count()==0:
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
 	#def _updateScreen
 	
 	def resetScreen(self):
