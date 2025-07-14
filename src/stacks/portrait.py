@@ -213,10 +213,11 @@ class portrait(QStackedWindowItem):
 	#def _endRestart
 
 	def _endLock(self,*args):
-		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
-		self.progress.setAttribute(Qt.WA_StyledBackground, False)
-		self.progress.stop()
-		self._goHome()
+		self._endRestart()
+	#	self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
+	#	self.progress.setAttribute(Qt.WA_StyledBackground, False)
+	#	self.progress.stop()
+	#	self._goHome()
 	#def _endLock
 
 	def _stopThreads(self):
@@ -1116,16 +1117,14 @@ class portrait(QStackedWindowItem):
 			self._updateBtn(self.installingApp)
 			self.installingAppDetail==None
 			self.installingApp.progress.start()
+		elif self.appUrl!="":
+			print("RESETTING")
+			self.appUrl=""
+			#self.firstHide=True
+			self._stopThreads()
+			self._endRestart()
 		else:
 			self._updateBtn(args[0])
-		if self.appUrl!="":
-			self.appUrl=""
-			self.progress.setAttribute(Qt.WA_StyledBackground, False)
-			self.progress.lblInfo.setVisible(False)
-			self.firstHide=True
-			self._stopThreads()
-			self._rebost.terminate()
-		else:
 			self._return()
 	#def _returnDetail
 
