@@ -62,7 +62,7 @@ class portrait(QStackedWindowItem):
 		self.init=False
 		self.minTime=1
 		self.oldTime=0
-		self.dbg=False
+		self.dbg=True
 		self.enabled=True
 		self._debug("portrait load")
 		self.setProps(shortDesc=i18n.get("DESC"),
@@ -194,8 +194,8 @@ class portrait(QStackedWindowItem):
 		time.sleep(0.1)
 		self._rebost.setAction("getCategories")
 		self._rebost.start()
-		self._rebost.wait()
 		QApplication.processEvents()
+		self._rebost.wait()
 		if self.locked==False and self.userLocked==True:
 			self._loadLockedRebost()
 		else:
@@ -214,10 +214,11 @@ class portrait(QStackedWindowItem):
 	#def _endRestart
 
 	def _endLock(self,*args):
-		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
-		self.progress.setAttribute(Qt.WA_StyledBackground, False)
-		self.progress.stop()
-		self._goHome()
+		self._endRestart()
+	#	self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
+	#	self.progress.setAttribute(Qt.WA_StyledBackground, False)
+	#	self.progress.stop()
+	#	self._goHome()
 	#def _endLock
 
 	def _stopThreads(self):
@@ -1116,16 +1117,14 @@ class portrait(QStackedWindowItem):
 			self._updateBtn(self.installingApp)
 			self.installingAppDetail==None
 			self.installingApp.progress.start()
+		elif self.appUrl!="":
+			print("RESETTING")
+			self.appUrl=""
+			#self.firstHide=True
+			self._stopThreads()
+			self._endRestart()
 		else:
 			self._updateBtn(args[0])
-		if self.appUrl!="":
-			self.appUrl=""
-			self.progress.setAttribute(Qt.WA_StyledBackground, False)
-			self.progress.lblInfo.setVisible(False)
-			self.firstHide=True
-			self._stopThreads()
-			self._rebost.terminate()
-		else:
 			self._return()
 	#def _returnDetail
 
@@ -1156,10 +1155,6 @@ class portrait(QStackedWindowItem):
 			self._endUpdate()
 			self._stopThreads()
 			return
-		if self.lstCategories.count()==0:
-			self._rebost.setAction("getCategories")
-			self._rebost.start()
-			self._rebost.wait()
 
 		if isinstance(addEnable,bool):
 			adding=addEnable
@@ -1184,6 +1179,10 @@ class portrait(QStackedWindowItem):
 				QApplication.processEvents()
 				self.rp.table.removeEventFilter(self)
 				self.appsToLoad=0
+		#This blocks the gui
+		if self.lstCategories.count()==0:
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
 	#def _updateScreen
 	
 	def resetScreen(self):
