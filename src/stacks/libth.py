@@ -139,7 +139,7 @@ class storeHelper(QThread):
 		cats=[]
 		try:
 			cats=json.loads(self.rc.execute('getFreedesktopCategories'))[0]
-		except Exeption as e:
+		except Exception as e:
 			print("Th for categories failed: {}".format(e))
 		self.catEnded.emit(cats)
 	#def _getFreedesktopCategories
