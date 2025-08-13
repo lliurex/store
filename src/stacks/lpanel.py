@@ -144,6 +144,7 @@ class detailPanel(QWidget):
 			if isinstance(args[0],dict):
 				name=args[0].get("name","")
 				pxm=args[0].get("icon","")
+				appid=args[0].get("id",name)
 			elif "://" in args[-1]:
 				self.stream=args[-1]
 			icon=""
@@ -184,6 +185,9 @@ class detailPanel(QWidget):
 		self.setCursor(self.oldcursor)
 		if "ERR" in app.keys():
 			self._onError()
+		print("END END END END END END END")
+		print(self.app)
+		print("END END END END END END END")
 		self.updateScreen()
 	#def _endSetParms
 
@@ -798,7 +802,8 @@ class detailPanel(QWidget):
 		(installed,uninstalled)=self._classifyBundles(bundles)
 		priority=["zomando","flatpak","snap","package","appimage","eduapp"]
 		for i in installed+uninstalled:
-			version=self.app.get('versions',{}).get(i,'')
+			#version=self.app.get('versions',{}).get(i,'')
+			version=""
 			if version=="":
 				version="lliurex23"
 			if not("eduapp" in bundles.keys() and len(bundles.keys())==1 or "zero" not in self.app.get("name")):

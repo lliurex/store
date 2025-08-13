@@ -139,6 +139,7 @@ class QPushButtonRebostApp(QPushButton):
 	#def setData
 
 	def _renderGui(self,*args):
+		return
 		states=self.app.get("state",{})
 		zmd=states.get("zomando","0")
 		if len(states)>0:
@@ -194,7 +195,7 @@ class QPushButtonRebostApp(QPushButton):
 					self.data.wait()
 			if ev.type()==QEvent.Type.Paint:
 				if self.init==False:
-					self.updateScreen()
+					self._updateScreen()
 					self.init=True
 			if ev.type()==QEvent.Type.FocusIn:
 				self.focusFrame.setVisible(True)
@@ -204,7 +205,10 @@ class QPushButtonRebostApp(QPushButton):
 		return(False)
 	#def eventFilter
 
-	def updateScreen(self):
+
+	def updateScreen(self,*args):
+		print(".")
+	def _updateScreen(self):
 		if hasattr(self,"app")==False:
 			return
 		if self.progress.isVisible()==True:

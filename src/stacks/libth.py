@@ -84,15 +84,19 @@ class storeHelper(QThread):
 
 	def _list(self):
 		apps=[]
-		if len(self.args)==1:
-			apps.extend(json.loads(self.rc.execute('list',"({})".format(self.args[0]))))
-		elif len(self.args)==2:
-			apps.extend(json.loads(self.rc.execute('list',"{}".format(self.args[0]),self.args[1])))
+		apps=self.rc.getAppsInCategory(self.args[0])
+		print("zxadasdasdasdasdasdasdasdasdasdasdasd")
+		print(apps)
+		print("zxadasdasdasdasdasdasdasdasdasdasdasd")
 		self.lstEnded.emit(apps)
 	#def _list
 
 	def _search(self,*args):
-		apps=json.loads(self.rc.execute("search",self.args[0]))
+		#apps=json.loads(self.rc.execute("search",self.args[0]))
+		if self.args[0]=="":
+			apps=self.rc.getApps()
+		else:
+			apps=self.rc.searchApp(self.args[0])
 		self.srcEnded.emit(apps)
 	#def _search(self):
 
@@ -138,7 +142,8 @@ class storeHelper(QThread):
 	def _getFreedesktopCategories(self):
 		cats=[]
 		try:
-			cats=json.loads(self.rc.execute('getFreedesktopCategories'))[0]
+			#cats=json.loads(self.rc.execute('getFreedesktopCategories'))[0]
+			cats=self.rc.getFreedesktopCategories()
 		except Exception as e:
 			print("Th for categories failed: {}".format(e))
 		self.catEnded.emit(cats)
@@ -209,7 +214,7 @@ class updateAppData(QThread):
 				self._debug("Update for {}".format(app["name"]))
 				self.rc.updatePkgData(app["name"],app)
 			time.sleep(0.1)
-			self._emitDataLoaded(name)
+		#	self._emitDataLoaded(name)
 	#def run
 
 	def stop(self):
@@ -255,14 +260,8 @@ class getData(QThread):
 	#def setApps
 	
 	def run(self):
-		applist=[]
-		for strapp in self.apps:
-			if self._stop==True:
-				break
-			jsonapp=json.loads(strapp)
-			applist.append(jsonapp)
 		if self._stop==False:
-			self.dataLoaded.emit(applist)
+			self.dataLoaded.emit(self.apps)
 	#def run
 
 	def stop(self,st=True):
@@ -289,9 +288,9 @@ class thShowApp(QThread):
 	def run(self):
 		if len(self.app.keys())>0:
 			try:
-				app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
+				app=json.loads(self.rc.showApp(self.app.get('id','')))[0]
 			except:
-				print("Error finding {}".format(self.app.get("name","")))
+				print("Error finding {}".format(self.app.get("id","")))
 				app=self.app.copy()
 				app["ERR"]=True
 			finally:

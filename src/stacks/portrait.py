@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import sys,time,signal
+import sys,time,signal,time
 from functools import partial
 import os
 import subprocess
@@ -73,6 +73,7 @@ class portrait(QStackedWindowItem):
 			visible=True)
 		self.destroyed.connect(partial(QStackedWindowItem._onDestroy,self.__dict__))
 		self.pendingApps={}
+		self.apps=[]
 		self.rc=store.client()
 		self.getData=getData()
 		self._rebost=storeHelper(rc=self.rc)
@@ -499,6 +500,9 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setSizeAdjustPolicy(self.lstCategories.SizeAdjustPolicy.AdjustToContents)
 		self.i18nCat={}
 		self.catI18n={}
+		print("------->")
+		print(cats)
+		print("-------<")
 		self.categoriesTree=cats
 		self.lstCategories.addItem(i18n.get('ALL'))
 		item=self.lstCategories.itemAt(0,0)
@@ -564,8 +568,10 @@ class portrait(QStackedWindowItem):
 	def _getAppList(self,cat="",limitBy=0):
 		if len(cat)>0:
 			cat=self.i18nCat.get(cat,cat)
+			if cat!="":
+				self._rebost.setAction("list","{}".format(cat))
 			if limitBy==0:
-				self._rebost.setAction("list","({})".format(cat))
+				self._rebost.setAction("list","{}".format(cat))
 				self._debug("Loading cat {}".format(cat))
 			else:
 				#If max rows is defined rebost tries to return as many apps as possible
@@ -696,8 +702,7 @@ class portrait(QStackedWindowItem):
 	#def _searchApps
 
 	def _endSearchApps(self,*args):
-		self.appsRaw=args[0]
-		self.appsRaw.sort()
+		self.appsRaw=json.loads(args[0])
 		self.apps=self.appsRaw
 		self.updateScreen(True)
 		self.oldTime=time.time()
@@ -780,7 +785,10 @@ class portrait(QStackedWindowItem):
 	#def _loadCategory
 
 	def _endLoadCategory(self,*args):
-		self.appsRaw=args[0]
+		self.appsRaw=[]
+		appsRaw=json.loads(args[0])
+		for key,item in appsRaw.items():
+			self.appsRaw.extend(item)
 		self.apps=self.appsRaw.copy()
 		self.updateScreen(True)
 		self.oldTime=time.time()
@@ -870,7 +878,7 @@ class portrait(QStackedWindowItem):
 		if len(apps)>0:
 			if self.stopAdding==True:
 				self.appsLoaded=0
-				apps=[json.loads(item) for item in self.apps]
+				apps=self.apps
 				self.stopAdding=False
 				self.pendingApps={}
 			if len(apps)>0:
@@ -888,6 +896,9 @@ class portrait(QStackedWindowItem):
 			print("WARNING!!!!: INSTALLED FILTER APPLIED")
 		pendingApps={}
 		while apps:
+			if len(apps)%5==0:
+				time.sleep(0.1)
+		
 			jsonapp=apps.pop(0)
 			if self.stopAdding==True:
 				break
@@ -1038,7 +1049,7 @@ class portrait(QStackedWindowItem):
 				continue
 			btn=app
 			#app=json.loads(self.rc.showApp(args[0]["name"]))[0]
-			app=json.loads(self.rc.showApp(btn.app["name"]))[0]
+			app=json.loads(self.rc.showApp(btn.app["id"]))[0]
 			btn.setApp(json.loads(app))
 			btn.updateScreen()
 		self.referererApp=None
@@ -1074,7 +1085,7 @@ class portrait(QStackedWindowItem):
 		self.referersShowed.update({self.refererApp.app["name"]:self.refererApp})
 		self.setChanged(False)
 		self.parent.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","").capitalize()))
-		self.lp.setParms({"name":args[-1].get("name",""),"icon":icn})
+		self.lp.setParms({"name":args[-1].get("name",""),"id":args[-1].get("id",""),"icon":icn})
 		self.setCursor(self.oldCursor)
 		self.lp.setFocus()
 		if self.zmdLauncher.isRunning() or self.epi.isRunning():
