@@ -16,7 +16,7 @@ class QLabelLink(QWidget):
 		hbox=QHBoxLayout()
 		icn=QtGui.QPixmap(os.path.join(RSRC,"link24x24.png"))
 		lblIcn=QLabel()
-		lblIcn.setPixmap(icn.scaled(16,16))
+		lblIcn.setPixmap(icn.scaled(16,16,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation))
 		hbox.addWidget(lblIcn)
 		self.lbl=QLabel(args[0])
 		hbox.addWidget(self.lbl)

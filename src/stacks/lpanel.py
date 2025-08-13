@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import sys,signal
 import os
+from functools import partial
 import subprocess
 import json
 import html
@@ -10,7 +11,7 @@ from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidge
 							QAbstractScrollArea, QFrame
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
-from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QStackedWindowItem
+from QtExtraWidgets import QScreenShotContainer,QScrollLabel
 import gettext
 import libhelper
 import exehelper
@@ -18,6 +19,7 @@ import css
 from cmbBtn import QComboButton
 from lblApp import QLabelRebostApp
 from lblLnk import QLabelLink
+from libth import thShowApp
 from constants import *
 _ = gettext.gettext
 QString=type("")
@@ -26,62 +28,23 @@ BKG_COLOR_INSTALLED=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,
 i18n={
 	"APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
 	"APPUNKNOWN_SAI":_("For any question the SAI can be contacted at <a href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"),
-	"CHOOSE":_("Choose"),
-	"CONFIG":_("Details"),
-	"DESC":_("Navigate through all applications"),
 	"ERRNOTFOUND":_("Could not open"),
 	"ERRLAUNCH":_("Error opening"),
+	"ERRMORETHANONE":_("There's another action in progress"),
 	"ERRSYSTEMAPP":_("System apps can't be removed"),
 	"ERRUNKNOWN":_("Unknown error"),
 	"FORBIDDEN":_("App unauthorized"),
-	"FORMAT":_("Format"),
-	"HOMEPAGE":_("Info"),
 	"INFO":_("For more info go to"),
 	"INSTALL":_("Install"),
-	"MENU":_("Show application detail"),
 	"OPENING":_("Opening"),
 	"RELEASE":_("Release"),
 	"REMOVE":_("Remove"),
 	"RUN":_("Open"),
 	"SEEIT":_("See at Appsedu"),
 	"SITE":_("Website"),
-	"TOOLTIP":_("Details"),
 	"UNAVAILABLE":_("Unavailable"),
-	"UPGRADE":_("Upgrade"),
-	"ZMDNOTFOUND":_("Zommand not found. Open Zero-Center?"),
 	}
 
-class thShowApp(QThread):
-	showEnded=Signal("PyObject")
-	def __init__(self,parent=None):
-		QThread.__init__(self, parent)
-		self.rc=store.client()
-		self.app={}
-	#def __init__
-
-	def setArgs(self,*args):
-		if isinstance(args[0],str):
-			self.app={}
-			self.app["name"]=args[0]
-		else:
-			self.app=args[0]
-	#def setArgs(self:
-
-	def run(self):
-		if len(self.app.keys())>0:
-			try:
-				app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
-			except:
-				print("Error finding {}".format(self.app.get("name","")))
-				app=self.app.copy()
-				app["ERR"]=True
-			finally:
-				if isinstance(app,str):
-					app=json.loads(app)
-				self.showEnded.emit(app)
-		return True
-	#def run
-#class thShowApp
 
 class detailPanel(QWidget):
 	clicked=Signal("PyObject")
@@ -96,14 +59,14 @@ class detailPanel(QWidget):
 		self.setStyleSheet(css.detailPanel())
 		self.refresh=False
 		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
-		self._connectThreads()
+		self.rc=store.client()
 		self.oldcursor=self.cursor()
 		self.stream=""
 		self.launcher=""
 		self.config={}
 		self.app={}
-		self.rc=store.client()
 		self.instBundle=""
+		self._connectThreads()
 		self.__initScreen__()
 	#def __init__
 
@@ -113,9 +76,9 @@ class detailPanel(QWidget):
 		self.epi.runEnded.connect(self._getEpiResults)
 		self.runapp=exehelper.appLauncher()
 		self.runapp.runEnded.connect(self._getRunappResults)
-		self.thEpiShow=thShowApp()
+		self.thEpiShow=thShowApp(rc=self.rc)
 		self.thEpiShow.showEnded.connect(self._endGetEpiResults)
-		self.thParmShow=thShowApp()
+		self.thParmShow=thShowApp(rc=self.rc)
 		self.thParmShow.showEnded.connect(self._endSetParms)
 		self.zmdLauncher=exehelper.zmdLauncher()
 		self.zmdLauncher.finished.connect(self._endRunZomando)
@@ -199,6 +162,8 @@ class detailPanel(QWidget):
 
 	def _endSetParms(self,*args):
 		if len(args)>0:
+			#Preserve icon 
+			icn=self.app.get("icon")
 			app=args[0]
 			if isinstance(app,dict):
 				self.app=app
@@ -296,6 +261,10 @@ class detailPanel(QWidget):
 	#def _getRunappResults
 
 	def _genericEpiInstall(self,*args):
+		if self.parent().installingApp!=None:
+			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.parent().installingApp.app["name"].capitalize(),timeout=4)
+			return
+		self.parent().installingAppDetail=self.app
 		if self.instBundle=="":
 			bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
 		else:
@@ -314,12 +283,12 @@ class detailPanel(QWidget):
 		self._debug("Invoking EPI for {}".format(epi))
 		if epi==None:
 			if res.get("done",0)==1 and "system package" in res.get("msg","").lower():
-				self.parent().showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
+				self.showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
 			else:
-				self.parent().showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
+				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
 			self.updateScreen()
 		else:
-			if bundle=="zomando" and self.app.get("state",{}).get("zomando","1")=="0":
+			if bundle=="zomando":
 				self.zmdLauncher.setApp(self.app)
 				self.zmdLauncher.start()
 			else:
@@ -333,7 +302,7 @@ class detailPanel(QWidget):
 		self.setCursor(cursor)
 		self.setEnabled(False)
 		self.refresh=False
-		signal.raise_signal(signal.SIGUSR1)
+		#signal.raise_signal(signal.SIGUSR1)
 		self.thEpiShow.setArgs(app)
 		self.thEpiShow.start()
 	#def _getEpiResults
@@ -351,16 +320,23 @@ class detailPanel(QWidget):
 			self.rc.commitInstall(app.get('name'),bundle,state)
 			self.refresh=True
 		self.setEnabled(True)
-		self.updateScreen()
+		if self.parent().installingAppDetail!=None:
+			self.parent().installingAppDetail=None
+			if self.parent().installingApp!=None:
+				self.parent().installingApp.progress.stop()
+			self.parent().installingApp=None
+		if self.isVisible()==True:
+			self.updateScreen()
 	 #def _endGetEpiResults
 
 	def _clickedBack(self):
 		if self.thParmShow.isRunning():
 			self.thParmShow.quit()
+		pxm=self.lblIcon.pixmap()
+		if pxm.isNull()==False:
+			self.app["icon"]=self.lblIcon.pixmapPath
 		self.clicked.emit(self.app)
-
-	def _loaded(self):
-		self.loaded.emit(self.app)
+	#def _clickedBack
 
 	def __initScreen__(self):
 		self.box=QGridLayout()
@@ -498,8 +474,8 @@ class detailPanel(QWidget):
 	#def _defResources
 
 	def keyPressEvent(self,*args):
-		if args[0].key() in [Qt.Key_Escape]:
-			self._return()
+		if args[0].key()==Qt.Key_Escape:
+			self._clickedBack()
 	#def keyPressEvent
 
 	def _setUnknownAppInfo(self):
@@ -514,7 +490,7 @@ class detailPanel(QWidget):
 			elif len(icn)>0:
 				if os.path.isfile(icn):
 					pxm=QtGui.QPixmap(icn)
-			if not pxm:
+			if not pxm :
 				icn=QtGui.QIcon.fromTheme(self.app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
 				pxm=icn.pixmap(ICON_SIZE,ICON_SIZE)
 			if pxm:
@@ -548,6 +524,10 @@ class detailPanel(QWidget):
 				print(e)
 	#def _loadScreenshots
 
+	def _updateIcon(self,*args):
+		icn=args[0]
+		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
+
 	def updateScreen(self):
 		if self.stream!="":
 			return
@@ -558,11 +538,19 @@ class detailPanel(QWidget):
 		#Disabled as requisite (250214-11:52)
 		#self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
 	#	self.lblName.setText("{}".format(self.app.get('name').upper()))
-		icn=self._getIconFromApp(self.app)
-		if isinstance(icn,QtGui.QIcon):
-			icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
-		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
+	#	icn=self.app["icon"]
+	#	if isinstance(icn,QtGui.QIcon):
+	#		icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
+	#	elif isinstance(icn,QtGui.QPixmap)==False:
+	#		icn=self._getIconFromApp(self.app)
+	#		if isinstance(icn,QtGui.QIcon):
+	#			icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
+		#self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
 		self.lblIcon.loadImg(self.app)
+		pxm=self.lblIcon.pixmap()
+		if pxm!=None:
+			if pxm.isNull()==False:
+				self.app["icon"]=self.lblIcon.pixmapPath
 		#Disabled as requisite (250214-11:52)
 		#self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
 		summary="{}<br>{}".format(self.app["name"].upper(),self.app.get("summary",""))
@@ -659,7 +647,7 @@ class detailPanel(QWidget):
 		self.app["summary"]=""
 		self.app["pkgname"]=""
 		self.app["description"]=""
-	#def _resetScreen(self):
+	#def _resetScreen
 
 	def _onError(self):
 		self._debug("Error detected")
@@ -702,14 +690,16 @@ class detailPanel(QWidget):
 		self.lstInfo.setText(i18n["INSTALL"].upper())
 		states=self.app.get("state",{}).copy()
 		installed=False
-		zmdInstalled=""
-		if "zomando" in states:
-			zmdInstalled=states.pop("zomando")
-		for bundle,state in states.items():
-			if state=="0":# and zmdInstalled!="0":
-				installed=True
-				self.instBundle=bundle
-				break
+		zmd=states.get("zomando","0")
+		if len(states)>0:
+			for bundle,state in states.items():
+				if bundle=="package" and zmd=="1":
+					if self.app["bundle"]["package"].startswith("zero"):
+						continue
+				if state=="0":# and zmdInstalled!="0":
+					installed=True
+					self.instBundle=bundle
+					break
 		self.btnRemove.setVisible(installed)
 		self.btnRemove.setEnabled(installed)
 		if len(self.app.get("bundle",[]))==1 and "eduapp" in self.app.get("bundle",{}).keys():
@@ -862,6 +852,7 @@ class detailPanel(QWidget):
 
 	def _initScreen(self):
 		#Reload config if app has been epified
+		self.showMsg=self.parent().showMsg
 		if len(self.app)>0:
 			self.lstInfo.setVisible(True)
 			self.btnInstall.setVisible(True)
@@ -884,7 +875,7 @@ class detailPanel(QWidget):
 			self.lblHomepage.setText("")
 			self.lblTags.setText("")
 			#Disabled as requisite (250214-11:52)
-			#self.lblTags.linkActivated.connect(self._tagNav)
+			self.lblTags.linkActivated.connect(self._tagNav)
 			self.app['name']=self.app.get('name','').replace(" ","")
 		else:
 			self._onError()

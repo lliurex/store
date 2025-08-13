@@ -103,7 +103,8 @@ def tablePanel():
 				} 
 				#qFlow::item{
 					padding:%spx;
-				}"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN*2),MARGIN,int(MARGIN)/4)
+				}
+				"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN*2),MARGIN,int(MARGIN)/4)
 	css=css+qflow
 	search="""#wsearch{
 					border:0px solid %s;
@@ -131,6 +132,24 @@ def tablePanel():
 					margin-bottom:%spx;
 				}"""%(int(MARGIN)*1.5,int(MARGIN)*1.5,int(MARGIN)*1.5)
 	css=css+iconUri
+	iconPrg="""#iconPrg{
+					margin-top: %spx;
+					margin-right:%spx;
+					margin-bottom:%spx;
+					margin-left:%spx;
+				}"""%(int(MARGIN)/2,int(MARGIN)/2,int(MARGIN)/2,int(MARGIN)/2)
+	css=css+iconPrg
+
+	categoriesBar="""#categoriesBar{border:0px;
+					margin-left:%spx;
+					margin-right:%spx;
+					margin-bottom:%spx;
+				}"""%(int(MARGIN*2),MARGIN,int(MARGIN)/4)
+	css=css+categoriesBar
+
+	categoryTag="""#categoryTag{text-decoration:none;background:%s;color:%s;padding:1px;padding-bottom:3px;border-radius:10;}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT)
+	css=css+categoryTag
+
 	return(css)
 #def tablePanel
 
@@ -142,6 +161,10 @@ def portrait():
 					margin:0px;
 			}"""
 	css=css+port
+	error="""#errorMsg{
+			background: %s;
+			}"""%(COLOR_BACKGROUND_LIGHT)
+	css=css+error
 	banner="""#banner{
 					margin-top:%spx;
 					margin-bottom:%spx;
