@@ -83,6 +83,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.setDefault(True)
 		self.setLayout(lay)
 		self.init=False
+		self.startLoadImage=False
 		self.focusFrame=QLabel("")
 		self.focusFrame.setVisible(False)
 		self.focusFrame.setFixedSize(QSize(self.sizeHint().width(),int(MARGIN)/2))
@@ -139,15 +140,11 @@ class QPushButtonRebostApp(QPushButton):
 	#def setData
 
 	def _renderGui(self,*args):
-		return
 		states=self.app.get("state",{})
 		zmd=states.get("zomando","0")
 		if len(states)>0:
 			for bundle,state in states.items():
-				if bundle=="package" and zmd=="1":
-					if self.app["bundle"]["package"].startswith("zero"):
-						continue
-				if state=="0":# and zmdInstalled!="0":
+				if state==0:
 					installed=True
 					self.btn.setText(i18n.get("REMOVE"))
 					self.instBundle=bundle
@@ -195,8 +192,15 @@ class QPushButtonRebostApp(QPushButton):
 					self.data.wait()
 			if ev.type()==QEvent.Type.Paint:
 				if self.init==False:
-					self._updateScreen()
 					self.init=True
+				elif self.init==True:
+					if self.startLoadImage==True:
+						if self.iconUri.text()=="":
+							self.loadImg(self.app)
+							self.init=None
+					else:
+						self.startLoadImage=True
+					self.updateScreen()
 			if ev.type()==QEvent.Type.FocusIn:
 				self.focusFrame.setVisible(True)
 			if ev.type()==QEvent.Type.FocusOut:
@@ -205,10 +209,7 @@ class QPushButtonRebostApp(QPushButton):
 		return(False)
 	#def eventFilter
 
-
-	def updateScreen(self,*args):
-		print(".")
-	def _updateScreen(self):
+	def updateScreen(self):
 		if hasattr(self,"app")==False:
 			return
 		if self.progress.isVisible()==True:
@@ -216,7 +217,6 @@ class QPushButtonRebostApp(QPushButton):
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
 		self.setToolTip(text)
 		self.label.setText(text)
-		self.loadImg(self.app)
 		states=self.app.get("state",{}).copy()
 		if "Forbidden" in self.app.get("categories",[]):
 			self.btn.setText(i18n.get("UNAUTHORIZED"))
@@ -224,18 +224,15 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setText(i18n.get("UNAVAILABLE"))
 		else:
 			self.btn.setText(i18n.get("INSTALL"))
-			states=self.app.get("state",{}).copy()
+			states=self.app.get("status",{}).copy()
 			bundles=self.app.get("bundle",{}).copy()
-
-
-
 			zmd=states.get("zomando","0")
 			if len(states)>0:
 				for bundle,state in states.items():
 					if bundle=="package" and zmd=="1":
 						if self.app["bundle"]["package"].startswith("zero"):
 							continue
-					if state=="0":# and zmdInstalled!="0":
+					if state==0:# and zmdInstalled!="0":
 						installed=True
 						self.btn.setText(i18n.get("REMOVE"))
 						self.instBundle=bundle
@@ -313,9 +310,9 @@ class QPushButtonRebostApp(QPushButton):
 	def _getStats(self,app):
 		stats={}
 		for bundle,state in app.get("state",{}).items():
-			if bundle=="zomando" and state=="0":
+			if bundle=="zomando" and state==0:
 				stats["zomando"]=True
-			elif state=="0":
+			elif state==0:
 				stats["installed"]=True
 			
 		if "Forbidden" in app.get("categories",[]):
