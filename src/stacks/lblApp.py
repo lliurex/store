@@ -20,6 +20,7 @@ class QLabelRebostApp(QLabel):
 		self.setAlignment(Qt.AlignCenter)
 		self.cacheDir=os.path.join(os.environ.get('HOME'),".cache","rebost","imgs")
 		self.scrCnt=QScreenShotContainer()
+		self.iconSize=-1
 		self.pixmapPath=""
 		self.app={}
 		self.th=[]
@@ -36,8 +37,16 @@ class QLabelRebostApp(QLabel):
 			self["scr"].wait()
 	#def _stop(*args):
 
+	def setIconSize(self,size):
+		self.iconSize=size
+	#def setIconSize
+
 	def loadImg(self,app):
-		wsize=ICON_SIZE
+		if self.iconSize>0:
+			baseSize=self.iconSize
+		else:
+			baseSize=ICON_SIZE
+		wsize=baseSize
 		self.app=app
 		img=app.get('icon','')
 		self.setMinimumWidth(1)
@@ -47,15 +56,15 @@ class QLabelRebostApp(QLabel):
 			icn=img
 		elif os.path.isfile(img):
 			if "/usr/share/banners/lliurex-neu" in img:
-				wsize=int(ICON_SIZE*1.8)
+				wsize=int(baseSize*1.8)
 			icn=QtGui.QPixmap.fromImage(QtGui.QImage(img))
 			self.pixmapPath=img
 		elif img=='':
 			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
-			icn=icn2.pixmap(ICON_SIZE,ICON_SIZE)
+			icn=icn2.pixmap(baseSize,baseSize)
 			self.pixmapPath=app.get("pkgname")
 		if icn:
-			self.setPixmap(icn.scaled(wsize,ICON_SIZE,Qt.KeepAspectRatio,Qt.SmoothTransformation))
+			self.setPixmap(icn.scaled(wsize,baseSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 			self.setMinimumWidth(wsize+10)
 			if self.pixmapPath=="":
 				self._savePixmap()
@@ -68,9 +77,13 @@ class QLabelRebostApp(QLabel):
 	
 	def load(self,*args):
 		img=args[0]
-		wsize=ICON_SIZE
-		self.setPixmap(img.scaled(wsize,ICON_SIZE,Qt.KeepAspectRatio,Qt.SmoothTransformation))
-		self.setMinimumWidth(ICON_SIZE+10)
+		if self.iconSize>0:
+			baseSize=self.iconSize
+		else:
+			baseSize=ICON_SIZE
+		wsize=baseSize
+		self.setPixmap(img.scaled(wsize,baseSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
+		self.setMinimumWidth(baseSize+10)
 		self._savePixmap()
 	#def load
 
