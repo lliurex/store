@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHead
 from btnRebost import QPushButtonRebostApp
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal
-from QtExtraWidgets import QSearchBox,QCheckableComboBox,QTableTouchWidget,QInfoLabel,QFlowTouchWidget
+from QtExtraWidgets import QCheckableComboBox,QTableTouchWidget,QInfoLabel,QFlowTouchWidget
 from lblLnk import QLabelLink
 import css
 import gettext
@@ -16,24 +16,7 @@ LAYOUT="appsedu"
 RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
 i18n={
 	"ALL":_("All"),
-	"AVAILABLE":_("Available"),
-	"CATEGORIESDSC":_("Filter by category"),
-	"CERTIFIED":_("Certified by Appsedu"),
-	"CONFIG":_("Portrait"),
-	"DESC":_("Navigate through all applications"),
-	"FILTERS":_("Filters"),
-	"FILTERSDSC":_("Filter by formats and states"),
-	"HOME":_("Home"),
-	"HOMEDSC":_("Main page"),
-	"INSTALLED":_("Installed"),
-	"LLXUP":_("Launch LliurexUp"),
-	"MENU":_("Show applications"),
-	"NEWDATA":_("Updating info"),
 	"SEARCH":_("Search"),
-	"SORTDSC":_("Sort alphabetically"),
-	"TOOLTIP":_("Portrait"),
-	"UPGRADABLE":_("Upgradables"),
-	"UPGRADES":_("There're upgrades available")
 	}
 
 class paneGlobalView(QWidget):
@@ -46,37 +29,28 @@ class paneGlobalView(QWidget):
 			return
 		self._rebost=args[0]
 		self.dbg=False
-		self.maxCol=1
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("mp")
 		self.setStyleSheet(css.tablePanel())
 		lay=QVBoxLayout()
 		lay.addSpacing(32)
 		lay.setSpacing(24)
-		self.searchGeometry=QSize(0,0)
-		self.search=self._defSearch()
 		hlay=QHBoxLayout()
 		wdg=QWidget()
 		wdg.setLayout(hlay)
-		hlay.addWidget(self.search,Qt.AlignRight)
 		lay.addWidget(wdg)
-		if LAYOUT=="appsedu":
-			self.search.setVisible(True)
-
 		self.topBar=self._defCategoriesBar()
 		self.topBar.setObjectName("categoriesBar")
 		self.topBar.setVisible(False)
 		self.topBar.setAttribute(Qt.WA_StyledBackground, True)
 		lay.addWidget(self.topBar,Qt.AlignTop|Qt.AlignCenter)
-
 		self.table=self._defTable()
-		if LAYOUT=="appsedu":
-			tableCol=1
-		else:
-			tableCol=0
 		lay.addWidget(self.table)
-		
 		self.setLayout(lay)
+		self.loading=False
+		self.referersShowed={}
+		self.appsToLoad=0
+		self.refresh=True
 	#def __init__
 
 	def _debug(self,msg):
@@ -124,59 +98,17 @@ class paneGlobalView(QWidget):
 		table.leaveEvent=self.tableLeaveEvent
 		table.setAttribute(Qt.WA_AcceptTouchEvents)
 		table.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-		#if LAYOUT=="appsedu":
-		#	table.setStyleSheet("""QFlowTouchWidget{border:0px; background:#FFFFFF;margin-left:100%;margin-right:1%;} QFlowTouchWidget::item{padding:2px}""")
+		table.setStyleSheet("""QFlowTouchWidget{border:0px; background:#FFFFFF;margin-left:100%;margin-right:1%;} QFlowTouchWidget::item{padding:2px}""")
 		return(table)
 	#def _defTable
 
 	def tableLeaveEvent(self,*args):
-		#self.table.setAutoScroll(False)
 		return(False)
 	#def enterEvent
 
 	def tableKeyPressEvent(self,*args):
-	#	if self.table.doAutoScroll()==None:
-	#		self.table.setAutoScroll(True)
 		return(False)
 	#def tableKeyPressEvent
-
-	def _defSearch(self):
-		wdg=QWidget()
-		#wdg.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Maximum)
-		wdg.setAttribute(Qt.WA_StyledBackground, True)
-		wdg.setObjectName("wsearch")
-		self.searchBox=QLineEdit()
-		self.searchBox.setObjectName("search")
-		lay=QHBoxLayout()
-		lay.setSpacing(0)
-		self.btnSearch=QPushButton()
-		self.btnSearch.setObjectName("bsearch")
-		icn=QtGui.QIcon(os.path.join(RSRC,"search.png"))
-		self.btnSearch.setIcon(icn)
-		self.btnSearch.setMinimumSize(int(ICON_SIZE/4),int(ICON_SIZE/4))
-		self.searchBox.setToolTip(i18n["SEARCH"])
-		self.searchBox.setPlaceholderText(i18n["SEARCH"])
-		self.searchGeometry=QSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
-		self.btnSearch.setIconSize(self.searchGeometry)
-		lay.addWidget(self.searchBox)#,Qt.AlignCenter|Qt.AlignCenter)
-		lay.addWidget(self.btnSearch)
-		wdg.setLayout(lay)
-		#wdg.setStyleSheet("""#wsearch{border:0px solid #FFFFFF;background:#002c4f;border-radius:20px}#search{color:#FFFFFF;background:#002c4f;border:0px solid;margin-left:12px;} #bsearch{color:#FFFFFF;background:#002c4f;border:0px;margin-right:12px}""")
-		wdg.setMaximumWidth(450)
-		return(wdg)
-	#def _defSearch
-
-	def setBtnIcon(self,icn=""):
-		if icn!="":
-			icn=QtGui.QIcon(os.path.join(RSRC,"{}.png".format(icn)))
-		if len(self.searchBox.text())>0:
-			icn=QtGui.QIcon(os.path.join(RSRC,"cancel.png"))
-			self.btnSearch.setIconSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
-		else:
-			icn=QtGui.QIcon(os.path.join(RSRC,"search.png"))
-			self.btnSearch.setIconSize(self.searchGeometry)
-		self.btnSearch.setIcon(icn)
-	#def _resetSearchBtnIcon
 
 	def getApps(self,category=""):
 		self._debug("Loading apps {}".format(category))
@@ -211,9 +143,37 @@ class paneGlobalView(QWidget):
 			jsonapp=apps.pop(0)
 			btn=QPushButtonRebostApp(jsonapp)
 			btn.clicked.connect(self._emitLoadDetails)
-			#btn.installEventFilter(self)
+			btn.installEventFilter(self)
 			btn.install.connect(self._emitInstallApp)
 			self.table.addWidget(btn)
 			#Force btn show
 			QApplication.processEvents()
 	#def _addAppsToGrid
+
+	def updateScreen(self,addEnable=None):
+		try:
+			if isinstance(addEnable,bool):
+				adding=addEnable
+			else:
+				adding=False
+			if self.loading==True:
+				adding=False
+			if self.refresh==True and adding==True:
+				print("REFRESH TRUE")
+				for i in self.referersShowed.keys():
+					self.referersShowed[i]=None
+				#self._debug("Update from {} to {} of {}".format(self.appsLoaded,self.appsToLoad,len(self.apps)))
+				#self._beginLoadData(self.appsLoaded,self.appsToLoad)
+			elif self.appsToLoad==-1: #Init 
+				print("WAS INIT")
+	#				self.progress.start()
+	#				self._rebost.setAction("status")
+	#				self._rebost.start()
+	#				QApplication.processEvents()
+	#				self.table.removeEventFilter(self)
+	#				self.appsToLoad=0
+		except Exception as e:
+			print("-----")
+			print(e)
+			print("-----")
+		print("UPDATE END")

@@ -52,7 +52,7 @@ class main(QWidget):
 	tagpressed=Signal(str)
 	def __init__(self,*args,**kwargs):
 		super().__init__()
-		self.dbg=False
+		self.dbg=True
 		self._debug("details load")
 		self.setObjectName("detailPanel")
 		self.setAttribute(Qt.WA_StyledBackground, True)
@@ -359,7 +359,7 @@ class main(QWidget):
 		self.header=self._defHeader()
 		self.box.addWidget(self.header,1,2,1,3)
 		self.screenShot=self._defScreenshot()
-		self.screenShot.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		#self.screenShot.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.box.addWidget(self.screenShot,2,2,1,3)
 		resources=self._defResources()
 		resources.setObjectName("resources")
