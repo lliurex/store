@@ -26,7 +26,10 @@ class llxup(QThread):
 class storeHelper(QThread):
 	test=Signal("PyObject")
 	lstEnded=Signal("PyObject")
+	gacEnded=Signal("PyObject")
 	srcEnded=Signal("PyObject")
+	shwEnded=Signal("PyObject")
+	urlEnded=Signal("PyObject")
 	lckEnded=Signal()
 	rstEnded=Signal()
 	staEnded=Signal(bool,bool)
@@ -57,6 +60,10 @@ class storeHelper(QThread):
 			self._list()
 		elif self.action=="search":
 			self._search()
+		elif self.action=="urlSearch":
+			self._searchByUrl()
+		elif self.action=="show":
+			self._show()
 		elif self.action=="updatePkgData":
 			self._updatePkgData()
 		elif self.action=="unlock":
@@ -69,6 +76,8 @@ class storeHelper(QThread):
 			self._getLockStatus()
 		elif self.action=="getCategories":
 			self._getFreedesktopCategories()
+		elif self.action=="getAppsPerCategory":
+			self._getAppsPerCategory()
 	#def run
 
 	def _test(self):
@@ -85,11 +94,14 @@ class storeHelper(QThread):
 	def _list(self):
 		apps=[]
 		apps=self.rc.getAppsInCategory(self.args[0])
-		print("zxadasdasdasdasdasdasdasdasdasdasdasd")
-		print(apps)
-		print("zxadasdasdasdasdasdasdasdasdasdasdasd")
 		self.lstEnded.emit(apps)
 	#def _list
+
+	def _getAppsPerCategory(self):
+		apps=[]
+		apps=self.rc.getAppsPerCategory()
+		self.gacEnded.emit(apps)
+	#def _getAppsPerCategory
 
 	def _search(self,*args):
 		#apps=json.loads(self.rc.execute("search",self.args[0]))
@@ -99,6 +111,26 @@ class storeHelper(QThread):
 			apps=self.rc.searchApp(self.args[0])
 		self.srcEnded.emit(apps)
 	#def _search(self):
+
+	def _searchByUrl(self,*args):
+		#apps=json.loads(self.rc.execute("search",self.args[0]))
+		app=[]
+		if self.args[0]!="":
+			url=self.args[0]
+			print("URL Search: {}".format(url))
+			if url!="":
+				app=self.rc.searchAppByUrl(url)
+			print("Res: {}".format(app))
+		self.urlEnded.emit(app)
+	#def _show(self):
+
+	def _show(self,*args):
+		#apps=json.loads(self.rc.execute("search",self.args[0]))
+		app={}
+		if self.args[0]!="":
+			apps=self.rc.showApp(self.args[0])
+		self.shwEnded.emit(app)
+	#def _show
 
 	def _updatePkgData(self):
 		if len(self.args)>0:
