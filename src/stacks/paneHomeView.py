@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import sys,signal
 import os,json
+import subprocess
 from functools import partial
 from PySide6.QtWidgets import QLabel, QWidget,QHBoxLayout,QVBoxLayout,QSizePolicy,QPushButton,QGridLayout
 from PySide6 import QtGui
@@ -21,9 +22,10 @@ i18n={"LBL_BLOG":"Blog entries",
 	"LBL_CATEGORIES":"Relevant categories"}
 
 class main(QWidget):
-	clicked=Signal("PyObject")
-	loaded=Signal("PyObject")
-	tagpressed=Signal(str)
+	clickedCategory=Signal("PyObject")
+	clickedBlog=Signal("PyObject")
+	clickedApp=Signal("PyObject")
+	clickedAppInstall=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=True
@@ -73,12 +75,20 @@ class main(QWidget):
 				continue
 			app={"name":"",
 				"summary":"<a href=\"{0}\">{1}</a><br>".format(blogRss[cont]["link"],blogRss[cont]["title"]),
+				"homepage":"{0}".format(blogRss[cont]["link"]),
 				"icon":img,
 				"pkgname":"",
 				"description":""}
 			btn.setApp(app)
 			cont+=1
 	#def _setBlogData
+
+	def _openBlog(self,*args):
+		blogTag=args[1]
+		blogUrl=blogTag.get("homepage")
+		cmd=["xdg-open",blogUrl]
+		subprocess.run(cmd)
+	#def _openBlog
 
 	def _getBlog(self):
 		wdg=QWidget()
@@ -93,6 +103,7 @@ class main(QWidget):
 			btn.iconUri.setMaximumHeight(IMAGE_PREVIEW/1.2)
 			btn.label.setMinimumWidth(IMAGE_PREVIEW)
 			btn.autoUpdate=True
+			btn.clicked.connect(self._openBlog)
 			layout.addWidget(btn)
 		rssparser=rss.rssParser()
 		rssparser.rssEnded.connect(self._processRss)
@@ -115,6 +126,11 @@ class main(QWidget):
 				break
 		self._debug("Setting data ---<")
 	#def _setAppseduData
+
+	def _loadApp(self,*args):
+		app=args[1]
+		self.clickedApp.emit(app)
+	#def _loadApp
 	
 	def _getAppsedu(self):
 		wdg=QWidget()
@@ -126,6 +142,7 @@ class main(QWidget):
 			btn.setMaximumWidth(IMAGE_PREVIEW/3)
 			btn.autoUpdate=True
 			btn.setVisible(False)
+			btn.clicked.connect(self._loadApp)
 			layout.addWidget(btn,Qt.AlignCenter)
 		rssparser=rss.rssParser()
 		rssparser.rssEnded.connect(self._processRss)
@@ -135,6 +152,11 @@ class main(QWidget):
 		wdg.setLayout(layout)
 		return(wdg)
 	#def _getAppsedu
+
+	def _loadCategory(self,*args):
+		app=args[1]
+		self.clickedCategory.emit(app["name"])
+	#def _loadCategory
 
 	def _setAppsData(self,*args):
 		categoryApps=json.loads(args[0])
@@ -155,6 +177,7 @@ class main(QWidget):
 				icn="multimedia"
 			app={"name":apps[idx],"icon":"applications-{}".format(icn),"pkgname":apps[idx],}
 			btn=QPushButtonRebostApp(app)
+			btn.clicked.connect(self._loadCategory)
 			btn.setFixedSize(QSize(ICON_SIZE*2,ICON_SIZE*1.5))
 			btn.showBtn=False
 			lay.addWidget(btn,Qt.AlignTop)
