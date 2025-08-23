@@ -167,7 +167,7 @@ class storeHelper(QThread):
 				userLock=False
 		except:
 			userLock=True
-		lock=self.rc.getLockStatus()
+		#lock=self.rc.getLockStatus()
 		self.staEnded.emit(lock,userLock)
 	#def _getLockStatus
 
