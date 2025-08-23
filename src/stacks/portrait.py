@@ -147,6 +147,8 @@ class portrait(QStackedWindowItem):
 		self.released=True
 		self.oldSearch=""
 		self.maxCol=5
+		self._rebost.setAction("getCategories")
+		self._rebost.start()
 		self.setStyleSheet(css.portrait())
 	#def _initGUI
 
@@ -521,6 +523,8 @@ class portrait(QStackedWindowItem):
 
 	def _getHomeViewPane(self):
 		pvp=paneHomeView.main(self._rebost)
+		pvp.clickedApp.connect(self._loadDetails)
+		pvp.clickedCategory.connect(self._loadCategory)
 		return(pvp)
 	#def _getHomeViewPane
 
@@ -630,6 +634,7 @@ class portrait(QStackedWindowItem):
 
 	def _goHome(self,*args,**kwargs):
 		self.lstCategories.setCurrentRow(0)
+		self._loadHome(True)
 		#self._loadCategory("")
 	#def _goHome
 
@@ -643,7 +648,6 @@ class portrait(QStackedWindowItem):
 		self.progress.start()
 		self.oldTime=time.time()
 	#def _beginLoad
-
 
 	def _loadHome(self,*args,**kwargs):
 		self._debug("Rebost running: {} - {} - {}".format(self._rebost.isFinished(),self._rebost.isRunning(),self._rebost.action))
@@ -659,6 +663,9 @@ class portrait(QStackedWindowItem):
 		#	self._rebost.start()
 		self.resetScreen()
 		self.lstCategories.setCurrentRow(-1)
+		self._homeView.setVisible(True)
+		self._globalView.setVisible(False)
+		self._detailView.setVisible(False)
 		self.updateScreen(True)
 	#def _loadHome
 
@@ -813,15 +820,18 @@ class portrait(QStackedWindowItem):
 	#def _loadCategory
 
 	def _endLoadCategory(self,*args):
+		self._debug("LOAD CATEGORY END")
+		self._globalView.setVisible(True)
+		self._homeView.setVisible(False)
+		self._endUpdate()
 		self.appsRaw=[]
 		appsRaw=json.loads(args[0])
 		for key,item in appsRaw.items():
 			self.appsRaw.extend(item)
 		self.apps=self.appsRaw.copy()
+		self._globalView.loadApps(self.apps)
 		self.updateScreen(True)
 		self.oldTime=time.time()
-		self._debug("LOAD CATEGORY END")
-		self._endUpdate()
 	#def _endLoadCategory
 
 	def eventFilter(self,*args):
@@ -890,6 +900,7 @@ class portrait(QStackedWindowItem):
 			return
 		self.loading=True
 		self._globalView.loadData(apps)
+		return
 		self.appsToLoad=len(self.apps)
 		if len(self.pendingApps)>0:
 			self._stopThreads()
