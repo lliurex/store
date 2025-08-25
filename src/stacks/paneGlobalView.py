@@ -164,14 +164,7 @@ class paneGlobalView(QWidget):
 					self.referersShowed[i]=None
 				#self._debug("Update from {} to {} of {}".format(self.appsLoaded,self.appsToLoad,len(self.apps)))
 				#self._beginLoadData(self.appsLoaded,self.appsToLoad)
-			elif self.appsToLoad==-1: #Init 
-				print("WAS INIT")
-	#				self.progress.start()
-	#				self._rebost.setAction("status")
-	#				self._rebost.start()
-	#				QApplication.processEvents()
-	#				self.table.removeEventFilter(self)
-	#				self.appsToLoad=0
+			#elif self.appsToLoad==-1: #Init 
 		except Exception as e:
 			print("-----")
 			print(e)
