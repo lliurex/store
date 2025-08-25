@@ -69,7 +69,6 @@ class paneGlobalView(QWidget):
 		self.tagpressed.emit(cat)
 	#def _tagNav(self,*args)
 
-
 	def populateCategories(self,subcats,cat=""):
 		self.topBar.clean()
 		if cat not in subcats and cat!="":
@@ -110,15 +109,16 @@ class paneGlobalView(QWidget):
 		return(False)
 	#def tableKeyPressEvent
 
-	def getApps(self,category=""):
+	def getApps(self,category="",search=""):
 		self._debug("Loading apps {}".format(category))
 		if category!="":
 			self._rebost.setAction("list","{}".format(category))
 		else:
-			self._rebost.setAction("search","")
+			self._rebost.setAction("search",search)
 		if self._rebost.isRunning():
 			self._rebost.requestInterruption()
 			#self._rebost.wait()
+		print("Launch rebost")
 		self._rebost.start()
 	#def getApps
 
