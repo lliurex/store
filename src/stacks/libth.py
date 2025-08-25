@@ -52,6 +52,7 @@ class storeHelper(QThread):
 			self.args=args
 		else:
 			self.args=[]
+	#def setAction
 	
 	def run(self):
 		if  self.action=="test":
@@ -117,18 +118,16 @@ class storeHelper(QThread):
 		app=[]
 		if self.args[0]!="":
 			url=self.args[0]
-			print("URL Search: {}".format(url))
 			if url!="":
 				app=self.rc.searchAppByUrl(url)
-			print("Res: {}".format(app))
 		self.urlEnded.emit(app)
-	#def _show(self):
+	#def _searchByUrl()
 
 	def _show(self,*args):
 		#apps=json.loads(self.rc.execute("search",self.args[0]))
 		app={}
 		if self.args[0]!="":
-			apps=self.rc.showApp(self.args[0])
+			app=self.rc.showApp(self.args[0])
 		self.shwEnded.emit(app)
 	#def _show
 
