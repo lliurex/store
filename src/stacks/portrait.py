@@ -78,6 +78,7 @@ class portrait(QStackedWindowItem):
 		self.pendingApps={}
 		self.apps=[]
 		self.rc=store.client()
+		self._referrerPane=None
 		self.getData=getData()
 		self._rebost=storeHelper(rc=self.rc)
 		self._llxup=llxup()
@@ -275,7 +276,7 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(self._globalView,1,1)
 		self._detailView=self._getDetailViewPane()
 		self._detailView.setObjectName("detailPanel")
-		self._detailView.clicked.connect(self._returnDetail)
+		self._detailView.clickedBack.connect(self._returnDetail)
 		self._detailView.loaded.connect(self._detailLoaded)
 		self.box.addWidget(self._detailView,1,1)
 		self._detailView.hide()
@@ -512,7 +513,7 @@ class portrait(QStackedWindowItem):
 
 	def _getGlobalViewPane(self):
 		gvp=paneGlobalView.paneGlobalView(self._rebost)
-		gvp.requestLoadDetails.connect(self._loadDetails)
+		gvp.requestLoadDetails.connect(self._loadGlobalDetails)
 		return(gvp)
 	#def _getGlobalViewPane
 
@@ -523,7 +524,7 @@ class portrait(QStackedWindowItem):
 
 	def _getHomeViewPane(self):
 		pvp=paneHomeView.main(self._rebost)
-		pvp.clickedApp.connect(self._loadDetails)
+		pvp.clickedApp.connect(self._loadHomeDetails)
 		pvp.clickedCategory.connect(self._loadCategory)
 		return(pvp)
 	#def _getHomeViewPane
@@ -1109,17 +1110,6 @@ class portrait(QStackedWindowItem):
 		self._rebost.start()
 	#def _loadLockedRebost
 
-	def _loadDetails(self,*args,**kwargs):
-		#self._stopThreads()
-		self.progress.start()
-		icn=""
-		cursor=QtGui.QCursor(Qt.WaitCursor)
-		self.setCursor(cursor)
-		if isinstance(args[0],QPushButtonRebostApp):
-			icn=args[0].iconUri.pixmap()
-		self._endLoadDetails(icn,*args)
-	#def _loadDetails(self,*args,**kwargs):
-
 	def _endLoadDetails(self,icn,*args):
 		#self.refererApp=args[0]
 		#self.referersHistory.update({self.refererApp.app["name"]:self.refererApp})
@@ -1132,6 +1122,44 @@ class portrait(QStackedWindowItem):
 		if self.zmdLauncher.isRunning() or self.epi.isRunning():
 			QApplication.processEvents()
 	#def _endLoadDetails
+
+	def _loadDetails(self,*args,**kwargs):
+		#self._stopThreads()
+		print(1)
+		self.progress.start()
+		icn=""
+		app=""
+		cursor=QtGui.QCursor(Qt.WaitCursor)
+		self.setCursor(cursor)
+		for arg in args:
+			if isinstance(arg,tuple):
+				for targ in arg:
+					if isinstance(targ,QPushButtonRebostApp):
+						icn=targ.iconUri.pixmap()
+					if isinstance(targ,dict):
+						app=targ
+				break
+			elif isinstance(arg,QPushButtonRebostApp):
+				icn=arg.iconUri.pixmap()
+			elif isinstance(arg,dict):
+				app=arg
+		print(2)
+		print(app)
+		if app!="":
+			self._endLoadDetails(icn,app)
+		else:
+			self.progress.stop()
+	#def _loadDetails(self,*args,**kwargs):
+
+	def _loadGlobalDetails(self,*args,**kwargs):
+		self._referrerPane=self._globalView
+		self._loadDetails(args,kwargs)
+	#def _loadGlobalDetails(self,*args,**kwargs):
+
+	def _loadHomeDetails(self,*args,**kwargs):
+		self._referrerPane=self._homeView
+		self._loadDetails(args,kwargs)
+	#def _loadGlobalDetails(self,*args,**kwargs):
 
 	def setParms(self,*args):
 		appsedu=args[0]
@@ -1193,7 +1221,7 @@ class portrait(QStackedWindowItem):
 			self.setCursor(self.oldCursor)
 		else:
 			self._detailView.hide()
-			self._globalView.show()
+			self._referrerPane.show()
 			self.progress.stop()
 		self.lstCategories.setCursor(self.oldCursor)
 		self.lstCategories.setEnabled(True)

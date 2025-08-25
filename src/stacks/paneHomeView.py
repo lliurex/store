@@ -7,7 +7,6 @@ from PySide6.QtWidgets import QLabel, QWidget,QHBoxLayout,QVBoxLayout,QSizePolic
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal
 from QtExtraWidgets import QScreenShotContainer
-import concurrent.futures as Futures
 import gettext
 import css
 import rss
@@ -24,12 +23,11 @@ i18n={"LBL_BLOG":"Blog entries",
 class main(QWidget):
 	clickedCategory=Signal("PyObject")
 	clickedBlog=Signal("PyObject")
-	clickedApp=Signal("PyObject")
+	clickedApp=Signal("PyObject","PyObject")
 	clickedAppInstall=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=True
-		self.thExecutor=Futures.ThreadPoolExecutor(max_workers=4)
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self._debug("home load")
 		self.setStyleSheet(css.tablePanel())
@@ -129,7 +127,7 @@ class main(QWidget):
 
 	def _loadApp(self,*args):
 		app=args[1]
-		self.clickedApp.emit(app)
+		self.clickedApp.emit(self,app)
 	#def _loadApp
 	
 	def _getAppsedu(self):
