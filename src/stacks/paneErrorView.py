@@ -51,19 +51,22 @@ class paneErrorView(QWidget):
 
 	def __initScreen__(self):
 		self.setAttribute(Qt.WA_StyledBackground, True)
-		box=QVBoxLayout()
+		box=QGridLayout()
 		self.setLayout(box)
 		icn=QtGui.QIcon.fromTheme("network-wireless")
 		pxm=QtGui.QPixmap()
 		pxm=icn.pixmap(QSize(256,256))
 		lblIcn=QLabel()
 		lblIcn.setPixmap(pxm)
-		box.addWidget(lblIcn,Qt.AlignBottom,Qt.AlignCenter)
+		box.addWidget(lblIcn,0,0,1,1,Qt.AlignCenter|Qt.AlignBottom)
 		lblTxt=QLabel(i18n["CHK_NETWORK"])
-		box.addWidget(lblTxt,Qt.AlignCenter,Qt.AlignCenter)
+		box.addWidget(lblTxt,1,0,1,1,Qt.AlignCenter|Qt.AlignCenter)
 		btnCnf=QPushButton(i18n["OPN_NETWORK"])
 		btnCnf.clicked.connect(self._launchNetworkSettings)
-		box.addWidget(btnCnf,Qt.AlignTop,Qt.AlignCenter)
+		box.addWidget(btnCnf,2,0,1,1,Qt.AlignCenter|Qt.AlignTop)
+		box.setRowStretch(0,2)
+		box.setRowStretch(1,0)
+		box.setRowStretch(2,1)
 	#def __initScreen__
 
 	def _return(self):
