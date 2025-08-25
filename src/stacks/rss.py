@@ -13,6 +13,7 @@ class rssParser(QThread):
 		self.rss={"blog":"https://portal.edu.gva.es/blogs/s1/lliurex/feed/",
 				"appsedu":"https://portal.edu.gva.es/appsedu/feed/"}
 		self.feed="blog"
+		self._stop=False
 	#def __init__
 
 	def _fetchArticle(self,url):
@@ -41,6 +42,9 @@ class rssParser(QThread):
 						link=li.find("a")
 						lastApps.append((li.text.split("(")[0].strip(),link.get("href","")))
 					break
+				if self._stop==True:
+					lastApps=[]
+					break
 		return(lastApps)
 	#def _getLastApps
 
@@ -55,6 +59,8 @@ class rssParser(QThread):
 					articleImg=info.find("img")
 					parsedFeeds[idx].update({"img":articleImg["src"]})
 					break
+			if self._stop==True:
+				break
 		return parsedFeeds
 	#def _getImgsForFeeds
 
@@ -78,9 +84,15 @@ class rssParser(QThread):
 						for app,link in lastApps:
 							idx=len(parsedFeeds)
 							parsedFeeds.update({idx:{"type":feed,"title":app,"link":link}})
+					if self._stop==True:
+						break
 		if len(parsedFeeds)>0:
-			parseFeeds=self._getImgsForFeeds(parsedFeeds)
-		self.rssEnded.emit(parseFeeds)
+			parsedFeeds=self._getImgsForFeeds(parsedFeeds)
+		self.rssEnded.emit(parsedFeeds)
+		self._stop=False
 	#def run
+
+	def stop(self):
+		self._stop=True
 #class rssParse
 
