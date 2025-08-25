@@ -33,7 +33,6 @@ mw.addStacksFromFolder(os.path.join(abspath,"stacks"))
 mw.setObjectName("MAIN")
 mw.layout().setContentsMargins(0,0,0,0)
 mw.setStyleSheet("""QWidget#MAIN{background:#002c4f; color:#FFFFFF;margin:0px;padding:0px;border:0px;}""")
-mw.show()
 #Get screen size available for us
 (w,h) = app.primaryScreen().size().toTuple()
 mw.setMinimumWidth(int(w*0.9))
@@ -42,4 +41,5 @@ if len(sys.argv)>1:
 	if ("://") in sys.argv[1] or os.path.isfile(sys.argv[1]):
 		wdg=mw.getCurrentStack()
 		wdg.setParms(sys.argv[1])
+mw.show()
 app.exec()
