@@ -47,7 +47,7 @@ i18n={
 
 
 class main(QWidget):
-	clicked=Signal("PyObject")
+	clickedBack=Signal("PyObject")
 	loaded=Signal("PyObject")
 	tagpressed=Signal(str)
 	def __init__(self,*args,**kwargs):
@@ -185,9 +185,6 @@ class main(QWidget):
 		self.setCursor(self.oldcursor)
 		if "ERR" in app.keys():
 			self._onError()
-		print("END END END END END END END")
-		print(self.app)
-		print("END END END END END END END")
 		self.updateScreen()
 	#def _endSetParms
 
@@ -339,7 +336,7 @@ class main(QWidget):
 		pxm=self.lblIcon.pixmap()
 		if pxm.isNull()==False:
 			self.app["icon"]=self.lblIcon.pixmapPath
-		self.clicked.emit(self.app)
+		self.clickedBack.emit(self.app)
 	#def _clickedBack
 
 	def __initScreen__(self):
