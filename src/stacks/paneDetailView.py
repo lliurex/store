@@ -61,7 +61,6 @@ class main(QWidget):
 		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
 		self.rc=store.client()
 		self.oldcursor=self.cursor()
-		self.stream=""
 		self.launcher=""
 		self.config={}
 		self.app={}
@@ -119,7 +118,6 @@ class main(QWidget):
 				app=self.rc.showApp(name)
 				if len(app)>2:
 					self.app=json.loads(app)[0]
-					self.app=json.loads(self.app)
 				else: #look for an aliases mapped from virtual app
 					if os.path.exists(self.mapFile):
 						fcontent={}
@@ -137,25 +135,20 @@ class main(QWidget):
 
 	def setParms(self,*args):
 		#self.hideMsg()
-		self.stream=""
+		self.parent()._stopThreads()
 		pxm=""
 		if len(args)>0:
 			name=args[-1]
+			self._resetScreen(name,"")
 			if isinstance(args[0],dict):
 				name=args[0].get("name","")
 				pxm=args[0].get("icon","")
 				appid=args[0].get("id",name)
-			elif "://" in args[-1]:
-				self.stream=args[-1]
-			icon=""
-			if self.stream=="":
-				if isinstance(pxm,QtGui.QPixmap):
-					icon=pxm
-				else:
-					icon=self.app.get("icon","")
-			if name!="":
-				self._resetScreen(name,icon)
 				self.thParmShow.setArgs(args[0])
+				self.thParmShow.start()
+			elif isinstance(name,str):
+				self._processStreams(name)
+				self.thParmShow.setArgs(self.app)
 				self.thParmShow.start()
 		self.lblHomepage.setVisible(True)
 		#self._showSplash(icon)
@@ -172,16 +165,12 @@ class main(QWidget):
 				try:
 					self.app=json.loads(app)
 				except Exception as e:
-					print(e)
+					pass
 		swErr=False
-		if self.stream!="":
-			self._processStreams(self.stream)
-			self.stream=""
-		else:
-			if len(self.app)>0:
-				for bundle,name in (self.app.get('bundle',{}).items()):
-					if bundle=='package':
-						continue
+		if len(self.app)>0:
+			for bundle,name in (self.app.get('bundle',{}).items()):
+				if bundle=='package':
+					continue
 		self.setCursor(self.oldcursor)
 		if "ERR" in app.keys():
 			self._onError()
@@ -257,7 +246,6 @@ class main(QWidget):
 				try:
 					self.showMsg(summary=i18n.get("ERRLAUNCH",""),msg="{}".format(self.app["name"]))
 				except Exception as e:
-					print("Warning: {}".format(e))
 					pass
 	#def _getRunappResults
 
@@ -522,6 +510,7 @@ class main(QWidget):
 			try:
 				self.screenShot.addImage(icn)
 			except Exception as e:
+				pprint("Error adding image")
 				print(e)
 	#def _loadScreenshots
 
@@ -530,8 +519,6 @@ class main(QWidget):
 		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
 
 	def updateScreen(self):
-		if self.stream!="":
-			return
 		self._initScreen()
 		if self.app.get("bundle",None)==None:
 			self._setUnknownAppInfo()
@@ -857,12 +844,12 @@ class main(QWidget):
 				try:
 					self.app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
 				except Exception as e:
-					print(e)
+					pass
 			if isinstance(self.app,str):
 				try:
 					self.app=json.loads(self.app)
 				except Exception as e:
-					print(e)
+					pass
 					self.app={}
 			self.btnInstall.setEnabled(True)
 			self.btnInstall.setText(i18n.get("INSTALL"))
