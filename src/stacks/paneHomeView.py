@@ -40,6 +40,7 @@ class main(QWidget):
 		layout=QGridLayout()
 		layout.setVerticalSpacing(0)
 		self.setLayout(layout)
+		self._stop=False
 		self.__initScreen__()
 	#def __init__
 
@@ -51,15 +52,17 @@ class main(QWidget):
 	def _processRss(self,*args,**kwargs):
 		result=args[0]
 		if len(result)>0:
-			print(result[0]["type"])
 			if result[0]["type"]=="appsedu":
 				for idx in range(0,min(len(result),10)):
+					if self._stop==True:
+						break
 					url=result[idx]["link"]
 					self._rebost.setAction("urlSearch",url)
 					self._rebost.start()
 					self._rebost.wait()
 			else:
-				self._setBlogData(result)
+				if self._stop==False:
+					self._setBlogData(result)
 	#def _processRss(self,*args,**kwargs):
 
 	def _setBlogData(self,*args):
@@ -188,6 +191,7 @@ class main(QWidget):
 		self._debug("Get apps per category")
 		self._rebost.setAction("getAppsPerCategory")
 		self._rebost.start()
+		self._rebost.wait()
 		return(wdg)
 	#def _getAppsByCategory(self):
 
@@ -206,4 +210,9 @@ class main(QWidget):
 		self.layout().addWidget(self.appsByCat,5,0)
 	#def __initScreen__
 
-
+	def _stopThreads(self):
+		self._stop=True
+		for th in self.th:
+			th.stop()
+		self._rebost.blockSignals(False)
+	#def _stopThreads
