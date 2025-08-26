@@ -88,7 +88,12 @@ class paneGlobalView(QWidget):
 		if cat not in subcats and cat!="":
 			subcats.insert(0,cat)
 		for subcat in subcats:
-			wdg=QLabel("<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'>#{0}</a>".format(_(subcat)))
+			wdg=QLabel()
+			if subcat!=cat:
+				text="<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'>#{0}</a>".format(_(subcat))
+			else:
+				text="<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'><strong>#{0}</strong></a>".format(_(subcat))
+			wdg.setText(text)
 			wdg.leaveEvent=self._catUndecorate
 			wdg.enterEvent=self._catDecorate
 			wdg.setAttribute(Qt.WA_StyledBackground, True)
