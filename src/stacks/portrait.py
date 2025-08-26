@@ -507,7 +507,7 @@ class portrait(QStackedWindowItem):
 	#def _getGlobalViewPane
 
 	def _getDetailViewPane(self):
-		dvp=paneDetailView.main()
+		dvp=paneDetailView.main(self._rebost)
 		return(dvp)
 	#def _getDetailViewPane
 
@@ -999,6 +999,8 @@ class portrait(QStackedWindowItem):
 			if self._referrerPane==self._detailView:
 				self._referrerPane=None
 				self._homeView.setVisible(True)
+				if len(self._homeView.layout().children())==0:
+					self._homeView.updateScreen()
 			else:
 				self._referrerPane.setVisible(True)
 		self.progress.stop()
@@ -1027,6 +1029,8 @@ class portrait(QStackedWindowItem):
 		elif self._detailView.isVisible():
 			self._stopThreads()
 		elif self._homeView.isVisible():
+			if len(self._homeView.layout().children())==0:
+				self._homeView.updateScreen()
 			self._endUpdate()
 	#def _updateScreen
 	

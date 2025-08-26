@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import sys,signal
-import os,json
+import os,json,time
 import subprocess
 from functools import partial
-from PySide6.QtWidgets import QLabel, QWidget,QHBoxLayout,QVBoxLayout,QSizePolicy,QPushButton,QGridLayout
+from PySide6.QtWidgets import QLabel, QWidget,QHBoxLayout,QVBoxLayout,QSizePolicy,QPushButton,QGridLayout,QApplication
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal
 from QtExtraWidgets import QScreenShotContainer
@@ -35,12 +35,13 @@ class main(QWidget):
 		self.th=[]
 		self._rebost=args[0]
 		self._rebost.urlEnded.connect(self._setAppseduData)
-		self._rebost.gacEnded.connect(self._setAppsData)
+		self._rebost.gacEnded.connect(self._setAppsByCat)
 		self.btns={}
 		layout=QGridLayout()
 		layout.setVerticalSpacing(0)
 		self.setLayout(layout)
 		self._stop=False
+		self.oldCursor=self.cursor()
 		self.__initScreen__()
 	#def __init__
 
@@ -81,7 +82,14 @@ class main(QWidget):
 				"pkgname":"",
 				"description":""}
 			btn.setApp(app)
+			btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 			cont+=1
+		self.blog.setCursor(self.oldCursor)
+		#Blog chargees without rebost needs so it's a good point to check if rebost data has been loaded
+		if self.appsByCat.cursor()==Qt.WaitCursor and self_rebost.isRunning()==False:
+			self._getAppsByCat()
+		if self.appsEdu.cursor()==Qt.WaitCursor and self_rebost.isRunning()==False:
+			self._getAppsedu()
 	#def _setBlogData
 
 	def _openBlog(self,*args):
@@ -92,6 +100,14 @@ class main(QWidget):
 	#def _openBlog
 
 	def _getBlog(self):
+		rssparser=rss.rssParser()
+		rssparser.rssEnded.connect(self._processRss)
+		rssparser.feed="blog"
+		rssparser.start()
+		self.th.append(rssparser)
+	#def _getBlog(self):
+
+	def _defBlog(self):
 		wdg=QWidget()
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
 		layout=QHBoxLayout()
@@ -99,6 +115,7 @@ class main(QWidget):
 		for i in range(0,5):
 			btn=QPushButtonRebostApp("{}")
 			btn.showBtn=False
+			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			btn.setObjectName("mp")
 			btn.iconSize=IMAGE_PREVIEW/1.2
 			btn.iconUri.setMaximumHeight(IMAGE_PREVIEW/1.2)
@@ -106,14 +123,9 @@ class main(QWidget):
 			btn.autoUpdate=True
 			btn.clicked.connect(self._openBlog)
 			layout.addWidget(btn)
-		rssparser=rss.rssParser()
-		rssparser.rssEnded.connect(self._processRss)
-		rssparser.feed="blog"
-		rssparser.start()
-		self.th.append(rssparser)
 		wdg.setLayout(layout)
 		return(wdg)
-	#def _getBlog(self):
+	#def _defBlog
 
 	def _setAppseduData(self,*args):
 		self._debug("Setting data --->")
@@ -123,9 +135,15 @@ class main(QWidget):
 				continue
 			if isinstance(app,list) and len(app)>0 and btn.app.get("summary","")=="":
 				btn.setApp(app[0])
+				btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 				btn.setVisible(True)
+				QApplication.processEvents()
 				break
 		self._debug("Setting data ---<")
+		self.appsEdu.setCursor(self.oldCursor)
+		#Ensure that there're categories after all
+		if self.appsByCat.cursor()==Qt.WaitCursor and self_rebost.isRunning()==False:
+			self._getAppsByCat()
 	#def _setAppseduData
 
 	def _loadApp(self,*args):
@@ -134,32 +152,36 @@ class main(QWidget):
 	#def _loadApp
 	
 	def _getAppsedu(self):
-		wdg=QWidget()
-		layout=QHBoxLayout()
-		layout.setSpacing(32)
-		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		for i in range(0,10):
-			btn=QPushButtonRebostApp("{}")
-			btn.setMaximumWidth(IMAGE_PREVIEW/3)
-			btn.autoUpdate=True
-			btn.setVisible(False)
-			btn.clicked.connect(self._loadApp)
-			layout.addWidget(btn,Qt.AlignCenter)
 		rssparser=rss.rssParser()
 		rssparser.rssEnded.connect(self._processRss)
 		rssparser.feed="appsedu"
 		rssparser.start()
 		self.th.append(rssparser)
-		wdg.setLayout(layout)
-		return(wdg)
 	#def _getAppsedu
+
+	def _defAppsedu(self):
+		wdg=QWidget()
+		layout=QHBoxLayout()
+		wdg.setLayout(layout)
+		layout.setSpacing(32)
+		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		for i in range(0,10):
+			btn=QPushButtonRebostApp("{}")
+			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
+			btn.setMaximumWidth(IMAGE_PREVIEW/3)
+			btn.autoUpdate=True
+			btn.setVisible(False)
+			btn.clicked.connect(self._loadApp)
+			layout.addWidget(btn,Qt.AlignCenter)
+		return(wdg)
+	#def _defAppsedu
 
 	def _loadCategory(self,*args):
 		app=args[1]
 		self.clickedCategory.emit(app["name"])
 	#def _loadCategory
 
-	def _setAppsData(self,*args):
+	def _setAppsByCat(self,*args):
 		categoryApps=json.loads(args[0])
 		apps={}
 		for cat in categoryApps.keys():
@@ -182,33 +204,45 @@ class main(QWidget):
 			btn.setFixedSize(QSize(ICON_SIZE*2,ICON_SIZE*1.5))
 			btn.showBtn=False
 			lay.addWidget(btn,Qt.AlignTop)
-	#def _setAppsData
+		self.appsByCat.setCursor(QtGui.QCursor(self.oldCursor))
+	#def _setAppsByCat
 
-	def _getAppsByCategory(self):
-		wdg=QWidget()
-		lay=QHBoxLayout()
-		wdg.setLayout(lay)
+	def _getAppsByCat(self):
 		self._debug("Get apps per category")
 		self._rebost.setAction("getAppsPerCategory")
 		self._rebost.start()
-		self._rebost.wait()
+	#def _getAppsByCat
+
+	def _defAppsByCat(self):
+		wdg=QWidget()
+		lay=QHBoxLayout()
+		wdg.setLayout(lay)
 		return(wdg)
-	#def _getAppsByCategory(self):
+	#def _defAppsByCategory:
 
 	def __initScreen__(self):
 		lblBlog=QLabel("{}<hr>".format(i18n["LBL_BLOG"]))
 		self.layout().addWidget(lblBlog,0,0)
-		self.blog=self._getBlog()
+		self.blog=self._defBlog()
 		self.layout().addWidget(self.blog,1,0)
 		lblAppsedu=QLabel("{}<hr>".format(i18n["LBL_APPSEDU"]))
 		self.layout().addWidget(lblAppsedu,2,0)
-		self.appsEdu=self._getAppsedu()
+		self.appsEdu=self._defAppsedu()
 		self.layout().addWidget(self.appsEdu,3,0)
 		lblCats=QLabel("{}<hr>".format(i18n["LBL_CATEGORIES"]))
 		self.layout().addWidget(lblCats,4,0)
-		self.appsByCat=self._getAppsByCategory()
+		self.appsByCat=self._defAppsByCat()
 		self.layout().addWidget(self.appsByCat,5,0)
 	#def __initScreen__
+
+	def updateScreen(self):
+		self.blog.setCursor(QtGui.QCursor(Qt.WaitCursor))
+		self.appsEdu.setCursor(QtGui.QCursor(Qt.WaitCursor))
+		self.appsByCat.setCursor(QtGui.QCursor(Qt.WaitCursor))
+		self._getAppsByCat()
+		self._getBlog()
+		self._getAppsedu()
+	#def updateScreen
 
 	def _stopThreads(self):
 		self._stop=True
