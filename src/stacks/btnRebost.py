@@ -160,7 +160,6 @@ class QPushButtonRebostApp(QPushButton):
 		if len(states)>0:
 			for bundle,state in states.items():
 				if state==0:
-					installed=True
 					self.btn.setText(i18n.get("REMOVE"))
 					self.instBundle=bundle
 					break
