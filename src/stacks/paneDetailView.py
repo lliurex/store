@@ -54,6 +54,7 @@ class main(QWidget):
 		super().__init__()
 		self.dbg=True
 		self._debug("details load")
+		self._rebost=args[0]
 		self.setObjectName("detailPanel")
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setStyleSheet(css.detailPanel())
@@ -204,9 +205,12 @@ class main(QWidget):
 	#def _runApp
 
 	def _getRunappResults(self,app,proc):
+		if proc==None:
+			return
 		if "attempted" not in app.keys():
 			app["attempted"]=[]
 		if proc.returncode!=0 or len(proc.stderr.strip())>0:
+			return
 			pkgname=""
 			bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
 			if bundle not in ["flatpak","snap"]:
@@ -247,6 +251,9 @@ class main(QWidget):
 					self.showMsg(summary=i18n.get("ERRLAUNCH",""),msg="{}".format(self.app["name"]))
 				except Exception as e:
 					pass
+		else:
+			self.setCursor(self.oldCursor)
+			
 	#def _getRunappResults
 
 	def _genericEpiInstall(self,*args):
@@ -258,12 +265,17 @@ class main(QWidget):
 			bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
 		else:
 			bundle=self.instBundle
-		self.rc.enableGui(True)
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
-		pkg=self.app.get('name').replace(' ','')
+		#pkg=self.app.get('name').replace(' ','')
+		pkg=self.app.get('bundle',{}).get(bundle,'')
 		user=os.environ.get('USER')
-		res=self.rc.testInstall("{}".format(pkg),"{}".format(bundle),user=user)
+		installer=str(self.rc.getExternalInstaller())
+		if installer!="":
+			self.runapp.setArgs(self.app,[installer,pkg,bundle])
+			self.runapp.start()
+			self.app.update({"installing":bundle})
+		return
 		try:
 			res=json.loads(res)[0]
 		except:
@@ -622,8 +634,8 @@ class main(QWidget):
 			icat=_(cat)
 			if icat not in tags:
 				#Disabled as requisite  (250214-11:52)
-				#tags+="<a href=\"#{0}\"><strong>{0}</strong></a> / ".format(icat)
-				tags+="{0} / ".format(icat)
+				tags+="<a href=\"#{0}\"><strong>{0}</strong></a> / ".format(icat)
+			#	tags+="{0} / ".format(icat)
 		return("{}".format(tags.strip(" / ")))
 	#def _generateCategoryTags
 
@@ -676,20 +688,17 @@ class main(QWidget):
 		self.btnInstall.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
 		self.lstInfo.blockSignals(True)
 		self.lstInfo.setText(i18n["INSTALL"].upper())
-		states=self.app.get("state",{}).copy()
-		installed=False
+		states=self.app.get("status",{})
 		zmd=states.get("zomando","0")
+		self.btnRemove.setVisible(False)
+		self.btnRemove.setEnabled(False)
 		if len(states)>0:
 			for bundle,state in states.items():
-				if bundle=="package" and zmd=="1":
-					if self.app["bundle"]["package"].startswith("zero"):
-						continue
-				if state=="0":# and zmdInstalled!="0":
-					installed=True
+				if state==0:
+					self.btnRemove.setVisible(True)
+					self.btnRemove.setEnabled(True)
 					self.instBundle=bundle
 					break
-		self.btnRemove.setVisible(installed)
-		self.btnRemove.setEnabled(installed)
 		if len(self.app.get("bundle",[]))==1 and "eduapp" in self.app.get("bundle",{}).keys():
 			self.lstInfo.setVisible(False)
 			self.btnRemove.setVisible(False)
