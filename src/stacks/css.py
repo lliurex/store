@@ -126,11 +126,29 @@ def tablePanel():
 					margin-left:%spx;
 					margin-right:%spx;
 					margin-bottom:%spx;
-				}"""%(int(MARGIN*2),MARGIN,int(MARGIN)/4)
+				}
+				"""%(int(MARGIN*2),MARGIN,int(MARGIN)/4)
 	css=css+categoriesBar
 
-	categoryTag="""#categoryTag{text-decoration:none;background:%s;color:%s;padding:1px;padding-bottom:3px;border-radius:10;}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT)
+	categoryTag="""#categoryTag{
+					text-decoration:none;
+					background:%s;
+					color:%s;
+					padding:1px;
+					padding-bottom:3px;
+					border-radius:10;
+					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT)
 	css=css+categoryTag
+
+	categoryTagActive="""#categoryTagActive{
+					text-decoration:none;
+					background:%s;
+					color:%s;
+					padding:1px;
+					padding-bottom:3px;
+					border-radius:10;
+					}"""%(COLOR_BACKGROUND_DARKEST,COLOR_FONT_LIGHT)
+	css=css+categoryTagActive
 
 	return(css)
 #def tablePanel
@@ -190,7 +208,10 @@ def portrait():
 				#lstCategories::item {
 					background-color: transparent;
 					color:%s;
-				}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,RADIUS,int(MARGIN)*4,int(MARGIN)*4,MARGIN,MARGIN,int(MARGIN)*4,COLOR_FONT_LIGHT)
+				}
+				#lstCategories::item:hover {
+					background-color: %s;
+				}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,RADIUS,int(MARGIN)*4,int(MARGIN)*4,MARGIN,MARGIN,int(MARGIN)*4,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARKEST)
 	css=css+lstCategories
 	certified="""#certified{
 					color:%s;
