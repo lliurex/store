@@ -59,8 +59,6 @@ class paneGlobalView(QWidget):
 
 	def _defCategoriesBar(self):
 		wdg=QFlowTouchWidget(self)
-		lbl=QLabel("#{}".format(_("ALL")))
-		wdg.addWidget(lbl)
 		return(wdg)
 	#def _defCategoriesBar
 
@@ -69,16 +67,33 @@ class paneGlobalView(QWidget):
 		self.tagpressed.emit(cat)
 	#def _tagNav(self,*args)
 
+	def _catDecorate(self,*args):
+		text=self.topBar.currentItem().text()
+		w=self.topBar.currentItem()
+		text=text.replace("none'>#","none'><strong>#").replace("</a>","</strong></a>")
+		self.topBar.currentItem().setText(text)
+	#def _catDecorate
+
+	def _catUndecorate(self,*args):
+		for idx in range(0,self.topBar.count()):
+			w=self.topBar.itemAt(idx).widget()
+			t=w.text()
+			if "<strong>" in t:
+				t=t.replace("<strong>","").replace("</strong>","")
+				w.setText(t)
+	#def _catUndecorate
+
 	def populateCategories(self,subcats,cat=""):
 		self.topBar.clean()
 		if cat not in subcats and cat!="":
 			subcats.insert(0,cat)
 		for subcat in subcats:
 			wdg=QLabel("<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'>#{0}</a>".format(_(subcat)))
+			wdg.leaveEvent=self._catUndecorate
+			wdg.enterEvent=self._catDecorate
 			wdg.setAttribute(Qt.WA_StyledBackground, True)
 			wdg.setOpenExternalLinks(False)
 			wdg.setObjectName("categoryTag")
-			wdg.setStyleSheet("""text-decoration:none;color:#FFFFFF""")
 			wdg.linkActivated.connect(self._tagNav)
 			self.topBar.addWidget(wdg)
 		if len(subcats)>1:

@@ -350,7 +350,6 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		vbox.addWidget(self.lstCategories,Qt.AlignTop|Qt.AlignCenter)
 		self.lstCategories.setMinimumHeight(int(ICON_SIZE/3))
-		self.lstCategories.setCursor(Qt.PointingHandCursor)
 		self.lstCategories.currentItemChanged.connect(self._decoreCmbCategories)
 		self.lstCategories.itemActivated.connect(self._loadCategory)
 		self.lstCategories.itemClicked.connect(self._loadCategory)
@@ -449,6 +448,7 @@ class portrait(QStackedWindowItem):
 		wdg.setObjectName("upgrades")
 		wdg.clicked.connect(self._launchLlxUp)
 		wdg.setVisible(False)
+		wdg.setCursor(Qt.PointingHandCursor)
 		return(wdg)
 	#def _defInfo
 
