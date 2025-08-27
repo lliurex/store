@@ -149,7 +149,6 @@ def tablePanel():
 					border-radius:10;
 					}"""%(COLOR_BACKGROUND_DARKEST,COLOR_FONT_LIGHT)
 	css=css+categoryTagActive
-
 	return(css)
 #def tablePanel
 
@@ -250,6 +249,16 @@ def portrait():
 					padding:%spx;
 				}"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,MARGIN)
 	css=css+upgrades
+	working="""#working{
+					color:%s;
+					font-size:20px;
+					background:%s;
+					border:0px solid;
+					border-top:0px;
+					border-color:%s;
+					border-bottom-left-radius:%spx;
+				}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS)
+	css=css+working
 	return(css)
 #def portrait
 
@@ -270,6 +279,5 @@ def prgBar():
 					font-size:24px;
 					color:%s;
 			}"""%(COLOR_FONT_LIGHT)
-	css=css+lblInfo
 	return(css)
 #def prgBar
