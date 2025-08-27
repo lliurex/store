@@ -155,11 +155,11 @@ class QPushButtonRebostApp(QPushButton):
 	#def _defProgress
 
 	def _renderGui(self,*args):
-		states=self.app.get("state",{})
+		states=self.app.get("status",{})
 		zmd=states.get("zomando","0")
 		if len(states)>0:
 			for bundle,state in states.items():
-				if state==0:
+				if int(state)==0:
 					self.btn.setText(i18n.get("REMOVE"))
 					self.instBundle=bundle
 					break
@@ -180,7 +180,7 @@ class QPushButtonRebostApp(QPushButton):
 			#Remove, get installed bundle
 			priority=["zomando","flatpak","snap","package","appimage","eduapp"]
 			for bundle in priority:
-				if self.app["state"].get(bundle,"1")=="0" and self.app["bundle"].get("bundle","")!="":
+				if self.app["status"].get(bundle,"1")=="0" and self.app["bundle"].get("bundle","")!="":
 					self.app["bundle"]={bundle:self.app["bundle"][bundle]}
 					break
 		self.install.emit(self,self.app)
@@ -227,27 +227,29 @@ class QPushButtonRebostApp(QPushButton):
 			text="<p>{0}</p>".format(self.app.get('summary','').strip())
 		self.setToolTip(text)
 		self.label.setText(text)
-		states=self.app.get("state",{}).copy()
 		if "Forbidden" in self.app.get("categories",[]):
 			self.btn.setText(i18n.get("UNAUTHORIZED"))
 		elif ("eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))==1) or len(self.app.get("bundle",[]))==0:
 			self.btn.setText(i18n.get("UNAVAILABLE"))
 		else:
 			self.btn.setText(i18n.get("INSTALL"))
-			states=self.app.get("status",{}).copy()
 			bundles=self.app.get("bundle",{}).copy()
+			states=self.app.get("status",{}).copy()
 			zmd=states.get("zomando","0")
 			if len(states)>0:
 				for bundle,state in states.items():
 					if bundle=="package" and zmd=="1":
 						if self.app["bundle"]["package"].startswith("zero"):
 							continue
-					if state==0:# and zmdInstalled!="0":
+					if int(state)==0:# and zmdInstalled!="0":
 						installed=True
 						self.btn.setText(i18n.get("REMOVE"))
 						self.instBundle=bundle
 						break
 		self._applyDecoration()
+		if int(self.app.get("state","0"))>=7:
+			self.btn.setCursor(QCursor(Qt.WaitCursor))
+			self.btn.setEnabled(False)
 		self.iconUri.setVisible(True)
 		self.flyIcon=""
 		if self.app.get("name","").startswith("zero-"):
@@ -321,7 +323,7 @@ class QPushButtonRebostApp(QPushButton):
 
 	def _getStats(self,app):
 		stats={}
-		for bundle,state in app.get("state",{}).items():
+		for bundle,state in app.get("status",{}).items():
 			if bundle=="zomando" and state==0:
 				stats["zomando"]=True
 			elif state==0:
@@ -329,8 +331,8 @@ class QPushButtonRebostApp(QPushButton):
 			
 		if "Forbidden" in app.get("categories",[]):
 			stats["forbidden"]=True
-		if app["name"]==app["pkgname"] and "zomando" in app.get("state",{}):
-			if len(app.get("state",{}))==1:
+		if app["name"]==app["pkgname"] and "zomando" in app.get("status",{}):
+			if len(app.get("status",{}))==1:
 				stats["installed"]=False
 		return(stats)
 	#def _getStats
@@ -422,12 +424,13 @@ class QPushButtonRebostApp(QPushButton):
 				margin:12px;
 			}
 			"""%(style["bkgColor"],style["brdColor"],brdWidth,focusedBrdWidth,style["frgColor"],style["bkgColor"],style["frgColor"],style["bkgBtnColor"],style["brdBtnColor"]))
-		self.btn.setEnabled(True)
-		if (style.get("forbidden",False)==True) or (self.btn.text()==i18n.get("UNAVAILABLE","")):
+		if (style.get("forbidden",False)==True) or (self.btn.text()==i18n.get("UNAVAILABLE","")) or self.btn.cursor()==Qt.WaitCursor:
 			if self.btn.text()!=i18n.get("UNAVAILABLE",""):
 				self.iconUri.setEnabled(False)
-			self.btn.setEnabled(False)
+			self.btn.blockSignals(True)
 			self.btn.setStyleSheet("""color:#AAAAAA""")
+		else:
+			self.btn.setEnabled(True)
 	#def _applyDecoration
 
 	def _removeDecoration(self):

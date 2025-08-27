@@ -253,28 +253,30 @@ class main(QWidget):
 					pass
 		else:
 			self.setCursor(self.oldCursor)
-			
 	#def _getRunappResults
+
+	def _setInstallingState(self):
+		self._rebost.setAppTmpState(self.app["id"],1)
+	#def _setInstallingState
 
 	def _genericEpiInstall(self,*args):
 		if self.parent().installingApp!=None:
 			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.parent().installingApp.app["name"].capitalize(),timeout=4)
 			return
-		self.parent().installingAppDetail=self.app
+		#self.parent().installingAppDetail=self.app
 		if self.instBundle=="":
 			bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
 		else:
 			bundle=self.instBundle
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
-		#pkg=self.app.get('name').replace(' ','')
 		pkg=self.app.get('bundle',{}).get(bundle,'')
 		user=os.environ.get('USER')
 		installer=str(self.rc.getExternalInstaller())
 		if installer!="":
 			self.runapp.setArgs(self.app,[installer,pkg,bundle])
 			self.runapp.start()
-			self.app.update({"installing":bundle})
+			self._setInstallingState()
 		return
 		try:
 			res=json.loads(res)[0]
@@ -311,9 +313,9 @@ class main(QWidget):
 	def _endGetEpiResults(self,app):
 		self.thEpiShow.wait()
 		bundle=list(app.get('bundle').keys())[0]
-		state=app.get('state',{}).get(bundle,1)
+		state=app.get('status',{}).get(bundle,1)
 		if app.get('name','')==self.app.get('name',''):
-			if state!=self.app.get("state",{}).get(bundle,1):
+			if state!=self.app.get("status",{}).get(bundle,1):
 				self.rc.commitInstall(app.get('name'),bundle,state)
 				self.refresh=True
 			self.app=app
@@ -699,6 +701,15 @@ class main(QWidget):
 					self.btnRemove.setEnabled(True)
 					self.instBundle=bundle
 					break
+		if int(self.app.get("state","0"))>=7:
+			self.btnRemove.setCursor(QtGui.QCursor(Qt.WaitCursor))
+			self.lstInfo.setCursor(QtGui.QCursor(Qt.WaitCursor))
+			self.btnRemove.setEnabled(False)
+			self.lstInfo.setEnabled(False)
+		else:
+			self.btnRemove.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+			self.lstInfo.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+
 		if len(self.app.get("bundle",[]))==1 and "eduapp" in self.app.get("bundle",{}).keys():
 			self.lstInfo.setVisible(False)
 			self.btnRemove.setVisible(False)
@@ -768,17 +779,13 @@ class main(QWidget):
 		pkgState=0
 		if "zomando" in bundles:
 			if "package" in bundles:
-				pkgState=self.app.get('state',{}).get("package",'1')
+				pkgState=self.app.get('status',{}).get("package",'1')
 				if pkgState.isdigit()==True:
 					pkgState=int(pkgState)
 		states=0
 		self.btnZomando.setVisible(False)
 		for bundle in bundles:
-			state=(self.app.get('state',{}).get(bundle,'1'))
-			if state.isdigit()==True:
-				state=int(state)
-			else:
-				state=1
+			state=(self.app.get('status',{}).get(bundle,1))
 			states+=state
 			if bundle=="zomando" and ((pkgState==0 or state==0) or (self.app.get("pkgname","x$%&/-1") not in self.app["bundle"]["zomando"])):
 				continue
@@ -827,7 +834,7 @@ class main(QWidget):
 		installed=[]
 		uninstalled=[]
 		for bundle in bundles.keys():
-			state=self.app.get("state",{}).get(bundle,1)
+			state=self.app.get("status",{}).get(bundle,1)
 			if bundle=="zomando":
 				#if "package" in bundles.keys():
 				#	continue
