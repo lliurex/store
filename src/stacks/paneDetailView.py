@@ -32,6 +32,7 @@ i18n={
 	"ERRLAUNCH":_("Error opening"),
 	"ERRMORETHANONE":_("There's another action in progress"),
 	"ERRSYSTEMAPP":_("System apps can't be removed"),
+	"ERRUNAUTHORIZED":_("Authorization is required"),
 	"ERRUNKNOWN":_("Unknown error"),
 	"FORBIDDEN":_("App unauthorized"),
 	"INFO":_("For more info go to"),
@@ -61,7 +62,7 @@ class main(QWidget):
 		self.refresh=False
 		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
 		self.rc=store.client()
-		self.oldcursor=self.cursor()
+		self.oldCursor=self.cursor()
 		self.launcher=""
 		self.config={}
 		self.app={}
@@ -172,7 +173,7 @@ class main(QWidget):
 			for bundle,name in (self.app.get('bundle',{}).items()):
 				if bundle=='package':
 					continue
-		self.setCursor(self.oldcursor)
+		self.setCursor(self.oldCursor)
 		if "ERR" in app.keys():
 			self._onError()
 		self.updateScreen()
@@ -205,8 +206,21 @@ class main(QWidget):
 	#def _runApp
 
 	def _getRunappResults(self,app,proc):
+		self.setCursor(self.oldCursor)
 		if proc==None:
 			return
+		if proc.returncode!=0:
+			#pkexec ret values
+			#127 -> Not authorized
+			if proc.returncode==127:
+				self.showMsg(title="AppsEdu Store",summary=self.app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=self.app["icon"],timeout=5000)
+		self._rebost.setAction("setAppState",self.app["id"],0)
+		self._rebost.start()
+		self._rebost.wait()
+		self.app["state"]=0
+		self._setLauncherStatus()
+
+		return
 		if "attempted" not in app.keys():
 			app["attempted"]=[]
 		if proc.returncode!=0 or len(proc.stderr.strip())>0:
@@ -256,7 +270,14 @@ class main(QWidget):
 	#def _getRunappResults
 
 	def _setInstallingState(self):
-		self._rebost.setAppTmpState(self.app["id"],1)
+		if self.btnRemove.isVisible()==True:
+			self._rebost.setAction("setAppState",self.app["id"],8)
+			self.app["state"]=8
+		else:
+			self._rebost.setAction("setAppState",self.app["id"],7)
+			self.app["state"]=7
+		self._rebost.start()
+		self._rebost.wait()
 	#def _setInstallingState
 
 	def _genericEpiInstall(self,*args):
@@ -268,36 +289,15 @@ class main(QWidget):
 			bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
 		else:
 			bundle=self.instBundle
-		cursor=QtGui.QCursor(Qt.WaitCursor)
-		self.setCursor(cursor)
 		pkg=self.app.get('bundle',{}).get(bundle,'')
 		user=os.environ.get('USER')
 		installer=str(self.rc.getExternalInstaller())
 		if installer!="":
+			self._setInstallingState()
+			self._setLauncherStatus()
 			self.runapp.setArgs(self.app,[installer,pkg,bundle])
 			self.runapp.start()
-			self._setInstallingState()
 		return
-		try:
-			res=json.loads(res)[0]
-		except:
-			res={}
-		epi=res.get('epi')
-		self._debug("Invoking EPI for {}".format(epi))
-		if epi==None:
-			if res.get("done",0)==1 and "system package" in res.get("msg","").lower():
-				self.showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(self.app["name"]),timeout=4)
-			else:
-				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(self.app["name"]),timeout=4)
-			self.updateScreen()
-		else:
-			if bundle=="zomando":
-				self.zmdLauncher.setApp(self.app)
-				self.zmdLauncher.start()
-			else:
-				cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
-				self.epi.setArgs(self.app,cmd,bundle)
-				self.epi.start()
 	#def _genericEpiInstall
 	
 	def _getEpiResults(self,app,*args):
@@ -404,37 +404,37 @@ class main(QWidget):
 		launchers=QWidget()
 		hlay=QVBoxLayout()
 
-		self.btnInstall=QLabel(i18n.get("INSTALL"))
-		#self.btnInstall.setObjectName("btnInstall")
-		self.btnInstall.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
+		self.lblRelease=QLabel(i18n.get("INSTALL"))
+		#self.lblRelease.setObjectName("lblRelease")
+		self.lblRelease.resize(self.lblRelease.sizeHint().width(),int(ICON_SIZE/3))
 
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
 		self.btnRemove.setObjectName("lstInfo")
-		self.btnRemove.clicked.connect(self._genericEpiInstall)
+		self.btnRemove.clicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
 
 		self.btnUnavailable=QPushButton(i18n.get("UNAVAILABLE"))
 		self.btnUnavailable.setObjectName("lstInfo")
 
 		self.btnZomando=QPushButton(" {} zomando ".format(i18n.get("RUN")))
 		self.btnZomando.clicked.connect(self._runZomando)
-		self.btnZomando.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
+		self.btnZomando.resize(self.lblRelease.sizeHint().width(),int(ICON_SIZE/3))
 		self.btnZomando.setVisible(False)
 
 		self.btnLaunch=QPushButton(i18n.get("RUN"))
 		self.btnLaunch.clicked.connect(self._runApp)
-		self.btnLaunch.resize(self.btnInstall.sizeHint().width(),int(ICON_SIZE/3))
+		self.btnLaunch.resize(self.lblRelease.sizeHint().width(),int(ICON_SIZE/3))
 		launchers.setLayout(hlay)
 		lay.addWidget(launchers,1,3,1,1,Qt.AlignTop|Qt.AlignRight)
-		for i in [self.btnInstall,self.btnLaunch,self.btnZomando]:
+		for i in [self.lblRelease,self.btnLaunch,self.btnZomando]:
 			i.setMinimumWidth(self.btnZomando.sizeHint().width()+(4*i.font().pointSize()))
 
 		self.lstInfo=QComboButton()
 		self.lstInfo.setObjectName("lstInfo")
 		self.lstInfo.setMaximumWidth(50)
 		self.lstInfo.currentTextChanged.connect(self._setLauncherOptions)	
-		self.lstInfo.installClicked.connect(self._genericEpiInstall)
-		lay.addWidget(self.btnInstall,1,3,3,1,Qt.AlignLeft|Qt.AlignTop)
-		lay.addWidget(self.lstInfo,2,3,1,1,Qt.AlignLeft|Qt.AlignTop)
+		self.lstInfo.installClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
+		lay.addWidget(self.lblRelease,1,3,3,1,Qt.AlignLeft|Qt.AlignTop)
+		lay.addWidget(self.lstInfo,2,3,1,1,Qt.AlignRight|Qt.AlignTop)
 		lay.addWidget(self.btnRemove,2,3,1,1)
 		lay.addWidget(self.btnUnavailable,2,3,1,1)
 		self.btnRemove.setVisible(False)
@@ -659,7 +659,7 @@ class main(QWidget):
 		if "Forbidden" not in self.app.get("categories",[]):
 			self.app["categories"]=["Forbidden"]
 		self.lstInfo.setEnabled(False)
-		self.btnInstall.setEnabled(False)
+		self.lblRelease.setEnabled(False)
 		self.btnRemove.setEnabled(False)
 		self.btnUnavailable.setEnabled(False)
 		self.btnLaunch.setEnabled(False)
@@ -677,17 +677,34 @@ class main(QWidget):
 		self.loaded.emit(self.app)
 	#def _onError
 
+	def _setLauncherStatus(self):
+		print(self.app)
+		if int(self.app.get("state","0"))>=7:
+			self.btnRemove.clicked.disconnect()
+			self.btnRemove.setCursor(QtGui.QCursor(Qt.WaitCursor))
+			self.lstInfo.installClicked.disconnect()
+			self.lstInfo.setCursor(QtGui.QCursor(Qt.WaitCursor))
+		else:
+			try:	
+				self.btnRemove.clicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
+				self.lstInfo.installClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
+			except: #Don't worry
+				pass
+			self.btnRemove.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+			self.lstInfo.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+	#def _setLauncherStatus
+
 	def _setLauncherOptions(self):
 		visible=True
 		bundle=self.lstInfo.currentText()
 		if "Forbidden" in self.app.get("categories",[]) or "eduapp" in bundle:
 			visible=False
-		self.btnInstall.setVisible(visible)
+		self.lblRelease.setVisible(visible)
 		self.lstInfo.setVisible(visible)
 		if bundle==i18n["INSTALL"].upper():
 			return
 		bundle=bundle.split(" ")[0]
-		self.btnInstall.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
+		self.lblRelease.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
 		self.lstInfo.blockSignals(True)
 		self.lstInfo.setText(i18n["INSTALL"].upper())
 		states=self.app.get("status",{})
@@ -701,63 +718,13 @@ class main(QWidget):
 					self.btnRemove.setEnabled(True)
 					self.instBundle=bundle
 					break
-		if int(self.app.get("state","0"))>=7:
-			self.btnRemove.setCursor(QtGui.QCursor(Qt.WaitCursor))
-			self.lstInfo.setCursor(QtGui.QCursor(Qt.WaitCursor))
-			self.btnRemove.setEnabled(False)
-			self.lstInfo.setEnabled(False)
-		else:
-			self.btnRemove.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
-			self.lstInfo.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
-
+		self._setLauncherStatus()
 		if len(self.app.get("bundle",[]))==1 and "eduapp" in self.app.get("bundle",{}).keys():
-			self.lstInfo.setVisible(False)
-			self.btnRemove.setVisible(False)
 			self.btnRemove.setEnabled(False)
 			self.btnUnavailable.setVisible(True)
 		else:
 			self.btnUnavailable.setVisible(False)
 		self.lstInfo.blockSignals(False)
-	#def _setLauncherOptions
-
-	def _old_setLauncherOptions(self):
-		self.lstInfo.setEnabled(True)
-		self.btnInstall.setEnabled(True)
-		self.btnRemove.setEnabled(True)
-		self.btnLaunch.setEnabled(True)
-		self.btnZomando.setEnabled(True)
-		bundle=""
-		release=""
-		tooltip=""
-		item=self.lstInfo.currentText()
-		if item==None:
-			self._debug("This app has not install option. Waiting data")
-			bundles=self.app.get("bundle",{}).copy()
-			if len(bundles)>0:
-				bundle=bundles.popitem()[1]
-			else:
-				bundle="package"
-			bitem=QListWidgetItem("{}".format(bundle))
-			self.lstInfo.insertItem(0,bitem)
-			item=self.lstInfo.item(0)
-		bundle=item.lower().split(" ")[-1].strip()
-		release=item.lower().split(" ")[0]
-		tooltip=item
-		if bundle=="package":
-			bundle="app" # Only for show purposes. "App" is friendly than "package"
-		if self.lstInfo.count()>0:
-			#self.btnInstall.setText("{0} {1}".format(i18n.get("INSTALL"),bundle))
-			self.btnInstall.setText("{0} / {1}".format(bundle,self.app.get("versions",{}).get(bundle,"")))
-			self.btnRemove.setText("{0} {1}".format(i18n.get("REMOVE"),bundle))
-			self.btnLaunch.setText("{0} {1}".format(i18n.get("RUN"),bundle))
-		self.btnInstall.setToolTip("{0}: {1}\n{2}".format(i18n.get("RELEASE"),release,bundle.capitalize()))
-		self.btnRemove.setToolTip(tooltip)
-		self.btnLaunch.setToolTip(tooltip)
-		if "Forbidden" in self.app.get("categories",[]) or "eduapp" in bundle:
-			self.btnInstall.setEnabled(False)
-			self.btnRemove.setEnabled(False)
-			self.btnLaunch.setEnabled(False)
-			self.btnZomando.setEnabled(False)
 	#def _setLauncherOptions
 
 	def _getIconFromApp(self,app):
@@ -799,25 +766,19 @@ class main(QWidget):
 		self.lstInfo.clear()
 		if len(bundles)<=0:
 			return()
-		(installed,uninstalled)=self._classifyBundles(bundles)
-		#priority=["zomando","flatpak","snap","package","appimage","eduapp"]
-		priority=["zomando","package","snap","flatpak","appimage","eduapp"]
-		for i in installed+uninstalled:
+		priority=["zomando","package","flatpak","snap","appimage","eduapp"]
+		priorityIdx={}
+		for i in bundles:
 			version=self.app.get('versions',{}).get(i,'')
 			if i in priority:
 				fversion=version.split("+")[0][0:10]
-				release=QListWidgetItem("{} {}".format(fversion,i))
-				release.setSizeHint(QSize(self.lstInfo.sizeHint().width()-50,self.lstInfo.font().pointSize()*3))
-				idx=priority.index(i)
-				if i in uninstalled:
-					idx+=len(installed)
-				else:
-					bcolor=BKG_COLOR_INSTALLED
-					release.setBackground(bcolor)
-				release.setToolTip(version)
 				release="{} {}".format(i,fversion)
-				#release="{0}".format(i)
-				self.lstInfo.insertItem(idx,release)
+				idx=priority.index(i)
+				priorityIdx[idx]=release
+		priorityFinal=list(priorityIdx.keys())
+		priorityFinal.sort()
+		for idx in priorityFinal:
+			self.lstInfo.addItem(priorityIdx[idx])
 		self.lstInfo.setText(i18n["INSTALL"].upper())
 		for idx in range(0,len(priority)):
 			try:
@@ -830,32 +791,12 @@ class main(QWidget):
 			self.lstInfo.setEnabled(False)
 	#def _setReleasesInfo
 
-	def _classifyBundles(self,bundles):
-		installed=[]
-		uninstalled=[]
-		for bundle in bundles.keys():
-			state=self.app.get("status",{}).get(bundle,1)
-			if bundle=="zomando":
-				#if "package" in bundles.keys():
-				#	continue
-				if os.path.isfile(bundles[bundle]):
-					state="0"
-			if isinstance(state,str):
-				if state.isdigit()==False:
-					state="1"
-			if int(state)==0: #installed
-				installed.append(bundle)
-			else:
-				uninstalled.append(bundle)
-		return(installed,uninstalled)
-	#def _classifyBundles
-
 	def _initScreen(self):
 		#Reload config if app has been epified
 		self.showMsg=self.parent().showMsg
 		if len(self.app)>0:
 			self.lstInfo.setVisible(True)
-			self.btnInstall.setVisible(True)
+			self.lblRelease.setVisible(True)
 			if self.app.get('name','')==self.epi.app.get('name',''):
 				try:
 					self.app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
@@ -867,9 +808,9 @@ class main(QWidget):
 				except Exception as e:
 					pass
 					self.app={}
-			self.btnInstall.setEnabled(True)
-			self.btnInstall.setText(i18n.get("INSTALL"))
-			self.setCursor(self.oldcursor)
+			self.lblRelease.setEnabled(True)
+			self.lblRelease.setText(i18n.get("INSTALL"))
+			self.setCursor(self.oldCursor)
 			self.screenShot.clear()
 			self.btnZomando.setVisible(False)
 			self.lblHomepage.setText("")
