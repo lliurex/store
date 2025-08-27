@@ -2,10 +2,11 @@
 from functools import partial
 import os,time
 import json
-from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsOpacityEffect,QSizePolicy,QApplication
-from PySide6.QtCore import Qt,Signal,QThread,QEvent,QSize,QPropertyAnimation
-from PySide6.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor,QPainter
+from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy
+from PySide6.QtCore import Qt,Signal,QEvent,QSize
+from PySide6.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
 from QtExtraWidgets import QScreenShotContainer
+from lblApp import QLabelRebostApp
 import css
 from constants import *
 import gettext
@@ -17,16 +18,6 @@ i18n={"INSTALL":_("Install"),
 	"UNAUTHORIZED":_("Blocked"),
 	"UNAVAILABLE":_("Unavailable"),
 	}
-
-i18nCustom={"INSTALLING":_("Installing"),
-	"REMOVING":_("Removing"),
-	"WORKING":_("Working"),
-	}
-
-class imageGetter():
-	def __init__(self,*args,**kwargs):
-		pass
-#class imageGetter
 
 class QPushButtonRebostApp(QPushButton):
 	clicked=Signal("PyObject","PyObject")
@@ -47,7 +38,8 @@ class QPushButtonRebostApp(QPushButton):
 		self.btn=self._defBtnInstall()
 		self.lblFlyIcon=self._defFlyIcon()
 		self.label=self._defLabel()
-		self.iconUri=QLabel()
+		self.iconUri=QLabelRebostApp()
+		self.iconUri.setIconSize(self.iconSize)
 		self.iconUri.setObjectName("iconUri")
 		self.focusFrame=self._defFrame()
 		#Btn Layout
@@ -67,8 +59,18 @@ class QPushButtonRebostApp(QPushButton):
 	#def __init__
 
 	@staticmethod
-	def _onDestroy(*args):
+	def _stop(*args):
 		selfDict=args[0]
+		if "scr" in selfDict.keys():
+			self["scr"].blockSignals(True)
+			self["scr"].requestInterruption()
+			self["scr"].deleteLater()
+			self["scr"].wait()
+		for th in selfDict.get("th",[]):
+			th.blockSignals(True)
+			th.requestInterruption()
+			th.deleteLater()
+			th.wait()
 		if selfDict.get("data","")!="":
 			self["data"].blockSignals(True)
 			self["data"].requestInterruption()
@@ -201,7 +203,8 @@ class QPushButtonRebostApp(QPushButton):
 				elif self.init==True and (self.app.get("summary","")+self.app.get("name",""))!="":
 					if self.startLoadImage==True:
 						if self.iconUri.text()=="":
-							self.loadImg(self.app)
+							self.iconUri.setIconSize(self.iconSize)
+							self.iconUri.loadImg(self.app)
 							self.init=None
 					else:
 						self.startLoadImage=True
@@ -246,6 +249,8 @@ class QPushButtonRebostApp(QPushButton):
 						self.btn.setText(i18n.get("REMOVE"))
 						self.instBundle=bundle
 						break
+		self.iconUri.setIconSize(self.iconSize)
+		self.iconUri.loadImg(self.app)
 		self._applyDecoration()
 		if int(self.app.get("state","0"))>=7:
 			self.btn.setCursor(QCursor(Qt.WaitCursor))
@@ -265,10 +270,6 @@ class QPushButtonRebostApp(QPushButton):
 		if int(self.app.get("state","0"))>=7:
 			self.progress.setVisible(True)
 	#def updateScreen
-
-	def pulse(self):
-		self.setStyleSheet("opacity:0")
-	#def pulse
 
 	def enterEvent(self,*args):
 	   self.setFocus()
@@ -299,29 +300,15 @@ class QPushButtonRebostApp(QPushButton):
 						img=iconPath
 			elif os.path.exists(os.path.join(self.cacheDir,os.path.basename(img))):
 				img=os.path.join(self.cacheDir,os.path.basename(img))
-		scrCnt=QScreenShotContainer()
-		scr=scrCnt.loadScreenShot(img,self.cacheDir)
-		scr.imageReady.connect(self.load)
-		scr.start()
-		self.th.append(scr)
+
+		#scrCnt=QScreenShotContainer()
+		#scr=scrCnt.loadScreenShot(img,self.cacheDir)
+		#scr.imageReady.connect(self.load)
+		#scr.start()
+		#self.th.append(scr)
 		#self.scr.wait()
 		self._applyDecoration(app)
 	#def loadImg
-
-	@staticmethod
-	def _stop(*args):
-		selfDict=args[0]
-		if "scr" in selfDict.keys():
-			self["scr"].blockSignals(True)
-			self["scr"].requestInterruption()
-			self["scr"].deleteLater()
-			self["scr"].wait()
-		for th in selfDict.get("th",[]):
-			th.blockSignals(True)
-			th.requestInterruption()
-			th.deleteLater()
-			th.wait()
-	#def _stop
 
 	def _getStats(self,app):
 		stats={}
@@ -435,11 +422,6 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setEnabled(True)
 	#def _applyDecoration
 
-	def _removeDecoration(self):
-		self.setObjectName("")
-		self.setStyleSheet("")
-	#def _removeDecoration
-	
 	def load(self,*args):
 		oldPxm=self.iconUri.pixmap()
 		img=args[0]
@@ -470,6 +452,7 @@ class QPushButtonRebostApp(QPushButton):
 	def setApp(self,app):
 		self.app=app
 		if self.autoUpdate==True:
+			print(self.app["icon"])
 			self.updateScreen()
 	#def setApp
 #class QPushButtonRebostApp
