@@ -8,7 +8,6 @@ from PySide6.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QCol
 from QtExtraWidgets import QScreenShotContainer
 import css
 from constants import *
-from prgBar import QProgressImage
 import gettext
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext
@@ -17,6 +16,11 @@ i18n={"INSTALL":_("Install"),
 	"REMOVE":_("Remove"),
 	"UNAUTHORIZED":_("Blocked"),
 	"UNAVAILABLE":_("Unavailable"),
+	}
+
+i18nCustom={"INSTALLING":_("Installing"),
+	"REMOVING":_("Removing"),
+	"WORKING":_("Working"),
 	}
 
 class imageGetter():
@@ -58,7 +62,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.th=[]
 		#Progress indicator
 		self.progress=self._defProgress()
-		self.layout().addWidget(self.progress,0,0,3,1,Qt.AlignBottom)
+		self.layout().addWidget(self.progress,0,0,Qt.AlignRight|Qt.AlignTop)
 		self._renderGui()
 	#def __init__
 
@@ -142,15 +146,11 @@ class QPushButtonRebostApp(QPushButton):
 	#def _defBtnInstall
 
 	def _defProgress(self):
-		wdg=QProgressImage(self)
-		wdg.setAttribute(Qt.WA_StyledBackground, False)
-		wdg.lblInfo.setMinimumWidth(self.rect().width()+int(MARGIN)*2)
-		wdg.lblInfo.setText("")
-		pxm=QPixmap(QSize(self.focusFrame.width(),self.focusFrame.size().height()))
-		pxm.fill(QColor(COLOR_BACKGROUND_DARK))
-		wdg.setPixmap(pxm)
-		wdg.setInc(3)
-		wdg.setColor(COLOR_BACKGROUND_DARK,COLOR_BORDER)
+		wdg=QLabel()
+		wdg.setObjectName("flyIcon")
+		scaleFactor=(self.iconSize/2)
+		wdg.setPixmap(QPixmap(os.path.join(RSRC,"run-build-install.png")).scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
+		wdg.setVisible(False)
 		return(wdg)
 	#def _defProgress
 
@@ -175,7 +175,7 @@ class QPushButtonRebostApp(QPushButton):
 
 	def _emitInstall(self,*args):
 		self.btn.setEnabled(False)
-		self.progress.start()
+		self.progress.setVisible(True)
 		if self.btn.text()==i18n["REMOVE"]:
 			#Remove, get installed bundle
 			priority=["zomando","flatpak","snap","package","appimage","eduapp"]
@@ -217,7 +217,7 @@ class QPushButtonRebostApp(QPushButton):
 		if hasattr(self,"app")==False:
 			return
 		if self.progress.isVisible()==True:
-			self.progress.stop()
+			self.progress.setVisible(False)
 		if self.app.get("name","").strip()!="":
 			if self.app.get("summary","")!="":
 				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
@@ -262,6 +262,8 @@ class QPushButtonRebostApp(QPushButton):
 			self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
 		if self.app.get("summary","")!="" and self.showBtn==True:
 			self.btn.setVisible(True)
+		if int(self.app.get("state","0"))>=7:
+			self.progress.setVisible(True)
 	#def updateScreen
 
 	def pulse(self):
