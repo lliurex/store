@@ -79,6 +79,8 @@ class storeHelper(QThread):
 			self._getFreedesktopCategories()
 		elif self.action=="getAppsPerCategory":
 			self._getAppsPerCategory()
+		elif self.action=="setAppState":
+			self._setAppState()
 	#def run
 
 	def _test(self):
@@ -130,6 +132,14 @@ class storeHelper(QThread):
 			app=self.rc.showApp(self.args[0])
 		self.shwEnded.emit(app)
 	#def _show
+	
+	def _setAppState(self,*args):
+		if self.args[0]!="":
+			temp=True
+			if len(self.args)>2:
+				temp=self.args[2]
+			app=self.rc.setAppState(self.args[0],self.args[1],temp)
+	#def _setAppState
 
 	def _updatePkgData(self):
 		if len(self.args)>0:
