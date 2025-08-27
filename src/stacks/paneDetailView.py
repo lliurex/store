@@ -48,13 +48,14 @@ i18n={
 
 
 class main(QWidget):
-	clickedBack=Signal("PyObject")
+	clickedBack=Signal("PyObject","PyObject")
 	loaded=Signal("PyObject")
 	tagpressed=Signal(str)
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=True
 		self._debug("details load")
+		self.destroyed.connect(partial(main._onDestroy,self.__dict__))
 		self._rebost=args[0]
 		self.setObjectName("detailPanel")
 		self.setAttribute(Qt.WA_StyledBackground, True)
@@ -89,6 +90,15 @@ class main(QWidget):
 		if self.dbg==True:
 			print("Details: {}".format(msg))
 	#def _debug
+
+	@staticmethod
+	def _onDestroy(*args):
+		selfDict=args[0]
+		selfDict["epi"].quit()
+		selfDict["runapp"].quit()
+		selfDict["thEpiShow"].quit()
+	#def _onDestroy
+
 
 	def _return(self):
 		return
@@ -135,10 +145,11 @@ class main(QWidget):
 								self.app=json.loads(self.app)
 	#def _processStreams
 
-	def setParms(self,*args):
+	def setParms(self,*args,**kwargs):
 		#self.hideMsg()
 		self.parent()._stopThreads()
 		pxm=""
+		self.referrerBtn=kwargs.get("btn",None)
 		if len(args)>0:
 			name=args[-1]
 			self._resetScreen(name,"")
@@ -219,54 +230,7 @@ class main(QWidget):
 		self._rebost.wait()
 		self.app["state"]=0
 		self._setLauncherStatus()
-
 		return
-		if "attempted" not in app.keys():
-			app["attempted"]=[]
-		if proc.returncode!=0 or len(proc.stderr.strip())>0:
-			return
-			pkgname=""
-			bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
-			if bundle not in ["flatpak","snap"]:
-				cmd=["gtk-launch"]
-			else:
-				pkgname=" ".join(self.helper.getCmdForLauncher(self.app,bundle)[2:])
-				cmd=[bundle,"run"]
-			if pkgname in app["attempted"]:
-				if app["pkgname"].split(".")[-1] not in app["attempted"]:
-					pkgname=app["pkgname"].split(".")[-1]
-				elif app["pkgname"]+"-appimage" not in app["attempted"]:
-					pkgname=app["pkgname"]+"-appimage"
-				elif "zero-lliurex" not in app["pkgname"]:
-					pkgname="net.lliurex.{}".format(app["pkgname"])
-					if pkgname in app["attempted"]:
-						pkgname=" ".join(self.helper.getCmdForLauncher(self.app,bundle,self.app["pkgname"])[1:],)
-					if pkgname in app["attempted"]:
-						pkgname="net.lliurex.{}".format(app["pkgname"].split("-")[0])
-					if pkgname in app["attempted"]:
-						pkgname="net.lliurex.{}".format(app["pkgname"])
-					if pkgname in app["attempted"]:
-						pkgname=" ".join(self.helper.getCmdForLauncher(self.app,bundle)[1:],)
-			pkgname=pkgname.replace("org.packagekit.","")
-			if pkgname not in app["attempted"]:
-				app["attempted"].append(pkgname)
-				if "zero-lliurex" in pkgname:
-					self._runZomando()
-				else:
-					self.runapp.setArgs(app,cmd.extend("{}".format(pkgname)))
-					self.runapp.start()
-			elif app["attempted"][-1]!="getLastAttempt":
-				self._debug("Last attempt")
-				app["attempted"].append("getLastAttempt")
-				self.runapp.setArgs(app,["{}".format(app["pkgname"])])
-				self.runapp.start()
-			else:
-				try:
-					self.showMsg(summary=i18n.get("ERRLAUNCH",""),msg="{}".format(self.app["name"]))
-				except Exception as e:
-					pass
-		else:
-			self.setCursor(self.oldCursor)
 	#def _getRunappResults
 
 	def _setInstallingState(self):
@@ -338,7 +302,8 @@ class main(QWidget):
 		pxm=self.lblIcon.pixmap()
 		if pxm.isNull()==False:
 			self.app["icon"]=self.lblIcon.pixmapPath
-		self.clickedBack.emit(self.app)
+		self.screenShot.clear()
+		self.clickedBack.emit(self.referrerBtn,self.app)
 	#def _clickedBack
 
 	def __initScreen__(self):
@@ -678,17 +643,19 @@ class main(QWidget):
 	#def _onError
 
 	def _setLauncherStatus(self):
-		print(self.app)
 		if int(self.app.get("state","0"))>=7:
-			self.btnRemove.clicked.disconnect()
+			try:
+				self.btnRemove.clicked.disconnect()
+				self.lstInfo.installClicked.disconnect()
+			except: #Don't worry
+				pass
 			self.btnRemove.setCursor(QtGui.QCursor(Qt.WaitCursor))
-			self.lstInfo.installClicked.disconnect()
 			self.lstInfo.setCursor(QtGui.QCursor(Qt.WaitCursor))
 		else:
 			try:	
 				self.btnRemove.clicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
 				self.lstInfo.installClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
-			except: #Don't worry
+			except: #Be happy
 				pass
 			self.btnRemove.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 			self.lstInfo.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
@@ -817,7 +784,7 @@ class main(QWidget):
 			self.lblTags.setText("")
 			#Disabled as requisite (250214-11:52)
 			self.lblTags.linkActivated.connect(self._tagNav)
-			self.app['name']=self.app.get('name','').replace(" ","")
+			self.app['name']=self.app.get('name','')
 		else:
 			self._onError()
 	#def _initScreen

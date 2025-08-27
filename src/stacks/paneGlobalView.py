@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os
+from functools import partial
 from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget,QSizePolicy,QCheckBox,QGraphicsDropShadowEffect
 from btnRebost import QPushButtonRebostApp
 from PySide6 import QtGui
@@ -29,6 +30,7 @@ class paneGlobalView(QWidget):
 			return
 		self._rebost=args[0]
 		self.dbg=False
+		self.destroyed.connect(partial(paneGlobalView._onDestroy,self.__dict__))
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("mp")
 		self.setStyleSheet(css.tablePanel())
@@ -56,6 +58,14 @@ class paneGlobalView(QWidget):
 	def _debug(self,msg):
 		if self.dbg==True:
 			print("GlobalView: {}".format(msg))
+
+	@staticmethod
+	def _onDestroy(*args):
+		selfDict=args[0]
+		if "table" in selfDict.keys():
+			selfDict["table"].clean()
+	#def _onDestroy
+
 
 	def _defCategoriesBar(self):
 		wdg=QFlowTouchWidget(self)
@@ -138,7 +148,6 @@ class paneGlobalView(QWidget):
 		if self._rebost.isRunning():
 			self._rebost.requestInterruption()
 			#self._rebost.wait()
-		print("Launch rebost")
 		self._rebost.start()
 	#def getApps
 
@@ -162,6 +171,7 @@ class paneGlobalView(QWidget):
 				break
 			jsonapp=apps.pop(0)
 			btn=QPushButtonRebostApp(jsonapp)
+			btn.autoUpdate=True
 			btn.clicked.connect(self._emitLoadDetails)
 			btn.installEventFilter(self)
 			btn.install.connect(self._emitInstallApp)
@@ -179,7 +189,6 @@ class paneGlobalView(QWidget):
 			if self.loading==True:
 				adding=False
 			if self.refresh==True and adding==True:
-				print("REFRESH TRUE")
 				for i in self.referersShowed.keys():
 					self.referersShowed[i]=None
 				#self._debug("Update from {} to {} of {}".format(self.appsLoaded,self.appsToLoad,len(self.apps)))
@@ -189,4 +198,11 @@ class paneGlobalView(QWidget):
 			print("-----")
 			print(e)
 			print("-----")
-		print("UPDATE END")
+	#def updateScreen
+
+	def updateBtn(self,btn,app):
+		if btn!=None:
+			if self.table.indexOf(btn):
+				btn.setApp(app)
+	#def updateBtn
+

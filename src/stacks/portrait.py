@@ -74,7 +74,7 @@ class portrait(QStackedWindowItem):
 			tooltip=i18n.get("TOOLTIP"),
 			index=1,
 			visible=True)
-		self.destroyed.connect(partial(QStackedWindowItem._onDestroy,self.__dict__))
+		self.destroyed.connect(partial(portrait._onDestroy,self.__dict__))
 		self.pendingApps={}
 		self.apps=[]
 		self.rc=store.client()
@@ -96,6 +96,23 @@ class portrait(QStackedWindowItem):
 	#	(self.locked,self.userLocked)=self._rebost.isLocked()
 	#def __init__
 
+	@staticmethod
+	def _onDestroy(*args):
+		selfDict=args[0]
+		selfDict["getData"].blockSignals(True)
+		selfDict["_rebost"].blockSignals(True)
+		selfDict["_llxup"].blockSignals(True)
+		selfDict["getData"].stop()
+		selfDict["getData"].requestInterruption()
+		selfDict["getData"].wait()
+		selfDict["_rebost"].requestInterruption()
+		selfDict["_rebost"].wait()
+		selfDict["_rebost"].quit()
+		selfDict["_rebost"].blockSignals(False)
+		selfDict["_llxup"].wait()
+		selfDict["_llxup"].quit()
+		selfDict["_llxup"].blockSignals(False)
+	#def _onDestroy
 
 	def _initRegisters(self):
 		#Catalogue related
@@ -114,11 +131,10 @@ class portrait(QStackedWindowItem):
 		self.categoriesTree={}
 		self.chkUpdates=False
 		self.isConnected=self._chkNetwork()
-	#def _initCatalogue
+		self.referrerBtn=None
+	#def _initRegisters
 
 	def _initThreads(self):
-		self.appUpdate=updateAppData(rc=self.rc)
-		self.appUpdate.dataLoaded.connect(self._endLoadApps)
 		self._llxup.chkEnded.connect(self._endGetUpgradables)
 		#self._rebost.test.connect(self._loadHome)
 		self._rebost.lstEnded.connect(self._endLoadCategory)
@@ -201,13 +217,9 @@ class portrait(QStackedWindowItem):
 	def _stopThreads(self):
 		if self.appsToLoad==-1: #Init 
 			exit
-		self.appUpdate.blockSignals(True)
 		self.getData.blockSignals(True)
 		self._rebost.blockSignals(True)
 		self._llxup.blockSignals(True)
-		self.appUpdate.stop()
-		self.appUpdate.requestInterruption()
-		self.appUpdate.wait()
 		self.getData.stop()
 		self.getData.requestInterruption()
 		self.getData.wait()
@@ -484,7 +496,6 @@ class portrait(QStackedWindowItem):
 		return(wdg)
 	#def _defSearch
 
-
 	def _defProgress(self):
 		wdg=QProgressImage(self)
 		return(wdg)
@@ -611,7 +622,6 @@ class portrait(QStackedWindowItem):
 	#def _beginUpdate
 
 	def _endUpdate(self):
-		self.appUpdate.blockSignals(False)
 		self._return()
 	#def _endUpdate
 
@@ -629,8 +639,6 @@ class portrait(QStackedWindowItem):
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.lstCategories.setEnabled(False)
-		self._stopThreads()
-		self._globalView.loadAppsStop()
 		self.resetScreen()
 		self.progress.start()
 		self.oldTime=time.time()
@@ -676,8 +684,6 @@ class portrait(QStackedWindowItem):
 				if states.get(bundle,"1")=="0":
 					appsFiltered.append(app)
 		self.apps=appsFiltered.copy()
-		self.appUpdate.blockSignals(False)
-		self.appUpdate.start()
 		self.appsRaw=self.apps.copy()
 		self.refresh=True
 		if len(self.apps)==0:
@@ -768,7 +774,6 @@ class portrait(QStackedWindowItem):
 		self._beginLoad()
 		cat=self._getRawCategory(cat)
 		self.searchBox.setText("")
-		self._getApps(cat)
 		if cat in self.categoriesTree.keys():
 			self._globalView.populateCategories(self.categoriesTree[cat],cat)
 		elif cat!="":
@@ -780,6 +785,7 @@ class portrait(QStackedWindowItem):
 			font.setBold(True)
 			wdg.setFont(font)
 			self._globalView.topBar.setVisible(True)
+		self._getApps(cat)
 	#def _loadCategory
 
 	def _endLoadCategory(self,*args):
@@ -901,10 +907,6 @@ class portrait(QStackedWindowItem):
 		self._detailView.setVisible(True)
 		self._homeView.setVisible(False)
 		self.progress.stop()
-		if not hasattr(self,"refererApp"):
-			return()
-		if self.refererApp==None:
-			return()
 	#def _detailLoaded
 
 	def _endLoadDetails(self,icn,*args):
@@ -930,11 +932,13 @@ class portrait(QStackedWindowItem):
 				for targ in arg:
 					if isinstance(targ,QPushButtonRebostApp):
 						icn=targ.iconUri.pixmap()
+						self.referrerBtn=targ
 					if isinstance(targ,dict):
 						app=targ
 				break
 			elif isinstance(arg,QPushButtonRebostApp):
 				icn=arg.iconUri.pixmap()
+				self.referrerBtn=arg
 			elif isinstance(arg,dict):
 				app=arg.copy()
 				break
@@ -985,15 +989,6 @@ class portrait(QStackedWindowItem):
 	#def _updateBtn
 
 	def _returnDetail(self,*args,**kwargs):
-		self._updateBtn(args[0])
-		self._return()
-	#def _returnDetail
-
-	def _return(self,*args,**kwargs):
-		self.setCursor(self.oldCursor)
-		self.parent.setWindowTitle("{}".format(APPNAME))
-		self.loading=False
-		QApplication.processEvents()
 		if self._detailView.isVisible():
 			self._detailView.hide()
 			if self._referrerPane==self._detailView:
@@ -1003,6 +998,22 @@ class portrait(QStackedWindowItem):
 					self._homeView.updateScreen()
 			else:
 				self._referrerPane.setVisible(True)
+
+		if self._globalView.isVisible()==True:
+			self._globalView.updateBtn(self.referrerBtn,args[1])
+		elif self._homeView.isVisible()==True and self.referrerBtn!=None:
+			self._homeView.updateBtn(self.referrerBtn,args[1])
+		self.referrerBtn=None
+		self._return(args,kwargs)
+	#def _returnDetail
+
+	def _return(self,*args,**kwargs):
+		self.setCursor(self.oldCursor)
+		self.parent.setWindowTitle("{}".format(APPNAME))
+		self.loading=False
+		QApplication.processEvents()
+		#	self.referrerBtn.setApp(args[1])
+		#	self.referrerBtn.updateScreen()
 		self.progress.stop()
 		self.lstCategories.setCursor(self.oldCursor)
 		self.lstCategories.setEnabled(True)
@@ -1029,6 +1040,7 @@ class portrait(QStackedWindowItem):
 		elif self._detailView.isVisible():
 			self._stopThreads()
 		elif self._homeView.isVisible():
+			self._stopThreads()
 			if len(self._homeView.layout().children())==0:
 				self._homeView.updateScreen()
 			self._endUpdate()
@@ -1040,6 +1052,7 @@ class portrait(QStackedWindowItem):
 		self.pendingApps={}
 		self.refererApp=None
 		self.appsSeen=[]
+		self._globalView.loadAppsStop()
 		self._globalView.table.clean()
 		self._globalView.topBar.setVisible(False)
 		QApplication.processEvents()

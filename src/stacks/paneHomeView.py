@@ -23,11 +23,12 @@ i18n={"LBL_BLOG":"Blog entries",
 class main(QWidget):
 	clickedCategory=Signal("PyObject")
 	clickedBlog=Signal("PyObject")
-	clickedApp=Signal("PyObject","PyObject")
+	clickedApp=Signal("PyObject","PyObject","PyObject")
 	clickedAppInstall=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=True
+		self.destroyed.connect(partial(main._onDestroy,self.__dict__))
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self._debug("home load")
 		self.setStyleSheet(css.tablePanel())
@@ -49,6 +50,18 @@ class main(QWidget):
 		if self.dbg==True:
 			print("Home: {}".format(msg))
 	#def _debug
+
+	@staticmethod
+	def _onDestroy(*args):
+		selfDict=args[0]
+		if selfDict.get("th",[])!=[]:
+			for th in selfDict["th"]:
+				th.blockSignals(True)
+				th.requestInterruption()
+				th.deleteLater()
+				th.quit()
+				th.wait()
+	#def _onDestroy
 
 	def _processRss(self,*args,**kwargs):
 		result=args[0]
@@ -148,7 +161,8 @@ class main(QWidget):
 
 	def _loadApp(self,*args):
 		app=args[1]
-		self.clickedApp.emit(self,app)
+		btn=args[0]
+		self.clickedApp.emit(self,btn,app)
 	#def _loadApp
 	
 	def _getAppsedu(self):
@@ -244,9 +258,15 @@ class main(QWidget):
 		self._getAppsedu()
 	#def updateScreen
 
+	def updateBtn(self,btn,app):
+		if btn!=None:
+			if btn in self.appsEdu.children():
+				btn.setApp(app)
+	#def updateBtn
+
 	def _stopThreads(self):
 		self._stop=True
 		for th in self.th:
-			th.stop()
+			th.quit()
 		self._rebost.blockSignals(False)
 	#def _stopThreads
