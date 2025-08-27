@@ -46,6 +46,7 @@ class QProgressImage(QWidget):
 		self.unlocking=False
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("prgBar")
+		self.i18nCustom={}
 		self.setStyleSheet(css.prgBar())
 		#lblProgress=QLabel(i18n["NEWDATA"])
 		#vbox.addWidget(lblProgress)#,Qt.AlignCenter|Qt.AlignBottom)
@@ -74,6 +75,7 @@ class QProgressImage(QWidget):
 		self.inc=-5
 		self.running=False
 		self.destroyed.connect(partial(QProgressImage._onDestroy,self.__dict__))
+	#def __init__
 
 	@staticmethod
 	def _onDestroy(*args):
@@ -180,4 +182,5 @@ class QProgressImage(QWidget):
 		self.update()
 		self.running=False
 	#def _doProgress
+
 
