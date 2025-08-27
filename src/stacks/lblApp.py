@@ -60,9 +60,12 @@ class QLabelRebostApp(QLabel):
 			icn=QtGui.QPixmap.fromImage(QtGui.QImage(img))
 			self.pixmapPath=img
 		elif img=='':
-			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
+			icn2=QtGui.QIcon.fromTheme(app.get('icon',""))#,QtGui.QIcon.fromTheme("appedu-generic"))
+			self.pixmapPath=app.get("icon")
+			if icn2.isNull():
+				icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
+				self.pixmapPath=app.get("pkgname")
 			icn=icn2.pixmap(baseSize,baseSize)
-			self.pixmapPath=app.get("pkgname")
 		if icn:
 			self.setPixmap(icn.scaled(wsize,baseSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 			self.setMinimumWidth(wsize+10)

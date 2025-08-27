@@ -214,6 +214,7 @@ class main(QWidget):
 				icn="multimedia"
 			app={"name":apps[idx],"icon":"applications-{}".format(icn),"pkgname":apps[idx],}
 			btn=QPushButtonRebostApp(app)
+			btn.autoUpdate=True
 			btn.clicked.connect(self._loadCategory)
 			btn.setFixedSize(QSize(ICON_SIZE*2,ICON_SIZE*1.5))
 			btn.showBtn=False

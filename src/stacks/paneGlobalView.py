@@ -202,7 +202,10 @@ class paneGlobalView(QWidget):
 
 	def updateBtn(self,btn,app):
 		if btn!=None:
+			print(btn)
 			if self.table.indexOf(btn):
+				print("TOMA!")
+				print(btn.autoUpdate)
 				btn.setApp(app)
 	#def updateBtn
 

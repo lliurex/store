@@ -493,10 +493,6 @@ class main(QWidget):
 				print(e)
 	#def _loadScreenshots
 
-	def _updateIcon(self,*args):
-		icn=args[0]
-		self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
-
 	def updateScreen(self):
 		self._initScreen()
 		if self.app.get("bundle",None)==None:
