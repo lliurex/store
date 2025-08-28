@@ -2,19 +2,16 @@
 import os
 from functools import partial
 from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget,QSizePolicy,QCheckBox,QGraphicsDropShadowEffect
-from btnRebost import QPushButtonRebostApp
 from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal
+from PySide6.QtCore import Qt,QSize,Signal,QEvent
 from QtExtraWidgets import QCheckableComboBox,QTableTouchWidget,QInfoLabel,QFlowTouchWidget
+from btnRebost import QPushButtonRebostApp
 from lblLnk import QLabelLink
 import css
+from constants import *
 import gettext
 _ = gettext.gettext
 
-ICON_SIZE=128
-MINTIME=0.2
-LAYOUT="appsedu"
-RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
 i18n={
 	"ALL":_("All"),
 	"SEARCH":_("Search"),
@@ -33,6 +30,7 @@ class paneGlobalView(QWidget):
 		self.destroyed.connect(partial(paneGlobalView._onDestroy,self.__dict__))
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("mp")
+		self.installEventFilter(self)
 		self.setStyleSheet(css.tablePanel())
 		lay=QVBoxLayout()
 		lay.addSpacing(32)
@@ -66,6 +64,33 @@ class paneGlobalView(QWidget):
 			selfDict["table"].clean()
 	#def _onDestroy
 
+	def eventFilter(self,*args):
+		if isinstance(args[0],QPushButtonRebostApp):
+			if isinstance(args[1],QtGui.QKeyEvent):
+				if args[1].type()==QEvent.Type.KeyPress:
+					newPos=-1
+					if args[1].key()==Qt.Key_Left or args[1].key()==Qt.Key_Up:
+						idx=self.table.currentIndex()
+						elements=1
+						if args[1].key()==Qt.Key_Up:
+							elements=int(self.width()/(args[0].width()+int(MARGIN)*2))-1
+						newPos=idx-elements
+					elif args[1].key()==Qt.Key_Right or args[1].key()==Qt.Key_Down:
+						idx=self.table.currentIndex()
+						elements=1
+						if args[1].key()==Qt.Key_Down:
+							elements=int(self.width()/(args[0].width()+int(MARGIN)*2))-1
+						newPos=idx+elements
+						#Ugly hack for autoscroll to focused item
+					if newPos!=-1:
+						if newPos<self.table.count() and newPos>=0:
+							btn=self.table.itemAt(newPos)
+							btn.widget().setFocus()
+							btn.widget().setEnabled(False)
+							btn.widget().setEnabled(True)
+							btn.widget().setFocus()
+		return(False)
+	#def eventFilter
 
 	def _defCategoriesBar(self):
 		wdg=QFlowTouchWidget(self)
@@ -162,7 +187,6 @@ class paneGlobalView(QWidget):
 	#def _emitLoadDetails
 
 	def _emitInstallApp(self,*args):
-		print(args)
 		self.requestInstallApp.emit(args[0],args[1])
 	#def _emitInstallApp
 

@@ -24,7 +24,7 @@ class main(QWidget):
 	clickedCategory=Signal("PyObject")
 	clickedBlog=Signal("PyObject")
 	clickedApp=Signal("PyObject","PyObject","PyObject")
-	clickedAppInstall=Signal("PyObject")
+	requestInstallApp=Signal("PyObject","PyObject")
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=True
@@ -140,6 +140,10 @@ class main(QWidget):
 		return(wdg)
 	#def _defBlog
 
+	def _emitInstallApp(self,*args):
+		self.requestInstallApp.emit(args[0],args[1])
+	#def _emitInstallApp
+
 	def _setAppseduData(self,*args):
 		app=json.loads(args[0])
 		for btn in self.appsEdu.children():
@@ -148,6 +152,7 @@ class main(QWidget):
 			if isinstance(app,list) and len(app)>0 and btn.app.get("summary","")=="":
 				btn.setApp(app[0])
 				btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+				btn.install.connect(self._emitInstallApp)
 				btn.setVisible(True)
 				break
 		self.appsEdu.setCursor(self.oldCursor)

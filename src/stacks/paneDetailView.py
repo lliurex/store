@@ -12,18 +12,16 @@ from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidge
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation,Slot
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel
-import gettext
 import libhelper
-import exehelper
 import css
 from cmbBtn import QComboButton
 from lblApp import QLabelRebostApp
 from lblLnk import QLabelLink
 from libth import thShowApp
 from constants import *
+import gettext
 _ = gettext.gettext
 QString=type("")
-BKG_COLOR_INSTALLED=QtGui.QColor(QtGui.QPalette().color(QtGui.QPalette.Inactive,QtGui.QPalette.Highlight))
 
 i18n={
 	"APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
@@ -32,7 +30,6 @@ i18n={
 	"ERRLAUNCH":_("Error opening"),
 	"ERRMORETHANONE":_("There's another action in progress"),
 	"ERRSYSTEMAPP":_("System apps can't be removed"),
-	"ERRUNAUTHORIZED":_("Authorization is required"),
 	"ERRUNKNOWN":_("Unknown error"),
 	"FORBIDDEN":_("App unauthorized"),
 	"INFO":_("For more info go to"),
@@ -51,6 +48,8 @@ class main(QWidget):
 	clickedBack=Signal("PyObject","PyObject")
 	loaded=Signal("PyObject")
 	tagpressed=Signal(str)
+	requestLoadCategory=Signal(str)
+	requestInstallApp=Signal("PyObject","PyObject",str)
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=True
@@ -63,6 +62,7 @@ class main(QWidget):
 		self.refresh=False
 		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
 		self.rc=store.client()
+		self.helper=libhelper.helper()
 		self.oldCursor=self.cursor()
 		self.launcher=""
 		self.config={}
@@ -73,17 +73,8 @@ class main(QWidget):
 	#def __init__
 
 	def _connectThreads(self):
-		self.helper=libhelper.helper()
-		self.epi=exehelper.appLauncher()
-		self.epi.runEnded.connect(self._getEpiResults)
-		self.runapp=exehelper.appLauncher()
-		self.runapp.runEnded.connect(self._getRunappResults)
-		self.thEpiShow=thShowApp(rc=self.rc)
-		self.thEpiShow.showEnded.connect(self._endGetEpiResults)
 		self.thParmShow=thShowApp(rc=self.rc)
 		self.thParmShow.showEnded.connect(self._endSetParms)
-		self.zmdLauncher=exehelper.zmdLauncher()
-		self.zmdLauncher.finished.connect(self._endRunZomando)
 	#def _connectThreads
 
 	def _debug(self,msg):
@@ -94,9 +85,7 @@ class main(QWidget):
 	@staticmethod
 	def _onDestroy(*args):
 		selfDict=args[0]
-		selfDict["epi"].quit()
-		selfDict["runapp"].quit()
-		selfDict["thEpiShow"].quit()
+		selfDict["thParmShow"].quit()
 	#def _onDestroy
 
 
@@ -190,32 +179,6 @@ class main(QWidget):
 		self.updateScreen()
 	#def _endSetParms
 
-	def _endRunZomando(self):
-		self.thEpiShow.setArgs(self.app["name"])
-		self.thEpiShow.start()
-	#def _endRunZomando
-
-	def _runZomando(self):
-		self.zmdLauncher.setApp(self.app)
-		self.zmdLauncher.start()
-		self.setEnabled(False)
-	#def _runZomando
-
-	def _runApp(self):
-		bundle=self.lstInfo.currentItem().text().lower().split(" ")[-1]
-		launchCmd=self.helper.getCmdForLauncher(self.app,bundle)
-		self._debug("Opening {0} with {1}".format(self.app["name"],launchCmd))
-		notifySummary=i18n.get("ERRNOTFOUND","")
-		if len(launchCmd)>0:
-			self.runapp.setArgs(self.app,launchCmd,bundle)
-			self.runapp.start()
-			notifySummary=i18n.get("OPENING","")
-		notifyIcon=None
-		if os.path.exists(self.app["icon"]):
-			notifyIcon=self.app["icon"]
-		self.showMsg(title="AppsEdu Store",summary=notifySummary,text=self.app["name"],icon=notifyIcon,timeout=2000)
-	#def _runApp
-
 	def _getRunappResults(self,app,proc):
 		self.setCursor(self.oldCursor)
 		if proc==None:
@@ -246,52 +209,9 @@ class main(QWidget):
 
 	@Slot("PyObejct,","PyObject")
 	def _genericEpiInstall(self,*args):
-		if self.instBundle=="":
-			bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
-		else:
-			bundle=self.instBundle
-		pkg=self.app.get('bundle',{}).get(bundle,'')
-		user=os.environ.get('USER')
-		installer=str(self.rc.getExternalInstaller())
-		if installer!="":
-			self._setInstallingState()
-			self._setLauncherStatus()
-			self.runapp.setArgs(self.app,[installer,pkg,bundle])
-			self.runapp.start()
-		return
+		bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
+		self.requestInstallApp.emit(self.referrerBtn,self.app,bundle)
 	#def _genericEpiInstall
-	
-	def _getEpiResults(self,app,*args):
-		cursor=QtGui.QCursor(Qt.WaitCursor)
-		self.setCursor(cursor)
-		self.setEnabled(False)
-		self.refresh=False
-		#signal.raise_signal(signal.SIGUSR1)
-		self.thEpiShow.setArgs(app)
-		self.thEpiShow.start()
-	#def _getEpiResults
-
-	def _endGetEpiResults(self,app):
-		self.thEpiShow.wait()
-		bundle=list(app.get('bundle').keys())[0]
-		state=app.get('status',{}).get(bundle,1)
-		if app.get('name','')==self.app.get('name',''):
-			if state!=self.app.get("status",{}).get(bundle,1):
-				self.rc.commitInstall(app.get('name'),bundle,state)
-				self.refresh=True
-			self.app=app
-		else:
-			self.rc.commitInstall(app.get('name'),bundle,state)
-			self.refresh=True
-		self.setEnabled(True)
-		if self.parent().installingAppDetail!=None:
-			self.parent().installingAppDetail=None
-			if self.parent().installingApp!=None:
-				self.parent().installingApp.progress.stop()
-			self.parent().installingApp=None
-		if self.isVisible()==True:
-			self.updateScreen()
-	 #def _endGetEpiResults
 
 	def _clickedBack(self):
 		if self.thParmShow.isRunning():
@@ -377,18 +297,8 @@ class main(QWidget):
 		self.btnUnavailable=QPushButton(i18n.get("UNAVAILABLE"))
 		self.btnUnavailable.setObjectName("lstInfo")
 
-		self.btnZomando=QPushButton(" {} zomando ".format(i18n.get("RUN")))
-		self.btnZomando.clicked.connect(self._runZomando)
-		self.btnZomando.resize(self.lblRelease.sizeHint().width(),int(ICON_SIZE/3))
-		self.btnZomando.setVisible(False)
-
-		self.btnLaunch=QPushButton(i18n.get("RUN"))
-		self.btnLaunch.clicked.connect(self._runApp)
-		self.btnLaunch.resize(self.lblRelease.sizeHint().width(),int(ICON_SIZE/3))
 		launchers.setLayout(hlay)
 		lay.addWidget(launchers,1,3,1,1,Qt.AlignTop|Qt.AlignRight)
-		for i in [self.lblRelease,self.btnLaunch,self.btnZomando]:
-			i.setMinimumWidth(self.btnZomando.sizeHint().width()+(4*i.font().pointSize()))
 
 		self.lstInfo=QComboButton()
 		self.lstInfo.setObjectName("lstInfo")
@@ -495,17 +405,6 @@ class main(QWidget):
 		if self.app.get("bundle",None)==None:
 			self._setUnknownAppInfo()
 			return
-		#Disabled as requisite (250214-11:52)
-		#self.lblName.setText("<h1>{}</h1>".format(self.app.get('name')))
-	#	self.lblName.setText("{}".format(self.app.get('name').upper()))
-	#	icn=self.app["icon"]
-	#	if isinstance(icn,QtGui.QIcon):
-	#		icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
-	#	elif isinstance(icn,QtGui.QPixmap)==False:
-	#		icn=self._getIconFromApp(self.app)
-	#		if isinstance(icn,QtGui.QIcon):
-	#			icn=icn.pixmap(ICON_SIZE,ICON_SIZE)
-		#self.lblIcon.setPixmap(icn.scaled(ICON_SIZE,ICON_SIZE))
 		self.lblIcon.loadImg(self.app)
 		pxm=self.lblIcon.pixmap()
 		if pxm!=None:
@@ -551,7 +450,7 @@ class main(QWidget):
 				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
 			self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setText(description)
-		self._updateScreenControls(bundles)
+		self._setReleasesInfo()
 		#preliminary license support, not supported
 		applicense=self.app.get('license','')
 		if applicense:
@@ -687,38 +586,6 @@ class main(QWidget):
 		self.lstInfo.blockSignals(False)
 	#def _setLauncherOptions
 
-	def _getIconFromApp(self,app):
-		icn=QtGui.QIcon()
-		appIcn=app.get("icon")
-		if isinstance(appIcn,str):
-			if os.path.exists(app.get("icon")):
-				icn=QtGui.QPixmap.fromImage(QtGui.QImage(appIcn))
-		elif icn.isNull():
-		#something went wrong. Perhaps img it's gzipped
-			icn2=QtGui.QIcon.fromTheme(app.get('pkgname'))
-			icn=icn2.pixmap(ICON_SIZE,ICON_SIZE)
-		elif isinstance(appIcn,QtGui.QPixmap):
-			icn=appIcn
-		return(icn)
-	#def _getIconFromApp
-
-	def _updateScreenControls(self,bundles):
-		pkgState=0
-		if "zomando" in bundles:
-			if "package" in bundles:
-				pkgState=self.app.get('status',{}).get("package",'1')
-				if pkgState.isdigit()==True:
-					pkgState=int(pkgState)
-		states=0
-		self.btnZomando.setVisible(False)
-		for bundle in bundles:
-			state=(self.app.get('status',{}).get(bundle,1))
-			states+=state
-			if bundle=="zomando" and ((pkgState==0 or state==0) or (self.app.get("pkgname","x$%&/-1") not in self.app["bundle"]["zomando"])):
-				continue
-		self._setReleasesInfo()
-	#def _updateScreenControls
-
 	def _setReleasesInfo(self):
 		for i in range(self.lstInfo.count()):
 			self.lstInfo.removeItem(i)
@@ -745,34 +612,14 @@ class main(QWidget):
 		if len(self.app)>0:
 			self.lstInfo.setVisible(True)
 			self.lblRelease.setVisible(True)
-			if self.app.get('name','')==self.epi.app.get('name',''):
-				try:
-					self.app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
-				except Exception as e:
-					pass
-			if isinstance(self.app,str):
-				try:
-					self.app=json.loads(self.app)
-				except Exception as e:
-					pass
-					self.app={}
 			self.lblRelease.setEnabled(True)
 			self.lblRelease.setText(i18n.get("INSTALL"))
 			self.setCursor(self.oldCursor)
 			self.screenShot.clear()
-			self.btnZomando.setVisible(False)
 			self.lblHomepage.setText("")
 			self.lblTags.setText("")
 			#Disabled as requisite (250214-11:52)
 			self.lblTags.linkActivated.connect(self._tagNav)
-			self.app['name']=self.app.get('name','')
 		else:
 			self._onError()
 	#def _initScreen
-
-	def _updateConfig(self,key):
-		pass
-
-	def writeConfig(self):
-		return
-
