@@ -92,7 +92,10 @@ class QLabelRebostApp(QLabel):
 
 	def _savePixmap(self):
 		pxm=self.pixmap()
-		stripName=''.join(ch for ch in os.path.basename(self.app.get("icon")) if ch.isalnum())
+		if isinstance(self.app.get("icon"),QtGui.QPixmap)==True:
+			stripName=''.join(ch for ch in os.path.basename(self.app.get("pkgname")) if ch.isalnum())
+		else:
+			stripName=''.join(ch for ch in os.path.basename(self.app.get("icon")) if ch.isalnum())
 		if stripName.endswith("png"):
 			stripName=stripName.replace("png",".png")
 		fPath=os.path.join(self.cacheDir,stripName)
