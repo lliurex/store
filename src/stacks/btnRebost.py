@@ -170,21 +170,14 @@ class QPushButtonRebostApp(QPushButton):
 		elif "eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))==1:
 			self.btn.setText(i18n.get("UNAVAILABLE"))
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper().replace("L*","L·"),self.app.get('summary','').strip().replace("l*","·"))
-		self.setToolTip(text)
 		self.label.setText(text)
+		if len(text)>0:
+			self.setToolTip(text)
 		img=self.app.get('icon','')
 	#def __init__
 
 	def _emitInstall(self,*args):
-	#	self.btn.setEnabled(False)
-	#	self.progress.setVisible(True)
-	#	if self.btn.text()==i18n["REMOVE"]:
-	#		#Remove, get installed bundle
-	#		priority=["zomando","flatpak","snap","package","appimage","eduapp"]
-	#		for bundle in priority:
-	#			if self.app["status"].get(bundle,"1")=="0" and self.app["bundle"].get("bundle","")!="":
-	#				self.app["bundle"]={bundle:self.app["bundle"][bundle]}
-	#				break
+		self.progress.setVisible(True)
 		self.install.emit(self,self.app)
 	#def _emitInstall
 
@@ -201,7 +194,6 @@ class QPushButtonRebostApp(QPushButton):
 					self._applyDecoration()
 				elif self.init==False and self.app.get("summary","")+self.app.get("name","")!="":
 					if self.startLoadImage==True:
-						print(".")
 						self.init=True
 						self.iconUri.setIconSize(self.appIconSize)
 						self.iconUri.loadImg(self.app)
@@ -229,7 +221,7 @@ class QPushButtonRebostApp(QPushButton):
 		else:
 			text="<p>{0}</p>".format(self.app.get('summary','').strip())
 			showBtn=False
-		if self.label.text()!=text:
+		if self.label.text()!=text and len(text)>0:
 			self.label.setText(text)
 			self.setToolTip(text)
 		if "Forbidden" in self.app.get("categories",[]) and self.btn.text()!=i18n["UNAUTHORIZED"]:
