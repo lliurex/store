@@ -27,7 +27,6 @@ class QPushButtonRebostApp(QPushButton):
 
 	def __init__(self,strapp,appname="",parent=None,**kwargs):
 		QPushButton.__init__(self, parent)
-		self.iconSize=kwargs.get("iconSize",96)
 		self.destroyed.connect(partial(QPushButtonRebostApp._stop,self.__dict__))
 		if isinstance(strapp,str):
 			self.app=json.loads(strapp)
@@ -35,11 +34,12 @@ class QPushButtonRebostApp(QPushButton):
 			self.app=strapp
 		self._wAttributes()
 		self._initRegisters()
+		self.appIconSize=kwargs.get("iconSize",ICON_SIZE/2)
 		self.btn=self._defBtnInstall()
 		self.lblFlyIcon=self._defFlyIcon()
 		self.label=self._defLabel()
 		self.iconUri=QLabelRebostApp()
-		self.iconUri.setIconSize(self.iconSize)
+		self.iconUri.setIconSize(self.appIconSize)
 		self.iconUri.setObjectName("iconUri")
 		self.focusFrame=self._defFrame()
 		#Btn Layout
@@ -97,16 +97,16 @@ class QPushButtonRebostApp(QPushButton):
 		if os.path.exists(self.cacheDir)==False:
 			os.makedirs(self.cacheDir)
 		self.instBundle=""
-		self.showBtn=True
 		self.refererApp=None
-		self.init=False
+		self.showBtn=True
+		self.init=None
 		self.startLoadImage=False
 		self.autoUpdate=False
 	#def _initRegisters
 
 	def _wAttributes(self):
 		self.setObjectName("rebostapp")
-		self.iconSize=self.iconSize/2
+		#self.appIconSize=self.aaiconSize/2
 		self.margin=12
 		self.setMinimumHeight(220)
 		self.setMinimumWidth(140)
@@ -150,7 +150,7 @@ class QPushButtonRebostApp(QPushButton):
 	def _defProgress(self):
 		wdg=QLabel()
 		wdg.setObjectName("flyIcon")
-		scaleFactor=(self.iconSize/2)
+		scaleFactor=(self.appIconSize/2)
 		wdg.setPixmap(QPixmap(os.path.join(RSRC,"run-build-install.png")).scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
 		wdg.setVisible(False)
 		return(wdg)
@@ -193,22 +193,21 @@ class QPushButtonRebostApp(QPushButton):
 		#if isinstance(ev,QMouseEvent):
 		#	self.activate()
 		if isinstance(ev,QEvent):
-			if ev.type()==QEvent.Type.Hide:
-				if hasattr(self,"data"):
-					self.data.quit()
-					self.data.wait()
 			if ev.type()==QEvent.Type.Paint:
-				if self.init==False:
-					self.init=True
-				elif self.init==True and (self.app.get("summary","")+self.app.get("name",""))!="":
+				#if self.init==False:
+				#	self.init=True
+				if self.init==None:
+					self.init=False
+					self._applyDecoration()
+				elif self.init==False and self.app.get("summary","")+self.app.get("name","")!="":
 					if self.startLoadImage==True:
-						if self.iconUri.text()=="":
-							self.iconUri.setIconSize(self.iconSize)
-							self.iconUri.loadImg(self.app)
-							self.init=None
+						print(".")
+						self.init=True
+						self.iconUri.setIconSize(self.appIconSize)
+						self.iconUri.loadImg(self.app)
 					else:
 						self.startLoadImage=True
-					self.updateScreen()
+						self.updateScreen()
 			if ev.type()==QEvent.Type.FocusIn:
 				self.focusFrame.setVisible(True)
 			if ev.type()==QEvent.Type.FocusOut:
@@ -219,6 +218,7 @@ class QPushButtonRebostApp(QPushButton):
 	def updateScreen(self):
 		if hasattr(self,"app")==False:
 			return
+		showBtn=self.showBtn
 		if self.progress.isVisible()==True:
 			self.progress.setVisible(False)
 		if self.app.get("name","").strip()!="":
@@ -228,16 +228,21 @@ class QPushButtonRebostApp(QPushButton):
 				text="<p>{0}</p>".format(self.app.get('name','').strip())
 		else:
 			text="<p>{0}</p>".format(self.app.get('summary','').strip())
-		self.setToolTip(text)
-		self.label.setText(text)
-		if "Forbidden" in self.app.get("categories",[]):
-			self.btn.setText(i18n.get("UNAUTHORIZED"))
-		elif ("eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))==1) or len(self.app.get("bundle",[]))==0:
-			self.btn.setText(i18n.get("UNAVAILABLE"))
+			showBtn=False
+		if self.label.text()!=text:
+			self.label.setText(text)
+			self.setToolTip(text)
+		if "Forbidden" in self.app.get("categories",[]) and self.btn.text()!=i18n["UNATHORIZED"]:
+			self.btn.setText(i18n["UNAUTHORIZED"])
+		elif "bundle" not in self.app.keys():
+			self.btn.setText(i18n["UNAVAILABLE"])
+		elif len(self.app["bundle"])==0 and self.btn.text()!=i18n["UNAVAILABLE"]:
+			self.btn.setText(i18n["UNAVAILABLE"])
 		else:
-			self.btn.setText(i18n.get("INSTALL"))
-			bundles=self.app.get("bundle",{}).copy()
-			states=self.app.get("status",{}).copy()
+			if self.btn.text()!=i18n["INSTALL"]:
+				self.btn.setText(i18n["INSTALL"])
+			bundles=self.app["bundle"]
+			states=self.app["status"]
 			zmd=states.get("zomando","0")
 			if len(states)>0:
 				for bundle,state in states.items():
@@ -245,16 +250,14 @@ class QPushButtonRebostApp(QPushButton):
 						if self.app["bundle"]["package"].startswith("zero"):
 							continue
 					if int(state)==0:# and zmdInstalled!="0":
-						installed=True
-						self.btn.setText(i18n.get("REMOVE"))
+						if self.btn.text()!=i18n["REMOVE"]:
+							self.btn.setText(i18n["REMOVE"])
 						self.instBundle=bundle
 						break
-		self.iconUri.setIconSize(self.iconSize)
-		self.iconUri.loadImg(self.app)
-		self._applyDecoration()
 		if int(self.app.get("state","0"))>=7:
 			self.btn.setCursor(QCursor(Qt.WaitCursor))
 			self.btn.setEnabled(False)
+			self.progress.setVisible(True)
 		self.iconUri.setVisible(True)
 		self.flyIcon=""
 		if self.app.get("name","").startswith("zero-"):
@@ -262,13 +265,11 @@ class QPushButtonRebostApp(QPushButton):
 		elif self.app.get("homepage")!=None:
 			if "appsedu" in self.app["homepage"].lower():
 				self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu128x128.png"))
-		scaleFactor=(self.iconSize/2)
+		scaleFactor=(self.appIconSize/2)
 		if isinstance(self.flyIcon,QPixmap):
-			self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
-		if self.app.get("summary","")!="" and self.showBtn==True:
-			self.btn.setVisible(True)
-		if int(self.app.get("state","0"))>=7:
-			self.progress.setVisible(True)
+			self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.FastTransformation))
+		if self.btn.isVisible()!=showBtn:
+			self.btn.setVisible(showBtn)
 	#def updateScreen
 
 	def enterEvent(self,*args):
@@ -285,10 +286,10 @@ class QPushButtonRebostApp(QPushButton):
 			return
 		elif os.path.isfile(img):
 			icn=QPixmap.fromImage(QImage(img))
-			icn=icn.scaled(self.iconSize,self.iconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
+			icn=icn.scaled(self.appIconSize,self.appIconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
 		elif img=='':
 			icn=QIcon.fromTheme(app.get('pkgname'),QIcon.fromTheme("appedu-generic"))
-			img=icn.pixmap(self.iconSize,self.iconSize)
+			img=icn.pixmap(self.appIconSize,self.appIconSize)
 		if isinstance(img,str):
 			if "flathub" in img:
 				tmp=img.split("/")
@@ -301,13 +302,13 @@ class QPushButtonRebostApp(QPushButton):
 			elif os.path.exists(os.path.join(self.cacheDir,os.path.basename(img))):
 				img=os.path.join(self.cacheDir,os.path.basename(img))
 
-		#scrCnt=QScreenShotContainer()
-		#scr=scrCnt.loadScreenShot(img,self.cacheDir)
-		#scr.imageReady.connect(self.load)
-		#scr.start()
-		#self.th.append(scr)
-		#self.scr.wait()
-		self._applyDecoration(app)
+		scrCnt=QScreenShotContainer()
+		scr=scrCnt.loadScreenShot(img,self.cacheDir)
+		scr.imageReady.connect(self.load)
+		scr.start()
+		self.th.append(scr)
+		self.scr.wait()
+		#self._applyDecoration(app)
 	#def loadImg
 
 	def _getStats(self,app):
@@ -320,9 +321,9 @@ class QPushButtonRebostApp(QPushButton):
 			
 		if "Forbidden" in app.get("categories",[]):
 			stats["forbidden"]=True
-		if app["name"]==app["pkgname"] and "zomando" in app.get("status",{}):
-			if len(app.get("status",{}))==1:
-				stats["installed"]=False
+		#if app["name"]==app["pkgname"] and "zomando" in app.get("status",{}):
+		#	if len(app.get("status",{}))==1:
+		#		stats["installed"]=False
 		return(stats)
 	#def _getStats
 
@@ -427,9 +428,9 @@ class QPushButtonRebostApp(QPushButton):
 		img=args[0]
 		if oldPxm!=None:
 			if oldPxm.isNull()==True:
-				self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
+				self.iconUri.setPixmap(img.scaled(self.appIconSize,self.appIconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 		else:
-			self.iconUri.setPixmap(img.scaled(self.iconSize,self.iconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
+			self.iconUri.setPixmap(img.scaled(self.appIconSize,self.appIconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 	#def load
 	
 	def activate(self):
