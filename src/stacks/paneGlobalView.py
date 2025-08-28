@@ -22,14 +22,14 @@ i18n={
 
 class paneGlobalView(QWidget):
 	tagpressed=Signal(str)
-	requestLoadDetails=Signal("PyObject","PyObject")
+	requestLoadDetails=Signal("PyObject","PyObject","PyObject")
 	requestInstallApp=Signal("PyObject","PyObject")
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		if len(args)<1:
 			return
 		self._rebost=args[0]
-		self.dbg=False
+		self.dbg=True
 		self.destroyed.connect(partial(paneGlobalView._onDestroy,self.__dict__))
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("mp")
@@ -156,10 +156,13 @@ class paneGlobalView(QWidget):
 	#def stopLoadApps
 
 	def _emitLoadDetails(self,*args):
-		self.requestLoadDetails.emit(args[0],args[1])
+		app=args[1]
+		btn=args[0]
+		self.requestLoadDetails.emit(self,btn,app)
 	#def _emitLoadDetails
 
 	def _emitInstallApp(self,*args):
+		print(args)
 		self.requestInstallApp.emit(args[0],args[1])
 	#def _emitInstallApp
 
@@ -202,7 +205,9 @@ class paneGlobalView(QWidget):
 
 	def updateBtn(self,btn,app):
 		if btn!=None:
-			if self.table.indexOf(btn):
+			self.table.indexOf(btn)
+			idx=self.table.indexOf(btn)
+			if idx>=0:
 				btn.setApp(app)
 	#def updateBtn
 
