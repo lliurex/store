@@ -119,7 +119,7 @@ class paneGlobalView(QWidget):
 	#def populateCategories
 
 	def _defTable(self):
-		table=QFlowTouchWidget(self)
+		table=QFlowTouchWidget(self,fastMode=True)
 		table.setFocusPolicy(Qt.NoFocus)
 		table.clearFocus()
 		table.setObjectName("qFlow")
@@ -202,10 +202,7 @@ class paneGlobalView(QWidget):
 
 	def updateBtn(self,btn,app):
 		if btn!=None:
-			print(btn)
 			if self.table.indexOf(btn):
-				print("TOMA!")
-				print(btn.autoUpdate)
 				btn.setApp(app)
 	#def updateBtn
 
