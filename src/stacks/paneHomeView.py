@@ -126,7 +126,7 @@ class main(QWidget):
 		layout=QHBoxLayout()
 		layout.setSpacing(0)
 		for i in range(0,5):
-			btn=QPushButtonRebostApp("{}")
+			btn=QPushButtonRebostApp("{}",iconSize=256)
 			btn.showBtn=False
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			btn.setObjectName("mp")
@@ -150,7 +150,6 @@ class main(QWidget):
 				btn.setApp(app[0])
 				btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 				btn.setVisible(True)
-				QApplication.processEvents()
 				break
 		self._debug("Setting data ---<")
 		self.appsEdu.setCursor(self.oldCursor)
@@ -180,7 +179,7 @@ class main(QWidget):
 		layout.setSpacing(32)
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		for i in range(0,10):
-			btn=QPushButtonRebostApp("{}")
+			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE/2))
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			btn.setMaximumWidth(IMAGE_PREVIEW/3)
 			btn.autoUpdate=True
@@ -262,6 +261,7 @@ class main(QWidget):
 	def updateBtn(self,btn,app):
 		if btn!=None:
 			if btn in self.appsEdu.children():
+				print("Get btn {}".format(btn))
 				btn.setApp(app)
 	#def updateBtn
 
