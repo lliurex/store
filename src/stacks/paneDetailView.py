@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidge
 							QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,\
 							QAbstractScrollArea, QFrame
 from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
+from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation,Slot
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel
 import gettext
 import libhelper
@@ -244,11 +244,8 @@ class main(QWidget):
 		self._rebost.wait()
 	#def _setInstallingState
 
+	@Slot("PyObejct,","PyObject")
 	def _genericEpiInstall(self,*args):
-		if self.parent().installingApp!=None:
-			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.parent().installingApp.app["name"].capitalize(),timeout=4)
-			return
-		#self.parent().installingAppDetail=self.app
 		if self.instBundle=="":
 			bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
 		else:
@@ -641,16 +638,16 @@ class main(QWidget):
 	def _setLauncherStatus(self):
 		if int(self.app.get("state","0"))>=7:
 			try:
-				self.btnRemove.clicked.disconnect()
-				self.lstInfo.installClicked.disconnect()
-			except: #Don't worry
-				pass
+				self.btnRemove.blockSignals(True)
+				self.lstInfo.blockSignals(True)
+			except Exception as e: #Don't worry
+				print(e)
 			self.btnRemove.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			self.lstInfo.setCursor(QtGui.QCursor(Qt.WaitCursor))
 		else:
 			try:	
-				self.btnRemove.clicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
-				self.lstInfo.installClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
+				self.btnRemove.blockSignals(False)
+				self.lstInfo.blockSignals(False)
 			except: #Be happy
 				pass
 			self.btnRemove.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
@@ -723,35 +720,23 @@ class main(QWidget):
 	#def _updateScreenControls
 
 	def _setReleasesInfo(self):
-		bundles=self.app.get('bundle',{})
 		for i in range(self.lstInfo.count()):
 			self.lstInfo.removeItem(i)
 		self.lstInfo.clear()
-		if len(bundles)<=0:
-			return()
-		priority=["zomando","package","flatpak","snap","appimage","eduapp"]
-		priorityIdx={}
-		for i in bundles:
-			version=self.app.get('versions',{}).get(i,'')
-			if i in priority:
-				fversion=version.split("+")[0][0:10]
-				release="{} {}".format(i,fversion)
-				idx=priority.index(i)
-				priorityIdx[idx]=release
-		priorityFinal=list(priorityIdx.keys())
-		priorityFinal.sort()
-		for idx in priorityFinal:
-			self.lstInfo.addItem(priorityIdx[idx])
-		self.lstInfo.setText(i18n["INSTALL"].upper())
-		for idx in range(0,len(priority)):
-			try:
-				self.lstInfo.setState(idx,False)
-			except:
-				break
-		if "eduapp" in bundles.keys():
-			bundles.pop("eduapp")
-		if len(bundles)<=0:
+		priority=self.helper.getBundlesByPriority(self.app)
+		if len(priority)<=0:
 			self.lstInfo.setEnabled(False)
+		else:
+			priorityFinal=list(priority.keys())
+			priorityFinal.sort()
+			for idx in priorityFinal:
+				self.lstInfo.addItem(priority[idx])
+			self.lstInfo.setText(i18n["INSTALL"].upper())
+			for idx in range(0,len(priority)):
+				try:
+					self.lstInfo.setState(idx,False)
+				except:
+					break
 	#def _setReleasesInfo
 
 	def _initScreen(self):

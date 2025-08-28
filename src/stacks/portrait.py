@@ -17,6 +17,7 @@ from rebost import store
 from libth import storeHelper,updateAppData,getData,llxup
 from btnRebost import QPushButtonRebostApp
 from prgBar import QProgressImage
+import libhelper
 import exehelper
 import paneDetailView
 import paneGlobalView
@@ -77,12 +78,15 @@ class portrait(QStackedWindowItem):
 		self.destroyed.connect(partial(portrait._onDestroy,self.__dict__))
 		self.pendingApps={}
 		self.apps=[]
+		self.helper=libhelper.helper()
 		self.rc=store.client()
 		self._referrerPane=None
 		self.getData=getData()
 		self._rebost=storeHelper(rc=self.rc)
 		self._llxup=llxup()
 		self.epi=exehelper.appLauncher()
+		self.runapp=exehelper.appLauncher()
+		self.runapp.runEnded.connect(self._getRunappResults)
 		self._initRegisters()
 		self._initThreads()
 		self._initGUI()
@@ -144,17 +148,13 @@ class portrait(QStackedWindowItem):
 		self._rebost.staEnded.connect(self._endGetLockStatus)
 		self._rebost.catEnded.connect(self._populateCategories)
 		self._rebost.shwEnded.connect(self._loadFromArgs)
-		self.epi.runEnded.connect(self._endLaunchHelper)
-		self.zmdLauncher=exehelper.zmdLauncher()
-		self.zmdLauncher.zmdEnded.connect(self._endLaunchHelper)
 	#def _initThreads(self):
 
 	def _initGUI(self):
 		self.hideControlButtons()
 		self.referersHistory={}
 		self.referersShowed={}
-		self.installingApp=None
-		self.installingAppDetail=None
+		self.installingBtn=None
 		self.refererApp=None
 		self.oldCursor=self.cursor()
 		self.refresh=True
@@ -278,8 +278,6 @@ class portrait(QStackedWindowItem):
 
 	def _closeEvent(self,*args):
 		self._stopThreads()
-		if self.installingApp!=None:
-			self.installingApp.progress.stop()
 		if self._llxup.isRunning():
 			self._llxup.quit()
 			self._llxup.wait()
@@ -514,6 +512,7 @@ class portrait(QStackedWindowItem):
 	def _getGlobalViewPane(self):
 		gvp=paneGlobalView.paneGlobalView(self._rebost)
 		gvp.requestLoadDetails.connect(self._loadGlobalDetails)
+		gvp.requestInstallApp.connect(self._installApp)
 		return(gvp)
 	#def _getGlobalViewPane
 
@@ -731,7 +730,6 @@ class portrait(QStackedWindowItem):
 		self.btnSearch.setIcon(icn)
 	#def setBtnIcon
 
-
 	def _changeSearchAppsBtnIcon(self):
 		if len(self.searchBox.text())>0:
 			self.setBtnIcon("cancel")
@@ -818,83 +816,73 @@ class portrait(QStackedWindowItem):
 		self._rebost.start()
 	#def _endLoadApps
 
-	def _installBundle(self,*args):
-		#QApplication.processEvents()
-		app=args[1]
-		refererApp=args[0]
-		if self.installingApp!=None:
-			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.installingApp.app["name"].capitalize(),timeout=4)
-			refererApp.progress.stop()
-			refererApp.btn.setEnabled(True)
-			self.installingApp.setFocus()
-			self.installingApp.setEnabled(False) #Trick to **really** get focus
-			self.installingApp.setEnabled(True)
-			self.installingApp.setFocus()
-			self.installingApp.pulse()
-			return
-
-		self.installingApp=refererApp
-		self.installingApp.blockSignals(True)
-		if self.refererApp==None:
-			self.refererApp=refererApp
-		if isinstance(app,dict)==False:
-			return
-		bundle=""
-		priority=["zomando","flatpak","snap","package","appimage","eduapp"]
-		for bund in priority:
-			if app.get("bundle",{}).get(bund,"")!="":
-				bundle=bund
-				break
-		if len(bundle)==0 or bundle=="package":
-			if app.get("bundle",{}).get("zomando","")!="":
-				bundle="zomando"
-			elif len(bundle)==0:
-				return
-		self.rc.enableGui(True)
-		cursor=QtGui.QCursor(Qt.WaitCursor)
-		self.setCursor(cursor)
-		pkg=app.get('name').replace(' ','')
-		user=os.environ.get('USER')
-		res=self.rc.testInstall("{}".format(pkg),"{}".format(bundle),user=user)
-		try:
-			res=json.loads(res)[0]
-		except Exception as e:
-			self._debug(e)
-			res={}
-		epi=res.get('epi')
-		self._debug("Invoking EPI for {}".format(epi))
-		if epi==None:
-			if res.get("done",0)==1 and "system package" in res.get("msg","").lower():
-				self.showMsg(summary=i18n.get("ERRSYSTEMAPP",""),msg="{}".format(app["name"]),timeout=4)
-			else:
-				self.showMsg(summary=i18n.get("ERRUNKNOWN",""),msg="{}".format(app["name"]),timeout=4)
-			self.updateScreen(True)
-			self.progress.stop()
+	def _setInstallingState(self,app):
+		return
+		if self.btnRemove.isVisible()==True:
+			self._rebost.setAction("setAppState",self.app["id"],8)
+			app["state"]=8
 		else:
-			if bundle=="zomando":# and app.get("state",{}).get("zomando","0")=="1":
-				self.zmdLauncher.setApp(app)
-				self.zmdLauncher.start()
-			else:
-				cmd=["pkexec","/usr/share/rebost/helper/rebost-software-manager.sh",res.get('epi')]
-				self.epi.setArgs(app,cmd,bundle)
-				self.epi.start()
-	#def _installBundle
+			self._rebost.setAction("setAppState",self.app["id"],7)
+			app["state"]=7
+		self._rebost.start()
+		self._rebost.wait()
+		return(app)
+	#def _setInstallingState
 
-	def _endLaunchHelper(self,*args,**kwargs):
-		for app in [self.refererApp,self.installingApp]:
-			if app==None:
-				continue
-			btn=app
-			app=json.loads(self.rc.showApp(btn.app["id"]))[0]
-			btn.setApp(json.loads(app))
-			btn.updateScreen()
-		self.referererApp=None
-		if self.installingApp!=None:
-			self.installingApp.blockSignals(False)
-			self.installingApp=None
-			self.installingAppDetail=None
+	def _getRunappResults(self,app,proc):
 		self.setCursor(self.oldCursor)
-	#def _endLaunchHelper
+		self._rebost.setAction("setAppState",app["id"],0)
+		self._rebost.start()
+		if proc==None:
+			return
+		if proc.returncode!=0:
+			#pkexec ret values
+			#127 -> Not authorized
+			if proc.returncode==127:
+				self.showMsg(title="AppsEdu Store",summary=app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=app["icon"],timeout=5000)
+		self._rebost.wait()
+		return
+	#def _getRunappResults
+
+	def _installApp(self,*args): #(btn,app,[bundle])
+		if self.installingBtn!=None:
+			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.installingBtn.app["name"].capitalize(),timeout=4)
+			return
+		btn=args[0]
+		app=args[1]
+		bundle=""
+		if len(args)>2:
+			bundle=args[2]
+		else:
+			priority=self.helper.getBundlesByPriority(app)
+			idx=list(priority.keys())
+			idx.sort()
+			bundle=priority[idx[0]].split(" ")[0]
+		pkg=app.get('bundle',{}).get(bundle,'')
+		if pkg!="":
+			installer=str(self.rc.getExternalInstaller())
+			if installer!="":
+				self.installingBtn=btn
+				self._setInstallingState(app)
+				self.runapp.setArgs(app,[installer,pkg,bundle])
+				self.runapp.start()
+		#if bundle=="":
+		#if len(args)>1:
+		#	bundle=args[1]
+		#self.installingApp=app.copy()
+		#if bundle=="":
+		#	#REM SET candidate bundle
+		#	bundle="package"
+		#pkg=app.get('bundle',{}).get(bundle,'')
+		#user=os.environ.get('USER')
+		#installer=str(self.rc.getExternalInstaller())
+		#if installer!="":
+		#	app=self._setInstallingState(app)
+		#	self._setLauncherStatus()
+		#	self.runapp.setArgs(app,[installer,pkg,bundle])
+		#	self.runapp.start()
+		return
+	#def _installApp
 
 	def _loadLockedRebost(self):
 		self.progress.start()
@@ -975,19 +963,6 @@ class portrait(QStackedWindowItem):
 			self._detailView.setParms(pkgname)
 	#def setParms
 	
-	def _updateBtn(self,*args,**kwargs):
-		app={}
-		if isinstance(args[0],dict):
-			app=args[0]
-		if app!={}:
-			#refered btn can be deleted so ensure there's a btn
-			if self.referersShowed.get(app.get("name"))!=None:
-				self.refererApp=self.referersShowed[app["name"]]
-				self.refererApp.setApp(app)
-				self.refererApp._stopThreads()
-				self.refererApp.updateScreen()
-	#def _updateBtn
-
 	def _returnFromDetail(self,*args,**kwargs):
 		if self._detailView.isVisible():
 			self._detailView.hide()
@@ -999,6 +974,7 @@ class portrait(QStackedWindowItem):
 			else:
 				self._referrerPane.setVisible(True)
 		if self._globalView.isVisible()==True:
+			self._debug("Looking for btn update: {}".format(self.referrerBtn))
 			self._globalView.updateBtn(self.referrerBtn,args[1])
 		elif self._homeView.isVisible()==True and self.referrerBtn!=None:
 			self._homeView.updateBtn(self.referrerBtn,args[1])
