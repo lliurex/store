@@ -26,6 +26,7 @@ class llxup(QThread):
 class storeHelper(QThread):
 	test=Signal("PyObject")
 	lstEnded=Signal("PyObject")
+	linEnded=Signal("PyObject")
 	gacEnded=Signal("PyObject")
 	srcEnded=Signal("PyObject")
 	shwEnded=Signal("PyObject")
@@ -59,6 +60,8 @@ class storeHelper(QThread):
 			self._test()
 		elif self.action=="list":
 			self._list()
+		elif self.action=="installed":
+			self._installed()
 		elif self.action=="search":
 			self._search()
 		elif self.action=="urlSearch":
@@ -99,6 +102,12 @@ class storeHelper(QThread):
 		apps=self.rc.getAppsInCategory(self.args[0])
 		self.lstEnded.emit(apps)
 	#def _list
+
+	def _installed(self):
+		apps=[]
+		apps=self.rc.getAppsInstalled()
+		self.linEnded.emit(apps)
+	#def _installed
 
 	def _getAppsPerCategory(self):
 		apps=[]
