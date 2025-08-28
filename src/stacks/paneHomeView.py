@@ -141,7 +141,6 @@ class main(QWidget):
 	#def _defBlog
 
 	def _setAppseduData(self,*args):
-		self._debug("Setting data --->")
 		app=json.loads(args[0])
 		for btn in self.appsEdu.children():
 			if not isinstance(btn,QPushButtonRebostApp):
@@ -151,7 +150,6 @@ class main(QWidget):
 				btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 				btn.setVisible(True)
 				break
-		self._debug("Setting data ---<")
 		self.appsEdu.setCursor(self.oldCursor)
 		#Ensure that there're categories after all
 		if self.appsByCat.cursor()==Qt.WaitCursor and self_rebost.isRunning()==False:
@@ -261,7 +259,6 @@ class main(QWidget):
 	def updateBtn(self,btn,app):
 		if btn!=None:
 			if btn in self.appsEdu.children():
-				print("Get btn {}".format(btn))
 				btn.setApp(app)
 	#def updateBtn
 
