@@ -164,7 +164,6 @@ class helper():
 		return(cmd)
 	#def getCmdForLauncher
 
-
 	def runApp(self,app,bundle,launcher=""): #TODO: QTHREAD
 		cmd=self.getCmdForLauncher(app,bundle,launcher)
 		proc=subprocess.run(cmd)
@@ -173,3 +172,18 @@ class helper():
 			proc=subprocess.run(cmd)
 		return(proc)
 	#def runApp(self,app,bundle)
+
+	def getBundlesByPriority(self,app):
+		priority=["zomando","package","flatpak","snap","appimage","eduapp"]
+		priorityIdx={}
+		bundles=app.get('bundle',{})
+		for i in bundles:
+			version=app.get('versions',{}).get(i,'')
+			if i in priority:
+				fversion=version.split("+")[0][0:10]
+				release="{} {}".format(i,fversion)
+				idx=priority.index(i)
+				priorityIdx[idx]=release
+		return(priorityIdx)
+	#def getBundlesByPriority
+
