@@ -135,6 +135,7 @@ class portrait(QStackedWindowItem):
 		self.loading=False
 		self.categoriesTree={}
 		self.chkUpdates=False
+		self.noChkNetwork=False
 		self.isConnected=self._chkNetwork()
 		self.referrerBtn=None
 	#def _initRegisters
@@ -173,16 +174,19 @@ class portrait(QStackedWindowItem):
 
 	def _chkNetwork(self):
 		state=False
-		bus=dbus.SystemBus()
-		try:
-			objbus=bus.get_object("org.freedesktop.NetworkManager","/org/freedesktop/NetworkManager")
-			proxbus=dbus.Interface(objbus,"org.freedesktop.NetworkManager")
-			status=proxbus.state()
-		except:
+		if self.noChkNetwork==True:
 			state=True
 		else:
-			if status==70:
+			bus=dbus.SystemBus()
+			try:
+				objbus=bus.get_object("org.freedesktop.NetworkManager","/org/freedesktop/NetworkManager")
+				proxbus=dbus.Interface(objbus,"org.freedesktop.NetworkManager")
+				status=proxbus.state()
+			except:
 				state=True
+			else:
+				if status==70:
+					state=True
 		return(state)
 	#def _chkNetwork
 
@@ -267,10 +271,10 @@ class portrait(QStackedWindowItem):
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		self.box.setColumnStretch(1,1)
 		self.setObjectName("portrait")
-		self.errTab=self._defError()
-		self.errTab.setObjectName("errorMsg")
-		self.errTab.setVisible(not(self.isConnected))
-		self.box.addWidget(self.errTab,0,1,self.box.rowCount(),self.box.columnCount())
+		self._errorView=self._defError()
+		self._errorView.setObjectName("errorMsg")
+		self._errorView.setVisible(not(self.isConnected))
+		self.box.addWidget(self._errorView,0,1,self.box.rowCount(),self.box.columnCount())
 		self.progress=self._defProgress()
 		self.progress.lblInfo.setVisible(False)
 		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
@@ -440,8 +444,9 @@ class portrait(QStackedWindowItem):
 	#def _defInfo
 
 	def _defError(self):
-		wdg=paneErrorView.paneErrorView()
-		return(wdg)
+		pev=paneErrorView.paneErrorView()
+		pev.requestLoadPortrait.connect(self._loadPortraitFromError)
+		return(pev)
 	#def _defError
 	
 	def _defSearch(self):
@@ -868,6 +873,13 @@ class portrait(QStackedWindowItem):
 		self._loadDetails(args,kwargs)
 	#def _loadGlobalDetails(self,*args,**kwargs):
 
+	def _loadPortraitFromError(self,*args,**kwargs):
+		self.noChkNetwork=True
+		print("HOME")
+		self._errorView.setVisible(False)
+		self._goHome()
+	#def _loadPortraitFromError
+
 	def _loadFromArgs(self,*args,**kwargs):
 		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		self.progress.setAttribute(Qt.WA_StyledBackground, False)
@@ -920,10 +932,9 @@ class portrait(QStackedWindowItem):
 	#def _return
 
 	def updateScreen(self,addEnable=None):
-		self.isConnected=self._chkNetwork()
-		self.errTab.setVisible(not(self.isConnected))
-		#self._homeView.setVisible(self.isConnected)
-		if self.isConnected==False:
+		isConnected=self._chkNetwork()
+		self._errorView.setVisible(not(isConnected))
+		if isConnected==False:
 			self._endUpdate()
 			self._globalView.setVisible(False)
 			self._homeView.setVisible(False)
