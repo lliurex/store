@@ -176,15 +176,15 @@ class QPushButtonRebostApp(QPushButton):
 	#def __init__
 
 	def _emitInstall(self,*args):
-		self.btn.setEnabled(False)
-		self.progress.setVisible(True)
-		if self.btn.text()==i18n["REMOVE"]:
-			#Remove, get installed bundle
-			priority=["zomando","flatpak","snap","package","appimage","eduapp"]
-			for bundle in priority:
-				if self.app["status"].get(bundle,"1")=="0" and self.app["bundle"].get("bundle","")!="":
-					self.app["bundle"]={bundle:self.app["bundle"][bundle]}
-					break
+	#	self.btn.setEnabled(False)
+	#	self.progress.setVisible(True)
+	#	if self.btn.text()==i18n["REMOVE"]:
+	#		#Remove, get installed bundle
+	#		priority=["zomando","flatpak","snap","package","appimage","eduapp"]
+	#		for bundle in priority:
+	#			if self.app["status"].get(bundle,"1")=="0" and self.app["bundle"].get("bundle","")!="":
+	#				self.app["bundle"]={bundle:self.app["bundle"][bundle]}
+	#				break
 		self.install.emit(self,self.app)
 	#def _emitInstall
 
@@ -232,7 +232,7 @@ class QPushButtonRebostApp(QPushButton):
 		if self.label.text()!=text:
 			self.label.setText(text)
 			self.setToolTip(text)
-		if "Forbidden" in self.app.get("categories",[]) and self.btn.text()!=i18n["UNATHORIZED"]:
+		if "Forbidden" in self.app.get("categories",[]) and self.btn.text()!=i18n["UNAUTHORIZED"]:
 			self.btn.setText(i18n["UNAUTHORIZED"])
 		elif "bundle" not in self.app.keys():
 			self.btn.setText(i18n["UNAVAILABLE"])
