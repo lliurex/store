@@ -196,7 +196,7 @@ class portrait(QStackedWindowItem):
 		time.sleep(0.1)
 		self._rebost.setAction("getCategories")
 		self._rebost.start()
-		QApplication.processEvents()
+		#QApplication.processEvents()
 		self._rebost.wait()
 		if self.locked==False and self.userLocked==True:
 			self._loadLockedRebost()
@@ -258,7 +258,7 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(self._globalView,1,1)
 		self._detailView=self._getDetailViewPane()
 		self._detailView.setObjectName("detailPanel")
-		self._detailView.clickedBack.connect(self._returnDetail)
+		self._detailView.clickedBack.connect(self._returnFromDetail)
 		self._detailView.loaded.connect(self._detailLoaded)
 		self.box.addWidget(self._detailView,1,1)
 		self._detailView.hide()
@@ -450,7 +450,7 @@ class portrait(QStackedWindowItem):
 
 	def _launchLlxUp(self):
 		self.parent.setVisible(False)
-		QApplication.processEvents()
+		#QApplication.processEvents()
 		subprocess.run(["pkexec","lliurex-up"])
 		self.parent.setVisible(True)
 	#def _launchLlxUp
@@ -601,7 +601,7 @@ class portrait(QStackedWindowItem):
 
 	def _endGetUpgradables(self,*args):
 		if args[0]==True:
-			QApplication.processEvents()
+			#QApplication.processEvents()
 			self.lblInfo.setVisible(True)
 	#def _endGetUpgradables(self,*args):
 
@@ -819,7 +819,7 @@ class portrait(QStackedWindowItem):
 	#def _endLoadApps
 
 	def _installBundle(self,*args):
-		QApplication.processEvents()
+		#QApplication.processEvents()
 		app=args[1]
 		refererApp=args[0]
 		if self.installingApp!=None:
@@ -916,8 +916,8 @@ class portrait(QStackedWindowItem):
 		self._detailView.show()
 		self.setCursor(self.oldCursor)
 		self._detailView.setFocus()
-		if self.zmdLauncher.isRunning() or self.epi.isRunning():
-			QApplication.processEvents()
+		#if self.zmdLauncher.isRunning() or self.epi.isRunning():
+		#	QApplication.processEvents()
 	#def _endLoadDetails
 
 	def _loadDetails(self,*args,**kwargs):
@@ -988,7 +988,7 @@ class portrait(QStackedWindowItem):
 				self.refererApp.updateScreen()
 	#def _updateBtn
 
-	def _returnDetail(self,*args,**kwargs):
+	def _returnFromDetail(self,*args,**kwargs):
 		if self._detailView.isVisible():
 			self._detailView.hide()
 			if self._referrerPane==self._detailView:
@@ -998,20 +998,19 @@ class portrait(QStackedWindowItem):
 					self._homeView.updateScreen()
 			else:
 				self._referrerPane.setVisible(True)
-
 		if self._globalView.isVisible()==True:
 			self._globalView.updateBtn(self.referrerBtn,args[1])
 		elif self._homeView.isVisible()==True and self.referrerBtn!=None:
 			self._homeView.updateBtn(self.referrerBtn,args[1])
 		self.referrerBtn=None
 		self._return(args,kwargs)
-	#def _returnDetail
+	#def _returnFromDetail
 
 	def _return(self,*args,**kwargs):
 		self.setCursor(self.oldCursor)
 		self.parent.setWindowTitle("{}".format(APPNAME))
 		self.loading=False
-		QApplication.processEvents()
+		#QApplication.processEvents()
 		#	self.referrerBtn.setApp(args[1])
 		#	self.referrerBtn.updateScreen()
 		self.progress.stop()
