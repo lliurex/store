@@ -47,7 +47,6 @@ i18n={
 class main(QWidget):
 	clickedBack=Signal("PyObject","PyObject")
 	loaded=Signal("PyObject")
-	tagpressed=Signal(str)
 	requestLoadCategory=Signal(str)
 	requestInstallApp=Signal("PyObject","PyObject",str)
 	def __init__(self,*args,**kwargs):
@@ -95,7 +94,7 @@ class main(QWidget):
 
 	def _tagNav(self,*args):
 		cat=args[0][0].replace("#","")
-		self.tagpressed.emit(cat)
+		self.requestLoadCategory.emit(cat)
 	#def _tagNav(self,*args)
 
 	def _processStreams(self,args):
@@ -519,7 +518,6 @@ class main(QWidget):
 		self.lblRelease.setEnabled(False)
 		self.btnRemove.setEnabled(False)
 		self.btnUnavailable.setEnabled(False)
-		self.btnLaunch.setEnabled(False)
 		self.blur=QGraphicsBlurEffect() 
 		self.blur.setBlurRadius(55) 
 		self.opacity=QGraphicsOpacityEffect()
