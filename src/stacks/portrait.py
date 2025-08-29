@@ -12,9 +12,9 @@ from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLa
 							QCheckBox,QListWidgetItem,QSizePolicy
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,QEvent
-from QtExtraWidgets import QStackedWindowItem,QFlowTouchWidget
+from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
-from libth import storeHelper,updateAppData,getData,llxup
+from libth import storeHelper,llxup
 from btnRebost import QPushButtonRebostApp
 from prgBar import QProgressImage
 import libhelper
@@ -82,10 +82,8 @@ class portrait(QStackedWindowItem):
 		self.helper=libhelper.helper()
 		self.rc=store.client()
 		self._referrerPane=None
-		self.getData=getData()
 		self._rebost=storeHelper(rc=self.rc)
 		self._llxup=llxup()
-		self.epi=exehelper.appLauncher()
 		self.runapp=exehelper.appLauncher()
 		self.runapp.runEnded.connect(self._getRunappResults)
 		self._initRegisters()
@@ -104,12 +102,8 @@ class portrait(QStackedWindowItem):
 	@staticmethod
 	def _onDestroy(*args):
 		selfDict=args[0]
-		selfDict["getData"].blockSignals(True)
 		selfDict["_rebost"].blockSignals(True)
 		selfDict["_llxup"].blockSignals(True)
-		selfDict["getData"].stop()
-		selfDict["getData"].requestInterruption()
-		selfDict["getData"].wait()
 		selfDict["_rebost"].requestInterruption()
 		selfDict["_rebost"].wait()
 		selfDict["_rebost"].quit()
@@ -222,12 +216,8 @@ class portrait(QStackedWindowItem):
 	def _stopThreads(self):
 		if self.appsToLoad==-1: #Init 
 			exit
-		self.getData.blockSignals(True)
 		self._rebost.blockSignals(True)
 		self._llxup.blockSignals(True)
-		self.getData.stop()
-		self.getData.requestInterruption()
-		self.getData.wait()
 		self._rebost.requestInterruption()
 		self._rebost.wait()
 		self._rebost.quit()
@@ -258,13 +248,14 @@ class portrait(QStackedWindowItem):
 		self._homeView=self._getHomeViewPane()
 		self.box.addWidget(self._homeView,1,1)
 		self._globalView=self._getGlobalViewPane()
-		self._globalView.tagpressed.connect(self._loadCategory)
+		self._globalView.requestLoadCategory.connect(self._loadCategory)
 		self._globalView.hide()
 		self.box.addWidget(self._globalView,1,1)
 		self._detailView=self._getDetailViewPane()
 		self._detailView.setObjectName("detailPanel")
 		self._detailView.clickedBack.connect(self._returnFromDetail)
 		self._detailView.loaded.connect(self._detailLoaded)
+		self._detailView.requestLoadCategory.connect(self._loadCategory)
 		self.box.addWidget(self._detailView,1,1)
 		self._detailView.hide()
 		self.btnSettings=QPushButton()
@@ -276,7 +267,7 @@ class portrait(QStackedWindowItem):
 		self._errorView.setVisible(not(self.isConnected))
 		self.box.addWidget(self._errorView,0,1,self.box.rowCount(),self.box.columnCount())
 		self.progress=self._defProgress()
-		self.progress.lblInfo.setVisible(False)
+		self.progress.lblInfo.hide()
 		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		self.progress.setAttribute(Qt.WA_StyledBackground, False)
 	#def _load_screen
@@ -428,17 +419,17 @@ class portrait(QStackedWindowItem):
 	#def _btnBar
 
 	def _launchLlxUp(self):
-		self.parent.setVisible(False)
+		self.parent.hide()
 		#QApplication.processEvents()
 		subprocess.run(["pkexec","lliurex-up"])
-		self.parent.setVisible(True)
+		self.parent.show()
 	#def _launchLlxUp
 
 	def _defInfo(self):
 		wdg=QPushButton(i18n.get("UPGRADES"))
 		wdg.setObjectName("upgrades")
 		wdg.clicked.connect(self._launchLlxUp)
-		wdg.setVisible(False)
+		wdg.hide()
 		wdg.setCursor(Qt.PointingHandCursor)
 		return(wdg)
 	#def _defInfo
@@ -551,12 +542,12 @@ class portrait(QStackedWindowItem):
 			category=self.i18nCat.get(category,category)
 			self._globalView.getApps(category,installed)
 		else:
-			self._globalView.setVisible(False)
+			self._globalView.hide()
 	#def _getApps
 
 	def _endGetUpgradables(self,*args):
 		if args[0]==True:
-			self.lblInfo.setVisible(True)
+			self.lblInfo.show()
 	#def _endGetUpgradables(self,*args):
 
 	def _getUpgradables(self):
@@ -567,11 +558,11 @@ class portrait(QStackedWindowItem):
 	def _beginUpdate(self):
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
-		self.btnSettings.setVisible(False)
+		self.btnSettings.hide()
 		if self.init==False:
 			self.progress.start()
 		self.stopAdding=True
-		self._homeView.setVisible(False)
+		self._homeView.hide()
 	#def _beginUpdate
 
 	def _endUpdate(self):
@@ -581,17 +572,18 @@ class portrait(QStackedWindowItem):
 	def _goHome(self,*args,**kwargs):
 		self.lstCategories.setCurrentRow(-1)
 		self._stopThreads()
-		self._homeView.setVisible(True)
-		self._globalView.setVisible(False)
-		self._detailView.setVisible(False)
+		self._homeView.show()
+		self._globalView.hide()
+		self._detailView.hide()
 	#def _goHome
 
 	def _beginLoad(self):
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.lstCategories.setEnabled(False)
-		self.resetScreen()
 		self.progress.start()
+		QApplication.processEvents()
+		self.resetScreen()
 		self.oldTime=time.time()
 	#def _beginLoad
 
@@ -609,8 +601,8 @@ class portrait(QStackedWindowItem):
 		self.apps=self.appsRaw.copy()
 		self.loading=False
 		self._debug("LOAD INSTALLED END")
-		self._globalView.setVisible(True)
-		self._homeView.setVisible(False)
+		self._globalView.show()
+		self._homeView.hide()
 		self._endUpdate()
 		self._globalView.loadApps(self.apps)
 		self.updateScreen(True)
@@ -634,8 +626,8 @@ class portrait(QStackedWindowItem):
 		self.apps=self.appsRaw.copy()
 		self.loading=False
 		self._debug("LOAD SEARCH END")
-		self._globalView.setVisible(True)
-		self._homeView.setVisible(False)
+		self._globalView.show()
+		self._homeView.hide()
 		self._endUpdate()
 		self._globalView.loadApps(self.apps)
 		self.updateScreen(True)
@@ -706,15 +698,16 @@ class portrait(QStackedWindowItem):
 
 	def _loadCategory(self,*args):
 		#Disable app url if any (JustInCase)
+		print("START LOAD")
 		self.appsLoaded=0
 		cat=None
 		flag=""
 		if len(args)==0:
 			cat=""
-		elif isinstance(args[0],QListWidgetItem):
-			cat=args[0].text()
 		elif isinstance(args[0],str):
 			cat=args[0]
+		elif isinstance(args[0],QListWidgetItem):
+			cat=args[0].text()
 		if cat==None:
 			return
 		if time.time()-self.oldTime<MINTIME:
@@ -726,20 +719,22 @@ class portrait(QStackedWindowItem):
 			self._globalView.populateCategories(self.categoriesTree[cat],cat)
 		elif cat!="":
 			wdg=self._globalView.topBar.currentItem()
-			font=wdg.font()
-			font.setBold(False)
-			for idx in range(0,self._globalView.topBar.count()):
-				self._globalView.topBar.itemAt(idx).widget().setFont(font)
-			font.setBold(True)
-			wdg.setFont(font)
-			self._globalView.topBar.setVisible(True)
+			if wdg!=None:
+				font=wdg.font()
+				font.setBold(False)
+				for idx in range(0,self._globalView.topBar.count()):
+					self._globalView.topBar.itemAt(idx).widget().setFont(font)
+				font.setBold(True)
+				wdg.setFont(font)
+			self._globalView.topBar.show()
 		self._getApps(cat)
 	#def _loadCategory
 
 	def _endLoadCategory(self,*args):
 		self._debug("LOAD CATEGORY END")
-		self._globalView.setVisible(True)
-		self._homeView.setVisible(False)
+		self._globalView.show()
+		self._homeView.hide()
+		self._detailView.hide()
 		self._endUpdate()
 		self.appsRaw=[]
 		appsRaw=json.loads(args[0])
@@ -822,8 +817,8 @@ class portrait(QStackedWindowItem):
 
 	def _detailLoaded(self,*args,**kwargs):
 		self._stopThreads()
-		self._detailView.setVisible(True)
-		self._homeView.setVisible(False)
+		self._detailView.show()
+		self._homeView.hide()
 		self.progress.stop()
 	#def _detailLoaded
 
@@ -871,12 +866,11 @@ class portrait(QStackedWindowItem):
 	def _loadHomeDetails(self,*args,**kwargs):
 		self._referrerPane=self._homeView
 		self._loadDetails(args,kwargs)
-	#def _loadGlobalDetails(self,*args,**kwargs):
+	#def _loadHomeDetails(self,*args,**kwargs):
 
 	def _loadPortraitFromError(self,*args,**kwargs):
 		self.noChkNetwork=True
-		print("HOME")
-		self._errorView.setVisible(False)
+		self._errorView.hide()
 		self._goHome()
 	#def _loadPortraitFromError
 
@@ -903,11 +897,11 @@ class portrait(QStackedWindowItem):
 			self._detailView.hide()
 			if self._referrerPane==self._detailView:
 				self._referrerPane=None
-				self._homeView.setVisible(True)
+				self._homeView.show()
 				if len(self._homeView.layout().children())==0:
 					self._homeView.updateScreen()
 			else:
-				self._referrerPane.setVisible(True)
+				self._referrerPane.show()
 		if args[1].get("state",0)>=7:
 			if self.installingBtn==None:
 				self.installingBtn=self.referrerBtn
@@ -936,16 +930,16 @@ class portrait(QStackedWindowItem):
 		self._errorView.setVisible(not(isConnected))
 		if isConnected==False:
 			self._endUpdate()
-			self._globalView.setVisible(False)
-			self._homeView.setVisible(False)
-			self._detailView.setVisible(False)
+			self._globalView.hide()
+			self._homeView.hide()
+			self._detailView.hide()
 			self._stopThreads()
 			return
 		if self._referrerPane!=None:
-			self._globalView.setVisible(False)
-			self._homeView.setVisible(False)
-			self._detailView.setVisible(False)
-			self._referrerPane.setVisible(True)
+			self._globalView.hide()
+			self._homeView.hide()
+			self._detailView.hide()
+			self._referrerPane.show()
 		if self._globalView.isVisible():
 			self._globalView.updateScreen()
 		elif self._detailView.isVisible():
@@ -965,8 +959,7 @@ class portrait(QStackedWindowItem):
 		self.appsSeen=[]
 		self._globalView.loadAppsStop()
 		self._globalView.table.clean()
-		self._globalView.topBar.setVisible(False)
-		QApplication.processEvents()
+		self._globalView.topBar.hide()
 	#def resetScreen
 
 	def _updateConfig(self,key):
