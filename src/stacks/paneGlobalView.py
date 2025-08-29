@@ -1,12 +1,11 @@
 #!/usr/bin/python3
-import os
+import os,time
 from functools import partial
-from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHeaderView,QHBoxLayout,QComboBox,QLineEdit,QWidget,QMenu,QProgressBar,QVBoxLayout,QListWidget,QSizePolicy,QCheckBox,QGraphicsDropShadowEffect
+from PySide6.QtWidgets import QApplication,QHBoxLayout,QWidget,QVBoxLayout,QLabel
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QEvent
-from QtExtraWidgets import QCheckableComboBox,QTableTouchWidget,QInfoLabel,QFlowTouchWidget
+from QtExtraWidgets import QFlowTouchWidget
 from btnRebost import QPushButtonRebostApp
-from lblLnk import QLabelLink
 import css
 from constants import *
 import gettext
@@ -18,7 +17,7 @@ i18n={
 	}
 
 class paneGlobalView(QWidget):
-	tagpressed=Signal(str)
+	requestLoadCategory=Signal(str)
 	requestLoadDetails=Signal("PyObject","PyObject","PyObject")
 	requestInstallApp=Signal("PyObject","PyObject")
 	def __init__(self,*args,**kwargs):
@@ -59,9 +58,8 @@ class paneGlobalView(QWidget):
 
 	@staticmethod
 	def _onDestroy(*args):
-		selfDict=args[0]
-		if "table" in selfDict.keys():
-			selfDict["table"].clean()
+		while args[0].keys():
+			args[0].popitem()
 	#def _onDestroy
 
 	def eventFilter(self,*args):
@@ -99,14 +97,15 @@ class paneGlobalView(QWidget):
 
 	def _tagNav(self,*args):
 		cat=args[0].replace("#","")
-		self.tagpressed.emit(cat)
+		self.requestLoadCategory.emit(cat)
 	#def _tagNav(self,*args)
 
 	def _catDecorate(self,*args):
-		text=self.topBar.currentItem().text()
-		w=self.topBar.currentItem()
-		text=text.replace("none'>#","none'><strong>#").replace("</a>","</strong></a>")
-		self.topBar.currentItem().setText(text)
+		if self.topBar.currentItem()!=None:
+			text=self.topBar.currentItem().text()
+			w=self.topBar.currentItem()
+			text=text.replace("none'>#","none'><strong>#").replace("</a>","</strong></a>")
+			self.topBar.currentItem().setText(text)
 	#def _catDecorate
 
 	def _catUndecorate(self,*args):
@@ -152,7 +151,7 @@ class paneGlobalView(QWidget):
 		table.leaveEvent=self.tableLeaveEvent
 		table.setAttribute(Qt.WA_AcceptTouchEvents)
 		table.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-		table.setStyleSheet("""QFlowTouchWidget{border:0px; background:#FFFFFF;margin-left:100%;margin-right:1%;} QFlowTouchWidget::item{padding:2px}""")
+		#table.setStyleSheet("""QFlowTouchWidget{border:0px; background:#FFFFFF;margin-left:100%;margin-right:1%;} QFlowTouchWidget::item{padding:2px}""")
 		return(table)
 	#def _defTable
 
@@ -172,6 +171,8 @@ class paneGlobalView(QWidget):
 			self._rebost.setAction("search",search)
 		if self._rebost.isRunning():
 			self._rebost.requestInterruption()
+			self._rebost.blockSignals(True)
+			self._reobst.quit()
 			#self._rebost.wait()
 		self._rebost.start()
 	#def getApps
@@ -203,8 +204,6 @@ class paneGlobalView(QWidget):
 			btn.installEventFilter(self)
 			btn.install.connect(self._emitInstallApp)
 			self.table.addWidget(btn)
-			#Force btn show
-			QApplication.processEvents()
 	#def _addAppsToGrid
 
 	def updateScreen(self,addEnable=None):
