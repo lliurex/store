@@ -17,6 +17,7 @@ i18n={
 	}
 
 class paneGlobalView(QWidget):
+	requestLoadApps=Signal("PyObject")
 	requestLoadCategory=Signal(str)
 	requestLoadDetails=Signal("PyObject","PyObject","PyObject")
 	requestInstallApp=Signal("PyObject","PyObject")
@@ -27,6 +28,8 @@ class paneGlobalView(QWidget):
 		self._rebost=args[0]
 		self.dbg=True
 		self.destroyed.connect(partial(paneGlobalView._onDestroy,self.__dict__))
+		self.stopAdding=False
+		self.requestLoadApps.connect(self._loadApps)
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("mp")
 		self.installEventFilter(self)
@@ -92,6 +95,7 @@ class paneGlobalView(QWidget):
 
 	def _defCategoriesBar(self):
 		wdg=QFlowTouchWidget(self)
+		wdg.currentItemChanged.connect(self._catDecorate)
 		return(wdg)
 	#def _defCategoriesBar
 
@@ -101,11 +105,11 @@ class paneGlobalView(QWidget):
 	#def _tagNav(self,*args)
 
 	def _catDecorate(self,*args):
-		if self.topBar.currentItem()!=None:
-			text=self.topBar.currentItem().text()
-			w=self.topBar.currentItem()
-			text=text.replace("none'>#","none'><strong>#").replace("</a>","</strong></a>")
-			self.topBar.currentItem().setText(text)
+		self._catUndecorate()
+		current=args[1]
+		text=current.text()
+		text=text.replace("none'>#","none'><strong>#").replace("</a>","</strong></a>")
+		current.setText(text)
 	#def _catDecorate
 
 	def _catUndecorate(self,*args):
@@ -115,10 +119,16 @@ class paneGlobalView(QWidget):
 			if "<strong>" in t:
 				t=t.replace("<strong>","").replace("</strong>","")
 				w.setText(t)
+		if len(args):
+			current=self.topBar.itemAt(0).widget()
+			text=current.text()
+			text=text.replace("none'>#","none'><strong>#").replace("</a>","</strong></a>")
+			current.setText(text)
 	#def _catUndecorate
 
 	def populateCategories(self,subcats,cat=""):
 		self.topBar.clean()
+		self.topBar.leaveEvent=self._catUndecorate
 		if cat not in subcats and cat!="":
 			subcats.insert(0,cat)
 		for subcat in subcats:
@@ -128,8 +138,10 @@ class paneGlobalView(QWidget):
 			else:
 				text="<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'><strong>#{0}</strong></a>".format(_(subcat))
 			wdg.setText(text)
-			wdg.leaveEvent=self._catUndecorate
-			wdg.enterEvent=self._catDecorate
+			wdg.setAttribute(Qt.WA_Hover,True)
+			wdg.hoverLeave=self._catUndecorate
+			wdg.hoverEnter=self._catDecorate
+			wdg.installEventFilter(self)
 			wdg.setAttribute(Qt.WA_StyledBackground, True)
 			wdg.setOpenExternalLinks(False)
 			wdg.setObjectName("categoryTag")
@@ -191,7 +203,7 @@ class paneGlobalView(QWidget):
 		self.requestInstallApp.emit(args[0],args[1])
 	#def _emitInstallApp
 
-	def loadApps(self,apps):
+	def _loadApps(self,apps):
 		pendingApps={}
 		self.stopAdding=False
 		while apps:
@@ -204,6 +216,10 @@ class paneGlobalView(QWidget):
 			btn.installEventFilter(self)
 			btn.install.connect(self._emitInstallApp)
 			self.table.addWidget(btn)
+		self.topBar.show()
+
+	def loadApps(self,apps):
+		self.requestLoadApps.emit(apps)
 	#def _addAppsToGrid
 
 	def updateScreen(self,addEnable=None):
