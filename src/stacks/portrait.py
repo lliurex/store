@@ -628,33 +628,37 @@ class portrait(QStackedWindowItem):
 		self._homeView.hide()
 		self._endUpdate()
 		self._globalView.loadApps(self.apps)
-		self.updateScreen(True)
+	#	self.updateScreen(True)
 		self.oldTime=time.time()
-	#def _endSearchApps
+		self._globalView.show()
+	#def _endLoadInstalled
 
 	def _searchApps(self):
 		txt=self.searchBox.text()
-		self._beginLoad()
 		self.lstCategories.setCurrentRow(-1)
 		if len(txt)==0:
 			return
 		else:
+			self._beginLoad()
 			self._rebost.setAction("search",txt)
 			self._rebost.blockSignals(False)
 			self._rebost.start()
 	#def _searchApps
 
 	def _endSearchApps(self,*args):
-		self.appsRaw=json.loads(args[0])
-		self.apps=self.appsRaw.copy()
-		self.loading=False
-		self._debug("LOAD SEARCH END")
+		self._debug("LOAD CATEGORY END")
 		self._globalView.show()
 		self._homeView.hide()
+		self._detailView.hide()
 		self._endUpdate()
+		self.appsRaw=[]
+		self.appsRaw=json.loads(args[0])
+		self.apps=self.appsRaw.copy()
 		self._globalView.loadApps(self.apps)
-		self.updateScreen(True)
+		#self.updateScreen(True)
+		self._globalView.topBar.hide()
 		self.oldTime=time.time()
+		self._globalView.show()
 	#def _endSearchApps
 
 	def setBtnIcon(self,icn=""):
@@ -745,11 +749,8 @@ class portrait(QStackedWindowItem):
 			wdg=self._globalView.topBar.currentItem()
 			font=wdg.font()
 			font.setBold(False)
-			print("GOLA")
 			for idx in range(0,self._globalView.topBar.count()):
-				print(idx)
 				self._globalView.topBar.itemAt(idx).widget().setFont(font)
-			print("END")
 			font.setBold(True)
 			wdg.setFont(font)
 		self.requestGetApps.emit(cat)
@@ -769,6 +770,7 @@ class portrait(QStackedWindowItem):
 		self.apps=self.appsRaw.copy()
 		self._globalView.loadApps(self.apps)
 		#self.updateScreen(True)
+		self._globalView.topBar.show()
 		self.oldTime=time.time()
 		self._globalView.show()
 	#def _endLoadCategory
