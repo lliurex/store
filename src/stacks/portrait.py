@@ -62,6 +62,9 @@ i18n={
 	}
 
 class portrait(QStackedWindowItem):
+	requestGetApps=Signal(str)
+	loadStart=Signal()
+	loadStop=Signal()
 	def __init_stack__(self):
 		self.init=False
 		self.minTime=1
@@ -135,6 +138,7 @@ class portrait(QStackedWindowItem):
 	#def _initRegisters
 
 	def _initThreads(self):
+		self.requestGetApps.connect(self._getApps)
 		self._llxup.chkEnded.connect(self._endGetUpgradables)
 		self._rebost.lstEnded.connect(self._endLoadCategory)
 		self._rebost.linEnded.connect(self._endLoadInstalled)
@@ -205,7 +209,8 @@ class portrait(QStackedWindowItem):
 	#def _endGetLockStatus
 
 	def _endRestart(self,*args):
-		self.progress.stop()
+		#self.progress.stop()
+		self.loadStop.emit()
 		self._goHome()
 	#def _endRestart
 
@@ -213,7 +218,17 @@ class portrait(QStackedWindowItem):
 		self._endRestart()
 	#def _endLock
 
-	def _stopThreads(self):
+	def _progressShow(self):
+		print("SHOW")
+		self.progress.start()
+		QApplication.processEvents()
+
+	def _progressHide(self):
+		print("HIDE")
+		self.progress.stop()
+		QApplication.processEvents()
+
+	def _stopThreads(self,ignoreProgress=False):
 		if self.appsToLoad==-1: #Init 
 			exit
 		self._rebost.blockSignals(True)
@@ -225,7 +240,9 @@ class portrait(QStackedWindowItem):
 		self._llxup.wait()
 		self._llxup.quit()
 		self._llxup.blockSignals(False)
-		self.progress.stop()
+		#self.progress.stop()
+		if ignoreProgress==False:
+			self.loadStop.emit()
 	#def _stopThreads
 
 	def __initScreen__(self):
@@ -268,6 +285,8 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(self._errorView,0,1,self.box.rowCount(),self.box.columnCount())
 		self.progress=self._defProgress()
 		self.progress.lblInfo.hide()
+		self.loadStart.connect(self._progressShow)
+		self.loadStop.connect(self._progressHide)
 		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		self.progress.setAttribute(Qt.WA_StyledBackground, False)
 	#def _load_screen
@@ -350,7 +369,8 @@ class portrait(QStackedWindowItem):
 		self.stopAdding=True
 		self.refresh=True
 		self.searchBox.setText("")
-		self.progress.start()
+		#self.progress.start()
+		self.loadStart.emit()
 		self._beginUpdate()
 		if self.certified.isChecked()==False and self.userLocked==False and self.locked==True:
 			self._rebost.setAction("unlock","")
@@ -539,6 +559,7 @@ class portrait(QStackedWindowItem):
 
 	def _getApps(self,category="",installed=False):
 		if category!="":
+			self.resetScreen()
 			category=self.i18nCat.get(category,category)
 			self._globalView.getApps(category,installed)
 		else:
@@ -560,7 +581,8 @@ class portrait(QStackedWindowItem):
 		self.setCursor(cursor)
 		self.btnSettings.hide()
 		if self.init==False:
-			self.progress.start()
+			self.loadStart.emit()
+		#	self.progress.start()
 		self.stopAdding=True
 		self._homeView.hide()
 	#def _beginUpdate
@@ -578,12 +600,13 @@ class portrait(QStackedWindowItem):
 	#def _goHome
 
 	def _beginLoad(self):
+		self.loadStart.emit()	
+		#self.progress.start()
+		QApplication.processEvents()
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.lstCategories.setEnabled(False)
-		self.progress.start()
-		QApplication.processEvents()
-		self.resetScreen()
+		self.resetScreen(ignoreProgress=True)
 		self.oldTime=time.time()
 	#def _beginLoad
 
@@ -699,6 +722,7 @@ class portrait(QStackedWindowItem):
 	def _loadCategory(self,*args):
 		#Disable app url if any (JustInCase)
 		print("START LOAD")
+		#self.progress.start()
 		self.appsLoaded=0
 		cat=None
 		flag=""
@@ -719,15 +743,17 @@ class portrait(QStackedWindowItem):
 			self._globalView.populateCategories(self.categoriesTree[cat],cat)
 		elif cat!="":
 			wdg=self._globalView.topBar.currentItem()
-			if wdg!=None:
-				font=wdg.font()
-				font.setBold(False)
-				for idx in range(0,self._globalView.topBar.count()):
-					self._globalView.topBar.itemAt(idx).widget().setFont(font)
-				font.setBold(True)
-				wdg.setFont(font)
-			self._globalView.topBar.show()
-		self._getApps(cat)
+			font=wdg.font()
+			font.setBold(False)
+			print("GOLA")
+			for idx in range(0,self._globalView.topBar.count()):
+				print(idx)
+				self._globalView.topBar.itemAt(idx).widget().setFont(font)
+			print("END")
+			font.setBold(True)
+			wdg.setFont(font)
+		self.requestGetApps.emit(cat)
+		QApplication.processEvents()
 	#def _loadCategory
 
 	def _endLoadCategory(self,*args):
@@ -744,6 +770,7 @@ class portrait(QStackedWindowItem):
 		self._globalView.loadApps(self.apps)
 		#self.updateScreen(True)
 		self.oldTime=time.time()
+		self._globalView.show()
 	#def _endLoadCategory
 
 	def _setInstallingState(self,app,state):
@@ -810,7 +837,8 @@ class portrait(QStackedWindowItem):
 	#def _installApp
 
 	def _loadLockedRebost(self):
-		self.progress.start()
+		#self.progress.start()
+		self.loadStart.emit()
 		self._rebost.setAction("restart")
 		self._rebost.start()
 	#def _loadLockedRebost
@@ -819,7 +847,8 @@ class portrait(QStackedWindowItem):
 		self._stopThreads()
 		self._detailView.show()
 		self._homeView.hide()
-		self.progress.stop()
+		#self.progress.stop()
+		self.loadStop.emit()
 	#def _detailLoaded
 
 	def _endLoadDetails(self,icn,*args):
@@ -833,7 +862,8 @@ class portrait(QStackedWindowItem):
 
 	def _loadDetails(self,*args,**kwargs):
 		self._stopThreads()
-		self.progress.start()
+		#self.progress.start()
+		self.loadStart.emit()
 		icn=""
 		app=""
 		cursor=QtGui.QCursor(Qt.WaitCursor)
@@ -920,7 +950,7 @@ class portrait(QStackedWindowItem):
 		#QApplication.processEvents()
 		#	self.referrerBtn.setApp(args[1])
 		#	self.referrerBtn.updateScreen()
-		self.progress.stop()
+		self.loadStop.emit()
 		self.lstCategories.setCursor(self.oldCursor)
 		self.lstCategories.setEnabled(True)
 	#def _return
@@ -951,15 +981,14 @@ class portrait(QStackedWindowItem):
 			self._endUpdate()
 	#def _updateScreen
 	
-	def resetScreen(self):
-		self._stopThreads()
+	def resetScreen(self,ignoreProgress=False):
+		self._stopThreads(ignoreProgress)
 		self.appsLoaded=0
 		self.pendingApps={}
 		self.refererApp=None
 		self.appsSeen=[]
 		self._globalView.loadAppsStop()
 		self._globalView.table.clean()
-		self._globalView.topBar.hide()
 	#def resetScreen
 
 	def _updateConfig(self,key):
