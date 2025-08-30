@@ -134,7 +134,7 @@ class QPushButtonRebostApp(QPushButton):
 		wdg=QLabel("")
 		wdg.setVisible(False)
 		wdg.setFixedSize(QSize(self.sizeHint().width(),int(MARGIN)/2))
-		#wdg.setStyleSheet("background: %s"%(COLOR_BACKGROUND_DARK))
+		wdg.setStyleSheet("background: %s"%(COLOR_BACKGROUND_DARK))
 		return(wdg)
 	#def _defFrame
 
