@@ -27,8 +27,8 @@ class paneGlobalView(QWidget):
 			return
 		self._rebost=args[0]
 		self.dbg=True
-		self.destroyed.connect(partial(paneGlobalView._onDestroy,self.__dict__))
 		self.stopAdding=False
+		self.destroyed.connect(partial(paneGlobalView._onDestroy,self.__dict__))
 		self.requestLoadApps.connect(self._loadApps)
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("mp")
@@ -217,6 +217,7 @@ class paneGlobalView(QWidget):
 			btn.install.connect(self._emitInstallApp)
 			self.table.addWidget(btn)
 		self.topBar.show()
+	#def _loadApps
 
 	def loadApps(self,apps):
 		self.requestLoadApps.emit(apps)
