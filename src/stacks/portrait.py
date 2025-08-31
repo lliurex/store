@@ -102,6 +102,11 @@ class portrait(QStackedWindowItem):
 	#	(self.locked,self.userLocked)=self._rebost.isLocked()
 	#def __init__
 
+	def _debug(self,msg):
+		if self.dbg==True:
+			print("Portrait: {}".format(msg))
+	#def _debug
+
 	@staticmethod
 	def _onDestroy(*args):
 		selfDict=args[0]
@@ -165,11 +170,6 @@ class portrait(QStackedWindowItem):
 		self.setStyleSheet(css.portrait())
 	#def _initGUI
 
-	def _debug(self,msg):
-		if self.dbg==True:
-			print("Portrait: {}".format(msg))
-	#def _debug
-
 	def _chkNetwork(self):
 		state=False
 		if self.noChkNetwork==True:
@@ -209,22 +209,43 @@ class portrait(QStackedWindowItem):
 	#def _endGetLockStatus
 
 	def _endRestart(self,*args):
-		#self.progress.stop()
 		self.loadStop.emit()
 		self._goHome()
 	#def _endRestart
+
+	def _getRunappResults(self,app,proc):
+		self.setCursor(self.oldCursor)
+		app["state"]=0
+		if proc==None:
+			return
+		if proc.returncode!=0:
+			#pkexec ret values
+			#127 -> Not authorized
+			if proc.returncode==127:
+				self.showMsg(title="AppsEdu Store",summary=app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=app["icon"],timeout=5000)
+			else:
+				self.showMsg(title="AppsEdu Store",summary=app["name"],text=i18n.get("ERRUNKNOWN"),icon=app["icon"],timeout=5000)
+		if self.installingBtn!=None:
+			oldReferrer=self.referrerBtn
+			self.referrerBtn=self.installingBtn
+			self._returnFromDetail(None,app)
+			self.referrerBtn=oldReferrer
+			self.installingBtn=None
+		self._rebost.setAction("setAppState",app["id"],0)
+		self._rebost.start()
+		self._rebost.wait()
+		return
+	#def _getRunappResults
 
 	def _endLock(self,*args):
 		self._endRestart()
 	#def _endLock
 
 	def _progressShow(self):
-		print("SHOW")
 		self.progress.start()
 		QApplication.processEvents()
 
 	def _progressHide(self):
-		print("HIDE")
 		self.progress.stop()
 		QApplication.processEvents()
 
@@ -240,56 +261,9 @@ class portrait(QStackedWindowItem):
 		self._llxup.wait()
 		self._llxup.quit()
 		self._llxup.blockSignals(False)
-		#self.progress.stop()
 		if ignoreProgress==False:
 			self.loadStop.emit()
 	#def _stopThreads
-
-	def __initScreen__(self):
-		self.box=QGridLayout()
-		self.setLayout(self.box)
-		self.box.setContentsMargins(0,0,0,0)
-		self.box.setSpacing(0)
-		self.sortAsc=False
-		navwdg=self._navPane()
-		navwdg.setObjectName("wdg")
-		self.box.addWidget(navwdg,0,0,2,1,Qt.AlignLeft)
-		searchwdg=QWidget()
-		wlay=QHBoxLayout()
-		searchwdg.setLayout(wlay)
-		searchwdg.setObjectName("wdgsearch")
-		searchwdg.setAttribute(Qt.WA_StyledBackground, True)
-		self.search=self._defSearch()
-		wlay.addWidget(self.search)
-		self.box.addWidget(searchwdg,0,1)
-		self._homeView=self._getHomeViewPane()
-		self.box.addWidget(self._homeView,1,1)
-		self._globalView=self._getGlobalViewPane()
-		self._globalView.requestLoadCategory.connect(self._loadCategory)
-		self._globalView.hide()
-		self.box.addWidget(self._globalView,1,1)
-		self._detailView=self._getDetailViewPane()
-		self._detailView.setObjectName("detailPanel")
-		self._detailView.clickedBack.connect(self._returnFromDetail)
-		self._detailView.loaded.connect(self._detailLoaded)
-		self._detailView.requestLoadCategory.connect(self._loadCategory)
-		self.box.addWidget(self._detailView,1,1)
-		self._detailView.hide()
-		self.btnSettings=QPushButton()
-		icn=QtGui.QIcon.fromTheme("settings-configure")
-		self.box.setColumnStretch(1,1)
-		self.setObjectName("portrait")
-		self._errorView=self._defError()
-		self._errorView.setObjectName("errorMsg")
-		self._errorView.setVisible(not(self.isConnected))
-		self.box.addWidget(self._errorView,0,1,self.box.rowCount(),self.box.columnCount())
-		self.progress=self._defProgress()
-		self.progress.lblInfo.hide()
-		self.loadStart.connect(self._progressShow)
-		self.loadStop.connect(self._progressHide)
-		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
-		self.progress.setAttribute(Qt.WA_StyledBackground, False)
-	#def _load_screen
 
 	def _closeEvent(self,*args):
 		self._stopThreads()
@@ -307,43 +281,46 @@ class portrait(QStackedWindowItem):
 		return(False)
 	#def eventFilter(self,*args):
 
-	def _navPane(self):
-		wdg=QWidget()
-		wdg.setObjectName("wdg")
-		lay=QVBoxLayout()
+	def __initScreen__(self):
+		self.box=QGridLayout()
+		self.setLayout(self.box)
+		self.box.setContentsMargins(0,0,0,0)
+		self.box.setSpacing(0)
 		self.sortAsc=False
-		banner=self._defBanner()
-		lay.addWidget(banner)
-		btnBar=self._btnBar()
-		hlay=QHBoxLayout()
-		wdg2=QWidget()
-		wdg2.setLayout(hlay)
-		hlay.addWidget(btnBar,Qt.AlignCenter)
-		lay.addWidget(wdg2)
-		navBar=self._defNavBar()
-		lay.addWidget(navBar)
-		wdg.setLayout(lay)
-		return(wdg)
-	#def _navPane
+		navwdg=self._defNavigationPane()
+		navwdg.setObjectName("wdg")
+		self.box.addWidget(navwdg,0,0,2,1,Qt.AlignLeft)
+		searchwdg=self._defSearch()
+		self.box.addWidget(searchwdg,0,1)
+		self._homeView=self._getHomeViewPane()
+		self.box.addWidget(self._homeView,1,1)
+		self._globalView=self._getGlobalViewPane()
+		self._globalView.hide()
+		self.box.addWidget(self._globalView,1,1)
+		self._detailView=self._getDetailViewPane()
+		self.box.addWidget(self._detailView,1,1)
+		self._detailView.hide()
+		self.btnSettings=QPushButton()
+		icn=QtGui.QIcon.fromTheme("settings-configure")
+		self.box.setColumnStretch(1,1)
+		self.setObjectName("portrait")
+		self._errorView=self._defError()
+		self._errorView.setVisible(not(self.isConnected))
+		self.box.addWidget(self._errorView,0,1,self.box.rowCount(),self.box.columnCount())
+		self.progress=self._defProgress()
+		self.progress.lblInfo.hide()
+		self.loadStart.connect(self._progressShow)
+		self.loadStop.connect(self._progressHide)
+		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
+		self.progress.setAttribute(Qt.WA_StyledBackground, False)
+	#def __initScreen__
 
-	def _defBanner(self):
-		lbl=QLabel()
-		lbl.setObjectName("banner")
-		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.svg")
-		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
-		lbl.setPixmap(pxm)
-		return lbl
-	#def _defBanner
-
-	def _defNavBar(self):
+	def _defNavigationBar(self):
 		wdg=QWidget()
-		if LAYOUT=="appsedu":
-			vbox=QVBoxLayout()
-		else:
-			vbox=QHBoxLayout()
+		vbox=QVBoxLayout()
 		wdg.setLayout(vbox)
 		vbox.setContentsMargins(10,0,10,0)
-		self.certified=self._appseduCertified()
+		self.certified=self._defAppseduChk()
 		vbox.addWidget(self.certified,Qt.AlignCenter)
 		self.lstCategories=QListWidget()
 		self.lstCategories.setObjectName("lstCategories")
@@ -362,14 +339,57 @@ class portrait(QStackedWindowItem):
 		vbox.setStretch(2,0)
 		vbox.setStretch(3,0)
 		return(wdg)
-	#def _defNavBar
+	#def _defNavigationBar
+
+	def _defBtnBar(self):
+		wdg=QWidget()
+		wdg.setObjectName("_defBtnBar")
+		lay=QHBoxLayout()
+		wdg.setLayout(lay)
+		btnHome=self._defHome()
+		btnHome.setObjectName("btnHome")
+		lay.addWidget(btnHome,Qt.AlignRight)
+		btnInst=self._defInst()
+		btnInst.setObjectName("btnHome")
+		lay.addWidget(btnInst,Qt.AlignLeft)
+		btnHome.setMaximumWidth(btnInst.sizeHint().width())
+		wdg.setMaximumWidth(btnInst.sizeHint().width()*2+10)
+		return(wdg)
+	#def _defBtnBar
+
+	def _defNavigationPane(self):
+		wdg=QWidget()
+		wdg.setObjectName("wdg")
+		lay=QVBoxLayout()
+		self.sortAsc=False
+		banner=self._defBanner()
+		lay.addWidget(banner)
+		_defBtnBar=self._defBtnBar()
+		hlay=QHBoxLayout()
+		wdg2=QWidget()
+		wdg2.setLayout(hlay)
+		hlay.addWidget(_defBtnBar,Qt.AlignCenter)
+		lay.addWidget(wdg2)
+		navBar=self._defNavigationBar()
+		lay.addWidget(navBar)
+		wdg.setLayout(lay)
+		return(wdg)
+	#def _defNavigationPane
+
+	def _defBanner(self):
+		lbl=QLabel()
+		lbl.setObjectName("banner")
+		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.svg")
+		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
+		lbl.setPixmap(pxm)
+		return lbl
+	#def _defBanner
 
 	def _unlockRebost(self,*args):
 		self._stopThreads()
 		self.stopAdding=True
 		self.refresh=True
 		self.searchBox.setText("")
-		#self.progress.start()
 		self.loadStart.emit()
 		self._beginUpdate()
 		if self.certified.isChecked()==False and self.userLocked==False and self.locked==True:
@@ -382,7 +402,7 @@ class portrait(QStackedWindowItem):
 		self._rebost.start()
 	#def _unlockRebost
 
-	def _appseduCertified(self):
+	def _defAppseduChk(self):
 		wdg=QWidget()
 		lay=QHBoxLayout()
 		lay.setSpacing(0)
@@ -406,7 +426,7 @@ class portrait(QStackedWindowItem):
 		wdg.setLayout(lay)
 		wdg.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		return(wdg)
-	#def _appseduCertified
+	#def _defAppseduChk
 
 	def _defInst(self):
 		btnInst=QPushButton(i18n.get("INSTALLED"))
@@ -421,22 +441,6 @@ class portrait(QStackedWindowItem):
 		btnHome.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		return(btnHome)
 	#def _defHome
-
-	def _btnBar(self):
-		wdg=QWidget()
-		wdg.setObjectName("btnBar")
-		lay=QHBoxLayout()
-		wdg.setLayout(lay)
-		btnHome=self._defHome()
-		btnHome.setObjectName("btnHome")
-		lay.addWidget(btnHome,Qt.AlignRight)
-		btnInst=self._defInst()
-		btnInst.setObjectName("btnHome")
-		lay.addWidget(btnInst,Qt.AlignLeft)
-		btnHome.setMaximumWidth(btnInst.sizeHint().width())
-		wdg.setMaximumWidth(btnInst.sizeHint().width()*2+10)
-		return(wdg)
-	#def _btnBar
 
 	def _launchLlxUp(self):
 		self.parent.hide()
@@ -457,10 +461,37 @@ class portrait(QStackedWindowItem):
 	def _defError(self):
 		pev=paneErrorView.paneErrorView()
 		pev.requestLoadPortrait.connect(self._loadPortraitFromError)
+		pev.setObjectName("errorMsg")
 		return(pev)
 	#def _defError
 	
+	def setBtnSearchIcon(self,icn=""):
+		if icn!="":
+			icn=QtGui.QIcon(os.path.join(RSRC,"{}.png".format(icn)))
+		if len(self.searchBox.text())>0:
+			icn=QtGui.QIcon(os.path.join(RSRC,"cancel.png"))
+		else:
+			icn=QtGui.QIcon(os.path.join(RSRC,"search.png"))
+		self.btnSearch.setIcon(icn)
+	#def setBtnSearchIcon
+
+	def _changeSearchAppsBtnIcon(self):
+		if len(self.searchBox.text())>0:
+			self.setBtnSearchIcon("cancel")
+		else:
+			self.setBtnSearchIcon("search")
+	#def _changeSearchAppsBtnIcon(self):
+
+	def _resetSearch(self):
+		self.searchBox.setText("")
+		self.searchBox.setFocus()
+	#def _resetSearch
+
 	def _defSearch(self):
+		wdgParent=QWidget()
+		layParent=QHBoxLayout(wdgParent)
+		wdgParent.setObjectName("wdgsearch")
+		wdgParent.setAttribute(Qt.WA_StyledBackground, True)
 		wdg=QWidget()
 		wdg.setSizePolicy(QSizePolicy.Maximum,QSizePolicy.Minimum)
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
@@ -484,7 +515,8 @@ class portrait(QStackedWindowItem):
 		lay.addWidget(self.btnSearch)
 		wdg.setLayout(lay)
 		wdg.setMaximumWidth(450)
-		return(wdg)
+		layParent.addWidget(wdg)
+		return(wdgParent)
 	#def _defSearch
 
 	def _defProgress(self):
@@ -492,25 +524,20 @@ class portrait(QStackedWindowItem):
 		return(wdg)
 	#def _defProgress
 
-	def _resetSearch(self):
-		self.searchBox.setText("")
-		self.searchBox.setFocus()
-	#def _resetSearch
-
-	def tableLeaveEvent(self,*args):
-		self._globalView.table.setAutoScroll(False)
-		return(False)
-	#def tableLeaveEvent
-
 	def _getGlobalViewPane(self):
 		gvp=paneGlobalView.paneGlobalView(self._rebost)
 		gvp.requestLoadDetails.connect(self._loadGlobalDetails)
 		gvp.requestInstallApp.connect(self._installApp)
+		gvp.requestLoadCategory.connect(self._loadCategory)
 		return(gvp)
 	#def _getGlobalViewPane
 
 	def _getDetailViewPane(self):
 		dvp=paneDetailView.main(self._rebost)
+		dvp.setObjectName("detailPanel")
+		dvp.clickedBack.connect(self._returnFromDetail)
+		dvp.loaded.connect(self._endLoadDetail)
+		dvp.requestLoadCategory.connect(self._loadCategory)
 		dvp.requestInstallApp.connect(self._installApp)
 		return(dvp)
 	#def _getDetailViewPane
@@ -562,8 +589,6 @@ class portrait(QStackedWindowItem):
 			self.resetScreen()
 			category=self.i18nCat.get(category,category)
 			self._globalView.getApps(category,installed)
-		else:
-			self._globalView.hide()
 	#def _getApps
 
 	def _endGetUpgradables(self,*args):
@@ -582,7 +607,6 @@ class portrait(QStackedWindowItem):
 		self.btnSettings.hide()
 		if self.init==False:
 			self.loadStart.emit()
-		#	self.progress.start()
 		self.stopAdding=True
 		self._homeView.hide()
 	#def _beginUpdate
@@ -592,21 +616,22 @@ class portrait(QStackedWindowItem):
 	#def _endUpdate
 
 	def _goHome(self,*args,**kwargs):
+		self._referrerPane=self._homeView
 		self.lstCategories.setCurrentRow(-1)
-		self._stopThreads()
-		self._homeView.show()
-		self._globalView.hide()
-		self._detailView.hide()
+		self.resetScreen()
+		self._showPane(self._homeView)
 	#def _goHome
 
-	def _beginLoad(self):
+	def _beginLoad(self,resetScreen=True):
 		self.loadStart.emit()	
-		#self.progress.start()
 		QApplication.processEvents()
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.lstCategories.setEnabled(False)
-		self.resetScreen(ignoreProgress=True)
+		if resetScreen==False:
+			self.softresetScreen()
+		else:
+			self.resetScreen()
 		self.oldTime=time.time()
 	#def _beginLoad
 
@@ -615,8 +640,6 @@ class portrait(QStackedWindowItem):
 		self._rebost.setAction("installed")
 		self._rebost.blockSignals(False)
 		self._rebost.start()
-		return
-		#Disable app url if any (JustInCase)
 	#def _loadInstalled
 
 	def _endLoadInstalled(self,*args):
@@ -624,13 +647,10 @@ class portrait(QStackedWindowItem):
 		self.apps=self.appsRaw.copy()
 		self.loading=False
 		self._debug("LOAD INSTALLED END")
-		self._globalView.show()
-		self._homeView.hide()
+		self._showPane(self._globalView)
 		self._endUpdate()
 		self._globalView.loadApps(self.apps)
-	#	self.updateScreen(True)
 		self.oldTime=time.time()
-		self._globalView.show()
 	#def _endLoadInstalled
 
 	def _searchApps(self):
@@ -647,37 +667,15 @@ class portrait(QStackedWindowItem):
 
 	def _endSearchApps(self,*args):
 		self._debug("LOAD CATEGORY END")
-		self._globalView.show()
-		self._homeView.hide()
-		self._detailView.hide()
+		self._showPane(self._globalView)
 		self._endUpdate()
 		self.appsRaw=[]
 		self.appsRaw=json.loads(args[0])
 		self.apps=self.appsRaw.copy()
 		self._globalView.loadApps(self.apps)
-		#self.updateScreen(True)
 		self._globalView.topBar.hide()
 		self.oldTime=time.time()
-		self._globalView.show()
 	#def _endSearchApps
-
-	def setBtnIcon(self,icn=""):
-		if icn!="":
-			icn=QtGui.QIcon(os.path.join(RSRC,"{}.png".format(icn)))
-		if len(self.searchBox.text())>0:
-			icn=QtGui.QIcon(os.path.join(RSRC,"cancel.png"))
-		else:
-			icn=QtGui.QIcon(os.path.join(RSRC,"search.png"))
-		#self.btnSearch.setIconSize(QSize(self.searchBox.sizeHint().height(),self.searchBox.sizeHint().height()))
-		self.btnSearch.setIcon(icn)
-	#def setBtnIcon
-
-	def _changeSearchAppsBtnIcon(self):
-		if len(self.searchBox.text())>0:
-			self.setBtnIcon("cancel")
-		else:
-			self.setBtnIcon("search")
-	#def _changeSearchAppsBtnIcon(self):
 
 	def _searchAppsBtn(self):
 		txt=self.searchBox.text()
@@ -724,9 +722,6 @@ class portrait(QStackedWindowItem):
 	#def _getRawCategory
 
 	def _loadCategory(self,*args):
-		#Disable app url if any (JustInCase)
-		print("START LOAD")
-		#self.progress.start()
 		self.appsLoaded=0
 		cat=None
 		flag=""
@@ -759,9 +754,7 @@ class portrait(QStackedWindowItem):
 
 	def _endLoadCategory(self,*args):
 		self._debug("LOAD CATEGORY END")
-		self._globalView.show()
-		self._homeView.hide()
-		self._detailView.hide()
+		self._showPane(self._globalView)
 		self._endUpdate()
 		self.appsRaw=[]
 		appsRaw=json.loads(args[0])
@@ -769,10 +762,8 @@ class portrait(QStackedWindowItem):
 			self.appsRaw.extend(item)
 		self.apps=self.appsRaw.copy()
 		self._globalView.loadApps(self.apps)
-		#self.updateScreen(True)
 		self._globalView.topBar.show()
 		self.oldTime=time.time()
-		self._globalView.show()
 	#def _endLoadCategory
 
 	def _setInstallingState(self,app,state):
@@ -782,30 +773,6 @@ class portrait(QStackedWindowItem):
 		self._rebost.wait()
 		return(app)
 	#def _setInstallingState
-
-	def _getRunappResults(self,app,proc):
-		self.setCursor(self.oldCursor)
-		app["state"]=0
-		if proc==None:
-			return
-		if proc.returncode!=0:
-			#pkexec ret values
-			#127 -> Not authorized
-			if proc.returncode==127:
-				self.showMsg(title="AppsEdu Store",summary=app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=app["icon"],timeout=5000)
-			else:
-				self.showMsg(title="AppsEdu Store",summary=app["name"],text=i18n.get("ERRUNKNOWN"),icon=app["icon"],timeout=5000)
-		if self.installingBtn!=None:
-			oldReferrer=self.referrerBtn
-			self.referrerBtn=self.installingBtn
-			self._returnFromDetail(None,app)
-			self.referrerBtn=oldReferrer
-			self.installingBtn=None
-		self._rebost.setAction("setAppState",app["id"],0)
-		self._rebost.start()
-		self._rebost.wait()
-		return
-	#def _getRunappResults
 
 	def _installApp(self,*args): #(btn,app,[bundle])
 		if self.installingBtn!=None:
@@ -838,38 +805,29 @@ class portrait(QStackedWindowItem):
 		return
 	#def _installApp
 
-	def _loadLockedRebost(self):
-		#self.progress.start()
-		self.loadStart.emit()
-		self._rebost.setAction("restart")
-		self._rebost.start()
-	#def _loadLockedRebost
-
-	def _detailLoaded(self,*args,**kwargs):
-		self._stopThreads()
-		self._detailView.show()
-		self._homeView.hide()
-		#self.progress.stop()
-		self.loadStop.emit()
-	#def _detailLoaded
-
-	def _endLoadDetails(self,icn,*args):
-		self.setChanged(False)
-		self.parent.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","").capitalize()))
-		self._detailView.setParms({"name":args[-1].get("name",""),"id":args[-1].get("id",""),"icon":icn})
-		self._detailView.show()
+	def _showPane(self,showPane):
+		for pane in [self._detailView,self._homeView,self._errorView,self._globalView]:
+			if showPane==self._detailView and pane==self._globalView: #flowlayout goes crazy
+				continue
+			if showPane!=pane:
+				pane.hide()
+		showPane.show()
+		showPane.setCursor(self.oldCursor)
+		showPane.setFocus()
+		self.lstCategories.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+		self.lstCategories.setEnabled(True)
 		self.setCursor(self.oldCursor)
-		self._detailView.setFocus()
-	#def _endLoadDetails
+	#def _showPane
+
+	def _endLoadDetail(self,*args,**kwargs):
+		self._showPane(self._detailView)
+		self.loadStop.emit()
+	#def _endLoadDetail
 
 	def _loadDetails(self,*args,**kwargs):
-		self._stopThreads()
-		#self.progress.start()
-		self.loadStart.emit()
+		self._beginLoad(resetScreen=False)
 		icn=""
 		app=""
-		cursor=QtGui.QCursor(Qt.WaitCursor)
-		self.setCursor(cursor)
 		for arg in args:
 			if isinstance(arg,tuple):
 				for targ in arg:
@@ -887,7 +845,8 @@ class portrait(QStackedWindowItem):
 				break
 		self._stopThreads()
 		if app!="":
-			self._endLoadDetails(icn,app)
+			self.parent.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","").capitalize()))
+			self._detailView.setParms({"name":app.get("name",""),"id":app.get("id",""),"icon":icn})
 	#def _loadDetails(self,*args,**kwargs):
 
 	def _loadGlobalDetails(self,*args,**kwargs):
@@ -902,7 +861,6 @@ class portrait(QStackedWindowItem):
 
 	def _loadPortraitFromError(self,*args,**kwargs):
 		self.noChkNetwork=True
-		self._errorView.hide()
 		self._goHome()
 	#def _loadPortraitFromError
 
@@ -912,6 +870,13 @@ class portrait(QStackedWindowItem):
 		self._referrerPane=self._homeView
 		self._loadDetails(json.loads(args[0])[0],kwargs)
 	#def _loadFromArgs
+
+	def _loadLockedRebost(self):
+		#self.progress.start()
+		self.loadStart.emit()
+		self._rebost.setAction("restart")
+		self._rebost.start()
+	#def _loadLockedRebost
 
 	def setParms(self,*args):
 		appsedu=args[0]
@@ -926,14 +891,13 @@ class portrait(QStackedWindowItem):
 	
 	def _returnFromDetail(self,*args,**kwargs):
 		if self._detailView.isVisible():
-			self._detailView.hide()
 			if self._referrerPane==self._detailView:
 				self._referrerPane=None
-				self._homeView.show()
+				self._showPane(self._homeView)
 				if len(self._homeView.layout().children())==0:
 					self._homeView.updateScreen()
 			else:
-				self._referrerPane.show()
+				self._showPane(self._referrerPane)
 		if args[1].get("state",0)>=7:
 			if self.installingBtn==None:
 				self.installingBtn=self.referrerBtn
@@ -949,42 +913,15 @@ class portrait(QStackedWindowItem):
 		self.setCursor(self.oldCursor)
 		self.parent.setWindowTitle("{}".format(APPNAME))
 		self.loading=False
-		#QApplication.processEvents()
-		#	self.referrerBtn.setApp(args[1])
-		#	self.referrerBtn.updateScreen()
 		self.loadStop.emit()
-		self.lstCategories.setCursor(self.oldCursor)
-		self.lstCategories.setEnabled(True)
 	#def _return
 
-	def updateScreen(self,addEnable=None):
-		isConnected=self._chkNetwork()
-		self._errorView.setVisible(not(isConnected))
-		if isConnected==False:
-			self._endUpdate()
-			self._globalView.hide()
-			self._homeView.hide()
-			self._detailView.hide()
-			self._stopThreads()
-			return
-		if self._referrerPane!=None:
-			self._globalView.hide()
-			self._homeView.hide()
-			self._detailView.hide()
-			self._referrerPane.show()
-		if self._globalView.isVisible():
-			self._globalView.updateScreen()
-		elif self._detailView.isVisible():
-			self._stopThreads()
-		elif self._homeView.isVisible():
-			self._stopThreads()
-			if len(self._homeView.layout().children())==0:
-				self._homeView.updateScreen()
-			self._endUpdate()
-	#def _updateScreen
-	
-	def resetScreen(self,ignoreProgress=False):
-		self._stopThreads(ignoreProgress)
+	def softresetScreen(self):
+		self._stopThreads(ignoreProgress=True)
+	#def resetScreen
+
+	def resetScreen(self):
+		self._stopThreads()
 		self.appsLoaded=0
 		self.pendingApps={}
 		self.refererApp=None
@@ -993,9 +930,20 @@ class portrait(QStackedWindowItem):
 		self._globalView.table.clean()
 	#def resetScreen
 
-	def _updateConfig(self,key):
-		pass
-
-	def writeConfig(self):
-		return
-
+	def updateScreen(self,addEnable=None):
+		isConnected=self._chkNetwork()
+		if isConnected==False:
+			self._endUpdate()
+			self._showPane(self._errorPane)
+			self._stopThreads()
+			return
+		if self._referrerPane!=None:
+			self._showPane(self._referrerPane)
+		if self._detailView.isVisible():
+			self._stopThreads()
+		elif self._homeView.isVisible():
+			self._stopThreads()
+			if len(self._homeView.layout().children())==0:
+				self._homeView.updateScreen()
+			self._endUpdate()
+	#def _updateScreen
