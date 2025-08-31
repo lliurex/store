@@ -152,6 +152,8 @@ class main(QWidget):
 			if not isinstance(btn,QPushButtonRebostApp):
 				continue
 			if isinstance(app,list) and len(app)>0 and btn.app.get("summary","")=="":
+				btn.setObjectName("rebostapp")
+				btn._applyDecoration()
 				btn.setApp(app[0])
 				btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 				btn.install.connect(self._emitInstallApp)
@@ -188,7 +190,13 @@ class main(QWidget):
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			btn.setMaximumWidth(IMAGE_PREVIEW/3)
 			btn.autoUpdate=True
-			btn.setVisible(False)
+			pxm=QtGui.QPixmap()
+			if i<3:
+				btn.setObjectName("mp")
+				pxm.load("/home/lliurex/git/store/src/rsrc/appsedu128x128.png")
+				btn.loadFullScreen(pxm)
+			else:
+				btn.setVisible(False)
 			btn.clicked.connect(self._loadApp)
 			layout.addWidget(btn,Qt.AlignCenter)
 		return(wdg)

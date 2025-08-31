@@ -107,7 +107,6 @@ class QPushButtonRebostApp(QPushButton):
 	def _wAttributes(self):
 		self.setObjectName("rebostapp")
 		#self.appIconSize=self.aaiconSize/2
-		self.margin=12
 		self.setMinimumHeight(220)
 		self.setMinimumWidth(140)
 		self.setAttribute(Qt.WA_StyledBackground, True)
@@ -408,14 +407,18 @@ class QPushButtonRebostApp(QPushButton):
 	#def _applyDecoration
 
 	def load(self,*args):
-		oldPxm=self.iconUri.pixmap()
+		currentPxm=self.iconUri.pixmap()
 		img=args[0]
-		if oldPxm!=None:
-			if oldPxm.isNull()==True:
+		if currentPxm!=None:
+			if currentPxm.isNull()==True:
 				self.iconUri.setPixmap(img.scaled(self.appIconSize,self.appIconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 		else:
 			self.iconUri.setPixmap(img.scaled(self.appIconSize,self.appIconSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
 	#def load
+
+	def loadFullScreen(self,img):
+		self.iconUri.setPixmap(img.scaled(self.width()-(self.layout().spacing()*2),self.height()-(self.layout().spacing()*2),Qt.KeepAspectRatio,Qt.SmoothTransformation))
+	#def loadFullScreen
 	
 	def activate(self):
 		self.clicked.emit(self,self.app)
