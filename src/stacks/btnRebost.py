@@ -370,21 +370,12 @@ class QPushButtonRebostApp(QPushButton):
 		if LAYOUT=="appsedu":
 			brdWidth=1
 			focusedBrdWidth=2
-		self.setStyleSheet("""#rebostapp_deprecated {
-			background: hsl(%s); 
-			border-color: hsl(%s); 
-			border-style: solid; 
-			border-width: %spx; 
-			border-radius: 5px;
-			}
-			#rebostapp_deprecated:focus:!pressed {
-				border-width:%spx;
-				}
-			#rebostapp {
+		self.setStyleSheet("""#rebostapp {
 				border-color: silver;
 				border-style: solid; 
 				border-width: 1px; 
 				border-radius: 5px;
+				background: qradialgradient(cx:0.5, cy:1,radius:0.7,fx:0.5,fy:0.9,stop:0 %s, stop:1 %s);
 			}
 			QLabel{
 				color: rgb(%s);
@@ -395,7 +386,7 @@ class QPushButtonRebostApp(QPushButton):
 				color: rgb(%s);
 				color: unset;
 				background:hsl(%s);
-				background:#EEEEEE;
+				background: #EEEEEE; 
 				border:1px solid;
 				border-color: hsl(%s); 
 				border-color: #EEEEEE; 
@@ -404,8 +395,9 @@ class QPushButtonRebostApp(QPushButton):
 				padding-left:12px;
 				padding-right:12px;
 				margin:12px;
+				background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
 			}
-			"""%(style["bkgColor"],style["brdColor"],brdWidth,focusedBrdWidth,style["frgColor"],style["bkgColor"],style["frgColor"],style["bkgBtnColor"],style["brdBtnColor"]))
+			"""%(COLOR_BORDER_DARK,COLOR_BACKGROUND_LIGHT,style["frgColor"],style["bkgColor"],style["frgColor"],style["bkgBtnColor"],style["brdBtnColor"],COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST))
 		if (style.get("forbidden",False)==True) or (self.btn.text()==i18n.get("UNAVAILABLE","")) or self.btn.cursor()==Qt.WaitCursor:
 			if self.btn.text()!=i18n.get("UNAVAILABLE",""):
 				self.iconUri.setEnabled(False)

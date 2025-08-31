@@ -232,13 +232,13 @@ def portrait():
 				#btnHome{
 					margin-top:%spx;
 					color:%s;
-					background:%s;
+					background: qlineargradient(x1:0, y1:0, x2:0, y2:2, stop:0 %s, stop:1 %s);
 					border-color:%s;
 					border-radius:%spx;
 					padding-bottom:%spx;
 					padding-top:%spx;
 				}
-				"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
+				"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
 	css=css+btnBar
 	upgrades="""#upgrades{
 					color:%s;
