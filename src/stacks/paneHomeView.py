@@ -15,9 +15,9 @@ from btnRebost import QPushButtonRebostApp
 import gettext
 _ = gettext.gettext
 
-i18n={"LBL_BLOG":"Blog entries",
-	"LBL_APPSEDU":"Latest apps in appsedu",
-	"LBL_CATEGORIES":"Relevant categories"}
+i18n={"LBL_BLOG":_("Blog entries"),
+	"LBL_APPSEDU":_("Latest apps in appsedu"),
+	"LBL_CATEGORIES":_("Relevant categories")}
 
 class main(QWidget):
 	clickedCategory=Signal("PyObject")
@@ -224,7 +224,7 @@ class main(QWidget):
 				icn="games"
 			elif ("audio" in icn) or ("video" in icn):
 				icn="multimedia"
-			app={"name":apps[idx],"icon":"applications-{}".format(icn),"pkgname":apps[idx],}
+			app={"name":_(apps[idx]),"icon":"applications-{}".format(icn),"pkgname":apps[idx],}
 			btn=QPushButtonRebostApp(app)
 			btn.autoUpdate=True
 			btn.clicked.connect(self._loadCategory)
