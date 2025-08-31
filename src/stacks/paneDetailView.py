@@ -8,15 +8,16 @@ import html
 from rebost import store
 from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,\
 							QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,\
-							QAbstractScrollArea, QFrame
+							QAbstractScrollArea, QFrame,QHeaderView
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation,Slot
-from QtExtraWidgets import QScreenShotContainer,QScrollLabel
+from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QTableTouchWidget
 import libhelper
 import css
 from cmbBtn import QComboButton
 from lblApp import QLabelRebostApp
 from lblLnk import QLabelLink
+from btnRebost import QPushButtonRebostApp
 from libth import thShowApp
 from constants import *
 import gettext
@@ -34,6 +35,7 @@ i18n={
 	"FORBIDDEN":_("App unauthorized"),
 	"INFO":_("For more info go to"),
 	"INSTALL":_("Install"),
+	"OPEN":_("Open"),
 	"OPENING":_("Opening"),
 	"RELEASE":_("Release"),
 	"REMOVE":_("Remove"),
@@ -73,7 +75,8 @@ class main(QWidget):
 
 	def _connectThreads(self):
 		self.thParmShow=thShowApp(rc=self.rc)
-		self.thParmShow.showEnded.connect(self._endSetParms)
+		self.hParmShow.showEnded.connect(self._endSetParms)
+		self._rebost.shwEnded.connect(self._endLoadSuggested)
 	#def _connectThreads
 
 	def _debug(self,msg):
@@ -197,8 +200,9 @@ class main(QWidget):
 
 	def _setInstallingState(self):
 		if self.btnRemove.isVisible()==True:
-			self._rebost.setAction("setAppState",self.app["id"],8)
 			self.app["state"]=8
+			if self.btnRemove.text()==i18n["REMOVE"]:
+				self._rebost.setAction("setAppState",self.app["id"],8)
 		else:
 			self._rebost.setAction("setAppState",self.app["id"],7)
 			self.app["state"]=7
@@ -209,7 +213,7 @@ class main(QWidget):
 	@Slot("PyObejct,","PyObject")
 	def _genericEpiInstall(self,*args):
 		bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
-		self.requestInstallApp.emit(self.referrerBtn,self.app,bundle)
+		self.requestInstallApp.emit(self.btnRemove,self.app,bundle)
 	#def _genericEpiInstall
 
 	def _clickedBack(self):
@@ -247,11 +251,13 @@ class main(QWidget):
 		self.lblDesc=QScrollLabel()
 		self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		self.suggests=self._defSuggests()
 		spacing=QLabel("")
 		spacing.setFixedHeight(6)
 		self.box.addWidget(spacing,3,1,1,1)
 		self.box.addWidget(resources,4,2,1,1)
 		self.box.addWidget(self.lblDesc,4,3,2,1)
+		self.box.addWidget(self.suggests,6,3,1,1,Qt.AlignBottom)
 		self.setLayout(self.box)
 		self.box.setColumnStretch(0,0)
 		self.box.setColumnStretch(1,0)
@@ -259,7 +265,7 @@ class main(QWidget):
 		self.box.setColumnStretch(3,1)
 		self.box.setRowStretch(0,0)
 		self.box.setRowStretch(5,1)
-		self.box.setRowStretch(6,0)
+		self.box.setRowStretch(7,0)
 		self.box.addWidget(spacingE,0,self.box.columnCount(),1,1)
 		errorLay=QGridLayout()
 		self.lblBkg=QLabel()
@@ -326,6 +332,20 @@ class main(QWidget):
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		return(wdg)
 	#def _defScreenshot
+
+	def _defSuggests(self):
+		wdg=QTableTouchWidget()
+		wdg.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		wdg.horizontalHeader().hide()
+		wdg.verticalHeader().hide()
+		wdg.setShowGrid(False)
+		wdg.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		wdg.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
+		wdg.setRowCount(2)
+		wdg.setColumnCount(1)
+		wdg.setCellWidget(0,0,QLabel("Related apps<br>"))
+		return(wdg)
+	#def _defSuggests
 
 	def _defResources(self):
 		wdg=QWidget()
@@ -399,6 +419,16 @@ class main(QWidget):
 				print(e)
 	#def _loadScreenshots
 
+	def _endLoadSuggested(self,*args):
+		app=json.loads(args[0])
+	#def _endLoadSuggested
+
+	def _loadSuggested(self,*args):
+		name=args[1]["name"]
+		self._rebost.setAction("show",name,0)
+		self._rebost.start()
+	#def _loadSuggested
+
 	def updateScreen(self):
 		self._initScreen()
 		if self.app.get("bundle",None)==None:
@@ -458,6 +488,15 @@ class main(QWidget):
 		#self._setLauncherOptions()
 		self.lblTags.setText(self._generateCategoryTags())
 		self.lblTags.adjustSize()
+		for suggest in self.app.get("suggests",[]):
+			self.suggests.setColumnCount(self.suggests.columnCount()+1)
+			app={"name":suggest,"icon":"","pkgname":suggest,"description":""}
+			btn=QPushButtonRebostApp(app)
+			btn.clicked.connect(self._loadSuggested)
+			btn.autoUpdate=True
+			btn.setFixedSize(QSize(ICON_SIZE,ICON_SIZE*1.5))
+			btn.showBtn=False
+			self.suggests.setCellWidget(1,self.suggests.columnCount()-2,btn)
 		self.loaded.emit(self.app)
 	#def _updateScreen
 
@@ -564,17 +603,23 @@ class main(QWidget):
 		self.lblRelease.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
 		self.lstInfo.blockSignals(True)
 		self.lstInfo.setText(i18n["INSTALL"].upper())
-		states=self.app.get("status",{})
-		zmd=states.get("zomando","0")
 		self.btnRemove.setVisible(False)
 		self.btnRemove.setEnabled(False)
+		bundles=self.app.get("bundle",{})
+		zmd=bundles.get("unknown","")
+		states=self.app["status"]
 		if len(states)>0:
 			for bundle,state in states.items():
-				if state==0:
+				if int(state)==0:# and zmdInstalled!="0":
 					self.btnRemove.setVisible(True)
 					self.btnRemove.setEnabled(True)
-					self.instBundle=bundle
-					break
+					if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
+						self.btnRemove.setText(i18n["OPEN"])
+						break
+					elif self.btnRemove.text()!=i18n["REMOVE"]:
+						self.btnRemove.setText(i18n["REMOVE"])
+						self.instBundle=bundle
+						break
 		self._setLauncherStatus()
 		if len(self.app.get("bundle",[]))==1 and "eduapp" in self.app.get("bundle",{}).keys():
 			self.btnRemove.setEnabled(False)

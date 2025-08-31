@@ -14,6 +14,7 @@ gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
 i18n={"INSTALL":_("Install"),
+	"OPEN":_("Open"),
 	"REMOVE":_("Remove"),
 	"UNAUTHORIZED":_("Blocked"),
 	"UNAVAILABLE":_("Unavailable"),
@@ -234,16 +235,15 @@ class QPushButtonRebostApp(QPushButton):
 				self.btn.setText(i18n["INSTALL"])
 			bundles=self.app["bundle"]
 			states=self.app["status"]
-			zmd=states.get("zomando","0")
+			zmd=bundles.get("unknown","")
 			if len(states)>0:
 				for bundle,state in states.items():
-					if bundle=="package" and zmd=="1":
-						if self.app["bundle"]["package"].startswith("zero"):
-							continue
 					if int(state)==0:# and zmdInstalled!="0":
-						if self.btn.text()!=i18n["REMOVE"]:
+						if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
+							self.btn.setText(i18n["OPEN"])
+						elif self.btn.text()!=i18n["REMOVE"]:
 							self.btn.setText(i18n["REMOVE"])
-						self.instBundle=bundle
+							self.instBundle=bundle
 						break
 		if int(self.app.get("state","0"))>=7:
 			self.btn.setCursor(QCursor(Qt.WaitCursor))

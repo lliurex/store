@@ -51,6 +51,7 @@ i18n={
 	"LLXUP":_("Launch LliurexUp"),
 	"MENU":_("Show applications"),
 	"NEWDATA":_("Updating info"),
+	"OPEN":_("Open"),
 	"REMOVE":_("Remove"),
 	"SEARCH":_("Search"),
 	"SORTDSC":_("Sort alphabetically"),
@@ -89,6 +90,8 @@ class portrait(QStackedWindowItem):
 		self._llxup=llxup()
 		self.runapp=exehelper.appLauncher()
 		self.runapp.runEnded.connect(self._getRunappResults)
+		self.zmd=exehelper.zmdLauncher()
+		self.zmd.zmdEnded.connect(self._getZmdResults)
 		self._initRegisters()
 		self._initThreads()
 		self._initGUI()
@@ -212,6 +215,12 @@ class portrait(QStackedWindowItem):
 		self.loadStop.emit()
 		self._goHome()
 	#def _endRestart
+
+	def _getZmdResults(self,app):
+		self.installingBtn=None
+		self.setCursor(self.oldCursor)
+		pass
+	#def _getZmdpResults
 
 	def _getRunappResults(self,app,proc):
 		self.setCursor(self.oldCursor)
@@ -795,13 +804,22 @@ class portrait(QStackedWindowItem):
 				state=7
 				if isinstance(wdg,QPushButtonRebostApp):
 					self.installingBtn=wdg
-					if wdg.text()==i18n["REMOVE"]:
+					if wdg.btn.text()==i18n["REMOVE"]:
 						state=8
+					elif wdg.btn.text()==i18n["OPEN"]:
+						state=0
 				elif isinstance(wdg,QPushButton):
-					state=8
-				self._setInstallingState(app,state)
-				self.runapp.setArgs(app,[installer,pkg,bundle])
-				self.runapp.start()
+					if wdg.text()==i18n["OPEN"]:
+						state=0
+					else:
+						state=8
+				if state>=7:
+					self._setInstallingState(app,state)
+					self.runapp.setArgs(app,[installer,pkg,bundle])
+					self.runapp.start()
+				else:
+					self.zmd.setApp(app)
+					self.zmd.start()
 		return
 	#def _installApp
 
@@ -934,7 +952,7 @@ class portrait(QStackedWindowItem):
 		isConnected=self._chkNetwork()
 		if isConnected==False:
 			self._endUpdate()
-			self._showPane(self._errorPane)
+			self._showPane(self._errorView)
 			self._stopThreads()
 			return
 		if self._referrerPane!=None:

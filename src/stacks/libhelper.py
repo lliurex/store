@@ -32,7 +32,7 @@ class helper():
 	def runZmd(self,app):
 		ret=-1
 		cmd=[]
-		zmdCmd=app.get('bundle',{}).get('zomando','')
+		zmdCmd=app.get('bundle',{}).get('unknown','')+".zmd"
 		appName=app.get("alias","")
 		if appName=="":
 			appName=app["name"]
