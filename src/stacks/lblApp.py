@@ -3,7 +3,7 @@ import os
 from functools import partial
 import json
 from PySide6.QtWidgets import QLabel
-from PySide6.QtCore import Qt,Signal
+from PySide6.QtCore import Qt,Signal,QSize
 from PySide6 import QtGui
 from QtExtraWidgets import QScreenShotContainer
 import gettext
@@ -42,51 +42,48 @@ class QLabelRebostApp(QLabel):
 	#def setIconSize
 
 	def loadImg(self,app):
+		self.app=app
+		load=True
 		if self.iconSize>0:
 			baseSize=self.iconSize
 		else:
 			baseSize=ICON_SIZE
 		wsize=baseSize
-		self.app=app
-		img=app.get('icon','')
-		self.setMinimumWidth(1)
-		icn=''
 		self.pixmapPath=""
+		img=app.get('icon','')
 		if isinstance(img,QtGui.QPixmap):
-			icn=img
+			self.load(img)
+			return
 		elif os.path.isfile(img):
-			if "/usr/share/banners/lliurex-neu" in img:
-				wsize=int(baseSize*1.8)
-			icn=QtGui.QPixmap.fromImage(QtGui.QImage(img))
 			self.pixmapPath=img
 		elif img=='':
-			icn2=QtGui.QIcon.fromTheme(app.get('icon',""))#,QtGui.QIcon.fromTheme("appedu-generic"))
-			self.pixmapPath=app.get("icon")
-			if icn2.isNull():
-				icn2=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
-				self.pixmapPath=app.get("pkgname")
-			icn=icn2.pixmap(baseSize,baseSize)
-		if icn:
-			self.setPixmap(icn.scaled(wsize,baseSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
-			self.setMinimumWidth(wsize+10)
-			if self.pixmapPath=="":
-				self._savePixmap()
-		elif img.startswith('http'):
-			scr=self.scrCnt.loadScreenShot(img,self.cacheDir)
+			icn=QtGui.QIcon.fromTheme(app.get('pkgname'),QtGui.QIcon.fromTheme("appedu-generic"))
+			if not icn.isNull():
+				self.setPixmap(icn.pixmap(QSize(wsize,baseSize)))
+				load=False
+		elif os.path.exists(os.path.join(self.cacheDir,os.path.basename(img))):
+			img=os.path.join(self.cacheDir,os.path.basename(img))
+			self.pixmapPath=img
+		if load:
+			scrCnt=QScreenShotContainer()
+			scr=scrCnt.loadScreenShot(img,self.cacheDir)
 			scr.imageReady.connect(self.load)
 			scr.start()
 			self.th.append(scr)
+	#	self.scr.wait()
 	#def loadImg
-	
-	def load(self,*args):
+
+	def load(self,*args,**kwargs):
 		img=args[0]
 		if self.iconSize>0:
 			baseSize=self.iconSize
 		else:
 			baseSize=ICON_SIZE
 		wsize=baseSize
-		self.setPixmap(img.scaled(wsize,baseSize,Qt.KeepAspectRatio,Qt.SmoothTransformation))
-		self.setMinimumWidth(baseSize+10)
+		if "/usr/share/banners/lliurex-neu" in self.pixmapPath:
+			wsize=int(baseSize*2.3)
+		self.setPixmap(img.scaled(wsize,baseSize,Qt.IgnoreAspectRatio,Qt.FastTransformation))
+		self.setMinimumWidth(wsize+10)
 		self._savePixmap()
 	#def load
 
@@ -100,7 +97,7 @@ class QLabelRebostApp(QLabel):
 			stripName=stripName.replace("png",".png")
 		fPath=os.path.join(self.cacheDir,stripName)
 		if not os.path.exists(fPath):
-			pxm=pxm.scaled(256,256,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
+			pxm=pxm.scaled(256,256,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.FastTransformation)
 			pxm.save(fPath,"PNG")#,quality=5)
 		self.pixmapPath=fPath
 	#def _savePixmap
