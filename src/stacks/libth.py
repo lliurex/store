@@ -128,10 +128,12 @@ class storeHelper(QThread):
 		#apps=json.loads(self.rc.execute("search",self.args[0]))
 		app=[]
 		if self.args[0]!="":
-			url=self.args[0]
-			if url!="":
-				app=self.rc.searchAppByUrl(url)
-		self.urlEnded.emit(app)
+			urls=self.args[0]
+			for url in urls:
+				if url!="":
+					app=self.rc.searchAppByUrl(url)
+					self.urlEnded.emit(app)
+		return()
 	#def _searchByUrl()
 
 	def _show(self,*args):

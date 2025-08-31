@@ -11,7 +11,6 @@ import gettext
 import css
 import rss
 from constants import *
-from lblArticle import QLabelArticle
 from btnRebost import QPushButtonRebostApp
 import gettext
 _ = gettext.gettext
@@ -64,19 +63,22 @@ class main(QWidget):
 	#def _onDestroy
 
 	def _processRss(self,*args,**kwargs):
-		result=args[0]
-		if len(result)>0:
-			if result[0]["type"]=="appsedu":
-				for idx in range(0,min(len(result),10)):
+		url=args[0]
+		apps=args[1]
+		if len(apps)>0:
+			if apps[0]["type"]=="appsedu":
+				urls=[]
+				for idx in range(0,min(len(apps),10)):
 					if self._stop==True:
 						break
-					url=result[idx]["link"]
-					self._rebost.setAction("urlSearch",url)
-					self._rebost.start()
-					self._rebost.wait()
+					url=apps[idx]["link"]
+					urls.append(url)
+				self._rebost.setAction("urlSearch",urls)
+				self._rebost.start()
+					#self._rebost.wait()
 			else:
 				if self._stop==False:
-					self._setBlogData(result)
+					self._setBlogData(apps)
 	#def _processRss(self,*args,**kwargs):
 
 	def _setBlogData(self,*args):

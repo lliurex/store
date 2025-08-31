@@ -6,7 +6,7 @@ import urllib
 from urllib.request import Request
 
 class rssParser(QThread):
-	rssEnded=Signal("PyObject")
+	rssEnded=Signal("PyObject","PyObject")
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self, None)
 		self.dbg=True
@@ -88,7 +88,7 @@ class rssParser(QThread):
 						break
 		if len(parsedFeeds)>0:
 			parsedFeeds=self._getImgsForFeeds(parsedFeeds)
-		self.rssEnded.emit(parsedFeeds)
+		self.rssEnded.emit(self.rss[feed],parsedFeeds)
 		self._stop=False
 	#def run
 
