@@ -268,38 +268,7 @@ class QPushButtonRebostApp(QPushButton):
 	#def enterEvent
 
 	def loadImg(self,app):
-		if app.get("icon","")=="":
-			return
-		img=app.get('icon','')
-		icn=''
-		if isinstance(img,QPixmap):
-			self.load(img)
-			return
-		elif os.path.isfile(img):
-			icn=QPixmap.fromImage(QImage(img))
-			icn=icn.scaled(self.appIconSize,self.appIconSize,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
-		elif img=='':
-			icn=QIcon.fromTheme(app.get('pkgname'),QIcon.fromTheme("appedu-generic"))
-			img=icn.pixmap(self.appIconSize,self.appIconSize)
-		if isinstance(img,str):
-			if "flathub" in img:
-				tmp=img.split("/")
-				if "icons" in tmp:
-					idx=tmp.index("icons")
-					prefix=tmp[:idx-1]
-					iconPath=os.path.join("/".join(prefix),"active","/".join(tmp[idx:]))
-					if os.path.isfile(iconPath):
-						img=iconPath
-			elif os.path.exists(os.path.join(self.cacheDir,os.path.basename(img))):
-				img=os.path.join(self.cacheDir,os.path.basename(img))
-
-		scrCnt=QScreenShotContainer()
-		scr=scrCnt.loadScreenShot(img,self.cacheDir)
-		scr.imageReady.connect(self.load)
-		scr.start()
-		self.th.append(scr)
-		self.scr.wait()
-		#self._applyDecoration(app)
+		self.iconUri.loadImg(self.app)
 	#def loadImg
 
 	def _getStats(self,app):
@@ -440,7 +409,6 @@ class QPushButtonRebostApp(QPushButton):
 	def setApp(self,app):
 		self.app=app
 		if self.autoUpdate==True:
-			print(self.app["icon"])
 			self.updateScreen()
 	#def setApp
 #class QPushButtonRebostApp
