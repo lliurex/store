@@ -1,17 +1,14 @@
 #!/usr/bin/python3
 import sys,signal
-import os
+import os,random
 from functools import partial
-import subprocess
 import json
 import html
 from rebost import store
-from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QComboBox,QHBoxLayout,QListWidget,\
-							QVBoxLayout,QListWidgetItem,QGraphicsBlurEffect,QGraphicsOpacityEffect,\
-							QAbstractScrollArea, QFrame,QHeaderView
+from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QScrollArea
 from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation,Slot
-from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QTableTouchWidget
+from PySide6.QtCore import Qt,QSize,Signal,QThread,Slot
+from QtExtraWidgets import QScreenShotContainer,QScrollLabel
 import libhelper
 import css
 from cmbBtn import QComboButton
@@ -75,7 +72,7 @@ class main(QWidget):
 
 	def _connectThreads(self):
 		self.thParmShow=thShowApp(rc=self.rc)
-		self.hParmShow.showEnded.connect(self._endSetParms)
+		self.thParmShow.showEnded.connect(self._endSetParms)
 		self._rebost.shwEnded.connect(self._endLoadSuggested)
 	#def _connectThreads
 
@@ -333,18 +330,32 @@ class main(QWidget):
 		return(wdg)
 	#def _defScreenshot
 
+	def _suggestsInit(self):
+		wdg=QWidget()
+		wdg.setMinimumHeight(172)
+		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		lay=QVBoxLayout()
+		wdg.setLayout(lay)
+		wdgSuggest=QWidget()
+		wdgSuggest.setMaximumHeight(128)
+		wlay=QHBoxLayout()
+		wdgSuggest.setLayout(wlay)
+		wdg.addWidget=wlay.addWidget
+		lay.addWidget(QLabel("Suggested apps"))
+		lay.addWidget(wdgSuggest)
+		return(wdg,wlay)
+	#def _defSuggestsInit
+
 	def _defSuggests(self):
-		wdg=QTableTouchWidget()
-		wdg.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		wdg.horizontalHeader().hide()
-		wdg.verticalHeader().hide()
-		wdg.setShowGrid(False)
-		wdg.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		wdg.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
-		wdg.setRowCount(2)
-		wdg.setColumnCount(1)
-		wdg.setCellWidget(0,0,QLabel("Related apps<br>"))
-		return(wdg)
+		wdgScroll=QScrollArea()
+		wdgScroll.setMinimumHeight(196)
+		wdgScroll.setWidgetResizable(True)
+		wdg,wlay=self._suggestsInit()
+		wdgScroll.setWidget(wdg)
+		wdgScroll.setWidget(wdg)
+		wdgScroll.addWidget=wlay.addWidget
+		wdgScroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		return(wdgScroll)
 	#def _defSuggests
 
 	def _defResources(self):
@@ -488,15 +499,22 @@ class main(QWidget):
 		#self._setLauncherOptions()
 		self.lblTags.setText(self._generateCategoryTags())
 		self.lblTags.adjustSize()
-		for suggest in self.app.get("suggests",[]):
-			self.suggests.setColumnCount(self.suggests.columnCount()+1)
-			app={"name":suggest,"icon":"","pkgname":suggest,"description":""}
-			btn=QPushButtonRebostApp(app)
-			btn.clicked.connect(self._loadSuggested)
-			btn.autoUpdate=True
-			btn.setFixedSize(QSize(ICON_SIZE,ICON_SIZE*1.5))
-			btn.showBtn=False
-			self.suggests.setCellWidget(1,self.suggests.columnCount()-2,btn)
+		suggests=self.app.get("suggests",[])
+		wdg,wlay=self._suggestsInit()
+		self.suggests.setWidget(wdg)
+		self.suggests.addWidget=wlay.addWidget
+		if len(suggests)>0:
+			random.shuffle(suggests)
+			suggests=suggests[0:min(7,len(suggests))]
+			for suggest in suggests:
+				app={"name":" ","icon":"","pkgname":suggest,"description":"","summary":"<br>"+suggest.capitalize()}
+				btn=QPushButtonRebostApp(app)
+				btn.clicked.connect(self._loadSuggested)
+				btn.autoUpdate=True
+				btn.setFixedSize(QSize(ICON_SIZE*1.5,self.suggests.sizeHint().height()*2))
+				btn.showBtn=False
+				self.suggests.addWidget(btn,Qt.AlignCenter|Qt.AlignCenter)
+			self.suggests.adjustSize()
 		self.loaded.emit(self.app)
 	#def _updateScreen
 
@@ -559,7 +577,6 @@ class main(QWidget):
 		self.btnUnavailable.setEnabled(False)
 		self.blur=QGraphicsBlurEffect() 
 		self.blur.setBlurRadius(55) 
-		self.opacity=QGraphicsOpacityEffect()
 		self.lblBkg.setGraphicsEffect(self.blur)
 		self.lblBkg.setStyleSheet("QLabel{background-color:rgba(%s,%s,%s,0.7);}"%(color.red(),color.green(),color.blue()))
 		#self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
