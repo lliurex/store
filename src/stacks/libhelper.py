@@ -32,10 +32,10 @@ class helper():
 	def runZmd(self,app):
 		ret=-1
 		cmd=[]
-		zmdCmd=app.get('bundle',{}).get('unknown','')+".zmd"
-		appName=app.get("alias","")
+		zmdCmd=app.get('bundle',{}).get('unknown','').replace(".epi","")+".zmd"
+		appName=app.get("pkgname","")
 		if appName=="":
-			appName=app["name"]
+			appName=zmdCmd
 		if zmdCmd.endswith(".zmd")==True:
 			zmdPath=os.path.join("/usr/share/zero-center/zmds",zmdCmd)
 			if os.path.isfile(zmdPath):
@@ -177,12 +177,16 @@ class helper():
 		priority=["zomando","package","flatpak","snap","appimage","eduapp"]
 		priorityIdx={}
 		bundles=app.get('bundle',{})
-		for i in bundles:
-			version=app.get('versions',{}).get(i,'')
-			if i in priority:
+		for bundle in bundles:
+			version=app.get('versions',{}).get(bundle,'Zomando')
+			if bundle=="unknown":
+				bundle="zomando"
+			if bundle in priority:
 				fversion=version.split("+")[0][0:10]
-				release="{} {}".format(i,fversion)
-				idx=priority.index(i)
+				idx=priority.index(bundle)
+				if bundle=="zomando":
+					bundle="unknown"
+				release="{} {}".format(bundle,fversion)
 				priorityIdx[idx]=release
 		return(priorityIdx)
 	#def getBundlesByPriority
