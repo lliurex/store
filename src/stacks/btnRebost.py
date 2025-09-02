@@ -14,7 +14,7 @@ gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
 i18n={"INSTALL":_("Install"),
-	"OPEN":_("Open"),
+	"OPEN":_("Z·Install"),
 	"REMOVE":_("Remove"),
 	"UNAUTHORIZED":_("Blocked"),
 	"UNAVAILABLE":_("Unavailable"),
@@ -237,14 +237,22 @@ class QPushButtonRebostApp(QPushButton):
 			states=self.app["status"]
 			zmd=bundles.get("unknown","")
 			if len(states)>0:
-				for bundle,state in states.items():
-					if int(state)==0:# and zmdInstalled!="0":
-						if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
-							self.btn.setText(i18n["OPEN"])
-						elif self.btn.text()!=i18n["REMOVE"]:
-							self.btn.setText(i18n["REMOVE"])
-							self.instBundle=bundle
-						break
+				if zmd!="" and len(bundles)==2: #2->pkg that belongs to a zmd
+					self.btn.setText(i18n["OPEN"])
+				else:
+					for bundle,state in states.items():
+						if int(state)==0:# and zmdInstalled!="0":
+							if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
+								self.btn.setText(i18n["OPEN"])
+							elif self.btn.text()!=i18n["REMOVE"]:
+								self.btn.setText(i18n["REMOVE"])
+								self.instBundle=bundle
+							break
+			elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
+					self.btn.setVisible(True)
+					self.btn.setEnabled(True)
+					self.btn.setText(i18n["OPEN"])
+					self.instBundle="unknown"
 		if int(self.app.get("state","0"))>=7:
 			self.btn.setCursor(QCursor(Qt.WaitCursor))
 			self.btn.setEnabled(False)
