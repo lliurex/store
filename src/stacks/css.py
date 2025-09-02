@@ -76,13 +76,33 @@ def detailPanel():
 					padding:0px;
 				}"""
 	css=css+screenshot
-	lblTags="""#lblTags{
-					margin:0px;
-					padding:0px;
-					border:0px;
-					bottom:0px
-				}"""
+
+	categoriesBar="""#categoriesBar{border:0px;
+					margin-left:%spx;
+					margin-right:%spx;
+					margin-bottom:%spx;
+				}
+				"""%(int(MARGIN*2),MARGIN,int(MARGIN)/4)
+	css=css+categoriesBar
+
+	lblTags="""#lblTags{border:0px;
+					margin-left:0px;
+					margin-right:0px;
+					margin-bottom:0px;
+				}
+				"""
 	css=css+lblTags
+
+	lblTag="""#lblTag{
+					text-decoration:none;
+					background:%s;
+					color:%s;
+					padding:1px;
+					padding-bottom:3px;
+					border-radius:10;
+					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT)
+	css=css+lblTag
+
 	return(css)
 #def detailPanel
 
