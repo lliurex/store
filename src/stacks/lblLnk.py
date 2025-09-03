@@ -9,17 +9,17 @@ import gettext
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
-LAYOUT="appsedu"
 class QLabelLink(QWidget):
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		hbox=QHBoxLayout()
+		hbox.setSpacing(int(MARGIN))
 		icn=QtGui.QPixmap(os.path.join(RSRC,"link24x24.png"))
 		lblIcn=QLabel()
 		lblIcn.setPixmap(icn.scaled(16,16,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation))
 		hbox.addWidget(lblIcn)
 		self.lbl=QLabel(args[0])
-		hbox.addWidget(self.lbl)
+		hbox.addWidget(self.lbl,Qt.AlignLeft)
 		self.setLayout(hbox)
 	
 	def setOpenExternalLinks(self,*args):
