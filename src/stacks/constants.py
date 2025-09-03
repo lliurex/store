@@ -15,4 +15,5 @@ COLOR_BORDER_DARKEST="#DDDDDD"
 COLOR_FONT_LIGHT="#FFFFFF"
 MARGIN="8"
 RADIUS="6"
+RADIUS_HIGH="10"
 RSRC=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc")
