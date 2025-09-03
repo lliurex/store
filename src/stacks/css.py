@@ -9,16 +9,16 @@ def detailPanel():
 			}
 			QWidget#detailPanel{
 					padding:0px;
-					border:0px;
 					margin:0px;
 					color:unset;
 			}"""%(COLOR_FONT_LIGHT)
 	css=css+detail
 	frame="""QWidget#frame{
-					margin:0px;
-					padding:0px;
 					border:1px solid %s;
-				}"""%(COLOR_BORDER_DARKEST)
+					margin:0px;
+					margin-left:%spx;
+					padding:0px;
+				}"""%(COLOR_BORDER_DARKEST,int(MARGIN)*2)
 	css=css+frame
 	resources="""QWidget#resources{
 					margin-top:%spx;
@@ -27,6 +27,13 @@ def detailPanel():
 					border-right-color:%s;
 				}"""%(MARGIN,int(MARGIN)/2,COLOR_BORDER_DARK)
 	css=css+resources
+
+	btnBack="""#btnBack{
+						margin-right:%spx;
+						margin-bottom:0px;
+				}"""%(int(MARGIN)*0)
+	css=css+btnBack
+
 	lblIcon="""#lblIcon{
 					margin-left:%spx;
 					margin-top:0;
@@ -77,31 +84,17 @@ def detailPanel():
 				}"""
 	css=css+screenshot
 
-	categoriesBar="""#categoriesBar{border:0px;
-					margin-left:%spx;
-					margin-right:%spx;
-					margin-bottom:%spx;
-				}
-				"""%(int(MARGIN*2),MARGIN,int(MARGIN)/4)
-	css=css+categoriesBar
-
-	lblTags="""#lblTags{border:0px;
-					margin-left:0px;
-					margin-right:0px;
-					margin-bottom:0px;
+	lblTags="""#lblTags{
+					border:0px;
 				}
 				"""
 	css=css+lblTags
 
-	lblTag="""#lblTag{
-					text-decoration:none;
-					background:%s;
-					color:%s;
-					padding:1px;
-					padding-bottom:3px;
-					border-radius:10;
-					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT)
-	css=css+lblTag
+	lblDesc="""#lblDesc{
+					border:0px;
+				}
+				"""
+	css=css+lblDesc
 
 	return(css)
 #def detailPanel
@@ -142,33 +135,6 @@ def tablePanel():
 				}"""%(int(MARGIN)/2,int(MARGIN)/2,int(MARGIN)/2,int(MARGIN)/2)
 	css=css+iconPrg
 
-	categoriesBar="""#categoriesBar{border:0px;
-					margin-left:%spx;
-					margin-right:%spx;
-					margin-bottom:%spx;
-				}
-				"""%(int(MARGIN*2),MARGIN,int(MARGIN)/4)
-	css=css+categoriesBar
-
-	categoryTag="""#categoryTag{
-					text-decoration:none;
-					background:%s;
-					color:%s;
-					padding:1px;
-					padding-bottom:3px;
-					border-radius:10;
-					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT)
-	css=css+categoryTag
-
-	categoryTagActive="""#categoryTagActive{
-					text-decoration:none;
-					background:%s;
-					color:%s;
-					padding:1px;
-					padding-bottom:3px;
-					border-radius:10;
-					}"""%(COLOR_BACKGROUND_DARKEST,COLOR_FONT_LIGHT)
-	css=css+categoryTagActive
 	return(css)
 #def tablePanel
 
@@ -201,6 +167,24 @@ def portrait():
 					background:%s;
 				}"""%(COLOR_BORDER,COLOR_BACKGROUND_DARK,int(RADIUS)*3,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN)*1.5,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN),COLOR_BACKGROUND_LIGHT)
 	css=css+search
+
+	categoriesBar="""#categoriesBar{border:0px;
+					margin:0px;
+					background:%s;
+					padding-left:%spx;
+				}
+				"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN)*12)
+	css=css+categoriesBar
+
+	categoryTag="""#categoryTag{
+					background:%s;
+					color:%s;
+					padding:1px;
+					padding-bottom:3px;
+					border-radius:%spx;
+					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,RADIUS_HIGH)
+	css=css+categoryTag
+
 	error="""#errorMsg{
 			background: %s;
 			}"""%(COLOR_BACKGROUND_LIGHT)
