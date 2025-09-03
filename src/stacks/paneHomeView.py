@@ -96,8 +96,14 @@ class main(QWidget):
 				"icon":img,
 				"pkgname":"",
 				"description":""}
+			btn.iconSize=IMAGE_PREVIEW
+			btn.iconUri.setFixedHeight(IMAGE_PREVIEW*0.5)
+			btn.label.setFixedWidth(IMAGE_PREVIEW)
+			btn.setMinimumWidth(IMAGE_PREVIEW)
 			btn.setApp(app)
 			btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+			btn.clicked.connect(self._openBlog)
+			btn.setVisible(True)
 			cont+=1
 		self.blog.setCursor(self.oldCursor)
 		#Blog chargees without rebost needs so it's a good point to check if rebost data has been loaded
@@ -127,16 +133,17 @@ class main(QWidget):
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
 		layout=QHBoxLayout()
 		layout.setSpacing(0)
+		pxm=QtGui.QPixmap()
 		for i in range(0,5):
-			btn=QPushButtonRebostApp("{}",iconSize=256)
+			btn=QPushButtonRebostApp("{}",iconSize=IMAGE_PREVIEW*0.8)
+			btn.setMaximumWidth(IMAGE_PREVIEW/3)
 			btn.showBtn=False
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			btn.setObjectName("mp")
-			btn.iconSize=IMAGE_PREVIEW/1.2
-			btn.iconUri.setMaximumHeight(IMAGE_PREVIEW/1.2)
-			btn.label.setMinimumWidth(IMAGE_PREVIEW)
 			btn.autoUpdate=True
-			btn.clicked.connect(self._openBlog)
+			#REM preview img
+			pxm.load("/home/lliurex/git/store/src/rsrc/blog128x128.png")
+			btn.loadFullScreen(pxm)
 			layout.addWidget(btn)
 		wdg.setLayout(layout)
 		return(wdg)
@@ -157,6 +164,7 @@ class main(QWidget):
 				btn.setApp(app[0])
 				btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 				btn.install.connect(self._emitInstallApp)
+				btn.clicked.connect(self._loadApp)
 				btn.setVisible(True)
 				break
 		self.appsEdu.setCursor(self.oldCursor)
@@ -185,19 +193,18 @@ class main(QWidget):
 		wdg.setLayout(layout)
 		layout.setSpacing(32)
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		pxm=QtGui.QPixmap()
 		for i in range(0,10):
 			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE/2))
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			btn.setMaximumWidth(IMAGE_PREVIEW/3)
 			btn.autoUpdate=True
-			pxm=QtGui.QPixmap()
 			if i<3:
 				btn.setObjectName("mp")
 				pxm.load("/home/lliurex/git/store/src/rsrc/appsedu128x128.png")
 				btn.loadFullScreen(pxm)
 			else:
 				btn.setVisible(False)
-			btn.clicked.connect(self._loadApp)
 			layout.addWidget(btn,Qt.AlignCenter)
 		return(wdg)
 	#def _defAppsedu
@@ -229,7 +236,7 @@ class main(QWidget):
 			btn.autoUpdate=True
 			btn.clicked.connect(self._loadCategory)
 			btn.setFixedSize(QSize(ICON_SIZE*2,ICON_SIZE*1.5))
-			btn.showBtn=False
+			btn.setCompactMode(True)
 			lay.addWidget(btn,Qt.AlignTop)
 		self.appsByCat.setCursor(QtGui.QCursor(self.oldCursor))
 	#def _setAppsByCat
