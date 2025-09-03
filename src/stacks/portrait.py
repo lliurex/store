@@ -17,6 +17,7 @@ from rebost import store
 from libth import storeHelper,llxup
 from btnRebost import QPushButtonRebostApp
 from prgBar import QProgressImage
+from barCategories import QToolBarCategories
 import libhelper
 import exehelper
 import paneDetailView
@@ -51,7 +52,7 @@ i18n={
 	"LLXUP":_("Launch LliurexUp"),
 	"MENU":_("Show applications"),
 	"NEWDATA":_("Updating info"),
-	"OPEN":_("Open"),
+	"OPEN":_("Z·Install"),
 	"REMOVE":_("Remove"),
 	"SEARCH":_("Search"),
 	"SORTDSC":_("Sort alphabetically"),
@@ -89,9 +90,9 @@ class portrait(QStackedWindowItem):
 		self._rebost=storeHelper(rc=self.rc)
 		self._llxup=llxup()
 		self.runapp=exehelper.appLauncher()
-		self.runapp.runEnded.connect(self._getRunappResults)
+		self.runapp.runEnded.connect(self._endRunApp)
 		self.zmd=exehelper.zmdLauncher()
-		self.zmd.zmdEnded.connect(self._getZmdResults)
+		self.zmd.zmdEnded.connect(self._endRunApp)
 		self._initRegisters()
 		self._initThreads()
 		self._initGUI()
@@ -211,52 +212,101 @@ class portrait(QStackedWindowItem):
 			self._endUpdate()
 	#def _endGetLockStatus
 
+	def _endLock(self,*args):
+		self._endRestart()
+	#def _endLock
+
 	def _endRestart(self,*args):
 		self.loadStop.emit()
 		self._goHome()
 	#def _endRestart
 
-	def _getZmdResults(self,app):
-		self.installingBtn=None
+	def _endRunApp(self,*args):
 		self.setCursor(self.oldCursor)
-		pass
-	#def _getZmdpResults
-
-	def _getRunappResults(self,app,proc):
-		self.setCursor(self.oldCursor)
-		app["state"]=0
-		if proc==None:
+		proc=None
+		if len(args)>0:
+			if isinstance(args[0],dict):
+				app=args[0]
+			if len(args)==2:
+				proc=args[1]
+		else:
 			return
-		if proc.returncode!=0:
-			#pkexec ret values
-			#127 -> Not authorized
-			if proc.returncode==127:
-				self.showMsg(title="AppsEdu Store",summary=app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=app["icon"],timeout=5000)
-			else:
-				self.showMsg(title="AppsEdu Store",summary=app["name"],text=i18n.get("ERRUNKNOWN"),icon=app["icon"],timeout=5000)
+		app["state"]=0 #App is in "normal" state
 		if self.installingBtn!=None:
 			oldReferrer=self.referrerBtn
 			self.referrerBtn=self.installingBtn
 			self._returnFromDetail(None,app)
 			self.referrerBtn=oldReferrer
 			self.installingBtn=None
+		if proc!=None:
+			if proc.returncode!=0:
+				#pkexec ret values
+				#127 -> Not authorized
+				if proc.returncode==127:
+					self.showMsg(title="LliureX Store",summary=app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=app["icon"],timeout=5000)
+				else:
+					self.showMsg(title="LliureX Store",summary=app["name"],text=i18n.get("ERRUNKNOWN"),icon=app["icon"],timeout=5000)
 		self._rebost.setAction("setAppState",app["id"],0)
 		self._rebost.start()
 		self._rebost.wait()
-		return
-	#def _getRunappResults
+	#def _endRunApp
 
-	def _endLock(self,*args):
-		self._endRestart()
-	#def _endLock
+	def _setInstallingState(self,app,state):
+		app["state"]=state
+		self._rebost.setAction("setAppState",app["id"],state)
+		self._rebost.start()
+		self._rebost.wait()
+		return(app)
+	#def _setInstallingState
+
+	def _installApp(self,*args): #(btn,app,[bundle])
+		if self.installingBtn!=None:
+			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.installingBtn.app["name"].capitalize(),timeout=4)
+			return
+		wdg=args[0]
+		app=args[1]
+		bundle=""
+		if len(args)>2:
+			bundle=args[2]
+		else:
+			priority=self.helper.getBundlesByPriority(app)
+			idx=list(priority.keys())
+			idx.sort()
+			bundle=priority[idx[0]].split(" ")[0]
+		pkg=app.get('bundle',{}).get(bundle,'')
+		try:
+			if pkg!="":
+				installer=str(self.rc.getExternalInstaller())
+				if installer!="":
+					state=7
+					if isinstance(wdg,QPushButtonRebostApp):
+						self.installingBtn=wdg
+						if wdg.btn.text()==i18n["REMOVE"]:
+							state=8
+					elif isinstance(wdg,QPushButton):
+						if wdg.text()==i18n["REMOVE"]:
+							state=8
+					if bundle!="unknown":
+						self._setInstallingState(app,state)
+						self.runapp.setArgs(app,[installer,pkg,bundle])
+						self.runapp.start()
+					else:
+						self.zmd.setApp(app)
+						self.zmd.start()
+		except Exception as e:
+			print(e)
+		return
+	#def _installApp
 
 	def _progressShow(self):
 		self.progress.start()
 		QApplication.processEvents()
+	#def _progressShow
 
 	def _progressHide(self):
 		self.progress.stop()
 		QApplication.processEvents()
+	#def _progressHide
 
 	def _stopThreads(self,ignoreProgress=False):
 		if self.appsToLoad==-1: #Init 
@@ -298,20 +348,31 @@ class portrait(QStackedWindowItem):
 		self.sortAsc=False
 		navwdg=self._defNavigationPane()
 		navwdg.setObjectName("wdg")
-		self.box.addWidget(navwdg,0,0,2,1,Qt.AlignLeft)
+		self.box.addWidget(navwdg,0,0,4,1,Qt.AlignLeft)
 		searchwdg=self._defSearch()
 		self.box.addWidget(searchwdg,0,1)
+		spacer=QLabel(" ")
+		spacer.setAttribute(Qt.WA_StyledBackground, True)
+		spacer.setStyleSheet("background:{};".format(COLOR_BACKGROUND_LIGHT))
+		spacer.setFixedHeight(int(MARGIN)*8)
+		self.box.addWidget(spacer,1,1)
+		self.barCategories=self._defBarCategories()
+		self.box.addWidget(self.barCategories,2,1,Qt.AlignTop)
 		self._homeView=self._getHomeViewPane()
-		self.box.addWidget(self._homeView,1,1)
+		self.box.addWidget(self._homeView,3,1)
 		self._globalView=self._getGlobalViewPane()
 		self._globalView.hide()
-		self.box.addWidget(self._globalView,1,1)
+		self.box.addWidget(self._globalView,3,1)
 		self._detailView=self._getDetailViewPane()
-		self.box.addWidget(self._detailView,1,1)
+		self.box.addWidget(self._detailView,3,1)
 		self._detailView.hide()
 		self.btnSettings=QPushButton()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		self.box.setColumnStretch(1,1)
+		self.box.setRowStretch(0,0)
+		self.box.setRowStretch(1,0)
+		self.box.setRowStretch(2,0)
+		self.box.setRowStretch(3,1)
 		self.setObjectName("portrait")
 		self._errorView=self._defError()
 		self._errorView.setVisible(not(self.isConnected))
@@ -382,6 +443,12 @@ class portrait(QStackedWindowItem):
 		navBar=self._defNavigationBar()
 		lay.addWidget(navBar)
 		wdg.setLayout(lay)
+		return(wdg)
+	#def _defNavigationPane
+
+	def _defBarCategories(self):
+		wdg=QToolBarCategories()
+		wdg.requestLoadCategory.connect(self._loadCategory)
 		return(wdg)
 	#def _defNavigationPane
 
@@ -537,7 +604,6 @@ class portrait(QStackedWindowItem):
 		gvp=paneGlobalView.paneGlobalView(self._rebost)
 		gvp.requestLoadDetails.connect(self._loadGlobalDetails)
 		gvp.requestInstallApp.connect(self._installApp)
-		gvp.requestLoadCategory.connect(self._loadCategory)
 		return(gvp)
 	#def _getGlobalViewPane
 
@@ -546,7 +612,7 @@ class portrait(QStackedWindowItem):
 		dvp.setObjectName("detailPanel")
 		dvp.clickedBack.connect(self._returnFromDetail)
 		dvp.loaded.connect(self._endLoadDetail)
-		dvp.requestLoadCategory.connect(self._loadCategory)
+		dvp.requestLoadTag.connect(self._loadTag)
 		dvp.requestInstallApp.connect(self._installApp)
 		return(dvp)
 	#def _getDetailViewPane
@@ -662,12 +728,16 @@ class portrait(QStackedWindowItem):
 		self.oldTime=time.time()
 	#def _endLoadInstalled
 
-	def _searchApps(self):
-		txt=self.searchBox.text()
+	def _searchApps(self,tag=""):
+		if tag=="":
+			txt=self.searchBox.text()
+		else:
+			txt=tag
 		self.lstCategories.setCurrentRow(-1)
 		if len(txt)==0:
 			return
 		else:
+			self.barCategories.hide()
 			self._beginLoad()
 			self._rebost.setAction("search",txt)
 			self._rebost.blockSignals(False)
@@ -682,7 +752,6 @@ class portrait(QStackedWindowItem):
 		self.appsRaw=json.loads(args[0])
 		self.apps=self.appsRaw.copy()
 		self._globalView.loadApps(self.apps)
-		self._globalView.topBar.hide()
 		self.oldTime=time.time()
 	#def _endSearchApps
 
@@ -730,6 +799,14 @@ class portrait(QStackedWindowItem):
 		return(cat)
 	#def _getRawCategory
 
+	def _loadTag(self,*args):
+		self.appsLoaded=0
+		if len(args)>0:
+			tag=args[0]
+			self._beginLoad()
+			self._searchApps(tag)
+	#def _loadTag
+
 	def _loadCategory(self,*args):
 		self.appsLoaded=0
 		cat=None
@@ -748,13 +825,13 @@ class portrait(QStackedWindowItem):
 		cat=self._getRawCategory(cat)
 		self.searchBox.setText("")
 		if cat in self.categoriesTree.keys():
-			self._globalView.populateCategories(self.categoriesTree[cat],cat)
+			self.barCategories.populateCategories(self.categoriesTree[cat],cat)
 		elif cat!="":
-			wdg=self._globalView.topBar.currentItem()
+			wdg=self.barCategories.currentItem()
 			font=wdg.font()
 			font.setBold(False)
-			for idx in range(0,self._globalView.topBar.count()):
-				self._globalView.topBar.itemAt(idx).widget().setFont(font)
+			for idx in range(0,self.barCategories.count()):
+				self.barCategories.itemAt(idx).widget().setFont(font)
 			font.setBold(True)
 			wdg.setFont(font)
 		self.requestGetApps.emit(cat)
@@ -771,57 +848,9 @@ class portrait(QStackedWindowItem):
 			self.appsRaw.extend(item)
 		self.apps=self.appsRaw.copy()
 		self._globalView.loadApps(self.apps)
-		self._globalView.topBar.show()
+		self.barCategories.show()
 		self.oldTime=time.time()
 	#def _endLoadCategory
-
-	def _setInstallingState(self,app,state):
-		app["state"]=state
-		self._rebost.setAction("setAppState",app["id"],state)
-		self._rebost.start()
-		self._rebost.wait()
-		return(app)
-	#def _setInstallingState
-
-	def _installApp(self,*args): #(btn,app,[bundle])
-		if self.installingBtn!=None:
-			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.installingBtn.app["name"].capitalize(),timeout=4)
-			return
-		wdg=args[0]
-		app=args[1]
-		bundle=""
-		if len(args)>2:
-			bundle=args[2]
-		else:
-			priority=self.helper.getBundlesByPriority(app)
-			idx=list(priority.keys())
-			idx.sort()
-			bundle=priority[idx[0]].split(" ")[0]
-		pkg=app.get('bundle',{}).get(bundle,'')
-		if pkg!="":
-			installer=str(self.rc.getExternalInstaller())
-			if installer!="":
-				state=7
-				if isinstance(wdg,QPushButtonRebostApp):
-					self.installingBtn=wdg
-					if wdg.btn.text()==i18n["REMOVE"]:
-						state=8
-					elif wdg.btn.text()==i18n["OPEN"]:
-						state=0
-				elif isinstance(wdg,QPushButton):
-					if wdg.text()==i18n["OPEN"]:
-						state=0
-					else:
-						state=8
-				if state>=7:
-					self._setInstallingState(app,state)
-					self.runapp.setArgs(app,[installer,pkg,bundle])
-					self.runapp.start()
-				else:
-					self.zmd.setApp(app)
-					self.zmd.start()
-		return
-	#def _installApp
 
 	def _showPane(self,showPane):
 		for pane in [self._detailView,self._homeView,self._errorView,self._globalView]:
@@ -834,12 +863,29 @@ class portrait(QStackedWindowItem):
 		showPane.setFocus()
 		self.lstCategories.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		self.lstCategories.setEnabled(True)
+		if self._detailView.isVisible()==True:
+			self.barCategories.populateCategories(self._detailView.app["categories"])
+			self.barCategories.show()
+		elif self._globalView.isVisible()==True:
+			item=self.lstCategories.currentItem()
+			if item!=None:
+				cat=item.text()
+				cat=self._getRawCategory(cat)
+				if cat in self.categoriesTree.keys():
+					self.barCategories.populateCategories(self.categoriesTree[cat],cat)
+				self.barCategories.show()
+			else:
+				if self.searchBox.text!="":
+					print("TE OMITO")
+					self.barCategories.hide()
+		else:
+			self.barCategories.hide()
 		self.setCursor(self.oldCursor)
 	#def _showPane
 
 	def _endLoadDetail(self,*args,**kwargs):
-		self._showPane(self._detailView)
 		self.loadStop.emit()
+		self._showPane(self._detailView)
 	#def _endLoadDetail
 
 	def _loadDetails(self,*args,**kwargs):
@@ -886,6 +932,7 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		self.progress.setAttribute(Qt.WA_StyledBackground, False)
 		self._referrerPane=self._homeView
+		jargs=json.loads(args[0])
 		self._loadDetails(json.loads(args[0])[0],kwargs)
 	#def _loadFromArgs
 
@@ -906,8 +953,20 @@ class portrait(QStackedWindowItem):
 			self._debug("Seeking for {}".format(pkgname))
 			self._detailView.setParms(pkgname)
 	#def setParms
+
+	def _searchReferrerByName(self,name):
+		for i in range(0,self._globalView.table.count()):
+			wdg=self._globalView.table.itemAt(i).widget()
+			if wdg.app["name"]==name:
+				self.referrerBtn=wdg
+				break
+	#def _searchReferrerByName
 	
 	def _returnFromDetail(self,*args,**kwargs):
+		if isinstance(self.referrerBtn,QPushButtonRebostApp):
+			if self.referrerBtn.app["name"]!=args[1]["name"]:
+				#Referrer doesn't match with last seen app. Search in table
+				self._searchReferrerByName(args[1]["name"])
 		if self._detailView.isVisible():
 			if self._referrerPane==self._detailView:
 				self._referrerPane=None

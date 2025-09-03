@@ -8,7 +8,7 @@ from rebost import store
 from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QScrollArea
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,Slot
-from QtExtraWidgets import QScreenShotContainer,QScrollLabel
+from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
 import libhelper
 import css
 from cmbBtn import QComboButton
@@ -32,7 +32,8 @@ i18n={
 	"FORBIDDEN":_("App unauthorized"),
 	"INFO":_("For more info go to"),
 	"INSTALL":_("Install"),
-	"OPEN":_("Open"),
+	"LBL_RELATED":_("More apps"),
+	"OPEN":_("Z·Install"),
 	"OPENING":_("Opening"),
 	"RELEASE":_("Release"),
 	"REMOVE":_("Remove"),
@@ -46,8 +47,9 @@ i18n={
 class main(QWidget):
 	clickedBack=Signal("PyObject","PyObject")
 	loaded=Signal("PyObject")
-	requestLoadCategory=Signal(str)
 	requestInstallApp=Signal("PyObject","PyObject",str)
+	requestLoadCategories=Signal(str)
+	requestLoadTag=Signal(str)
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=True
@@ -65,15 +67,15 @@ class main(QWidget):
 		self.launcher=""
 		self.config={}
 		self.app={}
+		self.oldApp={} #Returning point if browsing through related apps
 		self.instBundle=""
 		self._connectThreads()
-		self.__initScreen__()
+		self._renderGui()
 	#def __init__
 
 	def _connectThreads(self):
 		self.thParmShow=thShowApp(rc=self.rc)
 		self.thParmShow.showEnded.connect(self._endSetParms)
-		self._rebost.shwEnded.connect(self._endLoadSuggested)
 	#def _connectThreads
 
 	def _debug(self,msg):
@@ -87,15 +89,9 @@ class main(QWidget):
 		selfDict["thParmShow"].quit()
 	#def _onDestroy
 
-
 	def _return(self):
 		return
 	#def _return
-
-	def _tagNav(self,*args):
-		cat=args[0][0].replace("#","")
-		self.requestLoadCategory.emit(cat)
-	#def _tagNav(self,*args)
 
 	def _processStreams(self,args):
 		self.app={}
@@ -136,9 +132,14 @@ class main(QWidget):
 	def setParms(self,*args,**kwargs):
 		#self.hideMsg()
 		self.parent()._stopThreads()
+		self.thParmShow.blockSignals(True)
+		self.thParmShow.quit()
+		self.thParmShow.wait()
+		self.thParmShow.blockSignals(True)
 		pxm=""
 		self.referrerBtn=kwargs.get("btn",None)
 		if len(args)>0:
+			self.thParmShow.blockSignals(False)
 			name=args[-1]
 			self._resetScreen(name,"")
 			if isinstance(args[0],dict):
@@ -213,61 +214,82 @@ class main(QWidget):
 		self.requestInstallApp.emit(self.btnRemove,self.app,bundle)
 	#def _genericEpiInstall
 
+	def _tagLinkClicked(self,*args):
+		tag=args[0][0].replace("#","")
+		self.requestLoadTag.emit(tag)
+	#def _categoryTagClicked(self,*args)
+
+	def _categoryLinkClicked(self,*args):
+		cat=args[0][0].replace("#","")
+		self.requestLoadCategory.emit(cat)
+	#def _categoryLinkClicked(self,*args)
+
 	def _clickedBack(self):
 		if self.thParmShow.isRunning():
 			self.thParmShow.quit()
-		pxm=self.lblIcon.pixmap()
-		if pxm.isNull()==False:
-			self.app["icon"]=self.lblIcon.pixmapPath
-		self.screenShot.clear()
-		self.clickedBack.emit(self.referrerBtn,self.app)
+		if len(self.oldApp)>0:
+			self._rebost.setAction("show",self.oldApp["name"],0)
+			self.oldApp={}
+			self._rebost.start()
+			#return to 1st detail loaded
+		else:
+			pxm=self.lblIcon.pixmap()
+			if pxm.isNull()==False:
+				self.app["icon"]=self.lblIcon.pixmapPath
+			self.screenShot.clear()
+			self.clickedBack.emit(self.referrerBtn,self.app)
 	#def _clickedBack
 
-	def __initScreen__(self):
+	def keyPressEvent(self,*args):
+		if args[0].key()==Qt.Key_Escape:
+			self._clickedBack()
+	#def keyPressEvent
+
+	def _renderGui(self):
 		self.box=QGridLayout()
-		self.setObjectName("dp")
-		self.btnBack=QPushButton()
-		self.btnBack.clicked.connect(self._clickedBack)
-		icn=QtGui.QIcon(os.path.join(RSRC,"go-previous32x32.png"))
-		self.btnBack.setIcon(icn)
-		self.btnBack.setIconSize(self.btnBack.sizeHint())
+		self.setObjectName("detailPanel")
+		self.btnBack=self._defBtnBack()
 		self.box.addWidget(self.btnBack,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
-		spacingI=QLabel("")
-		spacingE=QLabel("")
-		spacingI.setFixedWidth(16)
-		spacingE.setFixedWidth(48)
-		self.box.addWidget(spacingI,0,1,1,1)
 		self.header=self._defHeader()
-		self.box.addWidget(self.header,1,2,1,3)
-		self.screenShot=self._defScreenshot()
-		#self.screenShot.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.box.addWidget(self.screenShot,2,2,1,3)
+		self.box.addWidget(self.header,0,2,1,3)
+		#self.categoryBar=self._defCategoriesBar()
+		#self.box.addWidget(self.categoryBar,1,1,1,4,Qt.AlignTop|Qt.AlignLeft)
 		resources=self._defResources()
 		resources.setObjectName("resources")
-		resources.setAttribute(Qt.WA_StyledBackground, True)
-		self.lblDesc=QScrollLabel()
-		self.lblDesc.label.setOpenExternalLinks(True)
-		self.lblDesc.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		self.suggests=self._defSuggests()
-		spacing=QLabel("")
-		spacing.setFixedHeight(6)
-		self.box.addWidget(spacing,3,1,1,1)
-		self.box.addWidget(resources,4,2,1,1)
-		self.box.addWidget(self.lblDesc,4,3,2,1)
-		self.box.addWidget(self.suggests,6,3,1,1,Qt.AlignBottom)
+		self.box.addWidget(resources,1,2,1,1)
+		self.lblDesc=self._defLblDesc()
+		self.box.addWidget(self.lblDesc,1,3,2,1)
+		self.screenShot=self._defScreenshot()
+		self.box.addWidget(self.screenShot,2,2,2,3)
 		self.setLayout(self.box)
 		self.box.setColumnStretch(0,0)
 		self.box.setColumnStretch(1,0)
 		self.box.setColumnStretch(2,0)
-		self.box.setColumnStretch(3,1)
+		self.box.setColumnStretch(3,2)
 		self.box.setRowStretch(0,0)
-		self.box.setRowStretch(5,1)
-		self.box.setRowStretch(7,0)
-		self.box.addWidget(spacingE,0,self.box.columnCount(),1,1)
+		self.box.setRowStretch(2,2)
 		errorLay=QGridLayout()
 		self.lblBkg=QLabel()
 		errorLay.addWidget(self.lblBkg,0,0,1,1)
 	#def _load_screen
+
+	def _defBtnBack(self):
+		wdg=QPushButton()
+		wdg.setObjectName("btnBack")
+		icn=QtGui.QIcon(os.path.join(RSRC,"go-previous32x32.png"))
+		wdg.setIcon(icn)
+		wdg.setIconSize(QSize(int(MARGIN)*8,int(MARGIN)*7))
+		wdg.clicked.connect(self._clickedBack)
+		return(wdg)
+	#def _defBtnBack
+
+	def _defLblDesc(self):
+		wdg=QScrollLabel()
+		wdg.setObjectName("lblDesc")
+		wdg.label.setOpenExternalLinks(True)
+		#wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		return(wdg)
+	#def _lblDesc
 
 	def _defHeader(self):
 		wdg=QWidget()
@@ -330,42 +352,47 @@ class main(QWidget):
 		return(wdg)
 	#def _defScreenshot
 
-	def _suggestsInit(self):
-		wdg=QWidget()
-		wdg.setMinimumHeight(172)
-		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		lay=QVBoxLayout()
-		wdg.setLayout(lay)
-		wdgSuggest=QWidget()
-		wdgSuggest.setMaximumHeight(128)
-		wlay=QHBoxLayout()
-		wdgSuggest.setLayout(wlay)
-		wdg.addWidget=wlay.addWidget
-		lay.addWidget(QLabel("Suggested apps"))
-		lay.addWidget(wdgSuggest)
-		return(wdg,wlay)
-	#def _defSuggestsInit
+	def _suggestsLoad(self):
+		self.suggests.clean()
+		suggests=self.app.get("suggests",[])
+		suggests=list(set(suggests))
+		random.shuffle(suggests)
+		for suggest in suggests:
+			if suggest==self.app["name"]:
+				continue
+			app=json.loads(self.rc.showApp(suggest))[0]
+			btn=QPushButtonRebostApp("{}")
+			btn.clicked.connect(self._loadSuggested)
+			btn.setCompactMode(True)
+			btn.setIconSize(QSize(32,32))
+			btn.setApp(app)
+			self.suggests.addWidget(btn)
+		if self.suggests.count()>0:
+			self.suggests.show()
+		else:
+			self.suggests.hide()
+	#def _defSuggestsLoad
 
 	def _defSuggests(self):
-		wdgScroll=QScrollArea()
-		wdgScroll.setMinimumHeight(196)
-		wdgScroll.setWidgetResizable(True)
-		wdg,wlay=self._suggestsInit()
-		wdgScroll.setWidget(wdg)
-		wdgScroll.setWidget(wdg)
-		wdgScroll.addWidget=wlay.addWidget
-		wdgScroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		return(wdgScroll)
+		wdg=QWidget()
+		lay=QVBoxLayout()
+		wdg.setLayout(lay)
+		lay.setSpacing(int(MARGIN))
+		lay.addWidget(QLabel(i18n["LBL_RELATED"]))
+		self.suggests=QFlowTouchWidget(self)
+		self.suggests.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		self.suggests.setObjectName("lblTags")
+		lay.addWidget(self.suggests)
+		#self.suggests.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+		#lay=QHBoxLayout()
+		#wdg.setLayout(lay)
+		#lay.addWidget(QLabel("Suggested apps"))
+		return(wdg)
 	#def _defSuggests
 
 	def _defResources(self):
 		wdg=QWidget()
 		lay=QVBoxLayout()
-		self.lblTags=QScrollLabel()
-		self.lblTags.setObjectName("lblTags")
-		self.lblTags.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.lblTags.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		lay.addWidget(self.lblTags)
 		self.resources=QWidget()
 		layResources=QVBoxLayout()
 		self.resources.setLayout(layResources)
@@ -374,14 +401,20 @@ class main(QWidget):
 		self.lblHomepage.setOpenExternalLinks(True)
 		layResources.addWidget(self.lblHomepage)
 		lay.addWidget(self.resources)
+		self.lblTags=QScrollLabel()
+		self.lblTags.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.lblTags.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.lblTags.setAttribute(Qt.WA_StyledBackground, True)
+		self.lblTags.setObjectName("lblTags")
+		lay.addWidget(self.lblTags,Qt.Alignment(0))
+		swdg=self._defSuggests()
+		lay.addWidget(swdg,Qt.Alignment(1))
+		swdg.setMinimumWidth(ICON_SIZE*3+(int(MARGIN)*3))
+		#swdg.setMinimumHeight(ICON_SIZE*4)
+		wdg.setMinimumHeight(self.lblTags.sizeHint().height()+ICON_SIZE*5)
 		wdg.setLayout(lay)
 		return(wdg)
 	#def _defResources
-
-	def keyPressEvent(self,*args):
-		if args[0].key()==Qt.Key_Escape:
-			self._clickedBack()
-	#def keyPressEvent
 
 	def _setUnknownAppInfo(self):
 		if self.app.get("name","")!="":
@@ -430,14 +463,14 @@ class main(QWidget):
 				print(e)
 	#def _loadScreenshots
 
-	def _endLoadSuggested(self,*args):
-		app=json.loads(args[0])
-	#def _endLoadSuggested
-
 	def _loadSuggested(self,*args):
-		name=args[1]["name"]
-		self._rebost.setAction("show",name,0)
-		self._rebost.start()
+		self.screenShot.clear()
+		self.thParmShow.quit()
+		self.thParmShow.wait()
+		if len(self.oldApp)==0:
+			self.oldApp=self.app
+		self.app=args[1]
+		self._endSetParms(self.app)
 	#def _loadSuggested
 
 	def updateScreen(self):
@@ -458,7 +491,7 @@ class main(QWidget):
 		self.lblSummary.setText("{}".format(summary))
 		bundles=list(self.app.get('bundle',{}).keys())
 		self.lstInfo.setEnabled(True)
-		homepage=self.app.get('infopage','')
+		homepage=self.app.get('homepage','')
 		if homepage=='':
 			homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
 		if not isinstance(homepage,str):
@@ -497,24 +530,10 @@ class main(QWidget):
 			text="<strong>{}</strong>".format(applicense)
 		self._loadScreenshots()	
 		#self._setLauncherOptions()
-		self.lblTags.setText(self._generateCategoryTags())
-		self.lblTags.adjustSize()
-		suggests=self.app.get("suggests",[])
-		wdg,wlay=self._suggestsInit()
-		self.suggests.setWidget(wdg)
-		self.suggests.addWidget=wlay.addWidget
-		if len(suggests)>0:
-			random.shuffle(suggests)
-			suggests=suggests[0:min(7,len(suggests))]
-			for suggest in suggests:
-				app={"name":" ","icon":"","pkgname":suggest,"description":"","summary":"<br>"+suggest.capitalize()}
-				btn=QPushButtonRebostApp(app)
-				btn.clicked.connect(self._loadSuggested)
-				btn.autoUpdate=True
-				btn.setFixedSize(QSize(ICON_SIZE*1.5,self.suggests.sizeHint().height()*2))
-				btn.showBtn=False
-				self.suggests.addWidget(btn,Qt.AlignCenter|Qt.AlignCenter)
-			self.suggests.adjustSize()
+		#self.lblCategories.setText(self._generateCategoryTags())
+		#self.lblCategories.adjustSize()
+		self.lblTags.setText(self._generateAppTags())
+		self._suggestsLoad()
 		self.loaded.emit(self.app)
 	#def _updateScreen
 
@@ -540,6 +559,20 @@ class main(QWidget):
 				break
 		return(launcher)
 	#def _getLauncherForApp
+
+	def _generateAppTags(self):
+		tags=""
+		style="padding:1px;border-radius:3px;text-decoration:none;"
+		for keyword in self.app.get("keywords",[]):
+			if len(keyword)==0 or keyword=="zomandos" or keyword==self.app["name"]:
+				continue
+			if keyword in self.app.get("suggests",[]):
+				continue
+			if keyword not in tags and len(keyword)>1:
+				#Disabled as requisite  (250214-11:52)
+				tags+="<a href=\"#{0}\" style=\"{1}\">#{0}</a> ".format(keyword,style)
+		return("{}".format(tags.strip(" / ")))
+	#def _generateAppTags
 
 	def _generateCategoryTags(self):
 		tags=""
@@ -626,23 +659,25 @@ class main(QWidget):
 		zmd=bundles.get("unknown","")
 		states=self.app["status"]
 		if len(states)>0:
-			for bundle,state in states.items():
-				if int(state)==0:# and zmdInstalled!="0":
-					self.btnRemove.setVisible(True)
-					self.btnRemove.setEnabled(True)
-					if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
-						self.btnRemove.setText(i18n["OPEN"])
-						break
-					elif self.btnRemove.text()!=i18n["REMOVE"]:
-						self.btnRemove.setText(i18n["REMOVE"])
-						self.instBundle=bundle
-						break
+			self.btnRemove.setVisible(True)
+			self.btnRemove.setEnabled(True)
+			if zmd!="" and len(bundles)==2: #2->pkg that belongs to a zmd
+				self.btnRemove.setText(i18n["OPEN"])
+			else:
+				for bundle,state in states.items():
+					if int(state)==0:# and zmdInstalled!="0":
+						if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
+							self.btnRemove.setText(i18n["OPEN"])
+							break
+						elif self.btnRemove.text()!=i18n["REMOVE"]:
+							self.btnRemove.setText(i18n["REMOVE"])
+							self.instBundle=bundle
+							break
+		elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
+				self.btnRemove.setVisible(True)
+				self.btnRemove.setEnabled(True)
+				self.btnRemove.setText(i18n["OPEN"])
 		self._setLauncherStatus()
-		if len(self.app.get("bundle",[]))==1 and "eduapp" in self.app.get("bundle",{}).keys():
-			self.btnRemove.setEnabled(False)
-			self.btnUnavailable.setVisible(True)
-		else:
-			self.btnUnavailable.setVisible(False)
 		self.lstInfo.blockSignals(False)
 	#def _setLauncherOptions
 
@@ -677,9 +712,11 @@ class main(QWidget):
 			self.setCursor(self.oldCursor)
 			self.screenShot.clear()
 			self.lblHomepage.setText("")
-			self.lblTags.setText("")
+			#self.lblCategories.setText("")
 			#Disabled as requisite (250214-11:52)
-			self.lblTags.linkActivated.connect(self._tagNav)
+			#self.lblCategories.linkActivated.connect(self._categoryLinkClicked)
+			self.lblTags.setText("")
+			self.lblTags.linkActivated.connect(self._tagLinkClicked)
 		else:
 			self._onError()
 	#def _initScreen
