@@ -38,6 +38,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.appIconSize=kwargs.get("iconSize",ICON_SIZE/2)
 		self.btn=self._defBtnInstall()
 		self.lblFlyIcon=self._defFlyIcon()
+		self.lblFlyIcon.setAttribute(Qt.WA_TranslucentBackground)
 		self.label=self._defLabel()
 		self.iconUri=QLabelRebostApp()
 		self.iconUri.setIconSize(self.appIconSize)
@@ -99,7 +100,8 @@ class QPushButtonRebostApp(QPushButton):
 			os.makedirs(self.cacheDir)
 		self.instBundle=""
 		self.refererApp=None
-		self.showBtn=True
+		self._showBtn=True
+		self._compactMode=False
 		self.init=None
 		self.startLoadImage=False
 		self.autoUpdate=False
@@ -116,6 +118,14 @@ class QPushButtonRebostApp(QPushButton):
 		self.setCursor(QCursor(Qt.PointingHandCursor))
 		self.setDefault(True)
 	#def _wAttributes
+
+	def setCompactMode(self,*args):
+		if args[0]==True:
+			self._showBtn=False
+			self._compactMode=True
+			self.setFixedSize(QSize(ICON_SIZE*1.4,ICON_SIZE*1.3))
+			self.appIconSize=(ICON_SIZE*0.4)
+	#def setCompactMode
 
 	def _defFlyIcon(self):
 		wdg=QLabel()
@@ -210,49 +220,50 @@ class QPushButtonRebostApp(QPushButton):
 	def updateScreen(self):
 		if hasattr(self,"app")==False:
 			return
-		showBtn=self.showBtn
+		_showBtn=self._showBtn
 		if self.progress.isVisible()==True:
 			self.progress.setVisible(False)
 		if self.app.get("name","").strip()!="":
-			if self.app.get("summary","")!="":
+			if self.app.get("summary","")!="" and self._compactMode==False:
 				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
 			else:
 				text="<p>{0}</p>".format(self.app.get('name','').strip())
 		else:
 			text="<p>{0}</p>".format(self.app.get('summary','').strip())
-			showBtn=False
+			_showBtn=False
 		if self.label.text()!=text and len(text)>0:
 			self.label.setText(text)
 			self.setToolTip(text)
-		if "Forbidden" in self.app.get("categories",[]) and self.btn.text()!=i18n["UNAUTHORIZED"]:
-			self.btn.setText(i18n["UNAUTHORIZED"])
-		elif "bundle" not in self.app.keys():
-			self.btn.setText(i18n["UNAVAILABLE"])
-		elif len(self.app["bundle"])==0 and self.btn.text()!=i18n["UNAVAILABLE"]:
-			self.btn.setText(i18n["UNAVAILABLE"])
-		else:
-			if self.btn.text()!=i18n["INSTALL"]:
-				self.btn.setText(i18n["INSTALL"])
-			bundles=self.app["bundle"]
-			states=self.app["status"]
-			zmd=bundles.get("unknown","")
-			if len(states)>0:
-				if zmd!="" and len(bundles)==2: #2->pkg that belongs to a zmd
-					self.btn.setText(i18n["OPEN"])
-				else:
-					for bundle,state in states.items():
-						if int(state)==0:# and zmdInstalled!="0":
-							if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
-								self.btn.setText(i18n["OPEN"])
-							elif self.btn.text()!=i18n["REMOVE"]:
-								self.btn.setText(i18n["REMOVE"])
-								self.instBundle=bundle
-							break
-			elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
-					self.btn.setVisible(True)
-					self.btn.setEnabled(True)
-					self.btn.setText(i18n["OPEN"])
-					self.instBundle="unknown"
+		if self._compactMode==False:
+			if "Forbidden" in self.app.get("categories",[]) and self.btn.text()!=i18n["UNAUTHORIZED"]:
+				self.btn.setText(i18n["UNAUTHORIZED"])
+			elif "bundle" not in self.app.keys():
+				self.btn.setText(i18n["UNAVAILABLE"])
+			elif len(self.app["bundle"])==0 and self.btn.text()!=i18n["UNAVAILABLE"]:
+				self.btn.setText(i18n["UNAVAILABLE"])
+			else:
+				if self.btn.text()!=i18n["INSTALL"]:
+					self.btn.setText(i18n["INSTALL"])
+				bundles=self.app["bundle"]
+				states=self.app["status"]
+				zmd=bundles.get("unknown","")
+				if len(states)>0:
+					if zmd!="" and len(bundles)==2: #2->pkg that belongs to a zmd
+						self.btn.setText(i18n["OPEN"])
+					else:
+						for bundle,state in states.items():
+							if int(state)==0:# and zmdInstalled!="0":
+								if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
+									self.btn.setText(i18n["OPEN"])
+								elif self.btn.text()!=i18n["REMOVE"]:
+									self.btn.setText(i18n["REMOVE"])
+									self.instBundle=bundle
+								break
+				elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
+						self.btn.setVisible(True)
+						self.btn.setEnabled(True)
+						self.btn.setText(i18n["OPEN"])
+						self.instBundle="unknown"
 		if int(self.app.get("state","0"))>=7:
 			self.btn.setCursor(QCursor(Qt.WaitCursor))
 			self.btn.setEnabled(False)
@@ -267,8 +278,8 @@ class QPushButtonRebostApp(QPushButton):
 		scaleFactor=(self.appIconSize/2)
 		if isinstance(self.flyIcon,QPixmap):
 			self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.FastTransformation))
-		if self.btn.isVisible()!=showBtn:
-			self.btn.setVisible(showBtn)
+		if self.btn.isVisible()!=_showBtn:
+			self.btn.setVisible(_showBtn)
 	#def updateScreen
 
 	def enterEvent(self,*args):
