@@ -300,12 +300,10 @@ class portrait(QStackedWindowItem):
 
 	def _progressShow(self):
 		self.progress.start()
-		QApplication.processEvents()
 	#def _progressShow
 
 	def _progressHide(self):
 		self.progress.stop()
-		QApplication.processEvents()
 	#def _progressHide
 
 	def _stopThreads(self,ignoreProgress=False):
@@ -824,6 +822,7 @@ class portrait(QStackedWindowItem):
 			return
 		if time.time()-self.oldTime<MINTIME:
 			return
+		self.searchBox.setText("")
 		self._beginLoad()
 		cat=self._getRawCategory(cat)
 		self.searchBox.setText("")
@@ -879,7 +878,6 @@ class portrait(QStackedWindowItem):
 				self.barCategories.show()
 			else:
 				if self.searchBox.text!="":
-					print("TE OMITO")
 					self.barCategories.hide()
 		else:
 			self.barCategories.hide()
@@ -936,7 +934,8 @@ class portrait(QStackedWindowItem):
 		self.progress.setAttribute(Qt.WA_StyledBackground, False)
 		self._referrerPane=self._homeView
 		jargs=json.loads(args[0])
-		self._loadDetails(json.loads(args[0])[0],kwargs)
+		if len(jargs)>0:
+			self._loadDetails(json.loads(args[0])[0],kwargs)
 	#def _loadFromArgs
 
 	def _loadLockedRebost(self):
