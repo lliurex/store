@@ -153,7 +153,6 @@ class main(QWidget):
 				self.thParmShow.setArgs(self.app)
 				self.thParmShow.start()
 		self.lblHomepage.setVisible(True)
-		#self._showSplash(icon)
 	#def setParms
 
 	def _endSetParms(self,*args):
@@ -252,8 +251,6 @@ class main(QWidget):
 		self.box.addWidget(self.btnBack,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
 		self.header=self._defHeader()
 		self.box.addWidget(self.header,0,2,1,3)
-		#self.categoryBar=self._defCategoriesBar()
-		#self.box.addWidget(self.categoryBar,1,1,1,4,Qt.AlignTop|Qt.AlignLeft)
 		resources=self._defResources()
 		resources.setObjectName("resources")
 		self.box.addWidget(resources,1,2,1,1)
@@ -287,7 +284,6 @@ class main(QWidget):
 		wdg=QScrollLabel()
 		wdg.setObjectName("lblDesc")
 		wdg.label.setOpenExternalLinks(True)
-		#wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		return(wdg)
 	#def _lblDesc
 
@@ -298,7 +294,7 @@ class main(QWidget):
 		lay.setSpacing(int(MARGIN)*2)
 		self.lblIcon=QLabelRebostApp()
 		self.lblIcon.setObjectName("lblIcon")
-		self.lblIcon.setMaximumWidth(ICON_SIZE+6)
+		self.lblIcon.setMaximumWidth(ICON_SIZE+int(MARGIN)*2)
 		lay.addWidget(self.lblIcon,0,1,3,1)
 		self.lblName=QLabel()
 		self.lblName.setObjectName("lblName")
@@ -311,7 +307,6 @@ class main(QWidget):
 		hlay=QVBoxLayout()
 
 		self.lblRelease=QLabel(i18n.get("INSTALL"))
-		#self.lblRelease.setObjectName("lblRelease")
 		self.lblRelease.resize(self.lblRelease.sizeHint().width(),int(ICON_SIZE/3))
 
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
@@ -356,6 +351,30 @@ class main(QWidget):
 		self.suggests.clean()
 		suggests=self.app.get("suggests",[])
 		suggests=list(set(suggests))
+		keywords=self.app.get("keywords",[])
+		random.shuffle(keywords)
+		categories=self.app.get("categories",[])
+		random.shuffle(categories)
+		if len(suggests)<4:
+			if len(keywords)>0:
+				while keywords:
+					apps=json.loads(self.rc.searchApp(keywords.pop()))
+					for app in apps:
+						suggests.append(app["name"].lower())
+			suggests=list(set(suggests))
+			if len(categories)>0:
+				while categories:
+					category=categories.pop()
+					apps=json.loads(self.rc.getAppsInCategory(category))
+					for app in apps[category]:
+						suggests.append(app["name"].lower())
+					suggests=list(set(suggests))
+					if len(suggests)>4:
+						break
+			random.shuffle(suggests)
+			if len(suggests)>4:
+				suggests=suggests[0:4]
+
 		random.shuffle(suggests)
 		for suggest in suggests:
 			if suggest==self.app["name"]:
@@ -383,10 +402,6 @@ class main(QWidget):
 		self.suggests.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		self.suggests.setObjectName("lblTags")
 		lay.addWidget(self.suggests)
-		#self.suggests.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-		#lay=QHBoxLayout()
-		#wdg.setLayout(lay)
-		#lay.addWidget(QLabel("Suggested apps"))
 		return(wdg)
 	#def _defSuggests
 
@@ -440,8 +455,6 @@ class main(QWidget):
 			text="<a href='{0}'>Appsedu</a>".format(homepage)
 			self.lblHomepage.setText(text)
 			self.lblHomepage.setToolTip(homepage)
-			#self.lblIcon.loadImg(self.app)
-			#self.lstInfo.setMaximumWidth(self.lblDesc.width()/2)
 			if self.lblDesc.width()>self.lblTags.width():
 				self.lblTags.setMaximumWidth(self.lblDesc.width()/2)
 	#def _setUnknownAppInfo
@@ -507,7 +520,6 @@ class main(QWidget):
 			text='<a href="{0}">{1}</a> '.format(homepage,desc)
 		self.lblHomepage.setText(text)
 		self.lblHomepage.setToolTip(homepage)
-		#self.lblDesc.label.setOpenExternalLinks(False)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
 		if "Forbidden" in self.app.get("categories",[]):
 			forbReason=""
@@ -529,9 +541,6 @@ class main(QWidget):
 		if applicense:
 			text="<strong>{}</strong>".format(applicense)
 		self._loadScreenshots()	
-		#self._setLauncherOptions()
-		#self.lblCategories.setText(self._generateCategoryTags())
-		#self.lblCategories.adjustSize()
 		self.lblTags.setText(self._generateAppTags())
 		self._suggestsLoad()
 		self.loaded.emit(self.app)
@@ -671,6 +680,7 @@ class main(QWidget):
 							break
 						elif self.btnRemove.text()!=i18n["REMOVE"]:
 							self.btnRemove.setText(i18n["REMOVE"])
+							print(states)
 							self.instBundle=bundle
 							break
 		elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
