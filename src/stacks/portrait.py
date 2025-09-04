@@ -650,12 +650,15 @@ class portrait(QStackedWindowItem):
 			masterCategories.append(_(mastercat).capitalize())
 		masterCategories.sort()
 		lowercats=[]
+		font=self.lstCategories.font()
+		font.setPointSize(font.pointSize()+2)
 		for cat in masterCategories:
 			if cat.lower() not in lowercats:
 				self.lstCategories.addItem(" · {}".format(cat))
 				item=self.lstCategories.item(self.lstCategories.count()-1)
 				if item!=None:
 					item.setToolTip(cat)
+					item.setFont(font)
 				lowercats.append(cat.lower())
 	#def _populateCategories
 
