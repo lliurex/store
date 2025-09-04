@@ -76,6 +76,7 @@ class main(QWidget):
 	def _connectThreads(self):
 		self.thParmShow=thShowApp(rc=self.rc)
 		self.thParmShow.showEnded.connect(self._endSetParms)
+		self._rebost.lsgEnded.connect(self._endSuggestsLoad)
 	#def _connectThreads
 
 	def _debug(self,msg):
@@ -131,7 +132,6 @@ class main(QWidget):
 
 	def setParms(self,*args,**kwargs):
 		#self.hideMsg()
-		self.parent()._stopThreads()
 		self.thParmShow.blockSignals(True)
 		self.thParmShow.quit()
 		self.thParmShow.wait()
@@ -224,18 +224,12 @@ class main(QWidget):
 	#def _categoryLinkClicked(self,*args)
 
 	def _clickedBack(self):
-		if self.thParmShow.isRunning():
-			self.thParmShow.quit()
+		self.screenShot.clear()
 		if len(self.oldApp)>0:
-			self._rebost.setAction("show",self.oldApp["name"],0)
+			app=self.oldApp.copy()
 			self.oldApp={}
-			self._rebost.start()
-			#return to 1st detail loaded
+			self.setParms(app)
 		else:
-			pxm=self.lblIcon.pixmap()
-			if pxm.isNull()==False:
-				self.app["icon"]=self.lblIcon.pixmapPath
-			self.screenShot.clear()
 			self.clickedBack.emit(self.referrerBtn,self.app)
 	#def _clickedBack
 
@@ -253,18 +247,18 @@ class main(QWidget):
 		self.box.addWidget(self.header,0,2,1,3)
 		resources=self._defResources()
 		resources.setObjectName("resources")
-		self.box.addWidget(resources,1,2,1,1)
+		self.box.addWidget(resources,1,2,2,1)
 		self.lblDesc=self._defLblDesc()
 		self.box.addWidget(self.lblDesc,1,3,2,1)
 		self.screenShot=self._defScreenshot()
-		self.box.addWidget(self.screenShot,2,2,2,3)
+		self.box.addWidget(self.screenShot,2,3,2,2)
 		self.setLayout(self.box)
 		self.box.setColumnStretch(0,0)
 		self.box.setColumnStretch(1,0)
 		self.box.setColumnStretch(2,0)
 		self.box.setColumnStretch(3,2)
 		self.box.setRowStretch(0,0)
-		self.box.setRowStretch(2,2)
+		self.box.setRowStretch(1,2)
 		errorLay=QGridLayout()
 		self.lblBkg=QLabel()
 		errorLay.addWidget(self.lblBkg,0,0,1,1)
@@ -347,39 +341,10 @@ class main(QWidget):
 		return(wdg)
 	#def _defScreenshot
 
-	def _suggestsLoad(self):
-		self.suggests.clean()
-		suggests=self.app.get("suggests",[])
-		suggests=list(set(suggests))
-		keywords=self.app.get("keywords",[])
-		random.shuffle(keywords)
-		categories=self.app.get("categories",[])
-		random.shuffle(categories)
-		if len(suggests)<4:
-			if len(keywords)>0:
-				while keywords:
-					apps=json.loads(self.rc.searchApp(keywords.pop()))
-					for app in apps:
-						suggests.append(app["name"].lower())
-			suggests=list(set(suggests))
-			if len(categories)>0:
-				while categories:
-					category=categories.pop()
-					apps=json.loads(self.rc.getAppsInCategory(category))
-					for app in apps[category]:
-						suggests.append(app["name"].lower())
-					suggests=list(set(suggests))
-					if len(suggests)>4:
-						break
-			random.shuffle(suggests)
-			if len(suggests)>4:
-				suggests=suggests[0:4]
-
-		random.shuffle(suggests)
-		for suggest in suggests:
-			if suggest==self.app["name"]:
-				continue
-			app=json.loads(self.rc.showApp(suggest))[0]
+	def _endSuggestsLoad(self,*args):
+		suggests=args[0]
+		print(type(suggests))
+		for app in suggests:
 			btn=QPushButtonRebostApp("{}")
 			btn.clicked.connect(self._loadSuggested)
 			btn.setCompactMode(True)
@@ -390,6 +355,12 @@ class main(QWidget):
 			self.suggests.show()
 		else:
 			self.suggests.hide()
+	#def _endSuggestLoad(self,args):
+
+	def _suggestsLoad(self):
+		self.suggests.clean()
+		self._rebost.setAction("getAppSuggests",self.app,6) #Load 6 apps
+		self._rebost.start()
 	#def _defSuggestsLoad
 
 	def _defSuggests(self):
@@ -477,13 +448,12 @@ class main(QWidget):
 	#def _loadScreenshots
 
 	def _loadSuggested(self,*args):
+		self.parent()._beginLoad()
 		self.screenShot.clear()
-		self.thParmShow.quit()
-		self.thParmShow.wait()
 		if len(self.oldApp)==0:
 			self.oldApp=self.app
-		self.app=args[1]
-		self._endSetParms(self.app)
+		app=args[1]
+		self.setParms(app)
 	#def _loadSuggested
 
 	def updateScreen(self):
@@ -652,7 +622,7 @@ class main(QWidget):
 	def _setLauncherOptions(self):
 		visible=True
 		bundle=self.lstInfo.currentText()
-		if "Forbidden" in self.app.get("categories",[]) or "eduapp" in bundle:
+		if "Forbidden" in self.app.get("categories",[]):
 			visible=False
 		self.lblRelease.setVisible(visible)
 		self.lstInfo.setVisible(visible)
@@ -666,27 +636,29 @@ class main(QWidget):
 		self.btnRemove.setEnabled(False)
 		bundles=self.app.get("bundle",{})
 		zmd=bundles.get("unknown","")
-		states=self.app["status"]
-		if len(states)>0:
-			self.btnRemove.setVisible(True)
-			self.btnRemove.setEnabled(True)
+		status=self.app["status"]
+		self.btnRemove.setText("")
+		if len(status)>0:
 			if zmd!="" and len(bundles)==2: #2->pkg that belongs to a zmd
 				self.btnRemove.setText(i18n["OPEN"])
 			else:
-				for bundle,state in states.items():
-					if int(state)==0:# and zmdInstalled!="0":
+				for bundle,appstatus in status.items():
+					if int(appstatus)==0:# and zmdInstalled!="0":
 						if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
 							self.btnRemove.setText(i18n["OPEN"])
 							break
 						elif self.btnRemove.text()!=i18n["REMOVE"]:
 							self.btnRemove.setText(i18n["REMOVE"])
-							print(states)
 							self.instBundle=bundle
 							break
 		elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
 				self.btnRemove.setVisible(True)
 				self.btnRemove.setEnabled(True)
 				self.btnRemove.setText(i18n["OPEN"])
+		if self.btnRemove.text()!="":
+			self.btnRemove.setVisible(True)
+			self.btnRemove.setEnabled(True)
+			self.lstInfo.hide()
 		self._setLauncherStatus()
 		self.lstInfo.blockSignals(False)
 	#def _setLauncherOptions
