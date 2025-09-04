@@ -2,8 +2,8 @@
 import os,time
 from functools import partial
 import json
-from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy,QWidget,QVBoxLayout
-from PySide6.QtCore import Qt,Signal,QThread,QCoreApplication,QTimer,QSize
+from PySide6.QtWidgets import QLabel,QWidget,QVBoxLayout,QApplication
+from PySide6.QtCore import Qt,Signal,QThread,QTimer,QSize
 from PySide6.QtGui import QPixmap,QColor
 import css
 from constants import *
@@ -30,7 +30,9 @@ class progress(QThread):
 	def run(self):
 		self.running=True
 		while self.running==True:
+			print("EMIT")
 			self.updated.emit()
+			QApplication.processEvents()
 			time.sleep(0.03)
 	#def run
 
@@ -118,7 +120,7 @@ class QProgressImage(QWidget):
 
 	def start(self):
 		self.updateTimer.start()
-		self.setVisible(True)
+		self.show()
 	#def start
 
 	def stop(self):
@@ -180,6 +182,7 @@ class QProgressImage(QWidget):
 		self.pxmOverlay.setMask(self.pxm.createMaskFromColor(Qt.transparent))
 		self.lblPxm.setPixmap(self.pxmOverlay)
 		self.update()
+		QApplication.processEvents()
 		self.running=False
 	#def _doProgress
 
