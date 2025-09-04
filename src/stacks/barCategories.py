@@ -42,10 +42,11 @@ class QToolBarCategories(QFlowTouchWidget):
 				t=t.replace("<strong>","").replace("</strong>","")
 				w.setText(t)
 		if len(args):
-			current=self.itemAt(0).widget()
-			text=current.text()
-			text=text.replace("none'>","none'><strong>").replace("</a>","</strong></a>")
-			current.setText(text)
+			if self.itemAt(0)!=None:
+				current=self.itemAt(0).widget()
+				text=current.text()
+				text=text.replace("none'>","none'><strong>").replace("</a>","</strong></a>")
+				current.setText(text)
 	#def _catUndecorate
 
 	def populateCategories(self,*args): #subcats,cat=""):
