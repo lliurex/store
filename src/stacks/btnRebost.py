@@ -226,14 +226,20 @@ class QPushButtonRebostApp(QPushButton):
 		if self.app.get("name","").strip()!="":
 			if self.app.get("summary","")!="" and self._compactMode==False:
 				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
-			else:
+			elif self._compactMode==False:
 				text="<p>{0}</p>".format(self.app.get('name','').strip()).upper()
+			else:
+				text="<p>{0}</p>".format(self.app.get('name','').strip()).capitalize()
 		else:
 			text="<p>{0}</p>".format(self.app.get('summary','').strip())
 			_showBtn=False
 		if self.label.text()!=text and len(text)>0:
 			self.label.setText(text)
-			self.setToolTip(text)
+			if self._compactMode==False:
+				self.setToolTip(text)
+			else:
+				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
+				self.setToolTip(text)
 		if self._compactMode==False:
 			if "Forbidden" in self.app.get("categories",[]) and self.btn.text()!=i18n["UNAUTHORIZED"]:
 				self.btn.setText(i18n["UNAUTHORIZED"])
@@ -245,14 +251,14 @@ class QPushButtonRebostApp(QPushButton):
 				if self.btn.text()!=i18n["INSTALL"]:
 					self.btn.setText(i18n["INSTALL"])
 				bundles=self.app["bundle"]
-				states=self.app["status"]
+				status=self.app["status"]
 				zmd=bundles.get("unknown","")
-				if len(states)>0:
+				if len(status)>0:
 					if zmd!="" and len(bundles)==2: #2->pkg that belongs to a zmd
 						self.btn.setText(i18n["OPEN"])
 					else:
-						for bundle,state in states.items():
-							if int(state)==0:# and zmdInstalled!="0":
+						for bundle,appstatus in status.items():
+							if int(appstatus)==0:# and zmdInstalled!="0":
 								if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
 									self.btn.setText(i18n["OPEN"])
 								elif self.btn.text()!=i18n["REMOVE"]:
@@ -292,12 +298,16 @@ class QPushButtonRebostApp(QPushButton):
 
 	def _getStats(self,app):
 		stats={}
-		for bundle,state in app.get("status",{}).items():
-			if bundle=="zomando" and state==0:
-				stats["zomando"]=True
-			elif state==0:
-				stats["installed"]=True
-			
+		bundles=self.app.get("bundle",{})
+		status=self.app.get("status",{})
+		zmd=bundles.get("unknown","")
+		if len(status)>0:
+			for bundle,appstatus in status.items():
+				if int(appstatus)==0:# and zmdInstalled!="0":
+					stats["installed"]=True
+		elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
+			stats["installed"]=True
+		
 		if "Forbidden" in app.get("categories",[]):
 			stats["forbidden"]=True
 		#if app["name"]==app["pkgname"] and "zomando" in app.get("status",{}):
