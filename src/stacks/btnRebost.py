@@ -227,7 +227,7 @@ class QPushButtonRebostApp(QPushButton):
 			if self.app.get("summary","")!="" and self._compactMode==False:
 				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
 			else:
-				text="<p>{0}</p>".format(self.app.get('name','').strip())
+				text="<p>{0}</p>".format(self.app.get('name','').strip()).upper()
 		else:
 			text="<p>{0}</p>".format(self.app.get('summary','').strip())
 			_showBtn=False
