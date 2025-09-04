@@ -25,13 +25,14 @@ class llxup(QThread):
 
 class storeHelper(QThread):
 	test=Signal("PyObject")
-	lstEnded=Signal("PyObject")
-	linEnded=Signal("PyObject")
 	gacEnded=Signal("PyObject")
-	srcEnded=Signal("PyObject")
-	shwEnded=Signal("PyObject")
-	urlEnded=Signal("PyObject")
+	linEnded=Signal("PyObject")
 	lckEnded=Signal()
+	lstEnded=Signal("PyObject")
+	lsgEnded=Signal("PyObject")
+	shwEnded=Signal("PyObject")
+	srcEnded=Signal("PyObject")
+	urlEnded=Signal("PyObject")
 	rstEnded=Signal()
 	staEnded=Signal(bool,bool)
 	catEnded=Signal("PyObject")
@@ -56,6 +57,7 @@ class storeHelper(QThread):
 	#def setAction
 	
 	def run(self):
+		print(self.action)
 		if  self.action=="test":
 			self._test()
 		elif self.action=="list":
@@ -70,6 +72,8 @@ class storeHelper(QThread):
 			self._show()
 		elif self.action=="updatePkgData":
 			self._updatePkgData()
+		elif self.action=="getAppSuggests":
+			self._getAppSuggests()
 		elif self.action=="unlock":
 			self._unlock()
 		elif self.action=="lock":
@@ -143,6 +147,33 @@ class storeHelper(QThread):
 			app=self.rc.showApp(self.args[0])
 		self.shwEnded.emit(app)
 	#def _show
+
+	def _getAppSuggests(self,*args):
+		apps=[]
+		if self.args[0]!="":
+			limit=10
+			if len(self.args)>1:
+				limit=self.args[1]
+			seen=[self.args[0].get("name")]
+			suggests=self.args[0].get("suggests",[])
+			keywords=self.args[0].get("keywords",[])
+			categories=self.args[0].get("categories",[])
+			extraTokens=keywords+categories
+			random.shuffle(extraTokens)
+			for suggest in suggests:
+				app=self.rc.showApp(suggest)
+				apps.append(json.loads(app)[0])
+			random.shuffle(apps)
+			for extra in extraTokens[random.randint(0,int(len(extraTokens)/2)):random.randint(int(len(extraTokens)/2)+1,len(extraTokens))]:
+				search=self.rc.searchApp(extra)
+				jsearch=json.loads(search)
+				for app in jsearch:
+					if app.get("name") not in seen:
+						seen.append(app.get("name"))
+						apps.append(app)
+			apps=apps[0:min(limit,len(apps))]
+		self.lsgEnded.emit(apps)
+	#def _getAppSuggests
 	
 	def _setAppState(self,*args):
 		if self.args[0]!="":
