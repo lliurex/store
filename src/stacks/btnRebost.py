@@ -123,7 +123,7 @@ class QPushButtonRebostApp(QPushButton):
 		if args[0]==True:
 			self._showBtn=False
 			self._compactMode=True
-			self.setFixedSize(QSize(ICON_SIZE*1.4,ICON_SIZE*1.3))
+			self.setFixedSize(QSize(ICON_SIZE*1.4,ICON_SIZE*1.2))
 			self.appIconSize=(ICON_SIZE*0.4)
 	#def setCompactMode
 
