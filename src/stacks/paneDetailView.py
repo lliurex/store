@@ -5,7 +5,7 @@ from functools import partial
 import json
 import html
 from rebost import store
-from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QScrollArea
+from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QScrollArea,QListWidget,QListWidgetItem
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,Slot
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
@@ -152,7 +152,6 @@ class main(QWidget):
 				self._processStreams(name)
 				self.thParmShow.setArgs(self.app)
 				self.thParmShow.start()
-		self.lblHomepage.setVisible(True)
 	#def setParms
 
 	def _endSetParms(self,*args):
@@ -236,6 +235,8 @@ class main(QWidget):
 	def keyPressEvent(self,*args):
 		if args[0].key()==Qt.Key_Escape:
 			self._clickedBack()
+		else:
+			args[0].ignore()
 	#def keyPressEvent
 
 	def _renderGui(self):
@@ -244,19 +245,22 @@ class main(QWidget):
 		self.btnBack=self._defBtnBack()
 		self.box.addWidget(self.btnBack,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
 		self.header=self._defHeader()
-		self.box.addWidget(self.header,0,2,1,3)
+		self.box.addWidget(self.header,0,2,1,4)
 		resources=self._defResources()
 		resources.setObjectName("resources")
 		self.box.addWidget(resources,1,2,2,1)
 		self.lblDesc=self._defLblDesc()
 		self.box.addWidget(self.lblDesc,1,3,2,1)
+		self.lstLinks=self._defLstLinks()
+		self.box.addWidget(self.lstLinks,1,4,2,1)
 		self.screenShot=self._defScreenshot()
-		self.box.addWidget(self.screenShot,2,3,2,2)
+		self.box.addWidget(self.screenShot,3,3,2,3)
 		self.setLayout(self.box)
 		self.box.setColumnStretch(0,0)
 		self.box.setColumnStretch(1,0)
 		self.box.setColumnStretch(2,0)
-		self.box.setColumnStretch(3,2)
+		self.box.setColumnStretch(3,3)
+		self.box.setColumnStretch(4,1)
 		self.box.setRowStretch(0,0)
 		self.box.setRowStretch(1,2)
 		errorLay=QGridLayout()
@@ -343,7 +347,6 @@ class main(QWidget):
 
 	def _endSuggestsLoad(self,*args):
 		suggests=args[0]
-		print(type(suggests))
 		for app in suggests:
 			btn=QPushButtonRebostApp("{}")
 			btn.clicked.connect(self._loadSuggested)
@@ -379,14 +382,6 @@ class main(QWidget):
 	def _defResources(self):
 		wdg=QWidget()
 		lay=QVBoxLayout()
-		self.resources=QWidget()
-		layResources=QVBoxLayout()
-		self.resources.setLayout(layResources)
-		self.lblHomepage=QLabelLink('<a href="http://lliurex.net">lliurex.net</a>')
-		self.lblHomepage.setToolTip("http://lliurex.net")
-		self.lblHomepage.setOpenExternalLinks(True)
-		layResources.addWidget(self.lblHomepage)
-		lay.addWidget(self.resources)
 		self.lblTags=QScrollLabel()
 		self.lblTags.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.lblTags.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -401,6 +396,15 @@ class main(QWidget):
 		wdg.setLayout(lay)
 		return(wdg)
 	#def _defResources
+
+	def _defLstLinks(self):
+		wdg=QListWidget()
+		#self.lblHomepage=QLabelLink('<a href="https://lliurex.net">lliurex.net</a>')
+		#self.lblHomepage.setToolTip("https://lliurex.net")
+		#self.lblHomepage.setOpenExternalLinks(True)
+		#layResources.addWidget(self.lblHomepage)
+		return(wdg)
+	#def _defLstLinks
 
 	def _setUnknownAppInfo(self):
 		if self.app.get("name","")!="":
@@ -448,7 +452,7 @@ class main(QWidget):
 	#def _loadScreenshots
 
 	def _loadSuggested(self,*args):
-		self.parent()._beginLoad()
+		self.parent()._beginLoad(resetScreen=False)
 		self.screenShot.clear()
 		if len(self.oldApp)==0:
 			self.oldApp=self.app
@@ -487,9 +491,16 @@ class main(QWidget):
 				desc=i18n.get("SEEIT")
 			else:
 				desc=i18n.get("SITE")
-			text='<a href="{0}">{1}</a> '.format(homepage,desc)
-		self.lblHomepage.setText(text)
-		self.lblHomepage.setToolTip(homepage)
+			text='<a href="{0}" style="text-decoration:none;"><strong>{1}</strong></a> '.format(homepage,desc)
+		item=QListWidgetItem()
+		self.lstLinks.addItem(item)
+		lbl=QLabelLink(text)
+		lbl.setToolTip(homepage)
+		lbl.setOpenExternalLinks(True)
+		self.lstLinks.setItemWidget(item,lbl)
+		item.setSizeHint(QSize(lbl.sizeHint()))
+	#	self.lblHomepage.setText(text)
+	#	self.lblHomepage.setToolTip(homepage)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
 		if "Forbidden" in self.app.get("categories",[]):
 			forbReason=""
@@ -693,7 +704,7 @@ class main(QWidget):
 			self.lblRelease.setText(i18n.get("INSTALL"))
 			self.setCursor(self.oldCursor)
 			self.screenShot.clear()
-			self.lblHomepage.setText("")
+			self.lstLinks.clear()
 			#self.lblCategories.setText("")
 			#Disabled as requisite (250214-11:52)
 			#self.lblCategories.linkActivated.connect(self._categoryLinkClicked)
