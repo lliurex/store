@@ -22,10 +22,7 @@ def detailPanel():
 	css=css+frame
 	resources="""QWidget#resources{
 					margin-top:%spx;
-					border-right:%spx solid;
-					border-radius:1px;
-					border-right-color:%s;
-				}"""%(MARGIN,int(MARGIN)/2,COLOR_BORDER_DARK)
+				}"""%(MARGIN)
 	css=css+resources
 
 	btnBack="""#btnBack{
@@ -49,21 +46,39 @@ def detailPanel():
 					margin-top:0;
 				}"""%(int(MARGIN)*3)
 	css=css+lblSummary
-	btnInstall="""QLabel#btnInstall{
-					margin-bottom:%spx
-				}"""%(MARGIN*2)
+	btnInstall="""QPushButton#btnInstall{
+					color:%s;
+					background: qlineargradient(x1:0, y1:0, x2:0, y2:4, stop:0 %s, stop:1 %s);
+					border:1px solid %s;
+					border-radius:%spx;
+					padding-bottom:%spx;
+					padding-top:%spx;
+				}
+				"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
 	css=css+btnInstall
+
+	boxBundles="""#boxBundles{
+					border:0px;
+					margin:0px;
+					padding:0px;
+					}"""
+	css=css+boxBundles
+
 	lstInfo="""#lstInfo{
 					padding:%spx;
 					color:#000000;
 					margin:1px;
 					border:1px solid;
 					border-color:%s;
-					border-radius:%spx;}
-					QComboBox#lstInfo::drop-down{ subcontrol-origin: padding;
+					border-radius:%spx;
+					}
+				QComboBox#lstInfo::drop-down{ subcontrol-origin: padding;
 					subcontrol-position: top right;
 					border-top-right-radius: %spx; /* same radius as the QComboBox */
 					border-bottom-right-radius: %spx;
+				}
+				QComboBox#lstInfo {
+					background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
 				}
 				QComboBox#lstInfo::down-arrow {
 					image: url("%s/drop-down16x16.png");
@@ -76,7 +91,7 @@ def detailPanel():
 					top: 1px;
 					right: %spx;
 				}
-				"""%(MARGIN,COLOR_BORDER,RADIUS,RADIUS,RADIUS,RSRC,int(MARGIN)*2,COLOR_BORDER,MARGIN,int(MARGIN)*2,int(MARGIN)*1.9)
+				"""%(MARGIN,COLOR_BORDER,RADIUS,RADIUS,RADIUS,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,RSRC,int(MARGIN)*2,COLOR_BORDER,MARGIN,int(MARGIN)*2,int(MARGIN)*1.9)
 	css=css+lstInfo
 	screenshot="""#screenshot{
 					margin:0px;
@@ -86,14 +101,26 @@ def detailPanel():
 
 	lblTags="""#lblTags{
 					border:0px;
-				}
-				"""
+					margin-top:%spx;
+					margin-left:%spx;
+				}"""%(MARGIN,MARGIN)
+
 	css=css+lblTags
+
+	lstLinks="""#lstLinks{
+					border:0px;
+					margin-left:%spx;
+				}"""%(MARGIN)
+
+	css=css+lstLinks
 
 	lblDesc="""#lblDesc{
 					border:0px;
+					border-left:%spx solid;
+					border-radius:1px;
+					border-left-color:%s;
 				}
-				"""
+				"""%(int(MARGIN)/2,COLOR_BORDER_DARK)
 	css=css+lblDesc
 
 	return(css)
