@@ -3,7 +3,7 @@ import os,time
 from functools import partial
 import json
 from PySide6.QtWidgets import QLabel,QWidget,QVBoxLayout,QApplication
-from PySide6.QtCore import Qt,Signal,QThread,QTimer,QSize
+from PySide6.QtCore import Qt,QTimer,QSize
 from PySide6.QtGui import QPixmap,QColor
 import css
 from constants import *
@@ -19,24 +19,6 @@ i18nLoad={
 i18nUnlock={
 	"UNLOCKINGDB":_("Loading available applications"),
 	}
-
-class progress(QThread):
-	updated=Signal()
-	def __init__(self,*args,**kwargs):
-		QThread.__init__(self)
-		self.running=True
-	#def __init__
-
-	def run(self):
-		self.running=True
-		while self.running==True:
-			self.updated.emit()
-			time.sleep(0.03)
-	#def run
-
-	def stop(self):
-		self.running=False
-	#def stop
 
 class QProgressImage(QWidget):
 	def __init__(self,*args,**kwargs):
@@ -66,10 +48,6 @@ class QProgressImage(QWidget):
 		self.oldTime=0
 		self.updateTimer=QTimer()
 		self.updateTimer.timeout.connect(self._doProgress)
-	#	self.updateTimer.start(1)
-		#self.updateTimer=progress(self)
-		#self.updateTimer.updated.connect(self._doProgress)
-		#self.setPixmap(self.pxm)
 		self.lblPxm.setAlignment(Qt.AlignCenter)
 		self.lblInfo.setAlignment(Qt.AlignCenter)
 		self.inc=-5
@@ -83,10 +61,7 @@ class QProgressImage(QWidget):
 		if "updateTimer" in selfDict:
 			selfDict["updateTimer"].blockSignals(True)
 			selfDict["updateTimer"].stop()
-			#selfDict["updateTimer"].requestInterruption()
-			#selfDict["updateTimer"].deleteLater()
-			#selfDict["updateTimer"].wait()
-
+	#def _onDestroy
 
 	def setColor(self,colorStart,colorEnd,colorIni=""):
 		self.color=QColor(colorStart)
@@ -118,23 +93,21 @@ class QProgressImage(QWidget):
 		self.inc=inc
 
 	def start(self):
-		self.updateTimer.start(0)
+		self.updateTimer.start(5)
 	#	self.updateTimer.start()
 		self.show()
 	#def start
 
 	def stop(self):
 		self.updateTimer.stop()
-	#	if self.updateTimer.isRunning():
-	#		self.updateTimer.stop()
-		#self.updateTimer.quit()
-		#self.updateTimer.wait()
 		self.setVisible(False)
 	#def stop(self):
 		
 	def _beginDoProgress(self,*args):
 		if self.running==False:
 			self._doProgress()
+		else:
+			print("R")
 	#def _beginDoProgress
 
 	def _doProgress(self,*args):
