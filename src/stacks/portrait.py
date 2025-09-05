@@ -328,15 +328,13 @@ class portrait(QStackedWindowItem):
 			self._llxup.quit()
 			self._llxup.wait()
 	#def _closeEvent
-	
-	def eventFilter(self,*args):
-		if isinstance(args[0],QListWidget):
-			if args[1].type==QEvent.Type.KeyRelease:
-				self.released=True
-			elif args[1].type==QEvent.Type.KeyPress:
-				self.released=False
-		return(False)
-	#def eventFilter(self,*args):
+
+	def keyPressEvent(self,*args):
+		if self.searchBox.hasFocus()==False:
+			self.searchBox.setFocus()
+			if args[0].text().strip()!="":
+				self.searchBox.setText(args[0].text())
+	#def keyPressEvent
 
 	def __initScreen__(self):
 		self.box=QGridLayout()
@@ -356,6 +354,7 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(spacer,1,1)
 		self.barCategories=self._defBarCategories()
 		self.box.addWidget(self.barCategories,2,1,Qt.AlignTop)
+		self.barCategories.setMinimumHeight(int(MARGIN)*6)
 		self._homeView=self._getHomeViewPane()
 		self.box.addWidget(self._homeView,3,1)
 		self._globalView=self._getGlobalViewPane()
