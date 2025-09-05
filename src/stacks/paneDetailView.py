@@ -208,7 +208,7 @@ class main(QWidget):
 
 	@Slot("PyObejct,","PyObject")
 	def _genericEpiInstall(self,*args):
-		bundle=self.lstInfo.currentSelected().lower().split(" ")[0]
+		bundle=self.cmbBundles.currentSelected().lower().split(" ")[0]
 		self.requestInstallApp.emit(self.btnRemove,self.app,bundle)
 	#def _genericEpiInstall
 
@@ -258,13 +258,12 @@ class main(QWidget):
 		self.screenShot=self._defScreenshot()
 		self.screenShot.widget.setMinimumHeight(self.lblDesc.height())
 		self.screenShot.scroll.setMinimumHeight(self.lblDesc.height())
-		#self.screenShot.setMinimumHeight(self.lblDesc.height())
 		self.box.addWidget(self.screenShot,1,3,3,1,Qt.AlignTop)
 		self.lstLinks=self._defLstLinks()
 		self.lstLinks.setObjectName("lstLinks")
 		vlay.addWidget(self.lstLinks)
 		self.tblSuggests=self._defSuggests()
-		self.box.addWidget(self.tblSuggests,3,2,2,1)
+		self.box.addWidget(self.tblSuggests,3,2,2,1,Qt.AlignBottom)
 		self.setLayout(self.box)
 		#COLS
 		self.box.setColumnStretch(0,0)
@@ -327,19 +326,19 @@ class main(QWidget):
 		self.btnRemove.clicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
 
 		self.btnUnavailable=QPushButton(i18n.get("UNAVAILABLE"))
-		self.btnUnavailable.setObjectName("lstInfo")
+		self.btnUnavailable.setObjectName("cmbBundles")
 
 		launchers.setLayout(hlay)
 		lay.addWidget(launchers,1,3,1,1,Qt.AlignTop|Qt.AlignRight)
 
-		self.lstInfo=QComboButton()
-		self.lstInfo.setAttribute(Qt.WA_StyledBackground, False)
-		self.lstInfo.setObjectName("lstInfo")
-		self.lstInfo.setMaximumWidth(50)
-		self.lstInfo.currentTextChanged.connect(self._setLauncherOptions)	
-		self.lstInfo.installClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
+		self.cmbBundles=QComboButton()
+		self.cmbBundles.setAttribute(Qt.WA_StyledBackground, False)
+		self.cmbBundles.setObjectName("cmbBundles")
+		self.cmbBundles.setFixedWidth(50)
+		self.cmbBundles.currentTextChanged.connect(self._setLauncherOptions)	
+		self.cmbBundles.installClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
 		lay.addWidget(self.lblRelease,1,3,1,1,Qt.AlignLeft|Qt.AlignTop)
-		lay.addWidget(self.lstInfo,2,3,1,1,Qt.AlignRight|Qt.AlignTop)
+		lay.addWidget(self.cmbBundles,2,3,1,1,Qt.AlignRight|Qt.AlignTop)
 		lay.addWidget(self.btnRemove,2,3,1,1)
 		lay.addWidget(self.btnUnavailable,2,3,1,1)
 		self.btnRemove.setVisible(False)
@@ -432,10 +431,6 @@ class main(QWidget):
 
 	def _defLstLinks(self):
 		wdg=QListWidget()
-		#self.lblHomepage=QLabelLink('<a href="https://lliurex.net">lliurex.net</a>')
-		#self.lblHomepage.setToolTip("https://lliurex.net")
-		#self.lblHomepage.setOpenExternalLinks(True)
-		#layResources.addWidget(self.lblHomepage)
 		return(wdg)
 	#def _defLstLinks
 
@@ -543,9 +538,7 @@ class main(QWidget):
 			summary="{}...".format(summary[0:150])
 		self.lblSummary.setText("{}".format(summary))
 		bundles=list(self.app.get('bundle',{}).keys())
-		self.lstInfo.setEnabled(True)
-	#	self.lblHomepage.setText(text)
-	#	self.lblHomepage.setToolTip(homepage)
+		self.cmbBundles.setEnabled(True)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
 		if "Forbidden" in self.app.get("categories",[]):
 			forbReason=""
@@ -645,7 +638,7 @@ class main(QWidget):
 		self.parent().setWindowTitle("AppsEdu - {}".format("ERROR"))
 		if "Forbidden" not in self.app.get("categories",[]):
 			self.app["categories"]=["Forbidden"]
-		self.lstInfo.setEnabled(False)
+		self.cmbBundles.setEnabled(False)
 		self.lblRelease.setEnabled(False)
 		self.btnRemove.setEnabled(False)
 		self.btnUnavailable.setEnabled(False)
@@ -666,34 +659,34 @@ class main(QWidget):
 		if int(self.app.get("state","0"))>=7:
 			try:
 				self.btnRemove.blockSignals(True)
-				self.lstInfo.blockSignals(True)
+				self.cmbBundles.blockSignals(True)
 			except Exception as e: #Don't worry
 				print(e)
 			self.btnRemove.setCursor(QtGui.QCursor(Qt.WaitCursor))
-			self.lstInfo.setCursor(QtGui.QCursor(Qt.WaitCursor))
+			self.cmbBundles.setCursor(QtGui.QCursor(Qt.WaitCursor))
 		else:
 			try:	
 				self.btnRemove.blockSignals(False)
-				self.lstInfo.blockSignals(False)
+				self.cmbBundles.blockSignals(False)
 			except: #Be happy
 				pass
 			self.btnRemove.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
-			self.lstInfo.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+			self.cmbBundles.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 	#def _setLauncherStatus
 
 	def _setLauncherOptions(self):
 		visible=True
-		bundle=self.lstInfo.currentText()
+		bundle=self.cmbBundles.currentText()
 		if "Forbidden" in self.app.get("categories",[]):
 			visible=False
 		self.lblRelease.setVisible(visible)
-		self.lstInfo.setVisible(visible)
+		self.cmbBundles.setVisible(visible)
 		if bundle==i18n["INSTALL"].upper():
 			return
 		bundle=bundle.split(" ")[0]
 		self.lblRelease.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
-		self.lstInfo.blockSignals(True)
-		self.lstInfo.setText(i18n["INSTALL"].upper())
+		self.cmbBundles.blockSignals(True)
+		self.cmbBundles.setText(i18n["INSTALL"].upper())
 		self.btnRemove.setVisible(False)
 		self.btnRemove.setEnabled(False)
 		bundles=self.app.get("bundle",{})
@@ -720,27 +713,29 @@ class main(QWidget):
 		if self.btnRemove.text()!="":
 			self.btnRemove.setVisible(True)
 			self.btnRemove.setEnabled(True)
-			self.lstInfo.hide()
+			self.btnRemove.setMinimumSize(self.cmbBundles.size())
+			self.btnUnavailable.setMinimumSize(self.cmbBundles.size())
+			self.cmbBundles.hide()
 		self._setLauncherStatus()
-		self.lstInfo.blockSignals(False)
+		self.cmbBundles.blockSignals(False)
 	#def _setLauncherOptions
 
 	def _setReleasesInfo(self):
-		for i in range(self.lstInfo.count()):
-			self.lstInfo.removeItem(i)
-		self.lstInfo.clear()
+		for i in range(self.cmbBundles.count()):
+			self.cmbBundles.removeItem(i)
+		self.cmbBundles.clear()
 		priority=self.helper.getBundlesByPriority(self.app)
 		if len(priority)<=0:
-			self.lstInfo.setEnabled(False)
+			self.cmbBundles.setEnabled(False)
 		else:
 			priorityFinal=list(priority.keys())
 			priorityFinal.sort()
 			for idx in priorityFinal:
-				self.lstInfo.addItem(priority[idx])
-			self.lstInfo.setText(i18n["INSTALL"].upper())
+				self.cmbBundles.addItem(priority[idx])
+			self.cmbBundles.setText(i18n["INSTALL"].upper())
 			for idx in range(0,len(priority)):
 				try:
-					self.lstInfo.setState(idx,False)
+					self.cmbBundles.setState(idx,False)
 				except:
 					break
 	#def _setReleasesInfo
@@ -749,7 +744,7 @@ class main(QWidget):
 		#Reload config if app has been epified
 		self.showMsg=self.parent().showMsg
 		if len(self.app)>0:
-			self.lstInfo.setVisible(True)
+			self.cmbBundles.setVisible(True)
 			self.lblRelease.setVisible(True)
 			self.lblRelease.setEnabled(True)
 			self.lblRelease.setText(i18n.get("INSTALL"))

@@ -64,7 +64,7 @@ def detailPanel():
 					}"""
 	css=css+boxBundles
 
-	lstInfo="""#lstInfo{
+	cmbBundles="""#cmbBundles{
 					padding:%spx;
 					color:#000000;
 					margin:1px;
@@ -72,27 +72,27 @@ def detailPanel():
 					border-color:%s;
 					border-radius:%spx;
 					}
-				QComboBox#lstInfo::drop-down{ subcontrol-origin: padding;
+				QComboBox#cmbBundles::drop-down{ subcontrol-origin: padding;
 					subcontrol-position: top right;
 					border-top-right-radius: %spx; /* same radius as the QComboBox */
 					border-bottom-right-radius: %spx;
 				}
-				QComboBox#lstInfo {
+				QComboBox#cmbBundles {
 					background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
 				}
-				QComboBox#lstInfo::down-arrow {
+				QComboBox#cmbBundles::down-arrow {
 					image: url("%s/drop-down16x16.png");
 					right:%spx;
 					border-left:1px solid %s;
 					padding:%spx;
 					margin-left:%spx;
 				}
-				QComboBox#lstInfo::down-arrow:on { /* shift the arrow when popup is open */
+				QComboBox#cmbBundles::down-arrow:on { /* shift the arrow when popup is open */
 					top: 1px;
 					right: %spx;
 				}
 				"""%(MARGIN,COLOR_BORDER,RADIUS,RADIUS,RADIUS,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,RSRC,int(MARGIN)*2,COLOR_BORDER,MARGIN,int(MARGIN)*2,int(MARGIN)*1.9)
-	css=css+lstInfo
+	css=css+cmbBundles
 	screenshot="""#screenshot{
 					margin:0px;
 					padding:0px;
