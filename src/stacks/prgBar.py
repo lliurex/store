@@ -30,9 +30,7 @@ class progress(QThread):
 	def run(self):
 		self.running=True
 		while self.running==True:
-			print("EMIT")
 			self.updated.emit()
-			QApplication.processEvents()
 			time.sleep(0.03)
 	#def run
 
@@ -66,11 +64,11 @@ class QProgressImage(QWidget):
 		lay.addWidget(self.lblInfo,Qt.AlignTop)
 		self.lblInfo.setObjectName("lblInfo")
 		self.oldTime=0
-		#self.updateTimer=QTimer()
-		#self.updateTimer.timeout.connect(self._doProgress)
-		#self.updateTimer.start(1)
-		self.updateTimer=progress(self)
-		self.updateTimer.updated.connect(self._doProgress)
+		self.updateTimer=QTimer()
+		self.updateTimer.timeout.connect(self._doProgress)
+	#	self.updateTimer.start(1)
+		#self.updateTimer=progress(self)
+		#self.updateTimer.updated.connect(self._doProgress)
 		#self.setPixmap(self.pxm)
 		self.lblPxm.setAlignment(Qt.AlignCenter)
 		self.lblInfo.setAlignment(Qt.AlignCenter)
@@ -84,9 +82,10 @@ class QProgressImage(QWidget):
 		selfDict=args[0]
 		if "updateTimer" in selfDict:
 			selfDict["updateTimer"].blockSignals(True)
-			selfDict["updateTimer"].requestInterruption()
-			selfDict["updateTimer"].deleteLater()
-			selfDict["updateTimer"].wait()
+			selfDict["updateTimer"].stop()
+			#selfDict["updateTimer"].requestInterruption()
+			#selfDict["updateTimer"].deleteLater()
+			#selfDict["updateTimer"].wait()
 
 
 	def setColor(self,colorStart,colorEnd,colorIni=""):
@@ -119,13 +118,15 @@ class QProgressImage(QWidget):
 		self.inc=inc
 
 	def start(self):
-		self.updateTimer.start()
+		self.updateTimer.start(0)
+	#	self.updateTimer.start()
 		self.show()
 	#def start
 
 	def stop(self):
-		if self.updateTimer.isRunning():
-			self.updateTimer.stop()
+		self.updateTimer.stop()
+	#	if self.updateTimer.isRunning():
+	#		self.updateTimer.stop()
 		#self.updateTimer.quit()
 		#self.updateTimer.wait()
 		self.setVisible(False)
@@ -138,6 +139,7 @@ class QProgressImage(QWidget):
 
 	def _doProgress(self,*args):
 		self.running=True
+		print(".")
 		if self.lblInfo.text()!="":
 			if self.unlocking==False:
 				i18n=i18nUnlock
@@ -182,7 +184,6 @@ class QProgressImage(QWidget):
 		self.pxmOverlay.setMask(self.pxm.createMaskFromColor(Qt.transparent))
 		self.lblPxm.setPixmap(self.pxmOverlay)
 		self.update()
-		QApplication.processEvents()
 		self.running=False
 	#def _doProgress
 
