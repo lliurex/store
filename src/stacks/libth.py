@@ -159,10 +159,6 @@ class storeHelper(QThread):
 			categories=self.args[0].get("categories",[])
 			extraTokens=keywords+categories
 			random.shuffle(extraTokens)
-			for suggest in suggests:
-				app=self.rc.showApp(suggest)
-				if len(app)>0:
-					apps.append(json.loads(app)[0])
 			random.shuffle(apps)
 			for extra in extraTokens[random.randint(0,int(len(extraTokens)/2)):random.randint(int(len(extraTokens)/2)+1,len(extraTokens))]:
 				search=self.rc.searchApp(extra)
@@ -172,6 +168,10 @@ class storeHelper(QThread):
 						seen.append(app.get("name"))
 						apps.append(app)
 			random.shuffle(apps)
+			for suggest in suggests:
+				app=json.loads(self.rc.showApp(suggest))
+				if len(app)>0:
+					apps.insert(0,app[0])
 			apps=apps[0:min(limit,len(apps))]
 		self.lsgEnded.emit(apps)
 	#def _getAppSuggests
