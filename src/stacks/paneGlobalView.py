@@ -58,13 +58,13 @@ class paneGlobalView(QWidget):
 						idx=self.table.currentIndex()
 						elements=1
 						if args[1].key()==Qt.Key_Up:
-							elements=int(self.width()/(args[0].width()+int(MARGIN)*2))-1
+							elements=int(self.width()/(args[0].width()+int(self.table.flowLayout.spacing())*2))+1
 						newPos=idx-elements
 					elif args[1].key()==Qt.Key_Right or args[1].key()==Qt.Key_Down:
 						idx=self.table.currentIndex()
 						elements=1
 						if args[1].key()==Qt.Key_Down:
-							elements=int(self.width()/(args[0].width()+int(MARGIN)*2))-1
+							elements=int(self.width()/(args[0].width()+int(self.table.flowLayout.spacing())*2))+1
 						newPos=idx+elements
 						#Ugly hack for autoscroll to focused item
 					if newPos!=-1:
@@ -88,9 +88,7 @@ class paneGlobalView(QWidget):
 	def _defTable(self):
 		table=QFlowTouchWidget(self,fastMode=True)
 		table.setFocusPolicy(Qt.NoFocus)
-		table.clearFocus()
 		table.setObjectName("qFlow")
-		table.flowLayout.setSpacing(24)
 		table.leaveEvent=self.tableLeaveEvent
 		table.setAttribute(Qt.WA_AcceptTouchEvents)
 		table.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -136,6 +134,7 @@ class paneGlobalView(QWidget):
 	def _loadApps(self,apps):
 		pendingApps={}
 		self.stopAdding=False
+		self.table.setSpacing(int(MARGIN)*5)
 		while apps:
 			if self.stopAdding==True:
 				break
