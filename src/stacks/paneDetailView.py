@@ -245,24 +245,37 @@ class main(QWidget):
 		self.btnBack=self._defBtnBack()
 		self.box.addWidget(self.btnBack,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
 		self.header=self._defHeader()
-		self.box.addWidget(self.header,0,2,1,4)
-		resources=self._defResources()
-		resources.setObjectName("resources")
-		self.box.addWidget(resources,1,2,2,1)
+		self.box.addWidget(self.header,0,1,1,4)
+		wdg=QWidget()
+		vlay=QVBoxLayout()
+		wdg.setLayout(vlay)
+		self.lblTags=self._defLblTags()
+		self.lblTags.setObjectName("lblTags")
+		vlay.addWidget(self.lblTags)
+		self.box.addWidget(wdg,1,1,2,1,Qt.AlignTop)
 		self.lblDesc=self._defLblDesc()
-		self.box.addWidget(self.lblDesc,1,3,2,1)
-		self.lstLinks=self._defLstLinks()
-		self.box.addWidget(self.lstLinks,1,4,2,1)
+		self.box.addWidget(self.lblDesc,1,2,3,1)
 		self.screenShot=self._defScreenshot()
-		self.box.addWidget(self.screenShot,3,3,2,3)
+		self.screenShot.widget.setMinimumHeight(self.lblDesc.height())
+		self.screenShot.scroll.setMinimumHeight(self.lblDesc.height())
+		#self.screenShot.setMinimumHeight(self.lblDesc.height())
+		self.box.addWidget(self.screenShot,1,3,3,1,Qt.AlignTop)
+		self.lstLinks=self._defLstLinks()
+		self.lstLinks.setObjectName("lstLinks")
+		vlay.addWidget(self.lstLinks)
+		self.tblSuggests=self._defSuggests()
+		self.box.addWidget(self.tblSuggests,3,2,2,1)
 		self.setLayout(self.box)
+		#COLS
 		self.box.setColumnStretch(0,0)
 		self.box.setColumnStretch(1,0)
-		self.box.setColumnStretch(2,0)
-		self.box.setColumnStretch(3,3)
-		self.box.setColumnStretch(4,1)
+		self.box.setColumnStretch(2,3)
+		self.box.setColumnStretch(3,1)
+		#ROWS
 		self.box.setRowStretch(0,0)
-		self.box.setRowStretch(1,2)
+		self.box.setRowStretch(1,3)
+		self.box.setRowStretch(2,1)
+		self.box.setRowStretch(3,0)
 		errorLay=QGridLayout()
 		self.lblBkg=QLabel()
 		errorLay.addWidget(self.lblBkg,0,0,1,1)
@@ -304,11 +317,13 @@ class main(QWidget):
 		launchers=QWidget()
 		hlay=QVBoxLayout()
 
+		self.boxBundles=self._defBoxBundles()
+		lay.addWidget(self.boxBundles,0,3,1,1,Qt.AlignTop|Qt.AlignRight)
 		self.lblRelease=QLabel(i18n.get("INSTALL"))
 		self.lblRelease.resize(self.lblRelease.sizeHint().width(),int(ICON_SIZE/3))
 
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
-		self.btnRemove.setObjectName("lstInfo")
+		self.btnRemove.setObjectName("btnInstall")
 		self.btnRemove.clicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
 
 		self.btnUnavailable=QPushButton(i18n.get("UNAVAILABLE"))
@@ -318,11 +333,12 @@ class main(QWidget):
 		lay.addWidget(launchers,1,3,1,1,Qt.AlignTop|Qt.AlignRight)
 
 		self.lstInfo=QComboButton()
+		self.lstInfo.setAttribute(Qt.WA_StyledBackground, False)
 		self.lstInfo.setObjectName("lstInfo")
 		self.lstInfo.setMaximumWidth(50)
 		self.lstInfo.currentTextChanged.connect(self._setLauncherOptions)	
 		self.lstInfo.installClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
-		lay.addWidget(self.lblRelease,1,3,3,1,Qt.AlignLeft|Qt.AlignTop)
+		lay.addWidget(self.lblRelease,1,3,1,1,Qt.AlignLeft|Qt.AlignTop)
 		lay.addWidget(self.lstInfo,2,3,1,1,Qt.AlignRight|Qt.AlignTop)
 		lay.addWidget(self.btnRemove,2,3,1,1)
 		lay.addWidget(self.btnUnavailable,2,3,1,1)
@@ -339,7 +355,7 @@ class main(QWidget):
 	#def _defHeader
 
 	def _defScreenshot(self):
-		wdg=QScreenShotContainer()
+		wdg=QScreenShotContainer(direction="vertical")
 		wdg.setObjectName("screenshot")
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		return(wdg)
@@ -347,20 +363,22 @@ class main(QWidget):
 
 	def _endSuggestsLoad(self,*args):
 		suggests=args[0]
+		self.suggests.setSpacing(int(MARGIN)*3)
 		for app in suggests:
 			btn=QPushButtonRebostApp("{}")
-			btn.clicked.connect(self._loadSuggested)
 			btn.setCompactMode(True)
+			btn.clicked.connect(self._loadSuggested)
 			btn.setIconSize(QSize(32,32))
 			btn.setApp(app)
 			self.suggests.addWidget(btn)
 		if self.suggests.count()>0:
+			self.suggests.setMinimumHeight(btn.sizeHint().height()+int(MARGIN)*8)
 			self.suggests.show()
 		else:
 			self.suggests.hide()
 	#def _endSuggestLoad(self,args):
 
-	def _suggestsLoad(self):
+	def _populateSuggestsList(self):
 		self.suggests.clean()
 		self._rebost.setAction("getAppSuggests",self.app,6) #Load 6 apps
 		self._rebost.start()
@@ -379,23 +397,38 @@ class main(QWidget):
 		return(wdg)
 	#def _defSuggests
 
-	def _defResources(self):
-		wdg=QWidget()
-		lay=QVBoxLayout()
-		self.lblTags=QScrollLabel()
-		self.lblTags.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.lblTags.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		self.lblTags.setAttribute(Qt.WA_StyledBackground, True)
-		self.lblTags.setObjectName("lblTags")
-		lay.addWidget(self.lblTags,Qt.Alignment(0))
-		swdg=self._defSuggests()
-		lay.addWidget(swdg,Qt.Alignment(1))
-		swdg.setMinimumWidth(ICON_SIZE*3+(int(MARGIN)*3))
-		#swdg.setMinimumHeight(ICON_SIZE*4)
-		wdg.setMinimumHeight(self.lblTags.sizeHint().height()+ICON_SIZE*5)
-		wdg.setLayout(lay)
+	def _defLblTags(self):
+		wdg=QScrollLabel()
+		wdg.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		wdg.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		wdg.setAttribute(Qt.WA_StyledBackground, True)
+		wdg.setMinimumWidth(ICON_SIZE*3+(int(MARGIN)*3))
 		return(wdg)
-	#def _defResources
+	#def _defLblTags
+
+	def _populateLinks(self):
+		homepage=self.app.get('homepage','')
+		if homepage=='':
+			homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
+		if not isinstance(homepage,str):
+			homepage='https://portal.edu.gva.es/appsedu/aplicacions-lliurex'
+		text=""
+		if homepage:
+			homepage=homepage.rstrip("/")
+			desc=homepage
+			if desc.startswith("https://portal.edu.gva.es/appsedu")==True:
+				desc=i18n.get("SEEIT")
+			else:
+				desc=i18n.get("SITE")
+			text='<a href="{0}" style="text-decoration:none;"><strong>{1}</strong></a> '.format(homepage,desc)
+		item=QListWidgetItem()
+		self.lstLinks.addItem(item)
+		lbl=QLabelLink(text)
+		lbl.setToolTip(homepage)
+		lbl.setOpenExternalLinks(True)
+		item.setSizeHint(QSize(lbl.sizeHint()))
+		self.lstLinks.setItemWidget(item,lbl)
+	#def _populateLinks
 
 	def _defLstLinks(self):
 		wdg=QListWidget()
@@ -405,6 +438,39 @@ class main(QWidget):
 		#layResources.addWidget(self.lblHomepage)
 		return(wdg)
 	#def _defLstLinks
+
+	def _populateBoxBundles(self):
+		for children in self.boxBundles.children():
+			if isinstance(children,QLabel):
+				children.hide()
+				bundle=children.toolTip().lower()
+				if bundle=="epi":
+					bundle="unknown"
+				if bundle in self.app["bundle"].keys():
+					children.show()
+	#def _populateBundleIcons
+
+	def _defBoxBundles(self):
+		wdg=QWidget()
+		wdg.setObjectName("boxBundles")
+		wdg.setMaximumHeight(34)
+		lay=QHBoxLayout()
+		lay.setSpacing(0)
+		lay.setContentsMargins(0,0,0,0)
+		wdg.setLayout(lay)
+		for bundle in self.rc.getSupportedFormats():
+			pxm=QtGui.QPixmap()
+			if bundle=="unknown":
+				bundle="epi"
+			pxmPath=os.path.join(RSRC,"application-vnd.{}.png".format(bundle))
+			pxm.load(pxmPath)
+			lbl=QLabel()
+			lbl.setPixmap(pxm)
+			lbl.setToolTip(bundle.capitalize())
+			lbl.hide()
+			lay.addWidget(lbl,Qt.AlignRight)
+		return(wdg)
+	#def _defBundleIcons
 
 	def _setUnknownAppInfo(self):
 		if self.app.get("name","")!="":
@@ -478,27 +544,6 @@ class main(QWidget):
 		self.lblSummary.setText("{}".format(summary))
 		bundles=list(self.app.get('bundle',{}).keys())
 		self.lstInfo.setEnabled(True)
-		homepage=self.app.get('homepage','')
-		if homepage=='':
-			homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
-		if not isinstance(homepage,str):
-			homepage='https://portal.edu.gva.es/appsedu/aplicacions-lliurex'
-		text=""
-		if homepage:
-			homepage=homepage.rstrip("/")
-			desc=homepage
-			if desc.startswith("https://portal.edu.gva.es/appsedu")==True:
-				desc=i18n.get("SEEIT")
-			else:
-				desc=i18n.get("SITE")
-			text='<a href="{0}" style="text-decoration:none;"><strong>{1}</strong></a> '.format(homepage,desc)
-		item=QListWidgetItem()
-		self.lstLinks.addItem(item)
-		lbl=QLabelLink(text)
-		lbl.setToolTip(homepage)
-		lbl.setOpenExternalLinks(True)
-		self.lstLinks.setItemWidget(item,lbl)
-		item.setSizeHint(QSize(lbl.sizeHint()))
 	#	self.lblHomepage.setText(text)
 	#	self.lblHomepage.setToolTip(homepage)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
@@ -523,7 +568,13 @@ class main(QWidget):
 			text="<strong>{}</strong>".format(applicense)
 		self._loadScreenshots()	
 		self.lblTags.setText(self._generateAppTags())
-		self._suggestsLoad()
+		if len(self.lblTags.text())==0:
+			self.lblTags.hide()
+		else:
+			self.lblTags.show()
+		self._populateSuggestsList()
+		self._populateLinks()
+		self._populateBoxBundles()
 		self.loaded.emit(self.app)
 	#def _updateScreen
 
@@ -709,6 +760,7 @@ class main(QWidget):
 			#Disabled as requisite (250214-11:52)
 			#self.lblCategories.linkActivated.connect(self._categoryLinkClicked)
 			self.lblTags.setText("")
+			self.lblTags.hide()
 			self.lblTags.linkActivated.connect(self._tagLinkClicked)
 		else:
 			self._onError()
