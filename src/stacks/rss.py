@@ -20,7 +20,7 @@ class rssParser(QThread):
 		content=''
 		req=Request(url, headers={'User-Agent':'Mozilla/5.0'})
 		try:
-			with urllib.request.urlopen(req,timeout=2) as f:
+			with urllib.request.urlopen(req,timeout=1) as f:
 				content=(f.read().decode('utf-8'))
 		except Exception as e:
 			print("Couldn't fetch {}".format(url))
@@ -41,10 +41,18 @@ class rssParser(QThread):
 					for li in ul.find_all("li"):
 						link=li.find("a")
 						lastApps.append((li.text.split("(")[0].strip(),link.get("href","")))
+						if len(lastApps)>5:
+							break
 					break
+					if len(lastApps)>5:
+						break
 				if self._stop==True:
 					lastApps=[]
 					break
+				if len(lastApps)>5:
+					break
+			if len(lastApps)>5:
+				break
 		return(lastApps)
 	#def _getLastApps
 
