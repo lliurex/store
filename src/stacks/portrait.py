@@ -11,7 +11,7 @@ import random
 from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
 							QCheckBox,QListWidgetItem,QSizePolicy
 from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread,QEvent
+from PySide6.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
 from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
 from libth import storeHelper,llxup
@@ -85,6 +85,7 @@ class portrait(QStackedWindowItem):
 		self.pendingApps={}
 		self.apps=[]
 		self.helper=libhelper.helper()
+		#self.updateTimer=QTimer()
 		self.rc=store.client()
 		self._referrerPane=None
 		self._rebost=storeHelper(rc=self.rc)
@@ -115,11 +116,11 @@ class portrait(QStackedWindowItem):
 	def _onDestroy(*args):
 		selfDict=args[0]
 		selfDict["_rebost"].blockSignals(True)
-		selfDict["_llxup"].blockSignals(True)
 		selfDict["_rebost"].requestInterruption()
 		selfDict["_rebost"].wait()
 		selfDict["_rebost"].quit()
 		selfDict["_rebost"].blockSignals(False)
+		selfDict["_llxup"].blockSignals(True)
 		selfDict["_llxup"].wait()
 		selfDict["_llxup"].quit()
 		selfDict["_llxup"].blockSignals(False)
@@ -299,24 +300,27 @@ class portrait(QStackedWindowItem):
 	#def _installApp
 
 	def _progressShow(self):
+		#self.updateTimer.start(5)
 		self.progress.start()
+		QApplication.processEvents()
 	#def _progressShow
 
 	def _progressHide(self):
 		self.progress.stop()
+		#self.updateTimer.stop()
 	#def _progressHide
 
 	def _stopThreads(self,ignoreProgress=False):
 		if self.appsToLoad==-1: #Init 
 			exit
 		self._rebost.blockSignals(True)
-		self._llxup.blockSignals(True)
 		self._rebost.requestInterruption()
-		self._rebost.wait()
 		self._rebost.quit()
+		self._rebost.wait()
 		self._rebost.blockSignals(False)
-		self._llxup.wait()
+		self._llxup.blockSignals(True)
 		self._llxup.quit()
+		self._llxup.wait()
 		self._llxup.blockSignals(False)
 		if ignoreProgress==False:
 			self.loadStop.emit()
@@ -324,9 +328,6 @@ class portrait(QStackedWindowItem):
 
 	def _closeEvent(self,*args):
 		self._stopThreads()
-		if self._llxup.isRunning():
-			self._llxup.quit()
-			self._llxup.wait()
 	#def _closeEvent
 
 	def keyPressEvent(self,*args):
@@ -375,9 +376,10 @@ class portrait(QStackedWindowItem):
 		self._errorView.setVisible(not(self.isConnected))
 		self.box.addWidget(self._errorView,0,1,self.box.rowCount(),self.box.columnCount())
 		self.progress=self._defProgress()
+		#self.updateTimer.timeout.connect(self.progress._doProgress)
 		self.progress.lblInfo.hide()
-		self.loadStart.connect(self._progressShow)
-		self.loadStop.connect(self._progressHide)
+		#self.loadStart.connect(self._progressShow)
+		#self.loadStop.connect(self._progressHide)
 		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		self.progress.setAttribute(Qt.WA_StyledBackground, False)
 	#def __initScreen__
@@ -464,6 +466,7 @@ class portrait(QStackedWindowItem):
 		self.refresh=True
 		self.searchBox.setText("")
 		self.loadStart.emit()
+		self._progressShow()
 		self._beginUpdate()
 		if self.certified.isChecked()==False and self.userLocked==False and self.locked==True:
 			self._rebost.setAction("unlock","")
@@ -570,6 +573,9 @@ class portrait(QStackedWindowItem):
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
 		wdg.setObjectName("wsearch")
 		self.searchBox=QLineEdit()
+		font=self.searchBox.font()
+		font.setPointSize(font.pointSize()+2)
+		self.searchBox.setFont(font)
 		self.searchBox.setObjectName("search")
 		lay=QHBoxLayout()
 		lay.setSpacing(0)
@@ -682,6 +688,7 @@ class portrait(QStackedWindowItem):
 		self.btnSettings.hide()
 		if self.init==False:
 			self.loadStart.emit()
+		self._progressShow()
 		self.stopAdding=True
 		self._homeView.hide()
 	#def _beginUpdate
@@ -699,7 +706,7 @@ class portrait(QStackedWindowItem):
 
 	def _beginLoad(self,resetScreen=True):
 		self.loadStart.emit()	
-		QApplication.processEvents()
+		self._progressShow()
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.lstCategories.setEnabled(False)
@@ -836,7 +843,7 @@ class portrait(QStackedWindowItem):
 			font.setBold(True)
 			wdg.setFont(font)
 		self.requestGetApps.emit(cat)
-		QApplication.processEvents()
+		#QApplication.processEvents()
 	#def _loadCategory
 
 	def _endLoadCategory(self,*args):
@@ -885,6 +892,7 @@ class portrait(QStackedWindowItem):
 
 	def _endLoadDetail(self,*args,**kwargs):
 		self.loadStop.emit()
+		self._progressHide()
 		self._showPane(self._detailView)
 	#def _endLoadDetail
 
@@ -940,6 +948,7 @@ class portrait(QStackedWindowItem):
 	def _loadLockedRebost(self):
 		#self.progress.start()
 		self.loadStart.emit()
+		self._progressShow()
 		self._rebost.setAction("restart")
 		self._rebost.start()
 	#def _loadLockedRebost
@@ -992,6 +1001,7 @@ class portrait(QStackedWindowItem):
 		self.parent.setWindowTitle("{}".format(APPNAME))
 		self.loading=False
 		self.loadStop.emit()
+		self._progressHide()
 	#def _return
 
 	def softresetScreen(self):
