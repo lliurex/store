@@ -167,11 +167,19 @@ class storeHelper(QThread):
 					if app.get("name") not in seen:
 						seen.append(app.get("name"))
 						apps.append(app)
-			random.shuffle(apps)
 			for suggest in suggests:
 				app=json.loads(self.rc.showApp(suggest))
 				if len(app)>0:
 					apps.insert(0,app[0])
+			if len(apps)==0:
+				for extra in extraTokens[random.randint(0,int(len(extraTokens)/2)):random.randint(int(len(extraTokens)/2)+1,len(extraTokens))]:
+					search=self.rc.searchApp(extra)
+					jsearch=json.loads(search)
+					for app in jsearch:
+						if app.get("name") not in seen:
+							seen.append(app.get("name"))
+							apps.append(app)
+			random.shuffle(apps)
 			apps=apps[0:min(limit,len(apps))]
 		self.lsgEnded.emit(apps)
 	#def _getAppSuggests
