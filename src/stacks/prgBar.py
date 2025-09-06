@@ -93,7 +93,7 @@ class QProgressImage(QWidget):
 		self.inc=inc
 
 	def start(self):
-		self.updateTimer.start(5)
+		self.updateTimer.start(1)
 	#	self.updateTimer.start()
 		self.show()
 	#def start
@@ -112,7 +112,6 @@ class QProgressImage(QWidget):
 
 	def _doProgress(self,*args):
 		self.running=True
-		print(".")
 		if self.lblInfo.text()!="":
 			if self.unlocking==False:
 				i18n=i18nUnlock
