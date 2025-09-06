@@ -87,12 +87,16 @@ class main(QWidget):
 	@staticmethod
 	def _onDestroy(*args):
 		selfDict=args[0]
+		selfDict["thParmShow"].blockSignals(True)
 		selfDict["thParmShow"].quit()
+		selfDict["thParmShow"].wait()
 	#def _onDestroy
 
-	def _return(self):
-		return
-	#def _return
+	def hide(self,*args):
+		self.oldApp={}
+		self.setVisible(False)
+		return True
+	#def hide
 
 	def _processStreams(self,args):
 		self.app={}
@@ -135,7 +139,6 @@ class main(QWidget):
 		self.thParmShow.blockSignals(True)
 		self.thParmShow.quit()
 		self.thParmShow.wait()
-		self.thParmShow.blockSignals(True)
 		pxm=""
 		self.referrerBtn=kwargs.get("btn",None)
 		if len(args)>0:
@@ -225,7 +228,7 @@ class main(QWidget):
 	def _clickedBack(self):
 		self.screenShot.clear()
 		if len(self.oldApp)>0:
-			app=self.oldApp.copy()
+			app=self.oldApp
 			self.oldApp={}
 			self.setParms(app)
 		else:
@@ -258,7 +261,7 @@ class main(QWidget):
 		self.screenShot=self._defScreenshot()
 		self.screenShot.widget.setMinimumHeight(self.lblDesc.height())
 		self.screenShot.scroll.setMinimumHeight(self.lblDesc.height())
-		self.box.addWidget(self.screenShot,1,3,3,1,Qt.AlignTop)
+		self.box.addWidget(self.screenShot,1,3,4,1,Qt.AlignTop)
 		self.lstLinks=self._defLstLinks()
 		self.lstLinks.setObjectName("lstLinks")
 		vlay.addWidget(self.lstLinks)
@@ -355,8 +358,8 @@ class main(QWidget):
 
 	def _defScreenshot(self):
 		wdg=QScreenShotContainer(direction="vertical")
+		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
 		wdg.setObjectName("screenshot")
-		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		return(wdg)
 	#def _defScreenshot
 
@@ -448,7 +451,6 @@ class main(QWidget):
 	def _defBoxBundles(self):
 		wdg=QWidget()
 		wdg.setObjectName("boxBundles")
-		wdg.setMaximumHeight(34)
 		lay=QHBoxLayout()
 		lay.setSpacing(0)
 		lay.setContentsMargins(0,0,0,0)
@@ -460,10 +462,12 @@ class main(QWidget):
 			pxmPath=os.path.join(RSRC,"application-vnd.{}.png".format(bundle))
 			pxm.load(pxmPath)
 			lbl=QLabel()
+			lbl.setObjectName("boxBundles")
 			lbl.setPixmap(pxm)
 			lbl.setToolTip(bundle.capitalize())
 			lbl.hide()
 			lay.addWidget(lbl,Qt.AlignRight)
+		wdg.setMaximumHeight(lbl.height())
 		return(wdg)
 	#def _defBundleIcons
 
