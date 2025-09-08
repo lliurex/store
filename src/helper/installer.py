@@ -19,8 +19,6 @@ class epiFile():
 			epiJson,epiContent=self._jsonForEpi(tmpDir,app,pkg,bundle)
 		except Exception as e:
 			print(e)
-		print(epiJson)
-		print(epiContent)
 		episcript=self._shForEpi(epiJson,app,pkg,bundle,postaction)
 		return(epiJson)
 	#def epiFromPkg
@@ -219,7 +217,6 @@ class epiFile():
 	
 	
 		
-print("VAMOS!!!")
 pkg=sys.argv[1]
 bundle=sys.argv[2]
 app=json.loads(sys.argv[3])
@@ -229,9 +226,7 @@ except Exception as e:
 	print(e)
 tmpDir=tempfile.TemporaryDirectory(delete=False)
 os.chmod(tmpDir.name,0o755)
-print("VOY")
 epiFile=epi.epiForPkg(tmpDir,pkg,bundle,app)
-print("EPI: {}".format(epiFile))
 cmd=["/usr/sbin/epi-gtk",epiFile]
 proc=subprocess.run(cmd)
 tmpDir.cleanup()

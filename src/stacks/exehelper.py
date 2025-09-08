@@ -53,7 +53,6 @@ class appLauncher(QThread):
 			try:
 				cmd=self.args.copy()
 				cmd.append(json.dumps(self.app))
-				print(cmd)
 				cmd.insert(0,"pkexec")
 				proc=subprocess.run(cmd,stderr=subprocess.PIPE,universal_newlines=True)
 			except Exception as e:
