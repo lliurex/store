@@ -9,24 +9,28 @@ def detailPanel():
 			}
 			QWidget#detailPanel{
 					padding:0px;
-					border:0px;
 					margin:0px;
 					color:unset;
 			}"""%(COLOR_FONT_LIGHT)
 	css=css+detail
 	frame="""QWidget#frame{
-					margin:0px;
-					padding:0px;
 					border:1px solid %s;
-				}"""%(COLOR_BORDER_DARKEST)
+					margin:0px;
+					margin-left:%spx;
+					padding:0px;
+				}"""%(COLOR_BORDER_DARKEST,int(MARGIN)*2)
 	css=css+frame
 	resources="""QWidget#resources{
 					margin-top:%spx;
-					border-right:%spx solid;
-					border-radius:1px;
-					border-right-color:%s;
-				}"""%(MARGIN,int(MARGIN)/2,COLOR_BORDER_DARK)
+				}"""%(MARGIN)
 	css=css+resources
+
+	btnBack="""#btnBack{
+						margin-right:%spx;
+						margin-bottom:0px;
+				}"""%(int(MARGIN)*0)
+	css=css+btnBack
+
 	lblIcon="""#lblIcon{
 					margin-left:%spx;
 					margin-top:0;
@@ -42,47 +46,83 @@ def detailPanel():
 					margin-top:0;
 				}"""%(int(MARGIN)*3)
 	css=css+lblSummary
-	btnInstall="""QLabel#btnInstall{
-					margin-bottom:%spx
-				}"""%(MARGIN*2)
+	btnInstall="""QPushButton#btnInstall{
+					color:%s;
+					background: qlineargradient(x1:0, y1:0, x2:0, y2:4, stop:0 %s, stop:1 %s);
+					border:1px solid %s;
+					border-radius:%spx;
+					padding-bottom:%spx;
+					padding-top:%spx;
+				}
+				"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
 	css=css+btnInstall
-	lstInfo="""#lstInfo{
+
+	boxBundles="""#boxBundles{
+					border:0px;
+					margin:0px;
+					padding:0px;
+					}"""
+	css=css+boxBundles
+
+	cmbBundles="""#cmbBundles{
 					padding:%spx;
 					color:#000000;
 					margin:1px;
 					border:1px solid;
 					border-color:%s;
-					border-radius:%spx;}
-					QComboBox#lstInfo::drop-down{ subcontrol-origin: padding;
+					border-radius:%spx;
+					}
+				QComboBox#cmbBundles::drop-down{ subcontrol-origin: padding;
 					subcontrol-position: top right;
 					border-top-right-radius: %spx; /* same radius as the QComboBox */
 					border-bottom-right-radius: %spx;
 				}
-				QComboBox#lstInfo::down-arrow {
+				QComboBox#cmbBundles {
+					background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
+				}
+				QComboBox#cmbBundles::down-arrow {
 					image: url("%s/drop-down16x16.png");
 					right:%spx;
 					border-left:1px solid %s;
 					padding:%spx;
 					margin-left:%spx;
 				}
-				QComboBox#lstInfo::down-arrow:on { /* shift the arrow when popup is open */
+				QComboBox#cmbBundles::down-arrow:on { /* shift the arrow when popup is open */
 					top: 1px;
 					right: %spx;
 				}
-				"""%(MARGIN,COLOR_BORDER,RADIUS,RADIUS,RADIUS,RSRC,int(MARGIN)*2,COLOR_BORDER,MARGIN,int(MARGIN)*2,int(MARGIN)*1.9)
-	css=css+lstInfo
+				"""%(MARGIN,COLOR_BORDER,RADIUS,RADIUS,RADIUS,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,RSRC,int(MARGIN)*2,COLOR_BORDER,MARGIN,int(MARGIN)*2,int(MARGIN)*1.9)
+	css=css+cmbBundles
 	screenshot="""#screenshot{
 					margin:0px;
 					padding:0px;
 				}"""
 	css=css+screenshot
+
 	lblTags="""#lblTags{
-					margin:0px;
-					padding:0px;
 					border:0px;
-					bottom:0px
-				}"""
+					margin-top:%spx;
+					margin-left:%spx;
+				}"""%(MARGIN,MARGIN)
+
 	css=css+lblTags
+
+	lstLinks="""#lstLinks{
+					border:0px;
+					margin-left:%spx;
+				}"""%(MARGIN)
+
+	css=css+lstLinks
+
+	lblDesc="""#lblDesc{
+					border:0px;
+					border-left:%spx solid;
+					border-radius:1px;
+					border-left-color:%s;
+				}
+				"""%(int(MARGIN)/2,COLOR_BORDER_DARK)
+	css=css+lblDesc
+
 	return(css)
 #def detailPanel
 
@@ -106,24 +146,6 @@ def tablePanel():
 				}
 				"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN*2),MARGIN,int(MARGIN)/4)
 	css=css+qflow
-	search="""#wsearch{
-					border:0px solid %s;
-					background:%s;
-					border-radius:%spx;
-				}
-				#search{
-					color:%s;
-					background:%s;
-					border:0px solid;
-					margin-left:%spx;
-				} 
-				#bsearch{
-					color:%s;
-					background:%s;
-					border:0px;
-					margin-right:%spx;
-				}"""%(COLOR_BORDER,COLOR_BACKGROUND_DARK,int(RADIUS)*3,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN)*1.5,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN))
-	css=css+search
 	flyIcon="""#flyIcon{background:transparent;}"""
 	css=css+flyIcon
 	iconUri="""#iconUri{
@@ -140,16 +162,6 @@ def tablePanel():
 				}"""%(int(MARGIN)/2,int(MARGIN)/2,int(MARGIN)/2,int(MARGIN)/2)
 	css=css+iconPrg
 
-	categoriesBar="""#categoriesBar{border:0px;
-					margin-left:%spx;
-					margin-right:%spx;
-					margin-bottom:%spx;
-				}"""%(int(MARGIN*2),MARGIN,int(MARGIN)/4)
-	css=css+categoriesBar
-
-	categoryTag="""#categoryTag{text-decoration:none;background:%s;color:%s;padding:1px;padding-bottom:3px;border-radius:10;}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT)
-	css=css+categoryTag
-
 	return(css)
 #def tablePanel
 
@@ -161,6 +173,45 @@ def portrait():
 					margin:0px;
 			}"""
 	css=css+port
+	search="""#wsearch{
+					border:0px solid %s;
+					background:%s;
+					border-radius:%spx;
+				}
+				#search{
+					color:%s;
+					background:%s;
+					border:0px solid;
+					margin-left:%spx;
+				} 
+				#bsearch{
+					color:%s;
+					background:%s;
+					border:0px;
+					margin-right:%spx;
+				}
+				#wdgsearch{
+					background:%s;
+				}"""%(COLOR_BORDER,COLOR_BACKGROUND_DARK,int(RADIUS)*3,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN)*1.5,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN),COLOR_BACKGROUND_LIGHT)
+	css=css+search
+
+	categoriesBar="""#categoriesBar{border:0px;
+					margin:0px;
+					background:%s;
+					padding-left:%spx;
+				}
+				"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN)*12)
+	css=css+categoriesBar
+
+	categoryTag="""#categoryTag{
+					background:%s;
+					color:%s;
+					padding:1px;
+					padding-bottom:3px;
+					border-radius:%spx;
+					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,RADIUS_HIGH)
+	css=css+categoryTag
+
 	error="""#errorMsg{
 			background: %s;
 			}"""%(COLOR_BACKGROUND_LIGHT)
@@ -187,7 +238,10 @@ def portrait():
 				#lstCategories::item {
 					background-color: transparent;
 					color:%s;
-				}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,RADIUS,int(MARGIN)*4,int(MARGIN)*4,MARGIN,MARGIN,int(MARGIN)*4,COLOR_FONT_LIGHT)
+				}
+				#lstCategories::item:hover {
+					background-color: %s;
+				}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,RADIUS,int(MARGIN)*4,int(MARGIN)*4,MARGIN,MARGIN,int(MARGIN)*4,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARKEST)
 	css=css+lstCategories
 	certified="""#certified{
 					color:%s;
@@ -209,13 +263,13 @@ def portrait():
 				#btnHome{
 					margin-top:%spx;
 					color:%s;
-					background:%s;
+					background: qlineargradient(x1:0, y1:0, x2:0, y2:2, stop:0 %s, stop:1 %s);
 					border-color:%s;
 					border-radius:%spx;
 					padding-bottom:%spx;
 					padding-top:%spx;
 				}
-				"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
+				"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
 	css=css+btnBar
 	upgrades="""#upgrades{
 					color:%s;
@@ -226,6 +280,16 @@ def portrait():
 					padding:%spx;
 				}"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,MARGIN)
 	css=css+upgrades
+	working="""#working{
+					color:%s;
+					font-size:20px;
+					background:%s;
+					border:0px solid;
+					border-top:0px;
+					border-color:%s;
+					border-bottom-left-radius:%spx;
+				}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS)
+	css=css+working
 	return(css)
 #def portrait
 
@@ -246,6 +310,5 @@ def prgBar():
 					font-size:24px;
 					color:%s;
 			}"""%(COLOR_FONT_LIGHT)
-	css=css+lblInfo
 	return(css)
 #def prgBar

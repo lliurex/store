@@ -25,9 +25,14 @@ class llxup(QThread):
 
 class storeHelper(QThread):
 	test=Signal("PyObject")
-	lstEnded=Signal("PyObject")
-	srcEnded=Signal("PyObject")
+	gacEnded=Signal("PyObject")
+	linEnded=Signal("PyObject")
 	lckEnded=Signal()
+	lstEnded=Signal("PyObject")
+	lsgEnded=Signal("PyObject")
+	shwEnded=Signal("PyObject")
+	srcEnded=Signal("PyObject")
+	urlEnded=Signal("PyObject")
 	rstEnded=Signal()
 	staEnded=Signal(bool,bool)
 	catEnded=Signal("PyObject")
@@ -49,16 +54,25 @@ class storeHelper(QThread):
 			self.args=args
 		else:
 			self.args=[]
+	#def setAction
 	
 	def run(self):
 		if  self.action=="test":
 			self._test()
 		elif self.action=="list":
 			self._list()
+		elif self.action=="installed":
+			self._installed()
 		elif self.action=="search":
 			self._search()
+		elif self.action=="urlSearch":
+			self._searchByUrl()
+		elif self.action=="show":
+			self._show()
 		elif self.action=="updatePkgData":
 			self._updatePkgData()
+		elif self.action=="getAppSuggests":
+			self._getAppSuggests()
 		elif self.action=="unlock":
 			self._unlock()
 		elif self.action=="lock":
@@ -69,6 +83,10 @@ class storeHelper(QThread):
 			self._getLockStatus()
 		elif self.action=="getCategories":
 			self._getFreedesktopCategories()
+		elif self.action=="getAppsPerCategory":
+			self._getAppsPerCategory()
+		elif self.action=="setAppState":
+			self._setAppState()
 	#def run
 
 	def _test(self):
@@ -84,17 +102,103 @@ class storeHelper(QThread):
 
 	def _list(self):
 		apps=[]
-		if len(self.args)==1:
-			apps.extend(json.loads(self.rc.execute('list',"({})".format(self.args[0]))))
-		elif len(self.args)==2:
-			apps.extend(json.loads(self.rc.execute('list',"{}".format(self.args[0]),self.args[1])))
+		apps=self.rc.getAppsInCategory(self.args[0])
 		self.lstEnded.emit(apps)
 	#def _list
 
+	def _installed(self):
+		apps=[]
+		apps=self.rc.getAppsInstalled()
+		self.linEnded.emit(apps)
+	#def _installed
+
+	def _getAppsPerCategory(self):
+		apps=[]
+		apps=self.rc.getAppsPerCategory()
+		self.gacEnded.emit(apps)
+	#def _getAppsPerCategory
+
 	def _search(self,*args):
-		apps=json.loads(self.rc.execute("search",self.args[0]))
+		#apps=json.loads(self.rc.execute("search",self.args[0]))
+		if self.args[0]=="":
+			apps=self.rc.getApps()
+		else:
+			apps=self.rc.searchApp(self.args[0])
 		self.srcEnded.emit(apps)
 	#def _search(self):
+
+	def _searchByUrl(self,*args):
+		#apps=json.loads(self.rc.execute("search",self.args[0]))
+		app=[]
+		if self.args[0]!="":
+			urls=self.args[0]
+			for url in urls:
+				if url!="":
+					app=self.rc.searchAppByUrl(url)
+					self.urlEnded.emit(app)
+		return()
+	#def _searchByUrl()
+
+	def _show(self,*args):
+		#apps=json.loads(self.rc.execute("search",self.args[0]))
+		app={}
+		if self.args[0]!="":
+			app=self.rc.refreshApp(self.args[0])
+		self.shwEnded.emit(app)
+	#def _show
+
+	def _getAppSuggests(self,*args):
+		apps=[]
+		if self.args[0]!="":
+			limit=10
+			if len(self.args)>1:
+				limit=self.args[1]
+			seen=[self.args[0].get("name")]
+			suggests=self.args[0].get("suggests",[])
+			keywords=self.args[0].get("keywords",[])
+			categories=self.args[0].get("categories",[])
+			extraTokens=keywords+categories
+			random.shuffle(extraTokens)
+			random.shuffle(apps)
+			if len(extraTokens)>6:
+				tokens=extraTokens[random.randint(0,int(len(extraTokens)/2)):random.randint(int(len(extraTokens)/2)+1,len(extraTokens))]
+			else:
+				tokens=extraTokens
+			for extra in tokens:
+				search=self.rc.searchApp(extra)
+				jsearch=json.loads(search)
+				for app in jsearch:
+					if app.get("name") not in seen:
+						seen.append(app.get("name"))
+						apps.append(app)
+			for suggest in suggests:
+				app=json.loads(self.rc.refreshApp(suggest))
+				if len(app)>0:
+					apps.insert(0,app[0])
+			if len(apps)==0:
+				if len(extraTokens)>6:
+					tokens=extraTokens[random.randint(0,int(len(extraTokens)/2)):random.randint(int(len(extraTokens)/2)+1,len(extraTokens))]
+				else:
+					tokens=extraTokens
+				for extra in tokens:
+					search=self.rc.searchApp(extra)
+					jsearch=json.loads(search)
+					for app in jsearch:
+						if app.get("name") not in seen:
+							seen.append(app.get("name"))
+							apps.append(app)
+			random.shuffle(apps)
+			apps=apps[0:min(limit,len(apps))]
+		self.lsgEnded.emit(apps)
+	#def _getAppSuggests
+	
+	def _setAppState(self,*args):
+		if self.args[0]!="":
+			temp=True
+			if len(self.args)>2:
+				temp=self.args[2]
+			app=self.rc.setAppState(self.args[0],self.args[1],temp)
+	#def _setAppState
 
 	def _updatePkgData(self):
 		if len(self.args)>0:
@@ -131,14 +235,15 @@ class storeHelper(QThread):
 				userLock=False
 		except:
 			userLock=True
-		lock=self.rc.getLockStatus()
+		#lock=self.rc.getLockStatus()
 		self.staEnded.emit(lock,userLock)
 	#def _getLockStatus
 
 	def _getFreedesktopCategories(self):
 		cats=[]
 		try:
-			cats=json.loads(self.rc.execute('getFreedesktopCategories'))[0]
+			#cats=json.loads(self.rc.execute('getFreedesktopCategories'))[0]
+			cats=self.rc.getFreedesktopCategories()
 		except Exception as e:
 			print("Th for categories failed: {}".format(e))
 		self.catEnded.emit(cats)
@@ -209,7 +314,7 @@ class updateAppData(QThread):
 				self._debug("Update for {}".format(app["name"]))
 				self.rc.updatePkgData(app["name"],app)
 			time.sleep(0.1)
-			self._emitDataLoaded(name)
+		#	self._emitDataLoaded(name)
 	#def run
 
 	def stop(self):
@@ -224,10 +329,10 @@ class updateAppData(QThread):
 		if self._stop==False:
 			if len(args)>0 and isinstance(args[0],str):
 				try:
-					app=json.loads(self.rc.showApp(args[0]))
+					app=json.loads(self.rc.refreshApp(args[0]))
 				except:
 					try:
-						app=json.loads(self.rc.showApp(args[0]))
+						app=json.loads(self.rc.refreshApp(args[0]))
 					except:
 						app={}
 				finally:
@@ -255,14 +360,8 @@ class getData(QThread):
 	#def setApps
 	
 	def run(self):
-		applist=[]
-		for strapp in self.apps:
-			if self._stop==True:
-				break
-			jsonapp=json.loads(strapp)
-			applist.append(jsonapp)
 		if self._stop==False:
-			self.dataLoaded.emit(applist)
+			self.dataLoaded.emit(self.apps)
 	#def run
 
 	def stop(self,st=True):
@@ -289,9 +388,10 @@ class thShowApp(QThread):
 	def run(self):
 		if len(self.app.keys())>0:
 			try:
-				app=json.loads(self.rc.showApp(self.app.get('name','')))[0]
-			except:
-				print("Error finding {}".format(self.app.get("name","")))
+				app=json.loads(self.rc.refreshApp(self.app.get('id','')))[0]
+			except Exception as e:
+				print(e)
+				print("Error finding {}".format(self.app.get("id","")))
 				app=self.app.copy()
 				app["ERR"]=True
 			finally:
