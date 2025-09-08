@@ -455,6 +455,7 @@ class main(QWidget):
 		lay.setSpacing(0)
 		lay.setContentsMargins(0,0,0,0)
 		wdg.setLayout(lay)
+		lbl=None
 		for bundle in self.rc.getSupportedFormats():
 			pxm=QtGui.QPixmap()
 			if bundle=="unknown":
@@ -467,7 +468,8 @@ class main(QWidget):
 			lbl.setToolTip(bundle.capitalize())
 			lbl.hide()
 			lay.addWidget(lbl,Qt.AlignRight)
-		wdg.setMaximumHeight(lbl.height())
+		if lbl!=None:
+			wdg.setMaximumHeight(lbl.height())
 		return(wdg)
 	#def _defBundleIcons
 
