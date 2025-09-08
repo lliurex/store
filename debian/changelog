@@ -1,3 +1,34 @@
+lliurex-store (1.4.9+12lliurex25) noble; urgency=medium
+
+  * RC1
+  * More modular code
+  * Improved thread management
+  * New home screen
+  * Look&Feel improvements
+  * Detail view:
+  *  - Add suggested apps
+  *  - Show bundle icons for app
+  *  - Changes in layout
+  *  - Add tags 
+  * Global View:
+  *  - Use of fastmode for flowtbable
+  *  - Remove listing of all applications
+  *  - Remove search functionalty
+  *  - Add full table management
+  * Home View:
+  *  - Show last blog entries
+  *  - Show appsedu new apps
+  *  - List top categories
+  * Main portrait:
+  *  - Centralize GUI actions
+  *  - Manage install/remove applications
+  *  - Restored links for categories
+  * ToDo (1.5)
+  *  - Relevant categories=categories with more installed apps
+  *  - Update appsedu data on demand
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 08 Sep 2025 12:22:41 +0200
+
 lliurex-store (1.4.9+11lliurex25) noble; urgency=medium
 
   * Noble release
