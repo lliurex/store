@@ -10,10 +10,10 @@ Homepage: https://github.com/lliurex/rebost
 Package: lliurex-store
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, 
-		rebost (>=2.6.0-14lliurex23), 
+		rebost (>=3.0), 
 		rebost-data (>=24.09.17), 
 		python3-rebost (>=2.0), 
-		python3-qtextrawidgets(>=0.6)
+		python3-qtextrawidgets (>=0.6),
 		python3-pyside2.qtgui, 
 		python3-pyside2.qtcore,
 		python3-pyside2.qtuitools
