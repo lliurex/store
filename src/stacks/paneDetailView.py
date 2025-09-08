@@ -116,7 +116,7 @@ class main(QWidget):
 				name=args.replace(".desktop","").replace(".flatpakref","")
 				name=name.split(".")[-1]
 			if len(name)>0:
-				app=self.rc.showApp(name)
+				app=self.rc.refreshApp(name)
 				if len(app)>2:
 					self.app=json.loads(app)[0]
 				else: #look for an aliases mapped from virtual app
@@ -128,7 +128,7 @@ class main(QWidget):
 						vname=jcontent.get(name,"")
 						self._debug("Find virtual pkg {0} for  {1}".format(vname,name))
 						if len(vname)>0:
-							app=self.rc.showApp(vname)
+							app=self.rc.refreshApp(vname)
 							if len(app)>2:
 								self.app=json.loads(app)[0]
 								self.app=json.loads(self.app)
@@ -493,8 +493,8 @@ class main(QWidget):
 			self.lblDesc.label.setOpenExternalLinks(True)
 			homepage="https://portal.edu.gva.es/appsedu/"
 			text="<a href='{0}'>Appsedu</a>".format(homepage)
-			self.lblHomepage.setText(text)
-			self.lblHomepage.setToolTip(homepage)
+			#self.lblHomepage.setText(text)
+			#self.lblHomepage.setToolTip(homepage)
 			if self.lblDesc.width()>self.lblTags.width():
 				self.lblTags.setMaximumWidth(self.lblDesc.width()/2)
 	#def _setUnknownAppInfo
@@ -544,6 +544,7 @@ class main(QWidget):
 		bundles=list(self.app.get('bundle',{}).keys())
 		self.cmbBundles.setEnabled(True)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
+		print(self.app)
 		if "Forbidden" in self.app.get("categories",[]):
 			forbReason=""
 			if self.app.get("summary","").endswith(")"):
@@ -553,9 +554,9 @@ class main(QWidget):
 
 			if self.app.get("ERR",False)!=False:
 				description=i18n.get("APPUNKNOWN_SAI")
-				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("APPUNKNOWN").split(".")[0],i18n.get("INFO"),homepage,description,forbReason)
+				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("APPUNKNOWN").split(".")[0],i18n.get("INFO"),i18n["APPUNKNOWN_SAI"],description,forbReason)
 			else:
-				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),homepage,description,forbReason)
+				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),i18n["APPUNKNOWN_SAI"],description,forbReason)
 			self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setText(description)
 		self._setReleasesInfo()
@@ -655,7 +656,7 @@ class main(QWidget):
 		self.app["pkgname"]="rebost"
 		self.app["description"]="{0}\n{1}".format(i18n.get("APPUNKNOWN"),i18n.get("APPUNKNOWN_SAI"))
 		self.app["bundle"]={}
-		self.lblHomepage.setVisible(False)
+		#self.lblHomepage.setVisible(False)
 		self.loaded.emit(self.app)
 	#def _onError
 

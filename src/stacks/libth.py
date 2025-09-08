@@ -143,7 +143,7 @@ class storeHelper(QThread):
 		#apps=json.loads(self.rc.execute("search",self.args[0]))
 		app={}
 		if self.args[0]!="":
-			app=self.rc.showApp(self.args[0])
+			app=self.rc.refreshApp(self.args[0])
 		self.shwEnded.emit(app)
 	#def _show
 
@@ -160,7 +160,11 @@ class storeHelper(QThread):
 			extraTokens=keywords+categories
 			random.shuffle(extraTokens)
 			random.shuffle(apps)
-			for extra in extraTokens[random.randint(0,int(len(extraTokens)/2)):random.randint(int(len(extraTokens)/2)+1,len(extraTokens))]:
+			if len(extraTokens)>6:
+				tokens=extraTokens[random.randint(0,int(len(extraTokens)/2)):random.randint(int(len(extraTokens)/2)+1,len(extraTokens))]
+			else:
+				tokens=extraTokens
+			for extra in tokens:
 				search=self.rc.searchApp(extra)
 				jsearch=json.loads(search)
 				for app in jsearch:
@@ -168,11 +172,15 @@ class storeHelper(QThread):
 						seen.append(app.get("name"))
 						apps.append(app)
 			for suggest in suggests:
-				app=json.loads(self.rc.showApp(suggest))
+				app=json.loads(self.rc.refreshApp(suggest))
 				if len(app)>0:
 					apps.insert(0,app[0])
 			if len(apps)==0:
-				for extra in extraTokens[random.randint(0,int(len(extraTokens)/2)):random.randint(int(len(extraTokens)/2)+1,len(extraTokens))]:
+				if len(extraTokens)>6:
+					tokens=extraTokens[random.randint(0,int(len(extraTokens)/2)):random.randint(int(len(extraTokens)/2)+1,len(extraTokens))]
+				else:
+					tokens=extraTokens
+				for extra in tokens:
 					search=self.rc.searchApp(extra)
 					jsearch=json.loads(search)
 					for app in jsearch:
@@ -321,10 +329,10 @@ class updateAppData(QThread):
 		if self._stop==False:
 			if len(args)>0 and isinstance(args[0],str):
 				try:
-					app=json.loads(self.rc.showApp(args[0]))
+					app=json.loads(self.rc.refreshApp(args[0]))
 				except:
 					try:
-						app=json.loads(self.rc.showApp(args[0]))
+						app=json.loads(self.rc.refreshApp(args[0]))
 					except:
 						app={}
 				finally:
@@ -380,8 +388,9 @@ class thShowApp(QThread):
 	def run(self):
 		if len(self.app.keys())>0:
 			try:
-				app=json.loads(self.rc.showApp(self.app.get('id','')))[0]
-			except:
+				app=json.loads(self.rc.refreshApp(self.app.get('id','')))[0]
+			except Exception as e:
+				print(e)
 				print("Error finding {}".format(self.app.get("id","")))
 				app=self.app.copy()
 				app["ERR"]=True
