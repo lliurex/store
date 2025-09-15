@@ -14,7 +14,7 @@ gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
 i18n={"INSTALL":_("Install"),
-	"OPEN":_("Z·Install"),
+	"INSTALL":_("Install"),
 	"REMOVE":_("Remove"),
 	"UNAUTHORIZED":_("Blocked"),
 	"UNAVAILABLE":_("Unavailable"),
@@ -153,7 +153,7 @@ class QPushButtonRebostApp(QPushButton):
 		btn.setText(i18n.get("INSTALL"))
 		btn.setObjectName("btnInstall")
 		btn.clicked.connect(self._emitInstall)
-		btn.setVisible(False)
+		btn.hide()
 		return(btn)
 	#def _defBtnInstall
 
@@ -175,9 +175,9 @@ class QPushButtonRebostApp(QPushButton):
 					self.btn.setText(i18n.get("REMOVE"))
 					self.instBundle=bundle
 					break
-		if "Forbidden" in self.app.get("categories",[]):
+		if "FORBIDDEN" in self.app.get("categories",[]):
 			self.btn.setText(i18n.get("UNAUTHORIZED"))
-		elif "eduapp" in self.app.get("bundle",[]) and len(self.app.get("bundle",[]))==1:
+		elif len(self.app.get("bundle",[]))==0:
 			self.btn.setText(i18n.get("UNAVAILABLE"))
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper().replace("L*","L·"),self.app.get('summary','').strip().replace("l*","·"))
 		self.label.setText(text)
@@ -241,11 +241,9 @@ class QPushButtonRebostApp(QPushButton):
 				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
 				self.setToolTip(text)
 		if self._compactMode==False:
-			if "Forbidden" in self.app.get("categories",[]) and self.btn.text()!=i18n["UNAUTHORIZED"]:
+			if self.app.get("forbidden",False)==True:
 				self.btn.setText(i18n["UNAUTHORIZED"])
-			elif "bundle" not in self.app.keys():
-				self.btn.setText(i18n["UNAVAILABLE"])
-			elif len(self.app["bundle"])==0 and self.btn.text()!=i18n["UNAVAILABLE"]:
+			elif len(self.app.get("bundle",{}))==0:
 				self.btn.setText(i18n["UNAVAILABLE"])
 			else:
 				if self.btn.text()!=i18n["INSTALL"]:
@@ -255,12 +253,12 @@ class QPushButtonRebostApp(QPushButton):
 				zmd=bundles.get("unknown","")
 				if len(status)>0:
 					if zmd!="" and len(bundles)==2: #2->pkg that belongs to a zmd
-						self.btn.setText(i18n["OPEN"])
+						self.btn.setText(i18n["INSTALL"])
 					else:
 						for bundle,appstatus in status.items():
 							if int(appstatus)==0:# and zmdInstalled!="0":
 								if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
-									self.btn.setText(i18n["OPEN"])
+									self.btn.setText(i18n["INSTALL"])
 								elif self.btn.text()!=i18n["REMOVE"]:
 									self.btn.setText(i18n["REMOVE"])
 									self.instBundle=bundle
@@ -268,7 +266,7 @@ class QPushButtonRebostApp(QPushButton):
 				elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
 						self.btn.setVisible(True)
 						self.btn.setEnabled(True)
-						self.btn.setText(i18n["OPEN"])
+						self.btn.setText(i18n["INSTALL"])
 						self.instBundle="unknown"
 		if int(self.app.get("state","0"))>=7:
 			self.btn.setCursor(QCursor(Qt.WaitCursor))
@@ -308,7 +306,7 @@ class QPushButtonRebostApp(QPushButton):
 		elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
 			stats["installed"]=True
 		
-		if "Forbidden" in app.get("categories",[]):
+		if app.get("forbidden",False)==True:
 			stats["forbidden"]=True
 		#if app["name"]==app["pkgname"] and "zomando" in app.get("status",{}):
 		#	if len(app.get("status",{}))==1:
