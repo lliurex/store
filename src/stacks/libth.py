@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import os
 from PySide6.QtCore import Signal,QThread
 import json,time,subprocess,random
 try:
@@ -34,7 +35,8 @@ class storeHelper(QThread):
 	srcEnded=Signal("PyObject")
 	urlEnded=Signal("PyObject")
 	rstEnded=Signal()
-	staEnded=Signal(bool,bool)
+	staEnded=Signal(bool)
+	cnfEnded=Signal("PyObject")
 	catEnded=Signal("PyObject")
 
 	def __init__(self,*args,**kwargs):
@@ -79,8 +81,8 @@ class storeHelper(QThread):
 			self._lock()
 		elif self.action=="restart":
 			self._restart()
-		elif self.action=="status":
-			self._getLockStatus()
+		elif self.action=="config":
+			self._getConfig()
 		elif self.action=="getCategories":
 			self._getFreedesktopCategories()
 		elif self.action=="getAppsPerCategory":
@@ -171,10 +173,6 @@ class storeHelper(QThread):
 					if app.get("name") not in seen:
 						seen.append(app.get("name"))
 						apps.append(app)
-			for suggest in suggests:
-				app=json.loads(self.rc.refreshApp(suggest))
-				if len(app)>0:
-					apps.insert(0,app[0])
 			if len(apps)==0:
 				if len(extraTokens)>6:
 					tokens=extraTokens[random.randint(0,int(len(extraTokens)/2)):random.randint(int(len(extraTokens)/2)+1,len(extraTokens))]
@@ -188,6 +186,10 @@ class storeHelper(QThread):
 							seen.append(app.get("name"))
 							apps.append(app)
 			random.shuffle(apps)
+			for suggest in suggests:
+				app=json.loads(self.rc.showApp(suggest))
+				if len(app)>0:
+					apps.insert(0,app[0])
 			apps=apps[0:min(limit,len(apps))]
 		self.lsgEnded.emit(apps)
 	#def _getAppSuggests
@@ -206,38 +208,25 @@ class storeHelper(QThread):
 	#def _updatePkgData
 
 	def _lock(self):
-		apps=[]
-		cmd=subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py","lock"])
-		if cmd.returncode==0:
-			self.rc.update(True)
+		config=self.rc.toggleLock()
 		self.lckEnded.emit()
 	#def _lock
 
 	def _unlock(self):
 		apps=[]
-		cmd=subprocess.run(["pkexec","/usr/share/rebost/helper/unlock-rebost.py"])
-		if cmd.returncode==0:
-			self.rc.update(True)
-		self.lckEnded.emit()
+		self._lock()
 	#def _unlock
 
 	def _restart(self):
-		self.rc.update(True)
+		print("YEPAH")
+		self.rc.restart()
 		self.rstEnded.emit()
-	#def _unlock
+	#def _restart
 
-	def _getLockStatus(self):
-		lock=True
-		userLock=True
-		try:
-			cmd=subprocess.run(["pkexec","/usr/share/rebost/helper/test-rebost.py"])
-			if cmd.returncode==0:
-				userLock=False
-		except:
-			userLock=True
-		#lock=self.rc.getLockStatus()
-		self.staEnded.emit(lock,userLock)
-	#def _getLockStatus
+	def _getConfig(self):
+		config=self.rc.getConfig()
+		self.cnfEnded.emit(config)
+	#def _getConfig
 
 	def _getFreedesktopCategories(self):
 		cats=[]
