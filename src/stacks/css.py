@@ -54,6 +54,11 @@ def detailPanel():
 					padding-bottom:%spx;
 					padding-top:%spx;
 				}
+				QPushButton#btnInstall:pressed{
+					border:0px solid;
+					background:black;
+				}
+
 				"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
 	css=css+btnInstall
 
