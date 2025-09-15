@@ -381,10 +381,8 @@ class QPushButtonRebostApp(QPushButton):
 				color: rgb(%s);
 				color: unset;
 				background:hsl(%s);
-				background: #EEEEEE; 
 				border:1px solid;
 				border-color: hsl(%s); 
-				border-color: #EEEEEE; 
 				border-radius:5px;
 				padding:3px;
 				padding-left:12px;
@@ -392,7 +390,11 @@ class QPushButtonRebostApp(QPushButton):
 				margin:12px;
 				background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
 			}
-			"""%(COLOR_BORDER_DARK,COLOR_BACKGROUND_LIGHT,style["frgColor"],style["bkgColor"],style["frgColor"],style["bkgBtnColor"],style["brdBtnColor"],COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST))
+			QPushButton#btnInstall:pressed
+			{
+				border:2px inset %s;
+			}
+			"""%(COLOR_BORDER_DARK,COLOR_BACKGROUND_LIGHT,style["frgColor"],style["bkgColor"],style["frgColor"],style["bkgBtnColor"],style["brdBtnColor"],COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK))
 		if (style.get("forbidden",False)==True) or (self.btn.text()==i18n.get("UNAVAILABLE","")) or self.btn.cursor()==Qt.WaitCursor:
 			if self.btn.text()!=i18n.get("UNAVAILABLE",""):
 				self.iconUri.setEnabled(False)

@@ -28,7 +28,12 @@ def detailPanel():
 	btnBack="""#btnBack{
 						margin-right:%spx;
 						margin-bottom:0px;
-				}"""%(int(MARGIN)*0)
+				}
+				QPushButton#btnBack:pressed
+				{
+					border:2px inset %s;
+				}
+				"""%(int(MARGIN)*0,COLOR_BACKGROUND_DARK)
 	css=css+btnBack
 
 	lblIcon="""#lblIcon{
@@ -54,12 +59,12 @@ def detailPanel():
 					padding-bottom:%spx;
 					padding-top:%spx;
 				}
-				QPushButton#btnInstall:pressed{
-					border:0px solid;
-					background:black;
+				QPushButton#btnInstall:pressed
+				{
+					border:2px inset %s;
 				}
 
-				"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
+				"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2,COLOR_BACKGROUND_DARK)
 	css=css+btnInstall
 
 	boxBundles="""#boxBundles{
@@ -274,7 +279,11 @@ def portrait():
 					padding-bottom:%spx;
 					padding-top:%spx;
 				}
-				"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
+				QPushButton#btnHome:pressed
+				{
+					border:2px inset %s;
+				}
+				"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2,COLOR_BACKGROUND_DARK)
 	css=css+btnBar
 	upgrades="""#upgrades{
 					color:%s;
