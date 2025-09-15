@@ -1,13 +1,11 @@
 #!/usr/bin/python3
 import sys,time,signal,time
 from functools import partial
-import os
+import os,grp
 import subprocess
 import json
 import dbus
-import dbus.service
 import dbus.mainloop.glib
-import random
 from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
 							QCheckBox,QListWidgetItem,QSizePolicy
 from PySide6 import QtGui
@@ -136,7 +134,9 @@ class portrait(QStackedWindowItem):
 		self.appsSeen=[]
 		self.appsRaw=[]
 		self.locked=True
-		self.userLocked=True
+		self._rebost.setAction("config")
+		self._rebost.start()
+		self._rebost.wait()
 		self.stopAdding=False
 		self.filters={"installed":False}
 		self.loading=False
@@ -153,9 +153,10 @@ class portrait(QStackedWindowItem):
 		self._rebost.lstEnded.connect(self._endLoadCategory)
 		self._rebost.linEnded.connect(self._endLoadInstalled)
 		self._rebost.srcEnded.connect(self._endSearchApps)
-		self._rebost.lckEnded.connect(self._endLock)
+		#self._rebost.lckEnded.connect(self._endLock)
 		self._rebost.rstEnded.connect(self._endRestart)
-		self._rebost.staEnded.connect(self._endGetLockStatus)
+		#self._rebost.staEnded.connect(self._endGetLockStatus)
+		self._rebost.cnfEnded.connect(self._endGetLockStatus)
 		self._rebost.catEnded.connect(self._populateCategories)
 		self._rebost.shwEnded.connect(self._loadFromArgs)
 	#def _initThreads(self):
@@ -193,28 +194,36 @@ class portrait(QStackedWindowItem):
 		return(state)
 	#def _chkNetwork
 
+	def _chkUserGroup(self):
+		grpData=grp.getgrnam("sudo")
+		if grpData.gr_gid not in os.getgroups():
+			self.locked=True
+	#def _chkUserGroup(self):
+
 	def _endGetLockStatus(self,*args):
 		self.certified.blockSignals(True)
-		self.locked=args[0]
-		self.userLocked=args[1]
-		if self.userLocked==False and self.locked==False:
-			self.certified.setChecked(False)
+		jconfig=args[0]
+		self.locked=jconfig.get("onlyVerified",False)
+		if not isinstance(self.locked,bool):
+			if int(self.locked)==0:
+				self.locked=False
+			else:
+				self.locked=True
+		if self.locked==False: #conf is unlocked, check groups 
+			self._chkUserGroup()
+			self.certified.setChkVisible(not(self.locked))
+			if self.locked==True:
+				self._unlockRebost()
+		self.certified.setChecked(self.locked)
 		self.certified.blockSignals(False)
-		self._debug("<-------- Rebost status acquired")
-		time.sleep(0.1)
-		self._rebost.setAction("getCategories")
-		self._rebost.start()
-		#QApplication.processEvents()
-		self._rebost.wait()
-		if self.locked==False and self.userLocked==True:
-			self._loadLockedRebost()
-		else:
-			self._getApps()
-			self._endUpdate()
+		self._debug("<-------- Rebost status acquired (lock {})".format(self.locked))
+		self._getApps()
+		self._endUpdate()
 	#def _endGetLockStatus
 
 	def _endLock(self,*args):
-		self._endRestart()
+		pass
+		#self._endRestart()
 	#def _endLock
 
 	def _endRestart(self,*args):
@@ -274,6 +283,8 @@ class portrait(QStackedWindowItem):
 			idx=list(priority.keys())
 			idx.sort()
 			bundle=priority[idx[0]].split(" ")[0]
+		if bundle=="zomando":
+			bundle="unknown"
 		pkg=app.get('bundle',{}).get(bundle,'')
 		try:
 			if pkg!="":
@@ -461,21 +472,15 @@ class portrait(QStackedWindowItem):
 	#def _defBanner
 
 	def _unlockRebost(self,*args):
-		self._stopThreads()
-		self.stopAdding=True
-		self.refresh=True
-		self.searchBox.setText("")
+		self.resetScreen()
 		self.loadStart.emit()
-		self._progressShow()
-		self._beginUpdate()
-		if self.certified.isChecked()==False and self.userLocked==False and self.locked==True:
-			self._rebost.setAction("unlock","")
-		elif self.locked==False:
-			self._rebost.setAction("lock","")
+		self._rebost.setAction("lock")
 		if self._rebost.isRunning():
 			self._rebost.requestInterruption()
 			self._rebost.wait()
 		self._rebost.start()
+		self._rebost.wait()
+		#self.updateScreen()
 	#def _unlockRebost
 
 	def _defAppseduChk(self):
@@ -487,10 +492,10 @@ class portrait(QStackedWindowItem):
 		chk.setObjectName("certifiedChk")
 		wdg.setChecked=chk.setChecked
 		wdg.isChecked=chk.isChecked
+		wdg.setChkVisible=chk.setVisible
 		wdg.blockSignals=chk.blockSignals
-		if self.userLocked==True:
+		if self.locked==True:
 			chk.setChecked(True)
-			chk.setEnabled(True)
 		chk.stateChanged.connect(self._unlockRebost)
 		wdg.setObjectName("certified")
 		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","appsedu128x64.png")
@@ -1019,6 +1024,9 @@ class portrait(QStackedWindowItem):
 	#def resetScreen
 
 	def updateScreen(self,addEnable=None):
+		self._rebost.setAction("config")
+		self._rebost.start()
+		self._rebost.wait()
 		isConnected=self._chkNetwork()
 		if isConnected==False:
 			self._endUpdate()
