@@ -841,12 +841,13 @@ class portrait(QStackedWindowItem):
 			self.barCategories.populateCategories(self.categoriesTree[cat],cat)
 		elif cat!="":
 			wdg=self.barCategories.currentItem()
-			font=wdg.font()
-			font.setBold(False)
-			for idx in range(0,self.barCategories.count()):
-				self.barCategories.itemAt(idx).widget().setFont(font)
-			font.setBold(True)
-			wdg.setFont(font)
+			if wdg!=None:
+				font=wdg.font()
+				font.setBold(False)
+				for idx in range(0,self.barCategories.count()):
+					self.barCategories.itemAt(idx).widget().setFont(font)
+				font.setBold(True)
+				wdg.setFont(font)
 		self.requestGetApps.emit(cat)
 		#QApplication.processEvents()
 	#def _loadCategory
