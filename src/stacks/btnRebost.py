@@ -34,6 +34,7 @@ class QPushButtonRebostApp(QPushButton):
 		else:
 			self.app=strapp
 		self._wAttributes()
+		self.setStyleSheet(css.btnRebost())
 		self._initRegisters()
 		self.appIconSize=kwargs.get("iconSize",ICON_SIZE/2)
 		self.btn=self._defBtnInstall()
@@ -123,7 +124,7 @@ class QPushButtonRebostApp(QPushButton):
 		if args[0]==True:
 			self._showBtn=False
 			self._compactMode=True
-			self.setFixedSize(QSize(ICON_SIZE*1.4,ICON_SIZE*1.2))
+			self.setFixedSize(QSize(ICON_SIZE*1.6,ICON_SIZE*1.2))
 			self.appIconSize=(ICON_SIZE*0.4)
 	#def setCompactMode
 
@@ -175,10 +176,14 @@ class QPushButtonRebostApp(QPushButton):
 					self.btn.setText(i18n.get("REMOVE"))
 					self.instBundle=bundle
 					break
-		if "FORBIDDEN" in self.app.get("categories",[]):
+		if self.app.get("forbidden",False)==True:
 			self.btn.setText(i18n.get("UNAUTHORIZED"))
+			self.btn.blockSignals(True)
+			#self.btn.setStyleSheet("""color:#AAAAAA""")
 		elif len(self.app.get("bundle",[]))==0:
 			self.btn.setText(i18n.get("UNAVAILABLE"))
+			self.btn.blockSignals(True)
+			#self.btn.setStyleSheet("""color:#AAAAAA""")
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper().replace("L*","L·"),self.app.get('summary','').strip().replace("l*","·"))
 		self.label.setText(text)
 		if len(text)>0:
@@ -193,8 +198,6 @@ class QPushButtonRebostApp(QPushButton):
 
 	def eventFilter(self,*args):
 		ev=args[1]
-		#if isinstance(ev,QMouseEvent):
-		#	self.activate()
 		if isinstance(ev,QEvent):
 			if ev.type()==QEvent.Type.Paint:
 				#if self.init==False:
@@ -217,6 +220,38 @@ class QPushButtonRebostApp(QPushButton):
 		return(False)
 	#def eventFilter
 
+	def _setActionForButton(self):
+		if self.app.get("forbidden",False)==True:
+			self.btn.setText(i18n["UNAUTHORIZED"])
+		elif len(self.app.get("bundle",{}))==0:
+			self.btn.setText(i18n["UNAVAILABLE"])
+		else: #app seems authorized and available
+			bundles=self.app["bundle"]
+			status=self.app["status"]
+			zmd=bundles.get("unknown","")
+			if self.app["id"]==zmd:
+				self.btn.setText(i18n["INSTALL"])
+				self.iconUri.setEnabled(True)
+				self.btn.setEnabled(True)
+			elif len(status)>0:
+				sw=False
+				for bundle,appstatus in status.items():
+					if int(appstatus)==0:
+						self.btn.setText(i18n["REMOVE"])
+						self.instBundle=bundle
+						break
+				if sw==False:
+					self.btn.setText(i18n["INSTALL"])
+					self.iconUri.setEnabled(True)
+					self.btn.setEnabled(True)
+			elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
+				self.btn.setVisible(True)
+				self.btn.setEnabled(True)
+				self.btn.setText(i18n["INSTALL"])
+				self.iconUri.setEnabled(True)
+				self.instBundle="unknown"
+	#def _setActionForButton
+
 	def updateScreen(self):
 		if hasattr(self,"app")==False:
 			return
@@ -229,7 +264,8 @@ class QPushButtonRebostApp(QPushButton):
 			elif self._compactMode==False:
 				text="<p>{0}</p>".format(self.app.get('name','').strip()).upper()
 			else:
-				text="<p>{0}</p>".format(self.app.get('name','').strip()).capitalize()
+				text="<p>{0}</p>".format(self.app.get('name','').strip().capitalize())
+				self.iconUri.setEnabled(True)
 		else:
 			text="<p>{0}</p>".format(self.app.get('summary','').strip())
 			_showBtn=False
@@ -241,33 +277,7 @@ class QPushButtonRebostApp(QPushButton):
 				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
 				self.setToolTip(text)
 		if self._compactMode==False:
-			if self.app.get("forbidden",False)==True:
-				self.btn.setText(i18n["UNAUTHORIZED"])
-			elif len(self.app.get("bundle",{}))==0:
-				self.btn.setText(i18n["UNAVAILABLE"])
-			else:
-				if self.btn.text()!=i18n["INSTALL"]:
-					self.btn.setText(i18n["INSTALL"])
-				bundles=self.app["bundle"]
-				status=self.app["status"]
-				zmd=bundles.get("unknown","")
-				if len(status)>0:
-					if zmd!="" and len(bundles)==2: #2->pkg that belongs to a zmd
-						self.btn.setText(i18n["INSTALL"])
-					else:
-						for bundle,appstatus in status.items():
-							if int(appstatus)==0:# and zmdInstalled!="0":
-								if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
-									self.btn.setText(i18n["INSTALL"])
-								elif self.btn.text()!=i18n["REMOVE"]:
-									self.btn.setText(i18n["REMOVE"])
-									self.instBundle=bundle
-								break
-				elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
-						self.btn.setVisible(True)
-						self.btn.setEnabled(True)
-						self.btn.setText(i18n["INSTALL"])
-						self.instBundle="unknown"
+			self._setActionForButton()
 		if int(self.app.get("state","0"))>=7:
 			self.btn.setCursor(QCursor(Qt.WaitCursor))
 			self.btn.setEnabled(False)
@@ -294,112 +304,16 @@ class QPushButtonRebostApp(QPushButton):
 		self.iconUri.loadImg(self.app)
 	#def loadImg
 
-	def _getStats(self,app):
-		stats={}
-		bundles=self.app.get("bundle",{})
-		status=self.app.get("status",{})
-		zmd=bundles.get("unknown","")
-		if len(status)>0:
-			for bundle,appstatus in status.items():
-				if int(appstatus)==0:# and zmdInstalled!="0":
-					stats["installed"]=True
-		elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
-			stats["installed"]=True
-		
-		if app.get("forbidden",False)==True:
-			stats["forbidden"]=True
-		#if app["name"]==app["pkgname"] and "zomando" in app.get("status",{}):
-		#	if len(app.get("status",{}))==1:
-		#		stats["installed"]=False
-		return(stats)
-	#def _getStats
-
-	def _getStyle(self,app):
-		stats=self._getStats(app)
-		style={"bkgColor":"",
-			"brdColor":"",
-			"frgColor":""}
-		lightnessMod=1
-		bkgcolor=QColor(QPalette().color(QPalette.Active,QPalette.Base))
-		if hasattr(QPalette,"Accent"):
-			bkgAlternateColor=QColor(QPalette().color(QPalette.Active,QPalette.Accent))
-		else:
-			bkgAlternateColor=QColor(QPalette().color(QPalette.Active,QPalette.Highlight))
-		fcolor=QColor(QPalette().color(QPalette.Active,QPalette.Text))
-		if (stats.get("forbidden",False)==True) or (self.btn.text()==i18n.get("UNAVAILABLE","")):
-			bkgcolor=QColor(QPalette().color(QPalette.Disabled,QPalette.Mid))
-			fcolor=QColor(QPalette().color(QPalette.Disabled,QPalette.BrightText))
-		elif stats.get("installed",False)==True:
-			bkgcolor=bkgAlternateColor
-		elif stats.get("zomando",False)==True:
-			bkgcolor=bkgAlternateColor
-			lightnessMod=50
-		bkgcolorHls=bkgcolor.toHsl()
-		bkglightness=bkgcolorHls.lightness()*(1+lightnessMod/100)
-		if 255<bkglightness:
-			bkglightness=bkgcolorHls.lightness()/lightnessMod
-		style["bkgColor"]="{0},{1},{2}".format(bkgcolorHls.hue(),
-												bkgcolorHls.saturation(),
-												bkglightness)
-		style["bkgBtnColor"]="{0},{1},{2}".format(bkgcolorHls.hue(),
-												bkgcolorHls.saturation(),
-												bkglightness-10)
-		style["brdBtnColor"]="{0},{1},{2}".format(bkgcolorHls.hue(),
-												bkgcolorHls.saturation(),
-												bkglightness-5)
-		style["brdColor"]="{0},{1},{2}".format(bkgcolor.hue(),
-												bkgcolor.saturation(),
-												bkgcolor.lightness()/2)
-		style["frgColor"]="{0},{1},{2}".format(fcolor.red(),
-												fcolor.green(),
-												fcolor.blue())
-		style.update(stats)
-		return(style)
-	#def _getStyle
-
 	def _applyDecoration(self,app={},forbidden=False,installed=False):
 		if app=={}:
 			app=self.app
-		style=self._getStyle(app)
-		brdWidth=6
-		if LAYOUT=="appsedu":
-			brdWidth=1
-			focusedBrdWidth=2
-		self.setStyleSheet("""#rebostapp {
-				border-color: silver;
-				border-style: solid; 
-				border-width: 1px; 
-				border-radius: 5px;
-				background: qradialgradient(cx:0.5, cy:1,radius:0.7,fx:0.5,fy:0.9,stop:0 %s, stop:1 %s);
-			}
-			QLabel{
-				color: rgb(%s);
-				color: unset;
-				/*background:hsl(%s);*/
-			}
-			#btnInstall{
-				color: rgb(%s);
-				color: unset;
-				background:hsl(%s);
-				border:1px solid;
-				border-color: hsl(%s); 
-				border-radius:5px;
-				padding:3px;
-				padding-left:12px;
-				padding-right:12px;
-				margin:12px;
-				background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
-			}
-			QPushButton#btnInstall:pressed
-			{
-				border:2px inset %s;
-			}
-			"""%(COLOR_BORDER_DARK,COLOR_BACKGROUND_LIGHT,style["frgColor"],style["bkgColor"],style["frgColor"],style["bkgBtnColor"],style["brdBtnColor"],COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK))
-		if (style.get("forbidden",False)==True) or (self.btn.text()==i18n.get("UNAVAILABLE","")) or self.btn.cursor()==Qt.WaitCursor:
-			if self.btn.text()!=i18n.get("UNAVAILABLE",""):
+		if (self.app.get("forbidden",False)==True) or len(self.app.get("bundle",[]))==0:
+			if len(self.app.get("bundle",[]))==0 and self._showBtn==True:
 				self.iconUri.setEnabled(False)
+			else:
+				self.iconUri.setEnabled(True)
 			self.btn.blockSignals(True)
-			self.btn.setStyleSheet("""color:#AAAAAA""")
+			self.btn.setEnabled(False)
 		else:
 			self.btn.setEnabled(True)
 	#def _applyDecoration

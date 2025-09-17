@@ -2,6 +2,45 @@
 import os
 from constants import *
 
+def btnRebost():
+	css=""
+	rebostapp="""#rebostapp {
+				border-color: silver;
+				border-style: solid; 
+				border-width: 1px; 
+				border-radius: 5px;
+				background: qradialgradient(cx:0.5, cy:1,radius:0.7,fx:0.5,fy:0.9,stop:0 %s, stop:1 %s);
+			}
+			"""%(COLOR_BORDER_DARK,COLOR_BACKGROUND_LIGHT)
+	css=css+rebostapp
+	rebostlbl="""QLabel{
+				color: rgb(%s);
+				color: unset;
+			}"""%(COLOR_FONT_LIGHT)
+	css=css+rebostlbl
+	btnInstall="""#btnInstall{
+				color: unset;
+				border:1px solid;
+				border-color: %s; 
+				border-radius:5px;
+				padding:3px;
+				padding-left:12px;
+				padding-right:12px;
+				margin:12px;
+				background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
+			}
+			#btnInstall:pressed
+			{
+				border:2px inset %s;
+			}
+			#btnInstall:disabled
+			{
+				color:%s
+			}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK,COLOR_BORDER)
+	css=css+btnInstall
+	return(css)
+#def btnRebost
+
 def detailPanel():
 	css=""
 	detail="""QWidget{
