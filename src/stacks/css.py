@@ -14,14 +14,12 @@ def btnRebost():
 			"""%(COLOR_BORDER_DARK,COLOR_BACKGROUND_LIGHT)
 	css=css+rebostapp
 	rebostlbl="""QLabel{
-				color: rgb(%s);
 				color: unset;
-			}"""%(COLOR_FONT_LIGHT)
+			}"""
 	css=css+rebostlbl
 	btnInstall="""#btnInstall{
 				color: unset;
-				border:1px solid;
-				border-color: %s; 
+				border:1px solid %s; 
 				border-radius:5px;
 				padding:3px;
 				padding-left:12px;
@@ -31,12 +29,12 @@ def btnRebost():
 			}
 			#btnInstall:pressed
 			{
-				border:2px inset %s;
+				border:3px solid %s;
 			}
 			#btnInstall:disabled
 			{
 				color:%s
-			}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK,COLOR_BORDER)
+			}"""%(COLOR_BORDER_DARKEST,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER_DARK,COLOR_BORDER)
 	css=css+btnInstall
 	return(css)
 #def btnRebost
