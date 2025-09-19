@@ -137,7 +137,8 @@ class storeHelper(QThread):
 			for url in urls:
 				if url!="":
 					app=self.rc.searchAppByUrl(url)
-					self.urlEnded.emit(app)
+					if len(app)>0:
+						self.urlEnded.emit(app)
 		return()
 	#def _searchByUrl()
 
