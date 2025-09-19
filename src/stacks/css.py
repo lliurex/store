@@ -324,12 +324,12 @@ def portrait():
 	css=css+btnBar
 	upgrades="""#upgrades{
 					color:%s;
-					background:%s;
 					border:1px;
 					border-color:%s;
 					border-radius:%spx;
 					padding:%spx;
-				}"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,MARGIN)
+					background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
+				}"""%(COLOR_BACKGROUND_DARK,COLOR_BORDER,RADIUS,MARGIN,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST)
 	css=css+upgrades
 	working="""#working{
 					color:%s;
