@@ -164,9 +164,12 @@ class main(QWidget):
 		for btn in self.appsEdu.children():
 			if not isinstance(btn,QPushButtonRebostApp):
 				continue
-			if isinstance(app,list) and len(app)>0 and btn.app.get("summary","")=="":
+			if len(btn.app.get("name",""))>0:
+				continue
+
+			if isinstance(app,list) and len(app)>0:
 				btn.setApp(app[0])
-				#btn._applyDecoration()
+				btn._applyDecoration()
 				btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 				btn.install.connect(self._emitInstallApp)
 				btn.clicked.connect(self._loadApp)
