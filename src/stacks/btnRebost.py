@@ -222,6 +222,7 @@ class QPushButtonRebostApp(QPushButton):
 	#def eventFilter
 
 	def _setActionForButton(self):
+		self.btn.setText(i18n["INSTALL"])
 		if self.app.get("forbidden",False)==True:
 			self.btn.setText(i18n["UNAUTHORIZED"])
 		elif len(self.app.get("bundle",{}))==0:
