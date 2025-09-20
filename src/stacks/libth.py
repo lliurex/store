@@ -219,7 +219,6 @@ class storeHelper(QThread):
 	#def _unlock
 
 	def _restart(self):
-		print("YEPAH")
 		self.rc.restart()
 		self.rstEnded.emit()
 	#def _restart
