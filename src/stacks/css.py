@@ -328,8 +328,13 @@ def portrait():
 					border-color:%s;
 					border-radius:%spx;
 					padding:%spx;
+					margin-bottom:%spx;
 					background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
-				}"""%(COLOR_BACKGROUND_DARK,COLOR_BORDER,RADIUS,MARGIN,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST)
+				}
+				#upgrades:pressed{
+					border:2px inset %s;
+				}
+				"""%(COLOR_BACKGROUND_DARK,COLOR_BORDER,RADIUS,MARGIN,int(MARGIN),COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK)
 	css=css+upgrades
 	working="""#working{
 					color:%s;
