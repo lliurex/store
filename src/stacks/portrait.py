@@ -92,15 +92,14 @@ class portrait(QStackedWindowItem):
 		self.runapp.runEnded.connect(self._endRunApp)
 		self.zmd=exehelper.zmdLauncher()
 		self.zmd.zmdEnded.connect(self._endRunApp)
-		self._initRegisters()
 		self._initThreads()
+		self._initRegisters()
 		self._initGUI()
 		#DBUS loop
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 		#DBUS connections
 		bus=dbus.SessionBus()
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
-		self._getUpgradables()
 	#	objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 	#	(self.locked,self.userLocked)=self._rebost.isLocked()
 	#def __init__
@@ -408,6 +407,7 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		vbox.addWidget(self.lstCategories,Qt.AlignTop|Qt.AlignCenter)
 		self.lstCategories.setMinimumHeight(int(ICON_SIZE/3))
+		self.lstCategories.setMaximumWidth(wdg.sizeHint().width()-int(MARGIN)*5)
 		self.lstCategories.currentItemChanged.connect(self._decoreLstCategories)
 		self.lstCategories.itemActivated.connect(self._loadCategory)
 		self.lstCategories.itemClicked.connect(self._loadCategory)
@@ -532,6 +532,8 @@ class portrait(QStackedWindowItem):
 
 	def _defInfo(self):
 		wdg=QPushButton(i18n.get("UPGRADES"))
+		icn=QtGui.QIcon.fromTheme("lliurex-up")
+		wdg.setIcon(icn)
 		wdg.setObjectName("upgrades")
 		wdg.clicked.connect(self._launchLlxUp)
 		wdg.hide()
@@ -685,6 +687,7 @@ class portrait(QStackedWindowItem):
 	def _getUpgradables(self):
 		self._debug("Get available upgrades")
 		self._llxup.start()
+		self._llxup.wait()
 	#def _getUpgradables
 
 	def _beginUpdate(self):
@@ -1025,6 +1028,7 @@ class portrait(QStackedWindowItem):
 	#def resetScreen
 
 	def updateScreen(self,addEnable=None):
+		self._getUpgradables()
 		self._rebost.setAction("config")
 		self._rebost.start()
 		self._rebost.wait()
