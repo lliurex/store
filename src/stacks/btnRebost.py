@@ -125,8 +125,8 @@ class QPushButtonRebostApp(QPushButton):
 		if args[0]==True:
 			self._showBtn=False
 			self._compactMode=True
-			self.setMinimumSize(QSize(ICON_SIZE*1.5,ICON_SIZE*1.3))
-			self.appIconSize=(ICON_SIZE*0.4)
+			self.setMinimumSize(QSize(self.appIconSize*1.5,self.appIconSize*1.3))
+			self.appIconSize=(self.appIconSize*0.4)
 	#def setCompactMode
 
 	def _defFlyIcon(self):
@@ -228,6 +228,7 @@ class QPushButtonRebostApp(QPushButton):
 		elif len(self.app.get("bundle",{}))==0:
 			self.btn.setText(i18n["UNAVAILABLE"])
 		else: #app seems authorized and available
+			self.iconUri.setEnabled(True)
 			bundles=self.app["bundle"]
 			status=self.app["status"]
 			zmd=bundles.get("unknown","")
