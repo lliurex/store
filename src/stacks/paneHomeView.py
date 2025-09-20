@@ -62,6 +62,16 @@ class main(QWidget):
 				th.wait()
 	#def _onDestroy
 
+	def showEvent(self,*args,**kwargs):
+		#Ensure that there's info after all
+		if len(self.appsByCat.children())<=1:
+			self._getAppsByCat()
+		if len(self.blog.children()[-1].app)==0:
+			self._getBlog()
+		if len(self.appsEdu.children()[3].app)==0: #3rd element as is a btn for sure
+			self._getAppsedu()
+	#def showEvent
+
 	def _processRss(self,*args,**kwargs):
 		url=args[0]
 		apps=args[1]
@@ -75,7 +85,6 @@ class main(QWidget):
 					urls.append(url)
 				self._rebost.setAction("urlSearch",urls)
 				self._rebost.start()
-					#self._rebost.wait()
 			else:
 				if self._stop==False:
 					self._setBlogData(apps)
@@ -102,15 +111,11 @@ class main(QWidget):
 			btn.setMinimumWidth(IMAGE_PREVIEW)
 			btn.setApp(app)
 			btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+			btn.iconUri.setEnabled(True)
 			btn.clicked.connect(self._openBlog)
 			btn.setVisible(True)
 			cont+=1
 		self.blog.setCursor(self.oldCursor)
-		#Blog chargees without rebost needs so it's a good point to check if rebost data has been loaded
-		if self.appsByCat.cursor()==Qt.WaitCursor and self_rebost.isRunning()==False:
-			self._getAppsByCat()
-		if self.appsEdu.cursor()==Qt.WaitCursor and self_rebost.isRunning()==False:
-			self._getAppsedu()
 	#def _setBlogData
 
 	def _openBlog(self,*args):
@@ -155,22 +160,25 @@ class main(QWidget):
 
 	def _setAppseduData(self,*args):
 		app=json.loads(args[0])
+		cont=0
 		for btn in self.appsEdu.children():
 			if not isinstance(btn,QPushButtonRebostApp):
 				continue
-			if isinstance(app,list) and len(app)>0 and btn.app.get("summary","")=="":
-				btn.setObjectName("rebostapp")
-				btn._applyDecoration()
+			if len(btn.app.get("name",""))>0:
+				continue
+
+			if isinstance(app,list) and len(app)>0:
 				btn.setApp(app[0])
+				btn._applyDecoration()
 				btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 				btn.install.connect(self._emitInstallApp)
 				btn.clicked.connect(self._loadApp)
 				btn.setVisible(True)
 				break
+			if cont>=len(self.appsEdu.children()):
+				break
+			cont+=1
 		self.appsEdu.setCursor(self.oldCursor)
-		#Ensure that there're categories after all
-		if self.appsByCat.cursor()==Qt.WaitCursor and self_rebost.isRunning()==False:
-			self._getAppsByCat()
 	#def _setAppseduData
 
 	def _loadApp(self,*args):
@@ -191,16 +199,16 @@ class main(QWidget):
 		wdg=QWidget()
 		layout=QHBoxLayout()
 		wdg.setLayout(layout)
-		layout.setSpacing(32)
+		layout.setSpacing(int(MARGIN)*4)
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		pxm=QtGui.QPixmap()
-		for i in range(0,10):
+		for i in range(0,8):
 			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE/2))
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			btn.setMaximumWidth(IMAGE_PREVIEW/3)
 			btn.autoUpdate=True
 			if i<3:
-				btn.setObjectName("mp")
+				#btn.setObjectName("mp")
 				pxm.load("/home/lliurex/git/store/src/rsrc/appsedu128x128.png")
 				btn.loadFullScreen(pxm)
 			else:
@@ -231,13 +239,20 @@ class main(QWidget):
 				icn="games"
 			elif ("audio" in icn) or ("video" in icn):
 				icn="multimedia"
-			app={"name":_(apps[idx]),"icon":"applications-{}".format(icn),"pkgname":apps[idx],}
-			btn=QPushButtonRebostApp(app)
+			if os.path.exists("/usr/share/icons/breeze/categories/24"):
+				for f in os.scandir("/usr/share/icons/breeze/categories/24"):
+					if icn in f.name:
+						icn=f.name
+			if "applications" not in icn:
+				icn="applications-other"
+			app={"name":_(apps[idx]),"icon":icn,"pkgname":apps[idx],}
+			btn=QPushButtonRebostApp(app,iconSize=64)
 			btn.autoUpdate=True
 			btn.clicked.connect(self._loadCategory)
-			btn.setFixedSize(QSize(ICON_SIZE*2,ICON_SIZE*1.5))
+			#btn.setFixedSize(QSize(ICON_SIZE*2,ICON_SIZE*1.5))
 			btn.setCompactMode(True)
 			lay.addWidget(btn,Qt.AlignTop)
+		lay.addSpacing(int(MARGIN)*8)
 		self.appsByCat.setCursor(QtGui.QCursor(self.oldCursor))
 	#def _setAppsByCat
 
@@ -250,6 +265,8 @@ class main(QWidget):
 	def _defAppsByCat(self):
 		wdg=QWidget()
 		lay=QHBoxLayout()
+		lay.setSpacing(int(MARGIN)*8)
+		lay.addSpacing(int(MARGIN)*8)
 		wdg.setLayout(lay)
 		return(wdg)
 	#def _defAppsByCategory:
@@ -273,9 +290,9 @@ class main(QWidget):
 		self.blog.setCursor(QtGui.QCursor(Qt.WaitCursor))
 		self.appsEdu.setCursor(QtGui.QCursor(Qt.WaitCursor))
 		self.appsByCat.setCursor(QtGui.QCursor(Qt.WaitCursor))
-		self._getAppsByCat()
-		self._getBlog()
-		self._getAppsedu()
+	#	self._getAppsByCat()
+	#	self._getBlog()
+	#	self._getAppsedu()
 	#def updateScreen
 
 	def updateBtn(self,btn,app):

@@ -2,6 +2,43 @@
 import os
 from constants import *
 
+def btnRebost():
+	css=""
+	rebostapp="""#rebostapp {
+				border-color: silver;
+				border-style: solid; 
+				border-width: 1px; 
+				border-radius: 5px;
+				background: qradialgradient(cx:0.5, cy:1,radius:0.7,fx:0.5,fy:0.9,stop:0 %s, stop:1 %s);
+			}
+			"""%(COLOR_BORDER_DARK,COLOR_BACKGROUND_LIGHT)
+	css=css+rebostapp
+	rebostlbl="""QLabel{
+				color: unset;
+			}"""
+	css=css+rebostlbl
+	btnInstall="""#btnInstall{
+				color: unset;
+				border:1px solid %s; 
+				border-radius:5px;
+				padding:3px;
+				padding-left:12px;
+				padding-right:12px;
+				margin:12px;
+				background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
+			}
+			#btnInstall:pressed
+			{
+				border:3px solid %s;
+			}
+			#btnInstall:disabled
+			{
+				color:%s
+			}"""%(COLOR_BORDER_DARKEST,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER_DARK,COLOR_BORDER)
+	css=css+btnInstall
+	return(css)
+#def btnRebost
+
 def detailPanel():
 	css=""
 	detail="""QWidget{
@@ -28,7 +65,12 @@ def detailPanel():
 	btnBack="""#btnBack{
 						margin-right:%spx;
 						margin-bottom:0px;
-				}"""%(int(MARGIN)*0)
+				}
+				QPushButton#btnBack:pressed
+				{
+					border:2px inset %s;
+				}
+				"""%(int(MARGIN)*0,COLOR_BACKGROUND_DARK)
 	css=css+btnBack
 
 	lblIcon="""#lblIcon{
@@ -54,7 +96,12 @@ def detailPanel():
 					padding-bottom:%spx;
 					padding-top:%spx;
 				}
-				"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
+				QPushButton#btnInstall:pressed
+				{
+					border:2px inset %s;
+				}
+
+				"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2,COLOR_BACKGROUND_DARK)
 	css=css+btnInstall
 
 	boxBundles="""#boxBundles{
@@ -269,16 +316,25 @@ def portrait():
 					padding-bottom:%spx;
 					padding-top:%spx;
 				}
-				"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2)
+				QPushButton#btnHome:pressed
+				{
+					border:2px inset %s;
+				}
+				"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2,COLOR_BACKGROUND_DARK)
 	css=css+btnBar
 	upgrades="""#upgrades{
 					color:%s;
-					background:%s;
 					border:1px;
 					border-color:%s;
 					border-radius:%spx;
 					padding:%spx;
-				}"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER,RADIUS,MARGIN)
+					margin-bottom:%spx;
+					background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
+				}
+				#upgrades:pressed{
+					border:2px inset %s;
+				}
+				"""%(COLOR_BACKGROUND_DARK,COLOR_BORDER,RADIUS,MARGIN,int(MARGIN),COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK)
 	css=css+upgrades
 	working="""#working{
 					color:%s;

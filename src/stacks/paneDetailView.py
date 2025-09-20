@@ -40,6 +40,7 @@ i18n={
 	"RUN":_("Open"),
 	"SEEIT":_("See at Appsedu"),
 	"SITE":_("Website"),
+	"UNAUTHORIZED":_("Blocked"),
 	"UNAVAILABLE":_("Unavailable"),
 	}
 
@@ -261,12 +262,12 @@ class main(QWidget):
 		self.screenShot=self._defScreenshot()
 		self.screenShot.widget.setMinimumHeight(self.lblDesc.height())
 		self.screenShot.scroll.setMinimumHeight(self.lblDesc.height())
-		self.box.addWidget(self.screenShot,1,3,4,1,Qt.AlignTop)
+		self.box.addWidget(self.screenShot,1,3,3,1,Qt.AlignTop)
 		self.lstLinks=self._defLstLinks()
 		self.lstLinks.setObjectName("lstLinks")
 		vlay.addWidget(self.lstLinks)
 		self.tblSuggests=self._defSuggests()
-		self.box.addWidget(self.tblSuggests,3,2,2,1,Qt.AlignBottom)
+		self.box.addWidget(self.tblSuggests,3,2,2,1)
 		self.setLayout(self.box)
 		#COLS
 		self.box.setColumnStretch(0,0)
@@ -276,8 +277,8 @@ class main(QWidget):
 		#ROWS
 		self.box.setRowStretch(0,0)
 		self.box.setRowStretch(1,3)
-		self.box.setRowStretch(2,1)
-		self.box.setRowStretch(3,0)
+		self.box.setRowStretch(2,0)
+		self.box.setRowStretch(3,1)
 		errorLay=QGridLayout()
 		self.lblBkg=QLabel()
 		errorLay.addWidget(self.lblBkg,0,0,1,1)
@@ -328,8 +329,9 @@ class main(QWidget):
 		self.btnRemove.setObjectName("btnInstall")
 		self.btnRemove.clicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
 
-		self.btnUnavailable=QPushButton(i18n.get("UNAVAILABLE"))
-		self.btnUnavailable.setObjectName("cmbBundles")
+		self.btnUnavailable=QPushButton(i18n.get("UNAUTHORIZED"))
+		#self.btnUnavailable.setObjectName("cmbBundles")
+		self.btnUnavailable.setEnabled(False)
 
 		launchers.setLayout(hlay)
 		lay.addWidget(launchers,1,3,1,1,Qt.AlignTop|Qt.AlignRight)
@@ -367,10 +369,9 @@ class main(QWidget):
 		suggests=args[0]
 		self.suggests.setSpacing(int(MARGIN)*3)
 		for app in suggests:
-			btn=QPushButtonRebostApp("{}")
+			btn=QPushButtonRebostApp("{}",iconSize=64)
 			btn.setCompactMode(True)
 			btn.clicked.connect(self._loadSuggested)
-			btn.setIconSize(QSize(32,32))
 			btn.setApp(app)
 			self.suggests.addWidget(btn)
 		if self.suggests.count()>0:
@@ -390,11 +391,12 @@ class main(QWidget):
 		wdg=QWidget()
 		lay=QVBoxLayout()
 		wdg.setLayout(lay)
-		lay.setSpacing(int(MARGIN))
+		lay.setSpacing(int(MARGIN)/2)
 		lay.addWidget(QLabel(i18n["LBL_RELATED"]))
 		self.suggests=QFlowTouchWidget(self)
 		self.suggests.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		self.suggests.setObjectName("lblTags")
+		self.suggests.setMinimumHeight(ICON_SIZE*1.4)
 		lay.addWidget(self.suggests)
 		return(wdg)
 	#def _defSuggests
@@ -546,7 +548,6 @@ class main(QWidget):
 		bundles=list(self.app.get('bundle',{}).keys())
 		self.cmbBundles.setEnabled(True)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
-		print(self.app)
 		if "Forbidden" in self.app.get("categories",[]):
 			forbReason=""
 			if self.app.get("summary","").endswith(")"):
@@ -684,23 +685,22 @@ class main(QWidget):
 	def _setLauncherOptions(self):
 		visible=True
 		bundle=self.cmbBundles.currentText()
-		if "Forbidden" in self.app.get("categories",[]):
-			visible=False
-		self.lblRelease.setVisible(visible)
-		self.cmbBundles.setVisible(visible)
-		if bundle==i18n["INSTALL"].upper():
-			return
+		self.btnUnavailable.hide()
 		bundle=bundle.split(" ")[0]
 		self.lblRelease.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
 		self.cmbBundles.blockSignals(True)
 		self.cmbBundles.setText(i18n["INSTALL"].upper())
-		self.btnRemove.setVisible(False)
+		self.btnRemove.hide()
 		self.btnRemove.setEnabled(False)
 		bundles=self.app.get("bundle",{})
 		zmd=bundles.get("unknown","")
-		status=self.app["status"]
+		status=self.app.get("status",{})
 		self.btnRemove.setText("")
-		if len(status)>0:
+		if self.app.get("forbidden",False)==True:
+			self.btnUnavailable.show()
+			self.btnRemove.hide()
+			self.cmbBundles.hide()
+		elif len(status)>0:
 			if zmd!="" and len(bundles)==2: #2->pkg that belongs to a zmd
 				self.btnRemove.setText(i18n["OPEN"])
 			else:
@@ -714,14 +714,14 @@ class main(QWidget):
 							self.instBundle=bundle
 							break
 		elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
-				self.btnRemove.setVisible(True)
+				self.btnRemove.show()
 				self.btnRemove.setEnabled(True)
 				self.btnRemove.setText(i18n["OPEN"])
 		if self.btnRemove.text()!="":
-			self.btnRemove.setVisible(True)
 			self.btnRemove.setEnabled(True)
 			self.btnRemove.setMinimumSize(self.cmbBundles.size())
 			self.btnUnavailable.setMinimumSize(self.cmbBundles.size())
+			self.btnRemove.show()
 			self.cmbBundles.hide()
 		self._setLauncherStatus()
 		self.cmbBundles.blockSignals(False)
@@ -738,6 +738,8 @@ class main(QWidget):
 			priorityFinal=list(priority.keys())
 			priorityFinal.sort()
 			for idx in priorityFinal:
+				if "unknown" in priority[idx]:
+					priority[idx]=priority[idx].replace("unknown","zomando")
 				self.cmbBundles.addItem(priority[idx])
 			self.cmbBundles.setText(i18n["INSTALL"].upper())
 			for idx in range(0,len(priority)):

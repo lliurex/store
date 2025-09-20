@@ -38,7 +38,13 @@ class helper():
 			appName=zmdCmd
 		if zmdCmd.endswith(".zmd")==True:
 			zmdPath=os.path.join("/usr/share/zero-center/zmds",zmdCmd)
-			if os.path.isfile(zmdPath):
+			if os.path.exists(zmdPath)==False:
+				alternatives=["zero-lliurex-{}".format(zmdCmd),"zero-installer-{}".format(zmdCmd),"zero-fp-{}".format(zmdCmd)]
+				for f in os.scandir(os.path.dirname(zmdPath)):
+					if f.name in alternatives:
+						zmdPath=f.path
+						break
+			if os.path.exists(zmdPath):
 				cmd=self._getCmdFromZmd(zmdPath)
 				#subprocess.run(["pkexec",zmdPath])
 				try:
@@ -178,7 +184,7 @@ class helper():
 		priorityIdx={}
 		bundles=app.get('bundle',{})
 		for bundle in bundles:
-			version=app.get('versions',{}).get(bundle,'Zomando')
+			version=app.get('versions',{}).get(bundle,'lliurex')
 			if bundle=="unknown":
 				bundle="zomando"
 			if bundle in priority:
