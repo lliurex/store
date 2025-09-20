@@ -369,10 +369,9 @@ class main(QWidget):
 		suggests=args[0]
 		self.suggests.setSpacing(int(MARGIN)*3)
 		for app in suggests:
-			btn=QPushButtonRebostApp("{}")
+			btn=QPushButtonRebostApp("{}",iconSize=64)
 			btn.setCompactMode(True)
 			btn.clicked.connect(self._loadSuggested)
-			btn.setIconSize(QSize(32,32))
 			btn.setApp(app)
 			self.suggests.addWidget(btn)
 		if self.suggests.count()>0:
@@ -549,7 +548,6 @@ class main(QWidget):
 		bundles=list(self.app.get('bundle',{}).keys())
 		self.cmbBundles.setEnabled(True)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
-		print(self.app)
 		if "Forbidden" in self.app.get("categories",[]):
 			forbReason=""
 			if self.app.get("summary","").endswith(")"):
