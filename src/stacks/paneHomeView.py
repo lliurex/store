@@ -199,10 +199,10 @@ class main(QWidget):
 		wdg=QWidget()
 		layout=QHBoxLayout()
 		wdg.setLayout(layout)
-		layout.setSpacing(32)
+		layout.setSpacing(int(MARGIN)*4)
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		pxm=QtGui.QPixmap()
-		for i in range(0,10):
+		for i in range(0,8):
 			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE/2))
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			btn.setMaximumWidth(IMAGE_PREVIEW/3)
@@ -246,12 +246,13 @@ class main(QWidget):
 			if "applications" not in icn:
 				icn="applications-other"
 			app={"name":_(apps[idx]),"icon":icn,"pkgname":apps[idx],}
-			btn=QPushButtonRebostApp(app)
+			btn=QPushButtonRebostApp(app,iconSize=64)
 			btn.autoUpdate=True
 			btn.clicked.connect(self._loadCategory)
 			#btn.setFixedSize(QSize(ICON_SIZE*2,ICON_SIZE*1.5))
 			btn.setCompactMode(True)
 			lay.addWidget(btn,Qt.AlignTop)
+		lay.addSpacing(int(MARGIN)*8)
 		self.appsByCat.setCursor(QtGui.QCursor(self.oldCursor))
 	#def _setAppsByCat
 
@@ -264,6 +265,8 @@ class main(QWidget):
 	def _defAppsByCat(self):
 		wdg=QWidget()
 		lay=QHBoxLayout()
+		lay.setSpacing(int(MARGIN)*8)
+		lay.addSpacing(int(MARGIN)*8)
 		wdg.setLayout(lay)
 		return(wdg)
 	#def _defAppsByCategory:
