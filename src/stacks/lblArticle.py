@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import os
 from functools import partial
-from PySide6.QtWidgets import QLabel,QVBoxLayout,QSizePolicy
-from PySide6.QtCore import Qt,Signal
-from PySide6 import QtGui
+from PySide2.QtWidgets import QLabel,QVBoxLayout,QSizePolicy
+from PySide2.QtCore import Qt,Signal
+from PySide2 import QtGui
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel
 import gettext
 from constants import *

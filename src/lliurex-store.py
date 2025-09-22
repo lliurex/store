@@ -2,9 +2,9 @@
 import sys
 import os
 import json
-from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import Qt
-from PySide6 import QtGui
+from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import Qt
+from PySide2 import QtGui
 from QtExtraWidgets import QStackedWindow
 import gettext
 gettext.textdomain('lliurex-store')
@@ -42,4 +42,4 @@ if len(sys.argv)>1:
 		wdg=mw.getCurrentStack()
 		wdg.setParms(sys.argv[1])
 mw.show()
-app.exec()
+app.exec_()
