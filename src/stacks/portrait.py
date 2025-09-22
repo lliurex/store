@@ -396,28 +396,7 @@ class portrait(QStackedWindowItem):
 		self.progress.setAttribute(Qt.WA_StyledBackground, False)
 	#def __initScreen__
 
-<<<<<<< HEAD
-	def _reload(self,*args,**kwargs):
-		self._stopThreads()
-		self.rp.searchBox.setText("")
-		self.progress.stop()
-		QApplication.processEvents()
-		self._beginUpdate()
-	#def _reload
-
-	def _closeEvent(self,*args):
-		self._stopThreads()
-		if self.installingApp!=None:
-			self.installingApp.progress.stop()
-		if self._llxup.isRunning():
-			self._llxup.quit()
-			self._llxup.wait()
-	#def _closeEvent
-	
-	def _navPane(self):
-=======
 	def _defNavigationBar(self):
->>>>>>> master_jammy
 		wdg=QWidget()
 		vbox=QVBoxLayout()
 		wdg.setLayout(vbox)
