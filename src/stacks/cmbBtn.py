@@ -67,6 +67,7 @@ class QComboButton(QCheckableComboBox):
 	def currentText(self):
 		text=self.lineEdit().text()
 		return(text)
+	#def currentText
 
 	def currentSelected(self):
 		items=self.getItems()
@@ -79,4 +80,5 @@ class QComboButton(QCheckableComboBox):
 			if text=="":
 				text=items[0].text().strip()
 		return(text)
+	#def currentSelected
 #class QComboButton

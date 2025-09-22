@@ -2,8 +2,8 @@
 import os,time
 from functools import partial
 import json
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QGraphicsDropShadowEffect,QSizePolicy,QWidget,QVBoxLayout
-from PySide2.QtCore import Qt,Signal,QThread,QCoreApplication,QTimer,QSize
+from PySide2.QtWidgets import QLabel,QWidget,QVBoxLayout,QApplication
+from PySide2.QtCore import Qt,QTimer,QSize
 from PySide2.QtGui import QPixmap,QColor
 import css
 from constants import *
@@ -20,24 +20,6 @@ i18nUnlock={
 	"UNLOCKINGDB":_("Loading available applications"),
 	}
 
-class progress(QThread):
-	updated=Signal()
-	def __init__(self,*args,**kwargs):
-		QThread.__init__(self)
-		self.running=True
-	#def __init__
-
-	def run(self):
-		self.running=True
-		while self.running==True:
-			self.updated.emit()
-			time.sleep(0.03)
-	#def run
-
-	def stop(self):
-		self.running=False
-	#def stop
-
 class QProgressImage(QWidget):
 	def __init__(self,*args,**kwargs):
 		QWidget.__init__(self)
@@ -46,6 +28,7 @@ class QProgressImage(QWidget):
 		self.unlocking=False
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("prgBar")
+		self.i18nCustom={}
 		self.setStyleSheet(css.prgBar())
 		#lblProgress=QLabel(i18n["NEWDATA"])
 		#vbox.addWidget(lblProgress)#,Qt.AlignCenter|Qt.AlignBottom)
@@ -63,27 +46,22 @@ class QProgressImage(QWidget):
 		lay.addWidget(self.lblInfo,Qt.AlignTop)
 		self.lblInfo.setObjectName("lblInfo")
 		self.oldTime=0
-		#self.updateTimer=QTimer()
-		#self.updateTimer.timeout.connect(self._doProgress)
-		#self.updateTimer.start(1)
-		self.updateTimer=progress(self)
-		self.updateTimer.updated.connect(self._doProgress)
-		#self.setPixmap(self.pxm)
+		self.updateTimer=QTimer()
+		self.updateTimer.timeout.connect(self._doProgress)
 		self.lblPxm.setAlignment(Qt.AlignCenter)
 		self.lblInfo.setAlignment(Qt.AlignCenter)
 		self.inc=-5
 		self.running=False
 		self.destroyed.connect(partial(QProgressImage._onDestroy,self.__dict__))
+	#def __init__
 
 	@staticmethod
 	def _onDestroy(*args):
 		selfDict=args[0]
 		if "updateTimer" in selfDict:
 			selfDict["updateTimer"].blockSignals(True)
-			selfDict["updateTimer"].requestInterruption()
-			selfDict["updateTimer"].deleteLater()
-			selfDict["updateTimer"].wait()
-
+			selfDict["updateTimer"].stop()
+	#def _onDestroy
 
 	def setColor(self,colorStart,colorEnd,colorIni=""):
 		self.color=QColor(colorStart)
@@ -115,21 +93,21 @@ class QProgressImage(QWidget):
 		self.inc=inc
 
 	def start(self):
-		self.updateTimer.start()
-		self.setVisible(True)
+		self.updateTimer.start(1)
+	#	self.updateTimer.start()
+		self.show()
 	#def start
 
 	def stop(self):
-		if self.updateTimer.isRunning():
-			self.updateTimer.stop()
-		#self.updateTimer.quit()
-		#self.updateTimer.wait()
+		self.updateTimer.stop()
 		self.setVisible(False)
 	#def stop(self):
 		
 	def _beginDoProgress(self,*args):
 		if self.running==False:
 			self._doProgress()
+		else:
+			print("R")
 	#def _beginDoProgress
 
 	def _doProgress(self,*args):
@@ -180,4 +158,5 @@ class QProgressImage(QWidget):
 		self.update()
 		self.running=False
 	#def _doProgress
+
 

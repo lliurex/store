@@ -32,13 +32,19 @@ class helper():
 	def runZmd(self,app):
 		ret=-1
 		cmd=[]
-		zmdCmd=app.get('bundle',{}).get('zomando','')
-		appName=app.get("alias","")
+		zmdCmd=app.get('bundle',{}).get('unknown','').replace(".epi","")+".zmd"
+		appName=app.get("pkgname","")
 		if appName=="":
-			appName=app["name"]
+			appName=zmdCmd
 		if zmdCmd.endswith(".zmd")==True:
 			zmdPath=os.path.join("/usr/share/zero-center/zmds",zmdCmd)
-			if os.path.isfile(zmdPath):
+			if os.path.exists(zmdPath)==False:
+				alternatives=["zero-lliurex-{}".format(zmdCmd),"zero-installer-{}".format(zmdCmd),"zero-fp-{}".format(zmdCmd)]
+				for f in os.scandir(os.path.dirname(zmdPath)):
+					if f.name in alternatives:
+						zmdPath=f.path
+						break
+			if os.path.exists(zmdPath):
 				cmd=self._getCmdFromZmd(zmdPath)
 				#subprocess.run(["pkexec",zmdPath])
 				try:
@@ -164,7 +170,6 @@ class helper():
 		return(cmd)
 	#def getCmdForLauncher
 
-
 	def runApp(self,app,bundle,launcher=""): #TODO: QTHREAD
 		cmd=self.getCmdForLauncher(app,bundle,launcher)
 		proc=subprocess.run(cmd)
@@ -173,3 +178,22 @@ class helper():
 			proc=subprocess.run(cmd)
 		return(proc)
 	#def runApp(self,app,bundle)
+
+	def getBundlesByPriority(self,app):
+		priority=["zomando","package","flatpak","snap","appimage","eduapp"]
+		priorityIdx={}
+		bundles=app.get('bundle',{})
+		for bundle in bundles:
+			version=app.get('versions',{}).get(bundle,'lliurex')
+			if bundle=="unknown":
+				bundle="zomando"
+			if bundle in priority:
+				fversion=version.split("+")[0][0:10]
+				idx=priority.index(bundle)
+				if bundle=="zomando":
+					bundle="unknown"
+				release="{} {}".format(bundle,fversion)
+				priorityIdx[idx]=release
+		return(priorityIdx)
+	#def getBundlesByPriority
+

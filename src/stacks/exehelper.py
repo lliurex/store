@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import subprocess
+import subprocess,json
 from PySide2.QtCore import Signal,QThread
 import libhelper
 
@@ -51,7 +51,11 @@ class appLauncher(QThread):
 			if " ".join(self.args[1:]) not in self.app["attempted"]:
 				self.app["attempted"].append(" ".join(self.args[1:]))
 			try:
-				proc=subprocess.run(self.args,stderr=subprocess.PIPE,universal_newlines=True)
+				cmd=self.args.copy()
+				cmd.append(json.dumps(self.app))
+				print(cmd)
+				cmd.insert(0,"pkexec")
+				proc=subprocess.run(cmd,stderr=subprocess.PIPE,universal_newlines=True)
 			except Exception as e:
 				print(e)
 			self.runEnded.emit(self.app,proc)
