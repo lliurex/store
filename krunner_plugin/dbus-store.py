@@ -38,12 +38,11 @@ class storeRunner(dbus.service.Object):
 		if len(query)>2:
 			result=self.rebost.searchApp(query)
 		jmatches=json.loads(result)
-		for app in jmatches:
-			japp=json.loads(app)
+		for japp in jmatches:
 			if japp["name"] in match.keys():
 				if japp["summary"]=="":
 					continue
-			states=japp.get("state",{}).copy()
+			states=japp.get("status",{}).copy()
 			zmd=states.get("zomando","0")
 			installed=False
 			if len(states)>0:
