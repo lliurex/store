@@ -136,7 +136,7 @@ class portrait(QStackedWindowItem):
 		self.locked=True
 		self._rebost.setAction("config")
 		self._rebost.start()
-		self._rebost.wait()
+		#self._rebost.wait()
 		self.stopAdding=False
 		self.filters={"installed":False}
 		self.loading=False
@@ -171,8 +171,6 @@ class portrait(QStackedWindowItem):
 		self.refresh=True
 		self.released=True
 		self.maxCol=5
-		self._rebost.setAction("getCategories")
-		self._rebost.start()
 		self.setStyleSheet(css.portrait())
 	#def _initGUI
 
@@ -689,7 +687,7 @@ class portrait(QStackedWindowItem):
 	def _getUpgradables(self):
 		self._debug("Get available upgrades")
 		self._llxup.start()
-		self._llxup.wait()
+		#self._llxup.wait()
 	#def _getUpgradables
 
 	def _beginUpdate(self):
@@ -877,6 +875,11 @@ class portrait(QStackedWindowItem):
 				continue
 			if showPane!=pane:
 				pane.hide()
+		#If categories are not populated load them
+		if self.lstCategories.count()<=0:
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
+			self._rebost.wait()
 		showPane.show()
 		showPane.setCursor(self.oldCursor)
 		showPane.setFocus()
@@ -973,6 +976,11 @@ class portrait(QStackedWindowItem):
 			self._referrerPane=self._detailView
 			self._debug("Seeking for {}".format(pkgname))
 			self._detailView.setParms(pkgname)
+		#If categories are not populated load them
+		if self.lstCategories.count()<=0:
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
+			self._rebost.wait()
 	#def setParms
 
 	def _searchReferrerByName(self,name):
@@ -1033,7 +1041,7 @@ class portrait(QStackedWindowItem):
 		self._getUpgradables()
 		self._rebost.setAction("config")
 		self._rebost.start()
-		self._rebost.wait()
+		#self._rebost.wait()
 		isConnected=self._chkNetwork()
 		if isConnected==False:
 			self._endUpdate()

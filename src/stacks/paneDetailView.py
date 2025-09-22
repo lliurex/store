@@ -260,6 +260,8 @@ class main(QWidget):
 		self.lblDesc=self._defLblDesc()
 		self.box.addWidget(self.lblDesc,1,2,3,1)
 		self.screenShot=self._defScreenshot()
+		self.screenShot.setObjectName("screenshot")
+		self.screenShot.scroll.setObjectName("screenshot")
 		self.screenShot.widget.setMinimumHeight(self.lblDesc.height())
 		self.screenShot.scroll.setMinimumHeight(self.lblDesc.height())
 		self.box.addWidget(self.screenShot,1,3,3,1,Qt.AlignTop)
@@ -361,7 +363,6 @@ class main(QWidget):
 	def _defScreenshot(self):
 		wdg=QScreenShotContainer(direction="vertical")
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
-		wdg.setObjectName("screenshot")
 		return(wdg)
 	#def _defScreenshot
 
