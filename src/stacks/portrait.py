@@ -1036,9 +1036,6 @@ class portrait(QStackedWindowItem):
 	#def resetScreen
 
 	def updateScreen(self,addEnable=None):
-		self._getUpgradables()
-		self._rebost.setAction("config")
-		self._rebost.start()
 		#self._rebost.wait()
 		isConnected=self._chkNetwork()
 		if isConnected==False:
@@ -1055,4 +1052,10 @@ class portrait(QStackedWindowItem):
 			if len(self._homeView.layout().children())==0:
 				self._homeView.updateScreen()
 			self._endUpdate()
+		self._getUpgradables()
+		self._rebost.setAction("config")
+		self._rebost.start()
+		if self.lstCategories.count()<=0:
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
 	#def _updateScreen
