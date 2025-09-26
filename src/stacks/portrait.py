@@ -280,9 +280,9 @@ class portrait(QStackedWindowItem):
 			idx=list(priority.keys())
 			idx.sort()
 			bundle=priority[idx[0]].split(" ")[0]
-		if bundle=="zomando":
+		if bundle=="epi":
 			bundle="unknown"
-		pkg=app.get('bundle',{}).get(bundle,'')
+		pkg=app.get('id')
 		try:
 			if pkg!="":
 				installer=str(self.rc.getExternalInstaller())
@@ -296,6 +296,7 @@ class portrait(QStackedWindowItem):
 						if wdg.text()==i18n["REMOVE"]:
 							state=8
 					if bundle!="unknown":
+						print("RUN APP PEOPLE")
 						self._setInstallingState(app,state)
 						self.runapp.setArgs(app,[installer,pkg,bundle])
 						self.runapp.start()
