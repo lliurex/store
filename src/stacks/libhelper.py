@@ -180,20 +180,26 @@ class helper():
 	#def runApp(self,app,bundle)
 
 	def getBundlesByPriority(self,app):
-		priority=["zomando","package","flatpak","snap","appimage","eduapp"]
+		priority=["epi","package","flatpak","snap","appimage","eduapp"]
 		priorityIdx={}
+		priorityTmp={}
 		bundles=app.get('bundle',{})
 		for bundle in bundles:
 			version=app.get('versions',{}).get(bundle,'lliurex')
 			if bundle=="unknown":
-				bundle="zomando"
+				bundle="epi"
 			if bundle in priority:
 				fversion=version.split("+")[0][0:10]
 				idx=priority.index(bundle)
-				if bundle=="zomando":
+				if bundle=="epi":
 					bundle="unknown"
 				release="{} {}".format(bundle,fversion)
-				priorityIdx[idx]=release
+				priorityTmp[idx]=release
+		if len(priorityTmp)>0:
+			sortedKeys=list(priorityTmp.keys())
+			sortedKeys.sort()
+			for i in sortedKeys:
+				priorityIdx[i]=priorityTmp[i]
 		return(priorityIdx)
 	#def getBundlesByPriority
 
