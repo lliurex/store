@@ -281,9 +281,9 @@ class portrait(QStackedWindowItem):
 			idx=list(priority.keys())
 			idx.sort()
 			bundle=priority[idx[0]].split(" ")[0]
-		if bundle=="zomando":
+		if bundle=="epi":
 			bundle="unknown"
-		pkg=app.get('bundle',{}).get(bundle,'')
+		pkg=app.get('id')
 		try:
 			if pkg!="":
 				installer=str(self.rc.getExternalInstaller())
@@ -297,6 +297,7 @@ class portrait(QStackedWindowItem):
 						if wdg.text()==i18n["REMOVE"]:
 							state=8
 					if bundle!="unknown":
+						print("RUN APP PEOPLE")
 						self._setInstallingState(app,state)
 						self.runapp.setArgs(app,[installer,pkg,bundle])
 						self.runapp.start()
@@ -1038,9 +1039,6 @@ class portrait(QStackedWindowItem):
 	#def resetScreen
 
 	def updateScreen(self,addEnable=None):
-		self._getUpgradables()
-		self._rebost.setAction("config")
-		self._rebost.start()
 		#self._rebost.wait()
 		isConnected=self._chkNetwork()
 		if isConnected==False:
@@ -1057,4 +1055,10 @@ class portrait(QStackedWindowItem):
 			if len(self._homeView.layout().children())==0:
 				self._homeView.updateScreen()
 			self._endUpdate()
+		self._getUpgradables()
+		self._rebost.setAction("config")
+		self._rebost.start()
+		if self.lstCategories.count()<=0:
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
 	#def _updateScreen

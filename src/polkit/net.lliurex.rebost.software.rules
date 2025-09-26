@@ -8,7 +8,7 @@ polkit.addRule(function(action, subject) {
     if ((action.id == "net.lliurex.rebost.software-manager.launcher" &&
         subject.active == true ) &&
         (subject.isInGroup("sudo") || subject.isInGroup("teachers"))){
-            return polkit.Result.AUTH_ADMIN;
+            return polkit.Result.YES;
     }
 
     return polkit.Result.NO;
