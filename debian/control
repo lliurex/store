@@ -21,6 +21,7 @@ Depends: ${misc:Depends}, ${python3:Depends},
 Provides: appsedu
 Conflicts: appsedu
 Replaces: appsedu
+Breaks: rebost (<<2.7.1.8)
 Description: Application store for LliureX with appsedu integration
 
 Package: lliurex-store-dbus
