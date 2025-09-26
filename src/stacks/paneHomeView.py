@@ -36,6 +36,7 @@ class main(QWidget):
 		self._rebost=args[0]
 		self._rebost.urlEnded.connect(self._setAppseduData)
 		self._rebost.gacEnded.connect(self._setAppsByCat)
+		self.appsEduApps=[]
 		self.btns={}
 		layout=QGridLayout()
 		layout.setVerticalSpacing(0)
@@ -68,7 +69,7 @@ class main(QWidget):
 			self._getAppsByCat()
 		if len(self.blog.children()[-1].app)==0:
 			self._getBlog()
-		if len(self.appsEdu.children()[3].app)==0: #3rd element as is a btn for sure
+		if len(self.appsEduApps)<=6: #6 because, well, why not?
 			self._getAppsedu()
 	#def showEvent
 
@@ -168,6 +169,9 @@ class main(QWidget):
 				continue
 
 			if isinstance(app,list) and len(app)>0:
+				if app[0].get("name") in self.appsEduApps:
+					continue
+				self.appsEduApps.append(app[0].get("name"))
 				btn.setApp(app[0])
 				btn._applyDecoration()
 				btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
@@ -260,6 +264,7 @@ class main(QWidget):
 		self._debug("Get apps per category")
 		self._rebost.setAction("getAppsPerCategory")
 		self._rebost.start()
+		self._rebost.wait()
 	#def _getAppsByCat
 
 	def _defAppsByCat(self):
