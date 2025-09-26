@@ -65,7 +65,8 @@ class rssParser(QThread):
 				articleInfo=bscontent.find_all("div",class_="imagen-destacada")
 				for info in articleInfo:
 					articleImg=info.find("img")
-					parsedFeeds[idx].update({"img":articleImg["src"]})
+					if isinstance(articleImg,dict):
+						parsedFeeds[idx].update({"img":articleImg["src"]})
 					break
 			if self._stop==True:
 				break
