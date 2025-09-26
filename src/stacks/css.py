@@ -11,7 +11,11 @@ def btnRebost():
 				border-radius: 5px;
 				background: qradialgradient(cx:0.5, cy:1,radius:0.7,fx:0.5,fy:0.9,stop:0 %s, stop:1 %s);
 			}
-			"""%(COLOR_BORDER_DARK,COLOR_BACKGROUND_LIGHT)
+			#rebostapp:pressed
+			{
+				border:3px solid %s;
+			}
+			"""%(COLOR_BORDER_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER)
 	css=css+rebostapp
 	rebostlbl="""QLabel{
 				color: unset;
@@ -34,7 +38,7 @@ def btnRebost():
 			#btnInstall:disabled
 			{
 				color:%s
-			}"""%(COLOR_BORDER_DARKEST,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER_DARK,COLOR_BORDER)
+			}"""%(COLOR_BORDER_DARKEST,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,COLOR_BORDER)
 	css=css+btnInstall
 	return(css)
 #def btnRebost
