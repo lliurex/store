@@ -11,6 +11,7 @@ from PySide2.QtCore import Qt,QSize,Signal,QThread,Slot
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
 import libhelper
 import css
+from btnInstallers import QPushButtonInstaller
 from cmbBtn import QComboButton
 from lblApp import QLabelRebostApp
 from lblLnk import QLabelLink
@@ -212,7 +213,9 @@ class main(QWidget):
 
 	@Slot("PyObejct,","PyObject")
 	def _genericEpiInstall(self,*args):
-		bundle=self.cmbBundles.currentSelected().lower().split(" ")[0]
+		self._setInstallingState()
+		if len(args)>0:
+			bundle=args[0].lower()
 		self.requestInstallApp.emit(self.btnRemove,self.app,bundle)
 	#def _genericEpiInstall
 
@@ -326,30 +329,34 @@ class main(QWidget):
 		lay.addWidget(self.boxBundles,0,3,1,1,Qt.AlignTop|Qt.AlignRight)
 		self.lblRelease=QLabel(i18n.get("INSTALL"))
 		self.lblRelease.resize(self.lblRelease.sizeHint().width(),int(ICON_SIZE/3))
+		self.lblRelease.hide()
+		lay.addWidget(self.lblRelease,1,3,1,1,Qt.AlignLeft|Qt.AlignTop)
 
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
 		self.btnRemove.setObjectName("btnInstall")
 		self.btnRemove.clicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
+		#lay.addWidget(self.btnRemove,2,3,1,1)
+		self.btnRemove.hide()
 
 		self.btnUnavailable=QPushButton(i18n.get("UNAUTHORIZED"))
 		#self.btnUnavailable.setObjectName("cmbBundles")
 		self.btnUnavailable.setEnabled(False)
+		lay.addWidget(self.btnUnavailable,2,3,1,1)
+		self.btnUnavailable.hide()
 
 		launchers.setLayout(hlay)
 		lay.addWidget(launchers,1,3,1,1,Qt.AlignTop|Qt.AlignRight)
 
-		self.cmbBundles=QComboButton()
-		self.cmbBundles.setAttribute(Qt.WA_StyledBackground, False)
-		self.cmbBundles.setObjectName("cmbBundles")
-		self.cmbBundles.setFixedWidth(50)
-		self.cmbBundles.currentTextChanged.connect(self._setLauncherOptions)	
-		self.cmbBundles.installClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
-		lay.addWidget(self.lblRelease,1,3,1,1,Qt.AlignLeft|Qt.AlignTop)
-		lay.addWidget(self.cmbBundles,2,3,1,1,Qt.AlignRight|Qt.AlignTop)
-		lay.addWidget(self.btnRemove,2,3,1,1)
-		lay.addWidget(self.btnUnavailable,2,3,1,1)
-		self.btnRemove.setVisible(False)
-		self.btnUnavailable.setVisible(False)
+		self.cmbBundles=QPushButtonInstaller()
+		self.cmbBundles.installerClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
+		self.cmbBundles.setText(i18n["INSTALL"])
+		self.cmbBundles.setVisible(False)
+		self.cmbBundles.setFixedSize(self.btnRemove.size().width()/2,ICON_SIZE*0.9)
+		self.btnRemove.setFixedSize(self.cmbBundles.size())
+		self.btnUnavailable.setFixedSize(self.cmbBundles.size())
+		lay.addWidget(self.cmbBundles,2,3,1,1)
+		self.cmbBundles.hide()
+
 		spacing=QLabel("")
 		spacing.setFixedWidth(64)
 		lay.addWidget(spacing,0,lay.columnCount())
@@ -444,7 +451,8 @@ class main(QWidget):
 		for children in self.boxBundles.children():
 			if isinstance(children,QLabel):
 				children.hide()
-				bundle=children.toolTip().lower()
+				chldText=children.toolTip().lower().split("\n")[0]
+				bundle=chldText.split(":")[-1].lower().strip()
 				if bundle=="epi":
 					bundle="unknown"
 				if bundle in self.app["bundle"].keys():
@@ -459,7 +467,8 @@ class main(QWidget):
 		lay.setContentsMargins(0,0,0,0)
 		wdg.setLayout(lay)
 		lbl=None
-		for bundle in self.rc.getSupportedFormats():
+		priority=["epi","package","flatpak","snap","appimage","eduapp"]
+		for bundle in priority:
 			pxm=QtGui.QPixmap()
 			if bundle=="unknown":
 				bundle="epi"
@@ -468,7 +477,7 @@ class main(QWidget):
 			lbl=QLabel()
 			lbl.setObjectName("boxBundles")
 			lbl.setPixmap(pxm)
-			lbl.setToolTip(bundle.capitalize())
+			lbl.setToolTip("Kind: {}\nRelease: {}".format(bundle.capitalize(),""))
 			lbl.hide()
 			lay.addWidget(lbl,Qt.AlignRight)
 		if lbl!=None:
@@ -563,7 +572,6 @@ class main(QWidget):
 				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),i18n["APPUNKNOWN_SAI"],description,forbReason)
 			self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setText(description)
-		self._setReleasesInfo()
 		#preliminary license support, not supported
 		applicense=self.app.get('license','')
 		if applicense:
@@ -577,6 +585,7 @@ class main(QWidget):
 		self._populateSuggestsList()
 		self._populateLinks()
 		self._populateBoxBundles()
+		self.cmbBundles.setApp(self.app)
 		self.loaded.emit(self.app)
 	#def _updateScreen
 
@@ -728,34 +737,12 @@ class main(QWidget):
 		self.cmbBundles.blockSignals(False)
 	#def _setLauncherOptions
 
-	def _setReleasesInfo(self):
-		for i in range(self.cmbBundles.count()):
-			self.cmbBundles.removeItem(i)
-		self.cmbBundles.clear()
-		priority=self.helper.getBundlesByPriority(self.app)
-		if len(priority)<=0:
-			self.cmbBundles.setEnabled(False)
-		else:
-			priorityFinal=list(priority.keys())
-			priorityFinal.sort()
-			for idx in priorityFinal:
-				if "unknown" in priority[idx]:
-					priority[idx]=priority[idx].replace("unknown","zomando")
-				self.cmbBundles.addItem(priority[idx])
-			self.cmbBundles.setText(i18n["INSTALL"].upper())
-			for idx in range(0,len(priority)):
-				try:
-					self.cmbBundles.setState(idx,False)
-				except:
-					break
-	#def _setReleasesInfo
-
 	def _initScreen(self):
 		#Reload config if app has been epified
 		self.showMsg=self.parent().showMsg
 		if len(self.app)>0:
 			self.cmbBundles.setVisible(True)
-			self.lblRelease.setVisible(True)
+			#self.lblRelease.setVisible(True)
 			self.lblRelease.setEnabled(True)
 			self.lblRelease.setText(i18n.get("INSTALL"))
 			self.setCursor(self.oldCursor)
