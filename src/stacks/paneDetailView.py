@@ -335,13 +335,13 @@ class main(QWidget):
 		self.btnRemove=QPushButton(i18n.get("REMOVE"))
 		self.btnRemove.setObjectName("btnInstall")
 		self.btnRemove.clicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
-		#lay.addWidget(self.btnRemove,2,3,1,1)
+		lay.addWidget(self.btnRemove,1,3,1,1)
 		self.btnRemove.hide()
 
 		self.btnUnavailable=QPushButton(i18n.get("UNAUTHORIZED"))
 		#self.btnUnavailable.setObjectName("cmbBundles")
 		self.btnUnavailable.setEnabled(False)
-		lay.addWidget(self.btnUnavailable,2,3,1,1)
+		lay.addWidget(self.btnUnavailable,1,3,1,1)
 		self.btnUnavailable.hide()
 
 		launchers.setLayout(hlay)
@@ -351,10 +351,10 @@ class main(QWidget):
 		self.cmbBundles.installerClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
 		self.cmbBundles.setText(i18n["INSTALL"])
 		self.cmbBundles.setVisible(False)
-		self.cmbBundles.setFixedSize(self.btnRemove.size().width()/2,ICON_SIZE*0.9)
+		self.cmbBundles.setMinimumSize(self.btnRemove.size().width()/3,ICON_SIZE/2)
 		self.btnRemove.setFixedSize(self.cmbBundles.size())
 		self.btnUnavailable.setFixedSize(self.cmbBundles.size())
-		lay.addWidget(self.cmbBundles,2,3,1,1)
+		lay.addWidget(self.cmbBundles,1,3,1,1)
 		self.cmbBundles.hide()
 
 		spacing=QLabel("")
