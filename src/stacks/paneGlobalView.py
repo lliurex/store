@@ -166,9 +166,9 @@ class paneGlobalView(QWidget):
 				#self._beginLoadData(self.appsLoaded,self.appsToLoad)
 			#elif self.appsToLoad==-1: #Init 
 		except Exception as e:
-			print("-----")
+			print("-- ERROR UPDATING SCREEN -->")
 			print(e)
-			print("-----")
+			print("-- END ERROR REPORT --<")
 	#def updateScreen
 
 	def updateBtn(self,btn,app):
