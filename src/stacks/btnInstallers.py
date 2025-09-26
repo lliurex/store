@@ -51,7 +51,6 @@ class QPushButtonInstaller(QPushButton):
 
 	def _emitInstall(self,*args):
 		bundle=args[1]["name"].split("<br>")[-1]
-		print("B: {}".format(bundle))
 		self.installerClicked.emit(bundle)
 	#def _emitInstall
 

@@ -296,7 +296,6 @@ class portrait(QStackedWindowItem):
 						if wdg.text()==i18n["REMOVE"]:
 							state=8
 					if bundle!="unknown":
-						print("RUN APP PEOPLE")
 						self._setInstallingState(app,state)
 						self.runapp.setArgs(app,[installer,pkg,bundle])
 						self.runapp.start()
