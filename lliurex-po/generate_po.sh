@@ -28,7 +28,7 @@ then
 		[ ${#i} -lt 2 ] && continue
 		if [ x${i// /} != "x" ]
 		then
-			[ $(grep msgid.*"$i"$ lliurex-store/lliurex-store.pot >/dev/null 2>&1;echo $?) -eq 0 ] && continue
+			[ $(grep msgid.*\"$i\"$ lliurex-store/lliurex-store.pot >/dev/null 2>&1;echo $?) -eq 0 ] && continue
 			echo "">> lliurex-store/lliurex-store.pot
 			echo "#">> lliurex-store/lliurex-store.pot
 			echo "msgid \"${i//_/}\""  >> lliurex-store/lliurex-store.pot
@@ -39,7 +39,7 @@ fi
 
 #Polkit
 
-PK_FILES="../src/polkit/*policy"
+PK_FILES="../polkit/actions/*policy"
 for pk_file in ${PK_FILES}
 do
 	msg=$(grep gettext-domain ${pk_file} | sed -e 's/.*\">//g;s/<\/.*//g')
