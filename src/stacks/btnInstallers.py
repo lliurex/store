@@ -96,6 +96,8 @@ class QPushButtonInstaller(QPushButton):
 
 	def mousePressEvent(self,*args,**kwargs):
 		bundlesSorted=self.helper.getBundlesByPriority(self.app)
+		if len(bundlesSorted)==0:
+			return
 		#arrow + bar=48px
 		if args[0].x()>(self.rect().width()-48):
 			self._loadLaunchers(bundlesSorted)
