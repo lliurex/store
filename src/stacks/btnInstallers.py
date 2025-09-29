@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-import os,subprocess
+import os,subprocess,time
 from PySide2.QtWidgets import QLabel, QPushButton,QMenu,QWidget,QWidgetAction,QSizePolicy,QApplication,QGridLayout
 from PySide2.QtCore import Qt,Signal,QSize,QPoint
-from PySide2.QtGui import QIcon
+from PySide2.QtGui import QIcon,QPixmap
 from btnRebost import QPushButtonRebostApp
 import libhelper
 import css
@@ -19,8 +19,9 @@ class QPushButtonInstaller(QPushButton):
 	def __init__(self,parent=None,**kwargs):
 		QPushButton.__init__(self, parent)
 		self.dbg=True
+		self.setCursor(Qt.PointingHandCursor)
 		self.setStyleSheet(css.btnRebost())
-		self.setObjectName("btnInstall")
+		self.setObjectName("btnInstaller")
 		self.helper=libhelper.helper()
 		self.app=kwargs.get("app",{})
 		self.dlgInstallers=QWidget()
@@ -50,9 +51,18 @@ class QPushButtonInstaller(QPushButton):
 	#def setApp
 
 	def _emitInstall(self,*args):
+		if args[0]!=None:
+			args[0].setCursor(Qt.WaitCursor)
+		else:
+			self.setCursor(Qt.WaitCursor)
 		bundle=args[1]["name"].split("<br>")[-1]
 		self.installerClicked.emit(bundle)
-	#def _emitInstall
+		time.sleep(2)
+		if args[0]!=None:
+			args[0].setCursor(Qt.PointingHandCursor)
+		else:
+			self.setCursor(Qt.PointingHandCursor)
+	#def _emitInstall(self,*args):
 
 	def _openWiki(self):
 		proc=["kde-open5","https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Gesti%C3%B3n+de+software+en+LliureX&highlight=snap#Diferents_formats_una_breu_explicaci_"]
@@ -79,13 +89,10 @@ class QPushButtonInstaller(QPushButton):
 
 	def mousePressEvent(self,*args,**kwargs):
 		bundlesSorted=self.helper.getBundlesByPriority(self.app)
-		self._loadLaunchers(bundlesSorted)
-		if len(self.app.get("bundle",[]))>1:
-			if self.app.get("bundle",{}).get("package","")==self.app.get("bundle",{}).get("unknown","unknown"):
-				bundle=bundlesSorted[list(bundlesSorted.keys())[0]].split(" ")[0]
-				self._emitInstall(None,{"name":"{}<br>{}".format(self.app["id"],bundle)})
-			else:
-				self.showMenu()
+		#arrow + bar=48px
+		if args[0].x()>(self.rect().width()-48):
+			self._loadLaunchers(bundlesSorted)
+			self.showMenu()
 		else:
 			bundle=bundlesSorted[list(bundlesSorted.keys())[0]].split(" ")[0]
 			if bundle=="unknown":
@@ -100,12 +107,21 @@ class QPushButtonInstaller(QPushButton):
 				chld.setParent(None)
 		cont=0
 		for idx,bundleData in bundlesSorted.items():
-			bundle,release=bundleData.split()
+			try:
+				bundleData=bundleData.strip()
+				if " " not in bundleData:
+					bundleData+=" contrib"
+				bundle,release=bundleData.split()
+			except Exception as e:
+				self._debug("ERROR!!!!")
+				self._debug(e)
+				self._debug("DUMP")
+				self._debug(bundleData)
+				self._debug("--- END ---")
 			if bundle=="unknown":
 				bundle="epi"
-			if self.app.get("status",{}).get(bundle,1)!=1:
-				continue
-			cont+=1
+			#if self.app.get("status",{}).get(bundle,1)!=1:
+			#	continue
 			#release=self.app.get("versions",{}).get(bundle,"lliurex").split(":")[-1].split("+")[0]
 			release=release[0:min(10,len(release))]
 			wdg=QPushButtonRebostApp({"name":"{}<br>{}".format(release,bundle.capitalize()),"icon":os.path.join(RSRC,"application-vnd.{}.png".format(bundle))},iconSize=64)
@@ -113,6 +129,11 @@ class QPushButtonInstaller(QPushButton):
 			wdg.clicked.connect(self._emitInstall)
 			wdg.setCompactMode(True)
 			wdg.setMaximumWidth(ICON_SIZE/3)
+			if cont==0:
+				wdg.flyIcon=QPixmap(os.path.join(RSRC,"emblem-favorite32x32.png"))
+				wdg.lblFlyIcon.setPixmap(wdg.flyIcon.scaled(16,16,Qt.KeepAspectRatioByExpanding,Qt.FastTransformation))
+				wdg.lblFlyIcon.show()
 			self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
+			cont+=1
 	#def _loadLaunchers
 
