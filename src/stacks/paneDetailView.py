@@ -448,14 +448,26 @@ class main(QWidget):
 	#def _defLstLinks
 
 	def _populateBoxBundles(self):
+		bundlesSorted=self.helper.getBundlesByPriority(self.app)
+		bundles=[]
+		for idx,bundleData in bundlesSorted.items():
+			bundleData=bundleData.strip()
+			if " " not in bundleData:
+				bundleData+=" contrib"
+			bundles.append(bundleData.split()[0])
 		for children in self.boxBundles.children():
 			if isinstance(children,QLabel):
 				children.hide()
-				chldText=children.toolTip().lower().split("\n")[0]
+				chldText=children.toolTip().lower().split("\n")[0].replace("<p>","").replace("</p>","")
 				bundle=chldText.split(":")[-1].lower().strip()
 				if bundle=="epi":
 					bundle="unknown"
-				if bundle in self.app["bundle"].keys():
+				if bundle in bundles:
+					release=self.app.get("versions",{}).get(bundle,"")
+					if bundle=="unknown":
+						bundle="epi"
+					text="Kind: {0}\nRelease: {1}".format(bundle.capitalize(),release)
+					children.setToolTip(text)
 					children.show()
 	#def _populateBundleIcons
 

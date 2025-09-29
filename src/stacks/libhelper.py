@@ -184,6 +184,10 @@ class helper():
 		priorityIdx={}
 		priorityTmp={}
 		bundles=app.get('bundle',{})
+		#If there's an epi remove the package
+		if "unknown" in bundles and "package" in bundles:
+			bundles.pop("package")
+
 		for bundle in bundles:
 			version=app.get('versions',{}).get(bundle,'lliurex')
 			if bundle=="unknown":
