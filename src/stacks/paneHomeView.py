@@ -243,10 +243,16 @@ class main(QWidget):
 				icn="games"
 			elif ("audio" in icn) or ("video" in icn):
 				icn="multimedia"
-			if os.path.exists("/usr/share/icons/breeze/categories/24"):
-				for f in os.scandir("/usr/share/icons/breeze/categories/24"):
-					if icn in f.name:
-						icn=f.name
+			iconPath="/usr/share/icons/breeze/categories/" # Bad idea. Nested for, hardcoded paths, filename assumptions, non-agnostic... 
+			for size in ["24","32"]:
+				wrkPath=os.path.join(iconPath,size)
+				if os.path.exists(wrkPath):
+					for f in os.scandir(wrkPath):
+						if icn in f.name:
+							icn=f.name
+							break
+				if "applications" in icn:
+					break
 			if "applications" not in icn:
 				icn="applications-other"
 			app={"name":_(apps[idx]),"icon":icn,"pkgname":apps[idx],}
