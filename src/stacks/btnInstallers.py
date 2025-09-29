@@ -78,6 +78,7 @@ class QPushButtonInstaller(QPushButton):
 		what.setStyleSheet("""padding:0px;margin:0px;border:0px,color:black""")
 		what.clicked.connect(self._openWiki)
 		what.setToolTip(i18n["HELP"])
+		what.setCursor(Qt.WhatsThisCursor)
 		self.menuLayout.addWidget(what,0,self.menuLayout.columnCount(),1,1,Qt.AlignLeft)
 		self.menuLayout.setColumnStretch(self.menuLayout.columnCount()-1,1)
 		self.menuLayout.setColumnStretch(self.menuLayout.columnCount(),0)
@@ -85,6 +86,12 @@ class QPushButtonInstaller(QPushButton):
 
 	def _setActionForMenu(self,*args):
 		self._resizeMenu()
+		for chld in self.dlgInstallers.children():
+			if isinstance(chld,QPushButtonRebostApp) or isinstance(chld,QPushButton):
+				if hasattr(chld,"app"):
+					release,bundle=chld.app["name"].split("<br>")
+					text="<p>Kind: {0}<br>Release: {1}</p>".format(bundle.capitalize(),release)
+					chld.setToolTip(text)
 	#def _setActionForMenu
 
 	def mousePressEvent(self,*args,**kwargs):
@@ -125,6 +132,7 @@ class QPushButtonInstaller(QPushButton):
 			#release=self.app.get("versions",{}).get(bundle,"lliurex").split(":")[-1].split("+")[0]
 			release=release[0:min(10,len(release))]
 			wdg=QPushButtonRebostApp({"name":"{}<br>{}".format(release,bundle.capitalize()),"icon":os.path.join(RSRC,"application-vnd.{}.png".format(bundle))},iconSize=64)
+			wdg.lockTooltip=True
 			wdg.label.setWordWrap(True)
 			wdg.clicked.connect(self._emitInstall)
 			wdg.setCompactMode(True)
