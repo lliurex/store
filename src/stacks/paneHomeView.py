@@ -227,7 +227,7 @@ class main(QWidget):
 	#def _loadCategory
 
 	def _setAppsByCat(self,*args):
-		categoryApps=json.loads(args[0])
+		categoryApps=args[0]
 		apps={}
 		for cat in categoryApps.keys():
 			apps[len(categoryApps[cat])]=cat
@@ -262,7 +262,7 @@ class main(QWidget):
 
 	def _getAppsByCat(self):
 		self._debug("Get apps per category")
-		self._rebost.setAction("getAppsPerCategory")
+		self._rebost.setAction("getAppsInstalledPerCategory")
 		self._rebost.start()
 		self._rebost.wait()
 	#def _getAppsByCat
