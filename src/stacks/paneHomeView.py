@@ -84,11 +84,12 @@ class main(QWidget):
 						break
 					url=apps[idx]["link"]
 					urls.append(url)
+				#WTF There're apps not included. This should not happen. WTF!!!
 				self._rebost.setAction("urlSearch",urls)
 				self._rebost.start()
+				self._rebost.wait()
 			else:
-				if self._stop==False:
-					self._setBlogData(apps)
+				self._setBlogData(apps)
 	#def _processRss(self,*args,**kwargs):
 
 	def _setBlogData(self,*args):
@@ -114,7 +115,7 @@ class main(QWidget):
 			btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 			btn.iconUri.setEnabled(True)
 			btn.clicked.connect(self._openBlog)
-			btn.setVisible(True)
+			btn.updateScreen()
 			cont+=1
 		self.blog.setCursor(self.oldCursor)
 	#def _setBlogData
@@ -128,7 +129,7 @@ class main(QWidget):
 
 	def _getBlog(self):
 		rssparser=rss.rssParser()
-		rssparser.rssEnded.connect(self._processRss)
+		rssparser.blogEnded.connect(self._processRss)
 		rssparser.feed="blog"
 		rssparser.start()
 		self.th.append(rssparser)
@@ -193,7 +194,7 @@ class main(QWidget):
 	
 	def _getAppsedu(self):
 		rssparser=rss.rssParser()
-		rssparser.rssEnded.connect(self._processRss)
+		rssparser.appsEnded.connect(self._processRss)
 		rssparser.feed="appsedu"
 		rssparser.start()
 		self.th.append(rssparser)
