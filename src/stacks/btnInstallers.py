@@ -111,7 +111,6 @@ class QPushButtonInstaller(QPushButton):
 				bundleData=bundleData.strip()
 				if " " not in bundleData:
 					bundleData+=" contrib"
-				print("%{}%".format(bundleData))
 				bundle,release=bundleData.split()
 			except Exception as e:
 				self._debug("ERROR!!!!")

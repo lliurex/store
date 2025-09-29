@@ -106,8 +106,6 @@ class QProgressImage(QWidget):
 	def _beginDoProgress(self,*args):
 		if self.running==False:
 			self._doProgress()
-		else:
-			print("R")
 	#def _beginDoProgress
 
 	def _doProgress(self,*args):

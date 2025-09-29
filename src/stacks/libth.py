@@ -379,8 +379,8 @@ class thShowApp(QThread):
 			try:
 				app=json.loads(self.rc.refreshApp(self.app.get('id','')))[0]
 			except Exception as e:
-				print(e)
 				print("Error finding {}".format(self.app.get("id","")))
+				self._debug(e)
 				app=self.app.copy()
 				app["ERR"]=True
 			finally:

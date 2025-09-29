@@ -526,8 +526,8 @@ class main(QWidget):
 			try:
 				self.screenShot.addImage(icn)
 			except Exception as e:
-				pprint("Error adding image")
-				print(e)
+				print("Error adding image")
+				self._debug(e)
 	#def _loadScreenshots
 
 	def _loadSuggested(self,*args):
