@@ -59,6 +59,7 @@ class QPushButtonRebostApp(QPushButton):
 		#Progress indicator
 		self.progress=self._defProgress()
 		self.layout().addWidget(self.progress,0,0,Qt.AlignRight|Qt.AlignTop)
+		self.lockTooltip=False
 		self._renderGui()
 	#def __init__
 
@@ -273,7 +274,7 @@ class QPushButtonRebostApp(QPushButton):
 			self.label.setText(text)
 			if self._compactMode==False:
 				self.setToolTip(text)
-			else:
+			elif self.lockTooltip==False:
 				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
 				self.setToolTip(text)
 		if self._compactMode==False:
