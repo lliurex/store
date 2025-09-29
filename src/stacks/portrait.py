@@ -128,6 +128,7 @@ class portrait(QStackedWindowItem):
 		self.i18nCat={}
 		self.oldCat=""
 		self.catI18n={}
+		self.apps={}
 		self.appsToLoad=-1
 		self.appsLoaded=0
 		self.appsSeen=[]
@@ -346,6 +347,7 @@ class portrait(QStackedWindowItem):
 	#def keyPressEvent
 
 	def __initScreen__(self):
+		print("-------------------------")
 		self.box=QGridLayout()
 		self.setLayout(self.box)
 		self.box.setContentsMargins(0,0,0,0)
