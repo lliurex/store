@@ -194,7 +194,8 @@ class QPushButtonRebostApp(QPushButton):
 	#def __init__
 
 	def _emitInstall(self,*args):
-		self.progress.setVisible(True)
+		self.progress.show()
+		self.lblFlyIcon.hide()
 		self.install.emit(self,self.app)
 	#def _emitInstall
 
@@ -263,7 +264,8 @@ class QPushButtonRebostApp(QPushButton):
 			return
 		_showBtn=self._showBtn
 		if self.progress.isVisible()==True:
-			self.progress.setVisible(False)
+			self.progress.hide()
+			self.lblFlyIcon.show()
 		if self.app.get("name","").strip()!="":
 			if self.app.get("summary","")!="" and self._compactMode==False:
 				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
@@ -284,10 +286,6 @@ class QPushButtonRebostApp(QPushButton):
 				self.setToolTip(text)
 		if self._compactMode==False:
 			self._setActionForButton()
-		if int(self.app.get("state","0"))>=7:
-			self.btn.setCursor(QCursor(Qt.WaitCursor))
-			self.btn.setEnabled(False)
-			self.progress.setVisible(True)
 		self.iconUri.setVisible(True)
 		self.flyIcon=""
 		if self.app.get("name","").startswith("zero-"):
@@ -300,6 +298,11 @@ class QPushButtonRebostApp(QPushButton):
 			self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.FastTransformation))
 		if self.btn.isVisible()!=_showBtn:
 			self.btn.setVisible(_showBtn)
+		if int(self.app.get("state","0"))>=7:
+			self.btn.setCursor(QCursor(Qt.WaitCursor))
+			self.btn.setEnabled(False)
+			self.progress.show()
+			self.lblFlyIcon.hide()
 	#def updateScreen
 
 	def enterEvent(self,*args):
