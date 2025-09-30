@@ -101,6 +101,7 @@ class main(QWidget):
 			img=blogRss[cont].get("img","")
 			if img=="":
 				continue
+			print(blogRss[cont])
 			app={"name":"",
 				"summary":"<a href=\"{0}\">{1}</a><br>".format(blogRss[cont]["link"],blogRss[cont]["title"]),
 				"homepage":"{0}".format(blogRss[cont]["link"]),
@@ -117,7 +118,7 @@ class main(QWidget):
 			btn.iconUri.setEnabled(True)
 			btn.clicked.connect(self._openBlog)
 			btn.updateScreen()
-			btn.setToolTip(blogRss[cont]["title"].capitalize())
+			btn.setToolTip(blogRss[cont]["summary"].capitalize())
 			cont+=1
 		self.blog.setCursor(self.oldCursor)
 	#def _setBlogData
