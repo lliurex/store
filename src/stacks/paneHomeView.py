@@ -111,11 +111,13 @@ class main(QWidget):
 			btn.iconUri.setFixedHeight(IMAGE_PREVIEW*0.5)
 			btn.label.setFixedWidth(IMAGE_PREVIEW)
 			btn.setMinimumWidth(IMAGE_PREVIEW)
+			btn.lockTooltip=True
 			btn.setApp(app)
 			btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 			btn.iconUri.setEnabled(True)
 			btn.clicked.connect(self._openBlog)
 			btn.updateScreen()
+			btn.setToolTip(blogRss[cont]["title"].capitalize())
 			cont+=1
 		self.blog.setCursor(self.oldCursor)
 	#def _setBlogData
