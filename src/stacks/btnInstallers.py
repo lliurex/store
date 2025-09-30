@@ -43,6 +43,7 @@ class QPushButtonInstaller(QPushButton):
 		self.menuInstaller.addAction(act)
 		self.menuInstaller.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
 		self.menuInstaller.aboutToShow.connect(self._setActionForMenu)
+		self.setProperty("clicked",False)
 	#def __init__
 
 	def _debug(self,msg):
@@ -104,7 +105,10 @@ class QPushButtonInstaller(QPushButton):
 		bundlesSorted=self.helper.getBundlesByPriority(self.app)
 		if len(bundlesSorted)==0:
 			return
-		#arrow + bar=48px
+		self.style().unpolish(self)
+		self.setProperty("clicked",True)
+		self.style().polish(self)
+		QApplication.processEvents()
 		if args[0].x()>(self.rect().width()-48):
 			self._loadLaunchers(bundlesSorted)
 			self.showMenu()
