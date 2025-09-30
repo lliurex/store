@@ -11,8 +11,14 @@ import gettext
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
-i18n={"INSTALL":_("Install"),
-		"HELP":_("What's this?")}
+i18n={
+	"HELP":_("What's this?"),
+	"INSTALL":_("Install"),
+	"OPEN":_("Z-Install"),
+	"REMOVE":_("Remove"),
+	"UNAUTHORIZED":_("Blocked"),
+	"UNAVAILABLE":_("Unavailable")
+	}
 
 class QPushButtonInstaller(QPushButton):
 	installerClicked=Signal(str)
@@ -37,6 +43,7 @@ class QPushButtonInstaller(QPushButton):
 		self.menuInstaller.addAction(act)
 		self.menuInstaller.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Maximum)
 		self.menuInstaller.aboutToShow.connect(self._setActionForMenu)
+		self.setProperty("clicked",False)
 	#def __init__
 
 	def _debug(self,msg):
@@ -98,7 +105,10 @@ class QPushButtonInstaller(QPushButton):
 		bundlesSorted=self.helper.getBundlesByPriority(self.app)
 		if len(bundlesSorted)==0:
 			return
-		#arrow + bar=48px
+		self.style().unpolish(self)
+		self.setProperty("clicked",True)
+		self.style().polish(self)
+		QApplication.processEvents()
 		if args[0].x()>(self.rect().width()-48):
 			self._loadLaunchers(bundlesSorted)
 			self.showMenu()
@@ -109,11 +119,7 @@ class QPushButtonInstaller(QPushButton):
 			self._emitInstall(None,{"name":"{}<br>{}".format(self.app["id"],bundle)})
 	#def mousePressEvent
 
-	def _loadLaunchers(self,bundlesSorted):
-		self._debug("Loading launchers")
-		for chld in self.dlgInstallers.children():
-			if isinstance(chld,QPushButtonRebostApp) or isinstance(chld,QPushButton):
-				chld.setParent(None)
+	def _populateInstallers(self,bundlesSorted):
 		cont=0
 		for idx,bundleData in bundlesSorted.items():
 			try:
@@ -145,5 +151,53 @@ class QPushButtonInstaller(QPushButton):
 				wdg.lblFlyIcon.show()
 			self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
 			cont+=1
+	#def _populateInstallers
+
+	def _setActionForButton(self):
+		self.setText(i18n["INSTALL"])
+		self.setMenu(self.menuInstaller)
+		if self.app.get("forbidden",False)==True:
+			self.setText(i18n["UNAUTHORIZED"])
+			self.setMenu(None)
+			self.setEnabled(False)
+		elif len(self.app.get("bundle",{}))==0:
+			self.setText(i18n["UNAVAILABLE"])
+			self.setMenu(None)
+			self.setEnabled(False)
+		else: #app seems authorized and available
+			self.setEnabled(True)
+			bundles=self.app["bundle"]
+			status=self.app["status"]
+			zmd=bundles.get("unknown","")
+			action="install"
+			if zmd==self.app["name"]==self.app["pkgname"]:
+				action="open"
+			else:
+				for bundle,appstatus in status.items():
+					if int(appstatus)==0:# and zmdInstalled!="0":
+						action="remove"
+						break
+			if action=="install":
+				self.setVisible(True)
+				self.setEnabled(True)
+				self.setText(i18n["INSTALL"])
+			elif action=="open":
+				self.setVisible(True)
+				self.setEnabled(True)
+				self.setText(i18n["OPEN"])
+				self.instBundle="unknown"
+			else:
+				self.setMenu(None)
+				self.setText(i18n["REMOVE"])
+	#def _setActionForButton
+
+	def _loadLaunchers(self,bundlesSorted):
+		self._debug("Loading launchers")
+		for chld in self.dlgInstallers.children():
+			if isinstance(chld,QPushButtonRebostApp) or isinstance(chld,QPushButton):
+				chld.setParent(None)
+		self._setActionForButton()
+		if self.isEnabled()==True:
+			self._populateInstallers(bundlesSorted)
 	#def _loadLaunchers
 

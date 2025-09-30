@@ -200,13 +200,12 @@ class main(QWidget):
 	#def _getRunappResults
 
 	def _setInstallingState(self):
-		if self.btnRemove.isVisible()==True:
+		if self.cmbBundles.text()==i18n["REMOVE"]:
 			self.app["state"]=8
-			if self.btnRemove.text()==i18n["REMOVE"]:
-				self._rebost.setAction("setAppState",self.app["id"],8)
+			self._rebost.setAction("setAppState",self.app["id"],8)
 		else:
-			self._rebost.setAction("setAppState",self.app["id"],7)
 			self.app["state"]=7
+			self._rebost.setAction("setAppState",self.app["id"],7)
 		self._rebost.start()
 		self._rebost.wait()
 	#def _setInstallingState
@@ -214,9 +213,12 @@ class main(QWidget):
 	@Slot("PyObejct,","PyObject")
 	def _genericEpiInstall(self,*args):
 		self._setInstallingState()
+		bondle=""
 		if len(args)>0:
 			bundle=args[0].lower()
-		self.requestInstallApp.emit(self.btnRemove,self.app,bundle)
+			if bundle=="epi":
+				bundle="unknown"
+		self.requestInstallApp.emit(self.cmbBundles,self.app,bundle)
 	#def _genericEpiInstall
 
 	def _tagLinkClicked(self,*args):
@@ -332,18 +334,6 @@ class main(QWidget):
 		self.lblRelease.hide()
 		lay.addWidget(self.lblRelease,1,3,1,1,Qt.AlignLeft|Qt.AlignTop)
 
-		self.btnRemove=QPushButton(i18n.get("REMOVE"))
-		self.btnRemove.setObjectName("btnInstall")
-		self.btnRemove.clicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
-		lay.addWidget(self.btnRemove,1,3,1,1)
-		self.btnRemove.hide()
-
-		self.btnUnavailable=QPushButton(i18n.get("UNAUTHORIZED"))
-		#self.btnUnavailable.setObjectName("cmbBundles")
-		self.btnUnavailable.setEnabled(False)
-		lay.addWidget(self.btnUnavailable,1,3,1,1)
-		self.btnUnavailable.hide()
-
 		launchers.setLayout(hlay)
 		lay.addWidget(launchers,1,3,1,1,Qt.AlignTop|Qt.AlignRight)
 
@@ -351,9 +341,8 @@ class main(QWidget):
 		self.cmbBundles.installerClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
 		self.cmbBundles.setText(i18n["INSTALL"])
 		self.cmbBundles.setVisible(False)
-		self.cmbBundles.setMinimumSize(self.btnRemove.size().width()/3,ICON_SIZE/2)
-		self.btnRemove.setFixedSize(self.cmbBundles.size())
-		self.btnUnavailable.setFixedSize(self.cmbBundles.size())
+		self.cmbBundles.setMinimumSize(ICON_SIZE*4,ICON_SIZE/2)
+		self.cmbBundles.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
 		lay.addWidget(self.cmbBundles,1,3,1,1)
 		self.cmbBundles.hide()
 
@@ -670,8 +659,6 @@ class main(QWidget):
 			self.app["categories"]=["Forbidden"]
 		self.cmbBundles.setEnabled(False)
 		self.lblRelease.setEnabled(False)
-		self.btnRemove.setEnabled(False)
-		self.btnUnavailable.setEnabled(False)
 		self.blur=QGraphicsBlurEffect() 
 		self.blur.setBlurRadius(55) 
 		self.lblBkg.setGraphicsEffect(self.blur)
@@ -688,66 +675,17 @@ class main(QWidget):
 	def _setLauncherStatus(self):
 		if int(self.app.get("state","0"))>=7:
 			try:
-				self.btnRemove.blockSignals(True)
 				self.cmbBundles.blockSignals(True)
 			except Exception as e: #Don't worry
 				print(e)
-			self.btnRemove.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			self.cmbBundles.setCursor(QtGui.QCursor(Qt.WaitCursor))
 		else:
 			try:	
-				self.btnRemove.blockSignals(False)
 				self.cmbBundles.blockSignals(False)
 			except: #Be happy
 				pass
-			self.btnRemove.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 			self.cmbBundles.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 	#def _setLauncherStatus
-
-	def _setLauncherOptions(self):
-		visible=True
-		bundle=self.cmbBundles.currentText()
-		self.btnUnavailable.hide()
-		bundle=bundle.split(" ")[0]
-		self.lblRelease.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
-		self.cmbBundles.blockSignals(True)
-		self.cmbBundles.setText(i18n["INSTALL"].upper())
-		self.btnRemove.hide()
-		self.btnRemove.setEnabled(False)
-		bundles=self.app.get("bundle",{})
-		zmd=bundles.get("unknown","")
-		status=self.app.get("status",{})
-		self.btnRemove.setText("")
-		if self.app.get("forbidden",False)==True:
-			self.btnUnavailable.show()
-			self.btnRemove.hide()
-			self.cmbBundles.hide()
-		elif len(status)>0:
-			if zmd!="" and len(bundles)==2: #2->pkg that belongs to a zmd
-				self.btnRemove.setText(i18n["OPEN"])
-			else:
-				for bundle,appstatus in status.items():
-					if int(appstatus)==0:# and zmdInstalled!="0":
-						if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
-							self.btnRemove.setText(i18n["OPEN"])
-							break
-						elif self.btnRemove.text()!=i18n["REMOVE"]:
-							self.btnRemove.setText(i18n["REMOVE"])
-							self.instBundle=bundle
-							break
-		elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
-				self.btnRemove.show()
-				self.btnRemove.setEnabled(True)
-				self.btnRemove.setText(i18n["OPEN"])
-		if self.btnRemove.text()!="":
-			self.btnRemove.setEnabled(True)
-			self.btnRemove.setMinimumSize(self.cmbBundles.size())
-			self.btnUnavailable.setMinimumSize(self.cmbBundles.size())
-			self.btnRemove.show()
-			self.cmbBundles.hide()
-		self._setLauncherStatus()
-		self.cmbBundles.blockSignals(False)
-	#def _setLauncherOptions
 
 	def _initScreen(self):
 		#Reload config if app has been epified

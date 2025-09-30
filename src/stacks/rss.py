@@ -88,7 +88,7 @@ class rssParser(QThread):
 					if feed=="blog":
 						idx=len(parsedFeeds)
 						links=item.get("links",[""])[0]
-						parsedFeeds.update({idx:{"type":feed,"title":item.get("title",""),"link":links.href}})
+						parsedFeeds.update({idx:{"type":feed,"title":item.get("title",""),"summary":item.get("summary",""),"link":links.href}})
 					else:
 						lastApps=self._getLastApps(item.get("content"))
 						for app,link in lastApps:
