@@ -301,8 +301,6 @@ class portrait(QStackedWindowItem):
 						self.runapp.setArgs(app,[installer,pkg,bundle])
 						self.runapp.start()
 					else:
-						print(app)
-						print("HERE I AM")
 						self.zmd.setApp(app)
 						self.zmd.start()
 		except Exception as e:
