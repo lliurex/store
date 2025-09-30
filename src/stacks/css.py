@@ -47,15 +47,12 @@ def btnRebost():
 					border:1px solid;
 					border-color:%s;
 					border-radius:%spx;
-					}
-				#btnInstaller::drop-down{ subcontrol-origin: padding;
-					subcontrol-position: top right;
-					border-top-right-radius: %spx; /* same radius as the QComboBox */
-					border-bottom-right-radius: %spx;
-				}
-				#btnInstaller {
 					background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
 				}
+				#btnInstaller:disabled{
+					color:#AAAAAA;
+				}
+
 				#btnInstaller::menu-indicator{
 					image: url("%s/drop-down16x16.png");
 					right:%spx;
@@ -66,11 +63,19 @@ def btnRebost():
 					padding-bottom:6px;
 					padding-left:12px;
 				}
-				#btnInstaller::menu-indicator:on { /* shift the arrow when popup is open */
+
+				/* REM for reference */
+				/*#btnInstaller::drop-down{ subcontrol-origin: padding;*/
+
+				#btnInstaller::menu-indicator:disabled{
+					color:#AAAAAA;
+				}
+
+				#btnInstaller::menu-indicator:checked { /* shift the arrow when popup is open */
 					top: 1px;
 					right: %spx;
 				}
-				"""%(COLOR_BORDER,RADIUS,RADIUS,RADIUS,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,RSRC,int(MARGIN)*2,COLOR_BORDER,MARGIN,int(MARGIN)*2,int(MARGIN)*1.9)
+				"""%(COLOR_BORDER,RADIUS,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,RSRC,int(MARGIN)*2,COLOR_BORDER,MARGIN,int(MARGIN)*2,int(MARGIN)*1.9)
 	css=css+btnInstaller
 
 	return(css)
