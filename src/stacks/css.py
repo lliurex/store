@@ -49,7 +49,13 @@ def btnRebost():
 					border-radius:%spx;
 					background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
 				}
+
 				#btnInstaller:disabled{
+					color:#AAAAAA;
+				}
+
+				*[clicked]{
+					border:3px inset silver;
 					color:#AAAAAA;
 				}
 
