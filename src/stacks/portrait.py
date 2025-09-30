@@ -293,7 +293,7 @@ class portrait(QStackedWindowItem):
 						self.installingBtn=wdg
 						if wdg.btn.text()==i18n["REMOVE"]:
 							state=8
-					elif isinstance(wdg,QPushButton):
+					elif hasattr(wdg,"text"):
 						if wdg.text()==i18n["REMOVE"]:
 							state=8
 					if bundle!="unknown":
@@ -301,6 +301,8 @@ class portrait(QStackedWindowItem):
 						self.runapp.setArgs(app,[installer,pkg,bundle])
 						self.runapp.start()
 					else:
+						print(app)
+						print("HERE I AM")
 						self.zmd.setApp(app)
 						self.zmd.start()
 		except Exception as e:
@@ -347,7 +349,6 @@ class portrait(QStackedWindowItem):
 	#def keyPressEvent
 
 	def __initScreen__(self):
-		print("-------------------------")
 		self.box=QGridLayout()
 		self.setLayout(self.box)
 		self.box.setContentsMargins(0,0,0,0)
@@ -734,7 +735,14 @@ class portrait(QStackedWindowItem):
 
 	def _endLoadInstalled(self,*args):
 		self.appsRaw=json.loads(args[0])
-		self.apps=self.appsRaw.copy()
+		self.apps=[]
+		for app in self.appsRaw:
+			#Discard zmds from list
+			if app["bundle"].get("unknown","")!="":
+				if app["bundle"].get("unknown")==app["name"]==app["pkgname"]:
+					continue
+			self.apps.append(app)
+		#self.apps=self.appsRaw.copy()
 		self.loading=False
 		self._debug("LOAD INSTALLED END")
 		self._showPane(self._globalView)
