@@ -2,6 +2,26 @@
 import os
 from constants import *
 
+def btnToggle():
+	css=""
+	btnOption="""#btnOption[origin=false]{
+				/*background: qradialgradient(cx:0.5, cy:0.5,radius:0.7,fx:0.5,fy:0.9,stop:0 %s, stop:1 %s);*/
+				border: 3px dashed %s;
+				background-color: #1A%s
+			}
+
+				#btnOption[origin=true]{
+				border: 2px solid %s;
+/*				background: %s;*/
+			}
+				QLabel{
+				color: %s;
+			}
+			"""%(COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK,COLOR_BORDER,COLOR_BORDER_DARK.replace("#",""),COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARKEST,COLOR_FONT_LIGHT)
+	css+=btnOption
+	return(css)
+#def btnToggle
+
 def btnRebost():
 	css=""
 	rebostapp="""#rebostapp {

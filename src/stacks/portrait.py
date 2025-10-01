@@ -14,6 +14,7 @@ from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
 from libth import storeHelper,llxup
 from btnRebost import QPushButtonRebostApp
+from btnToggle import QPushButtonToggle
 from prgBar import QProgressImage
 from barCategories import QToolBarCategories
 import libhelper
@@ -193,30 +194,27 @@ class portrait(QStackedWindowItem):
 	#def _chkNetwork
 
 	def _chkUserGroup(self):
+		lockedUser=False
 		grpData=grp.getgrnam("sudo")
 		if grpData.gr_gid not in os.getgroups():
-			self.locked=True
+			userlocked=True
+		return(lockedUser)
 	#def _chkUserGroup(self):
 
 	def _endGetLockStatus(self,*args):
-		self.certified.blockSignals(True)
 		jconfig=args[0]
 		self.locked=jconfig.get("onlyVerified",False)
+		lockedUser=self._chkUserGroup()
 		if not isinstance(self.locked,bool):
 			if int(self.locked)==0:
 				self.locked=False
 			else:
 				self.locked=True
 		if self.locked==False: #conf is unlocked, check groups 
-			self._chkUserGroup()
-			self.certified.setChkVisible(not(self.locked))
-			if self.locked==True:
+			if lockedUser==True:
 				self._unlockRebost()
-		self.certified.setChecked(self.locked)
-		self.certified.blockSignals(False)
+		self.certified.setLocked(self.locked,lockedUser)
 		self._debug("<-------- Rebost status acquired (lock {})".format(self.locked))
-		self._getApps()
-		self._endUpdate()
 	#def _endGetLockStatus
 
 	def _endLock(self,*args):
@@ -398,7 +396,8 @@ class portrait(QStackedWindowItem):
 		vbox=QVBoxLayout()
 		wdg.setLayout(vbox)
 		vbox.setContentsMargins(10,0,10,0)
-		self.certified=self._defAppseduChk()
+		self.certified=QPushButtonToggle()
+		self.certified.toggleClicked.connect(self._unlockRebost)
 		vbox.addWidget(self.certified,Qt.AlignCenter)
 		self.lstCategories=QListWidget()
 		self.lstCategories.setObjectName("lstCategories")
@@ -479,34 +478,8 @@ class portrait(QStackedWindowItem):
 			self._rebost.wait()
 		self._rebost.start()
 		self._rebost.wait()
-		#self.updateScreen()
+		self._goHome()
 	#def _unlockRebost
-
-	def _defAppseduChk(self):
-		wdg=QWidget()
-		lay=QHBoxLayout()
-		lay.setSpacing(0)
-		lbl=QLabel()
-		chk=QCheckBox()
-		chk.setObjectName("certifiedChk")
-		wdg.setChecked=chk.setChecked
-		wdg.isChecked=chk.isChecked
-		wdg.setChkVisible=chk.setVisible
-		wdg.blockSignals=chk.blockSignals
-		if self.locked==True:
-			chk.setChecked(True)
-		chk.stateChanged.connect(self._unlockRebost)
-		wdg.setObjectName("certified")
-		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","appsedu128x64.png")
-		pxm=QtGui.QPixmap(img).scaled(132,40,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
-		lbl.setPixmap(pxm)
-		lbl.setAlignment(Qt.AlignCenter|Qt.AlignCenter)
-		lay.addWidget(lbl,Qt.AlignRight)
-		lay.addWidget(chk,Qt.AlignLeft)
-		wdg.setLayout(lay)
-		wdg.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
-		return(wdg)
-	#def _defAppseduChk
 
 	def _defInst(self):
 		btnInst=QPushButton(i18n.get("INSTALLED"))
