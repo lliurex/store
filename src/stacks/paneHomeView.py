@@ -258,7 +258,7 @@ class main(QWidget):
 					break
 			if "applications" not in icn:
 				icn="applications-other"
-			app={"name":_(apps[idx]),"icon":icn,"pkgname":apps[idx],}
+			app={"name":_(apps[idx]),"icon":icn,"pkgname":apps[idx]}
 			btn=QPushButtonRebostApp(app,iconSize=64)
 			btn.autoUpdate=True
 			btn.clicked.connect(self._loadCategory)

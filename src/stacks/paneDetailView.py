@@ -412,23 +412,29 @@ class main(QWidget):
 		if homepage=='':
 			homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
 		if not isinstance(homepage,str):
-			homepage='https://portal.edu.gva.es/appsedu/aplicacions-lliurex'
+			homepage=""
+			#homepage='https://portal.edu.gva.es/appsedu/aplicacions-lliurex'
 		text=""
 		if homepage:
 			homepage=homepage.rstrip("/")
 			desc=homepage
+			print(desc)
 			if desc.startswith("https://portal.edu.gva.es/appsedu")==True:
 				desc=i18n.get("SEEIT")
 			else:
 				desc=i18n.get("SITE")
 			text='<a href="{0}" style="text-decoration:none;"><strong>{1}</strong></a> '.format(homepage,desc)
-		item=QListWidgetItem()
-		self.lstLinks.addItem(item)
-		lbl=QLabelLink(text)
-		lbl.setToolTip(homepage)
-		lbl.setOpenExternalLinks(True)
-		item.setSizeHint(QSize(lbl.sizeHint()))
-		self.lstLinks.setItemWidget(item,lbl)
+		if len(text)>0:
+			item=QListWidgetItem()
+			self.lstLinks.addItem(item)
+			lbl=QLabelLink(text)
+			lbl.setToolTip(homepage)
+			lbl.setOpenExternalLinks(True)
+			item.setSizeHint(QSize(lbl.sizeHint()))
+			self.lstLinks.setItemWidget(item,lbl)
+			self.lstLinks.show()
+		else:
+			self.lstLinks.hide()
 	#def _populateLinks
 
 	def _defLstLinks(self):
@@ -624,6 +630,18 @@ class main(QWidget):
 			if keyword not in tags and len(keyword)>1:
 				#Disabled as requisite  (250214-11:52)
 				tags+="<a href=\"#{0}\" style=\"{1}\">#{0}</a> ".format(keyword,style)
+		if tags.count(" ")<4:
+			cont=0
+			for word in self.app.get("summary","").split(" "):
+				if len(word)<3:
+					continue
+				elif word.lower() in ["open","source","system","the","with","some","any"]:
+					continue
+				b="".join([ w for w in word if w.isalpha() ])
+				tags+="<a href=\"#{0}\" style=\"{1}\">#{0}</a> ".format(b,style)
+				cont+=1
+				if cont==4:
+					break
 		return("{}".format(tags.strip(" / ")))
 	#def _generateAppTags
 
