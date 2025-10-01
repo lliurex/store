@@ -14,7 +14,6 @@ gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
 i18n={"INSTALL":_("Install"),
-	"INSTALL":_("Install"),
 	"OPEN":_("Z-Install"),
 	"REMOVE":_("Remove"),
 	"UNAUTHORIZED":_("Blocked"),
@@ -324,6 +323,7 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.blockSignals(True)
 			self.btn.setEnabled(False)
 		else:
+			self.btn.blockSignals(False)
 			self.btn.setEnabled(True)
 	#def _applyDecoration
 
