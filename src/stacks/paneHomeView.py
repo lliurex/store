@@ -101,7 +101,6 @@ class main(QWidget):
 			img=blogRss[cont].get("img","")
 			if img=="":
 				continue
-			print(blogRss[cont])
 			app={"name":"",
 				"summary":"<a href=\"{0}\">{1}</a><br>".format(blogRss[cont]["link"],blogRss[cont]["title"]),
 				"homepage":"{0}".format(blogRss[cont]["link"]),
