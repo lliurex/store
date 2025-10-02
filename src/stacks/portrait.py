@@ -204,7 +204,7 @@ class portrait(QStackedWindowItem):
 	def _endGetLockStatus(self,*args):
 		jconfig=args[0]
 		self.locked=jconfig.get("onlyVerified",False)
-		lockedUser=self._chkUserGroup()
+		lockedUser=not(self._chkUserGroup())
 		if not isinstance(self.locked,bool):
 			if int(self.locked)==0:
 				self.locked=False
@@ -478,12 +478,13 @@ class portrait(QStackedWindowItem):
 			self._rebost.wait()
 		self._rebost.start()
 		self._rebost.wait()
-		self._goHome()
+		self._showPane(self._homeView)
 	#def _unlockRebost
 
 	def _defInst(self):
 		btnInst=QPushButton(i18n.get("INSTALLED"))
 		btnInst.clicked.connect(self._loadInstalled)
+		btnInst.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		return(btnInst)
 	#def _defHome
 
@@ -844,7 +845,8 @@ class portrait(QStackedWindowItem):
 			self.appsRaw.extend(item)
 		self.apps=self.appsRaw.copy()
 		self._globalView.loadApps(self.apps)
-		self.barCategories.show()
+		#REM This show launches also after locking store. Investigate but disable ATM
+		#self.barCategories.show()
 		self.oldTime=time.time()
 	#def _endLoadCategory
 
