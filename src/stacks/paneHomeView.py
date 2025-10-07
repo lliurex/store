@@ -3,9 +3,9 @@ import sys,signal
 import os,json,time
 import subprocess
 from functools import partial
-from PySide2.QtWidgets import QLabel, QWidget,QHBoxLayout,QVBoxLayout,QSizePolicy,QPushButton,QGridLayout,QApplication
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal
+from PySide6.QtWidgets import QLabel, QWidget,QHBoxLayout,QVBoxLayout,QSizePolicy,QPushButton,QGridLayout,QApplication
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal
 from QtExtraWidgets import QScreenShotContainer
 import gettext
 import css
