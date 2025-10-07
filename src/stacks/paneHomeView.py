@@ -87,7 +87,7 @@ class main(QWidget):
 				#WTF There're apps not included. This should not happen. WTF!!!
 				self._rebost.setAction("urlSearch",urls)
 				self._rebost.start()
-				self._rebost.wait()
+				#self._rebost.wait()
 			else:
 				self._setBlogData(apps)
 	#def _processRss(self,*args,**kwargs):
@@ -273,7 +273,7 @@ class main(QWidget):
 		self._debug("Get apps per category")
 		self._rebost.setAction("getAppsInstalledPerCategory")
 		self._rebost.start()
-		self._rebost.wait()
+		#self._rebost.wait()
 	#def _getAppsByCat
 
 	def _defAppsByCat(self):
