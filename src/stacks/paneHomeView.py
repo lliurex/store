@@ -24,6 +24,7 @@ class main(QWidget):
 	clickedBlog=Signal("PyObject")
 	clickedApp=Signal("PyObject","PyObject","PyObject")
 	requestInstallApp=Signal("PyObject","PyObject")
+	loaded=Signal()
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=True
@@ -84,7 +85,6 @@ class main(QWidget):
 						break
 					url=apps[idx]["link"]
 					urls.append(url)
-				#WTF There're apps not included. This should not happen. WTF!!!
 				self._rebost.setAction("urlSearch",urls)
 				self._rebost.start()
 				self._rebost.wait()
@@ -186,6 +186,7 @@ class main(QWidget):
 				break
 			cont+=1
 		self.appsEdu.setCursor(self.oldCursor)
+		self.loaded.emit()
 	#def _setAppseduData
 
 	def _loadApp(self,*args):
@@ -267,13 +268,14 @@ class main(QWidget):
 			lay.addWidget(btn,Qt.AlignTop)
 		lay.addSpacing(int(MARGIN)*8)
 		self.appsByCat.setCursor(QtGui.QCursor(self.oldCursor))
+		self.loaded.emit()
 	#def _setAppsByCat
 
 	def _getAppsByCat(self):
 		self._debug("Get apps per category")
 		self._rebost.setAction("getAppsInstalledPerCategory")
 		self._rebost.start()
-		self._rebost.wait()
+		#self._rebost.wait()
 	#def _getAppsByCat
 
 	def _defAppsByCat(self):
@@ -308,16 +310,3 @@ class main(QWidget):
 	#	self._getBlog()
 	#	self._getAppsedu()
 	#def updateScreen
-
-	def updateBtn(self,btn,app):
-		if btn!=None:
-			if btn in self.appsEdu.children():
-				btn.setApp(app)
-	#def updateBtn
-
-	def _stopThreads(self):
-		self._stop=True
-		for th in self.th:
-			th.quit()
-		self._rebost.blockSignals(False)
-	#def _stopThreads

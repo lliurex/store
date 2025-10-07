@@ -344,6 +344,17 @@ class portrait(QStackedWindowItem):
 				self.searchBox.setText(args[0].text())
 	#def keyPressEvent
 
+	def _chkCategories(self,*args):
+		if self.lstCategories.count()<=0:
+			self._rebost.blockSignals(False)
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
+			self._rebost.wait()
+			self.prgCat.stop()
+			self.prgCat.hide()
+			self.lstCategories.show()
+	#def _chkCategories
+
 	def __initScreen__(self):
 		self.box=QGridLayout()
 		self.setLayout(self.box)
@@ -353,8 +364,8 @@ class portrait(QStackedWindowItem):
 		navwdg=self._defNavigationPane()
 		navwdg.setObjectName("wdg")
 		self.box.addWidget(navwdg,0,0,4,1,Qt.AlignLeft)
-		searchwdg=self._defSearch()
-		self.box.addWidget(searchwdg,0,1)
+		self.searchwdg=self._defSearch()
+		self.box.addWidget(self.searchwdg,0,1)
 		spacer=QLabel(" ")
 		spacer.setAttribute(Qt.WA_StyledBackground, True)
 		spacer.setStyleSheet("background:{};".format(COLOR_BACKGROUND_LIGHT))
@@ -371,7 +382,12 @@ class portrait(QStackedWindowItem):
 		self._detailView=self._getDetailViewPane()
 		self.box.addWidget(self._detailView,3,1)
 		self._detailView.hide()
-		self.btnSettings=QPushButton()
+		self.prgCat=QProgressImage(self)
+		self.prgCat.sleepSeconds=55
+		self.prgCat.setColor(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_DARKEST)
+		self.prgCat.lblInfo.setWordWrap(True)
+		self.box.addWidget(self.prgCat,0,0,4,2)
+		self.prgCat.start()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		self.box.setColumnStretch(1,1)
 		self.box.setRowStretch(0,0)
@@ -409,6 +425,7 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.currentItemChanged.connect(self._decoreLstCategories)
 		self.lstCategories.itemActivated.connect(self._loadCategory)
 		self.lstCategories.itemClicked.connect(self._loadCategory)
+		self.lstCategories.hide()
 		self.lblInfo=self._defInfo()
 		vbox.addSpacing(30)
 		vbox.addWidget(self.lblInfo,Qt.AlignBottom)
@@ -477,13 +494,14 @@ class portrait(QStackedWindowItem):
 			self._rebost.requestInterruption()
 			self._rebost.wait()
 		self._rebost.start()
-		self._rebost.wait()
-		self._goHome()
+		#self._rebost.wait()
+		self._showPane(self._homeView)
 	#def _unlockRebost
 
 	def _defInst(self):
 		btnInst=QPushButton(i18n.get("INSTALLED"))
 		btnInst.clicked.connect(self._loadInstalled)
+		btnInst.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		return(btnInst)
 	#def _defHome
 
@@ -604,6 +622,7 @@ class portrait(QStackedWindowItem):
 		hvp.clickedApp.connect(self._loadHomeDetails)
 		hvp.clickedCategory.connect(self._loadCategory)
 		hvp.requestInstallApp.connect(self._installApp)
+		hvp.loaded.connect(self._chkCategories)
 		return(hvp)
 	#def _getHomeViewPane
 
@@ -844,7 +863,8 @@ class portrait(QStackedWindowItem):
 			self.appsRaw.extend(item)
 		self.apps=self.appsRaw.copy()
 		self._globalView.loadApps(self.apps)
-		self.barCategories.show()
+		#REM This show launches also after locking store. Investigate but disable ATM
+		#self.barCategories.show()
 		self.oldTime=time.time()
 	#def _endLoadCategory
 
@@ -858,7 +878,7 @@ class portrait(QStackedWindowItem):
 		if self.lstCategories.count()<=0:
 			self._rebost.setAction("getCategories")
 			self._rebost.start()
-			self._rebost.wait()
+			#self._rebost.wait()
 		showPane.show()
 		showPane.setCursor(self.oldCursor)
 		showPane.setFocus()
@@ -1018,25 +1038,26 @@ class portrait(QStackedWindowItem):
 
 	def updateScreen(self,addEnable=None):
 		#self._rebost.wait()
+		if self.lstCategories.count()<=0:
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
 		isConnected=self._chkNetwork()
 		if isConnected==False:
 			self._endUpdate()
 			self._showPane(self._errorView)
 			self._stopThreads()
 			return
+		self._rebost.setAction("config")
+		self._rebost.start()
 		if self._referrerPane!=None:
 			self._showPane(self._referrerPane)
 		if self._detailView.isVisible():
 			self._stopThreads()
 		elif self._homeView.isVisible():
-			self._stopThreads()
+			if self.init==True:
+				self._stopThreads()
 			if len(self._homeView.layout().children())==0:
 				self._homeView.updateScreen()
 			self._endUpdate()
 		self._getUpgradables()
-		self._rebost.setAction("config")
-		self._rebost.start()
-		if self.lstCategories.count()<=0:
-			self._rebost.setAction("getCategories")
-			self._rebost.start()
 	#def _updateScreen
