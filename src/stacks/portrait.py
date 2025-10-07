@@ -860,7 +860,7 @@ class portrait(QStackedWindowItem):
 		if self.lstCategories.count()<=0:
 			self._rebost.setAction("getCategories")
 			self._rebost.start()
-			self._rebost.wait()
+			#self._rebost.wait()
 		showPane.show()
 		showPane.setCursor(self.oldCursor)
 		showPane.setFocus()
