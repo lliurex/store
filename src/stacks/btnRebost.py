@@ -5,7 +5,6 @@ import json
 from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout
 from PySide2.QtCore import Qt,Signal,QEvent,QSize
 from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
-from QtExtraWidgets import QScreenShotContainer
 from lblApp import QLabelRebostApp
 import css
 from constants import *
@@ -65,19 +64,20 @@ class QPushButtonRebostApp(QPushButton):
 	@staticmethod
 	def _stop(*args):
 		selfDict=args[0]
-		if "scr" in selfDict.keys():
-			self["scr"].blockSignals(True)
-			self["scr"].requestInterruption()
-			self["scr"].deleteLater()
-			self["scr"].wait()
-		for th in selfDict.get("th",[]):
-			th.blockSignals(True)
-			th.requestInterruption()
-			th.deleteLater()
-			th.wait()
+		#if "scr" in selfDict.keys():
+		#	self["scr"].blockSignals(True)
+		#	self["scr"].requestInterruption()
+		#	self["scr"].deleteLater()
+		#	self["scr"].wait()
+		#for th in selfDict.get("th",[]):
+		#	th.blockSignals(True)
+		#	th.requestInterruption()
+		#	th.deleteLater()
+		#	th.wait()
 		if selfDict.get("data","")!="":
 			self["data"].blockSignals(True)
 			self["data"].requestInterruption()
+			self["data"].quit()
 			self["data"].deleteLater()
 			self["data"].wait()
 	#def _onDestroy
