@@ -435,5 +435,6 @@ def prgBar():
 					font-size:24px;
 					color:%s;
 			}"""%(COLOR_FONT_LIGHT)
+	css=css+lblInfo
 	return(css)
 #def prgBar
