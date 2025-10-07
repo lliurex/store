@@ -8,91 +8,107 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-31 17:36+0200\n"
+"POT-Creation-Date: 2025-09-29 11:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/stacks/btnRebost.py:16 ../src/stacks/cmbBtn.py:11
-#: ../src/stacks/lblApp.py:14 ../src/stacks/lblArticle.py:13
-#: ../src/stacks/paneDetailView.py:36
+#: ../src/stacks/btnInstallers.py:14 ../src/stacks/btnRebost.py:16
+#: ../src/stacks/btnRebost.py:17 ../src/stacks/cmbBtn.py:10
+#: ../src/stacks/lblApp.py:14 ../src/stacks/paneDetailView.py:35
 msgid "Install"
 msgstr ""
 
-#: ../src/stacks/btnRebost.py:17 ../src/stacks/paneDetailView.py:39
+#: ../src/stacks/btnInstallers.py:15
+msgid "What's this?"
+msgstr ""
+
+#: ../src/stacks/btnRebost.py:18
+msgid "Z-Install"
+msgstr ""
+
+#: ../src/stacks/btnRebost.py:19 ../src/stacks/paneDetailView.py:40
 #: ../src/stacks/portrait.py:54
 msgid "Remove"
 msgstr ""
 
-#: ../src/stacks/btnRebost.py:18
+#: ../src/stacks/btnRebost.py:20 ../src/stacks/paneDetailView.py:44
 msgid "Blocked"
 msgstr ""
 
-#: ../src/stacks/btnRebost.py:19 ../src/stacks/paneDetailView.py:43
+#: ../src/stacks/btnRebost.py:21 ../src/stacks/paneDetailView.py:45
 msgid "Unavailable"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:27
+#: ../src/stacks/paneDetailView.py:26
 msgid ""
 "The app could not be loaded. Until included in LliureX catalogue it can't be "
 "installed"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:28
+#: ../src/stacks/paneDetailView.py:27
 msgid ""
 "For any question the SAI can be contacted at <a href='https://portal.edu.gva."
 "es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:29 ../src/stacks/portrait.py:40
+#: ../src/stacks/paneDetailView.py:28 ../src/stacks/portrait.py:39
 msgid "Could not open"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:30 ../src/stacks/portrait.py:41
+#: ../src/stacks/paneDetailView.py:29 ../src/stacks/portrait.py:40
 msgid "Error opening"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:31 ../src/stacks/portrait.py:42
+#: ../src/stacks/paneDetailView.py:30 ../src/stacks/portrait.py:41
 msgid "There's another action in progress"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:32 ../src/stacks/portrait.py:44
+#: ../src/stacks/paneDetailView.py:31 ../src/stacks/portrait.py:43
 msgid "System apps can't be removed"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:33 ../src/stacks/portrait.py:45
+#: ../src/stacks/paneDetailView.py:32 ../src/stacks/portrait.py:44
 msgid "Unknown error"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:34
+#: ../src/stacks/paneDetailView.py:33
 msgid "App unauthorized"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:35
+#: ../src/stacks/paneDetailView.py:34
 msgid "For more info go to"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:37
-msgid "Opening"
+#: ../src/stacks/paneDetailView.py:36
+msgid "More apps"
+msgstr ""
+
+#: ../src/stacks/paneDetailView.py:37 ../src/stacks/portrait.py:53
+msgid "Z·Install"
 msgstr ""
 
 #: ../src/stacks/paneDetailView.py:38
+msgid "Opening"
+msgstr ""
+
+#: ../src/stacks/paneDetailView.py:39
 msgid "Release"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:40
+#: ../src/stacks/paneDetailView.py:41
 msgid "Open"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:41
+#: ../src/stacks/paneDetailView.py:42
 msgid "See at Appsedu"
 msgstr ""
 
-#: ../src/stacks/paneDetailView.py:42
+#: ../src/stacks/paneDetailView.py:43
 msgid "Website"
 msgstr ""
 
@@ -108,7 +124,7 @@ msgstr ""
 msgid "Go to store anyway"
 msgstr ""
 
-#: ../src/stacks/paneGlobalView.py:15 ../src/stacks/portrait.py:34
+#: ../src/stacks/paneGlobalView.py:15 ../src/stacks/portrait.py:33
 msgid "All"
 msgstr ""
 
@@ -128,59 +144,59 @@ msgstr ""
 msgid "Relevant categories"
 msgstr ""
 
-#: ../src/stacks/portrait.py:35
+#: ../src/stacks/portrait.py:34
 msgid "Available"
 msgstr ""
 
-#: ../src/stacks/portrait.py:36
+#: ../src/stacks/portrait.py:35
 msgid "Filter by category"
 msgstr ""
 
-#: ../src/stacks/portrait.py:37
+#: ../src/stacks/portrait.py:36
 msgid "Certified by Appsedu"
 msgstr ""
 
-#: ../src/stacks/portrait.py:38 ../src/stacks/portrait.py:57
+#: ../src/stacks/portrait.py:37 ../src/stacks/portrait.py:57
 msgid "Portrait"
 msgstr ""
 
-#: ../src/stacks/portrait.py:39
+#: ../src/stacks/portrait.py:38
 msgid "Navigate through all applications"
 msgstr ""
 
-#: ../src/stacks/portrait.py:43
+#: ../src/stacks/portrait.py:42
 msgid "Authorization is required"
 msgstr ""
 
-#: ../src/stacks/portrait.py:46
+#: ../src/stacks/portrait.py:45
 msgid "Filters"
 msgstr ""
 
-#: ../src/stacks/portrait.py:47
+#: ../src/stacks/portrait.py:46
 msgid "Filter by formats and states"
 msgstr ""
 
-#: ../src/stacks/portrait.py:48
+#: ../src/stacks/portrait.py:47
 msgid "Home"
 msgstr ""
 
-#: ../src/stacks/portrait.py:49
+#: ../src/stacks/portrait.py:48
 msgid "Main page"
 msgstr ""
 
-#: ../src/stacks/portrait.py:50
+#: ../src/stacks/portrait.py:49
 msgid "Installed"
 msgstr ""
 
-#: ../src/stacks/portrait.py:51
+#: ../src/stacks/portrait.py:50
 msgid "Launch LliurexUp"
 msgstr ""
 
-#: ../src/stacks/portrait.py:52
+#: ../src/stacks/portrait.py:51
 msgid "Show applications"
 msgstr ""
 
-#: ../src/stacks/portrait.py:53
+#: ../src/stacks/portrait.py:52
 msgid "Updating info"
 msgstr ""
 
@@ -210,19 +226,15 @@ msgstr ""
 
 
 #
-msgid "Argument asas "
-msgstr ""
-
-#
 msgid "AudioVideo"
 msgstr ""
 
 #
-msgid " = "
+msgid "DiscBurning"
 msgstr ""
 
 #
-msgid "DiscBurning"
+msgid "Audio"
 msgstr ""
 
 #
@@ -247,6 +259,10 @@ msgstr ""
 
 #
 msgid "Player"
+msgstr ""
+
+#
+msgid "Video"
 msgstr ""
 
 #
@@ -630,6 +646,10 @@ msgid "WordProcessor"
 msgstr ""
 
 #
+msgid "Science"
+msgstr ""
+
+#
 msgid "Settings"
 msgstr ""
 
@@ -639,6 +659,10 @@ msgstr ""
 
 #
 msgid "Accessibility"
+msgstr ""
+
+#
+msgid "System"
 msgstr ""
 
 #

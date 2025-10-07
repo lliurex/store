@@ -11,6 +11,7 @@ from PySide6.QtCore import Qt,QSize,Signal,QThread,Slot
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
 import libhelper
 import css
+from btnInstallers import QPushButtonInstaller
 from cmbBtn import QComboButton
 from lblApp import QLabelRebostApp
 from lblLnk import QLabelLink
@@ -199,21 +200,25 @@ class main(QWidget):
 	#def _getRunappResults
 
 	def _setInstallingState(self):
-		if self.btnRemove.isVisible()==True:
+		if self.cmbBundles.text()==i18n["REMOVE"]:
 			self.app["state"]=8
-			if self.btnRemove.text()==i18n["REMOVE"]:
-				self._rebost.setAction("setAppState",self.app["id"],8)
+			self._rebost.setAction("setAppState",self.app["id"],8)
 		else:
-			self._rebost.setAction("setAppState",self.app["id"],7)
 			self.app["state"]=7
+			self._rebost.setAction("setAppState",self.app["id"],7)
 		self._rebost.start()
 		self._rebost.wait()
 	#def _setInstallingState
 
 	@Slot("PyObejct,","PyObject")
 	def _genericEpiInstall(self,*args):
-		bundle=self.cmbBundles.currentSelected().lower().split(" ")[0]
-		self.requestInstallApp.emit(self.btnRemove,self.app,bundle)
+		self._setInstallingState()
+		bondle=""
+		if len(args)>0:
+			bundle=args[0].lower()
+			if bundle=="epi":
+				bundle="unknown"
+		self.requestInstallApp.emit(self.cmbBundles,self.app,bundle)
 	#def _genericEpiInstall
 
 	def _tagLinkClicked(self,*args):
@@ -260,6 +265,8 @@ class main(QWidget):
 		self.lblDesc=self._defLblDesc()
 		self.box.addWidget(self.lblDesc,1,2,3,1)
 		self.screenShot=self._defScreenshot()
+		self.screenShot.setObjectName("screenshot")
+		self.screenShot.scroll.setObjectName("screenshot")
 		self.screenShot.widget.setMinimumHeight(self.lblDesc.height())
 		self.screenShot.scroll.setMinimumHeight(self.lblDesc.height())
 		self.box.addWidget(self.screenShot,1,3,3,1,Qt.AlignTop)
@@ -324,30 +331,21 @@ class main(QWidget):
 		lay.addWidget(self.boxBundles,0,3,1,1,Qt.AlignTop|Qt.AlignRight)
 		self.lblRelease=QLabel(i18n.get("INSTALL"))
 		self.lblRelease.resize(self.lblRelease.sizeHint().width(),int(ICON_SIZE/3))
-
-		self.btnRemove=QPushButton(i18n.get("REMOVE"))
-		self.btnRemove.setObjectName("btnInstall")
-		self.btnRemove.clicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
-
-		self.btnUnavailable=QPushButton(i18n.get("UNAUTHORIZED"))
-		#self.btnUnavailable.setObjectName("cmbBundles")
-		self.btnUnavailable.setEnabled(False)
+		self.lblRelease.hide()
+		lay.addWidget(self.lblRelease,1,3,1,1,Qt.AlignLeft|Qt.AlignTop)
 
 		launchers.setLayout(hlay)
 		lay.addWidget(launchers,1,3,1,1,Qt.AlignTop|Qt.AlignRight)
 
-		self.cmbBundles=QComboButton()
-		self.cmbBundles.setAttribute(Qt.WA_StyledBackground, False)
-		self.cmbBundles.setObjectName("cmbBundles")
-		self.cmbBundles.setFixedWidth(50)
-		self.cmbBundles.currentTextChanged.connect(self._setLauncherOptions)	
-		self.cmbBundles.installClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
-		lay.addWidget(self.lblRelease,1,3,1,1,Qt.AlignLeft|Qt.AlignTop)
-		lay.addWidget(self.cmbBundles,2,3,1,1,Qt.AlignRight|Qt.AlignTop)
-		lay.addWidget(self.btnRemove,2,3,1,1)
-		lay.addWidget(self.btnUnavailable,2,3,1,1)
-		self.btnRemove.setVisible(False)
-		self.btnUnavailable.setVisible(False)
+		self.cmbBundles=QPushButtonInstaller()
+		self.cmbBundles.installerClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
+		self.cmbBundles.setText(i18n["INSTALL"])
+		self.cmbBundles.setVisible(False)
+		self.cmbBundles.setMinimumSize(ICON_SIZE*4,ICON_SIZE/2)
+		self.cmbBundles.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+		lay.addWidget(self.cmbBundles,1,3,1,1)
+		self.cmbBundles.hide()
+
 		spacing=QLabel("")
 		spacing.setFixedWidth(64)
 		lay.addWidget(spacing,0,lay.columnCount())
@@ -361,7 +359,6 @@ class main(QWidget):
 	def _defScreenshot(self):
 		wdg=QScreenShotContainer(direction="vertical")
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
-		wdg.setObjectName("screenshot")
 		return(wdg)
 	#def _defScreenshot
 
@@ -415,23 +412,29 @@ class main(QWidget):
 		if homepage=='':
 			homepage=self.app.get('homepage','https://portal.edu.gva.es/appsedu/aplicacions-lliurex')
 		if not isinstance(homepage,str):
-			homepage='https://portal.edu.gva.es/appsedu/aplicacions-lliurex'
+			homepage=""
+			#homepage='https://portal.edu.gva.es/appsedu/aplicacions-lliurex'
 		text=""
 		if homepage:
 			homepage=homepage.rstrip("/")
 			desc=homepage
+			print(desc)
 			if desc.startswith("https://portal.edu.gva.es/appsedu")==True:
 				desc=i18n.get("SEEIT")
 			else:
 				desc=i18n.get("SITE")
 			text='<a href="{0}" style="text-decoration:none;"><strong>{1}</strong></a> '.format(homepage,desc)
-		item=QListWidgetItem()
-		self.lstLinks.addItem(item)
-		lbl=QLabelLink(text)
-		lbl.setToolTip(homepage)
-		lbl.setOpenExternalLinks(True)
-		item.setSizeHint(QSize(lbl.sizeHint()))
-		self.lstLinks.setItemWidget(item,lbl)
+		if len(text)>0:
+			item=QListWidgetItem()
+			self.lstLinks.addItem(item)
+			lbl=QLabelLink(text)
+			lbl.setToolTip(homepage)
+			lbl.setOpenExternalLinks(True)
+			item.setSizeHint(QSize(lbl.sizeHint()))
+			self.lstLinks.setItemWidget(item,lbl)
+			self.lstLinks.show()
+		else:
+			self.lstLinks.hide()
 	#def _populateLinks
 
 	def _defLstLinks(self):
@@ -440,13 +443,26 @@ class main(QWidget):
 	#def _defLstLinks
 
 	def _populateBoxBundles(self):
+		bundlesSorted=self.helper.getBundlesByPriority(self.app)
+		bundles=[]
+		for idx,bundleData in bundlesSorted.items():
+			bundleData=bundleData.strip()
+			if " " not in bundleData:
+				bundleData+=" contrib"
+			bundles.append(bundleData.split()[0])
 		for children in self.boxBundles.children():
 			if isinstance(children,QLabel):
 				children.hide()
-				bundle=children.toolTip().lower()
+				chldText=children.toolTip().lower().split("\n")[0].replace("<p>","").replace("</p>","")
+				bundle=chldText.split(":")[-1].lower().strip()
 				if bundle=="epi":
 					bundle="unknown"
-				if bundle in self.app["bundle"].keys():
+				if bundle in bundles:
+					release=self.app.get("versions",{}).get(bundle,"")
+					if bundle=="unknown":
+						bundle="epi"
+					text="Kind: {0}\nRelease: {1}".format(bundle.capitalize(),release)
+					children.setToolTip(text)
 					children.show()
 	#def _populateBundleIcons
 
@@ -458,7 +474,8 @@ class main(QWidget):
 		lay.setContentsMargins(0,0,0,0)
 		wdg.setLayout(lay)
 		lbl=None
-		for bundle in self.rc.getSupportedFormats():
+		priority=["epi","package","flatpak","snap","appimage","eduapp"]
+		for bundle in priority:
 			pxm=QtGui.QPixmap()
 			if bundle=="unknown":
 				bundle="epi"
@@ -467,7 +484,7 @@ class main(QWidget):
 			lbl=QLabel()
 			lbl.setObjectName("boxBundles")
 			lbl.setPixmap(pxm)
-			lbl.setToolTip(bundle.capitalize())
+			lbl.setToolTip("Kind: {}\nRelease: {}".format(bundle.capitalize(),""))
 			lbl.hide()
 			lay.addWidget(lbl,Qt.AlignRight)
 		if lbl!=None:
@@ -516,8 +533,8 @@ class main(QWidget):
 			try:
 				self.screenShot.addImage(icn)
 			except Exception as e:
-				pprint("Error adding image")
-				print(e)
+				print("Error adding image")
+				self._debug(e)
 	#def _loadScreenshots
 
 	def _loadSuggested(self,*args):
@@ -562,7 +579,6 @@ class main(QWidget):
 				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),i18n["APPUNKNOWN_SAI"],description,forbReason)
 			self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setText(description)
-		self._setReleasesInfo()
 		#preliminary license support, not supported
 		applicense=self.app.get('license','')
 		if applicense:
@@ -576,6 +592,7 @@ class main(QWidget):
 		self._populateSuggestsList()
 		self._populateLinks()
 		self._populateBoxBundles()
+		self.cmbBundles.setApp(self.app)
 		self.loaded.emit(self.app)
 	#def _updateScreen
 
@@ -613,6 +630,18 @@ class main(QWidget):
 			if keyword not in tags and len(keyword)>1:
 				#Disabled as requisite  (250214-11:52)
 				tags+="<a href=\"#{0}\" style=\"{1}\">#{0}</a> ".format(keyword,style)
+		if tags.count(" ")<4:
+			cont=0
+			for word in self.app.get("summary","").split(" "):
+				if len(word)<3:
+					continue
+				elif word.lower() in ["open","source","system","the","with","some","any"]:
+					continue
+				b="".join([ w for w in word if w.isalpha() ])
+				tags+="<a href=\"#{0}\" style=\"{1}\">#{0}</a> ".format(b,style)
+				cont+=1
+				if cont==4:
+					break
 		return("{}".format(tags.strip(" / ")))
 	#def _generateAppTags
 
@@ -648,8 +677,6 @@ class main(QWidget):
 			self.app["categories"]=["Forbidden"]
 		self.cmbBundles.setEnabled(False)
 		self.lblRelease.setEnabled(False)
-		self.btnRemove.setEnabled(False)
-		self.btnUnavailable.setEnabled(False)
 		self.blur=QGraphicsBlurEffect() 
 		self.blur.setBlurRadius(55) 
 		self.lblBkg.setGraphicsEffect(self.blur)
@@ -666,95 +693,24 @@ class main(QWidget):
 	def _setLauncherStatus(self):
 		if int(self.app.get("state","0"))>=7:
 			try:
-				self.btnRemove.blockSignals(True)
 				self.cmbBundles.blockSignals(True)
 			except Exception as e: #Don't worry
 				print(e)
-			self.btnRemove.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			self.cmbBundles.setCursor(QtGui.QCursor(Qt.WaitCursor))
 		else:
 			try:	
-				self.btnRemove.blockSignals(False)
 				self.cmbBundles.blockSignals(False)
 			except: #Be happy
 				pass
-			self.btnRemove.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 			self.cmbBundles.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 	#def _setLauncherStatus
-
-	def _setLauncherOptions(self):
-		visible=True
-		bundle=self.cmbBundles.currentText()
-		self.btnUnavailable.hide()
-		bundle=bundle.split(" ")[0]
-		self.lblRelease.setText("{0} {1}".format(i18n.get("RELEASE"),self.app.get("versions",{}).get(bundle,"lliurex")))
-		self.cmbBundles.blockSignals(True)
-		self.cmbBundles.setText(i18n["INSTALL"].upper())
-		self.btnRemove.hide()
-		self.btnRemove.setEnabled(False)
-		bundles=self.app.get("bundle",{})
-		zmd=bundles.get("unknown","")
-		status=self.app.get("status",{})
-		self.btnRemove.setText("")
-		if self.app.get("forbidden",False)==True:
-			self.btnUnavailable.show()
-			self.btnRemove.hide()
-			self.cmbBundles.hide()
-		elif len(status)>0:
-			if zmd!="" and len(bundles)==2: #2->pkg that belongs to a zmd
-				self.btnRemove.setText(i18n["OPEN"])
-			else:
-				for bundle,appstatus in status.items():
-					if int(appstatus)==0:# and zmdInstalled!="0":
-						if bundle=="package" and zmd!="" and len(bundles)==2: #2->zmd and its own pkg
-							self.btnRemove.setText(i18n["OPEN"])
-							break
-						elif self.btnRemove.text()!=i18n["REMOVE"]:
-							self.btnRemove.setText(i18n["REMOVE"])
-							self.instBundle=bundle
-							break
-		elif zmd!="" and len(bundles)==1: #1->No other bundles, so it's a zomando pkg
-				self.btnRemove.show()
-				self.btnRemove.setEnabled(True)
-				self.btnRemove.setText(i18n["OPEN"])
-		if self.btnRemove.text()!="":
-			self.btnRemove.setEnabled(True)
-			self.btnRemove.setMinimumSize(self.cmbBundles.size())
-			self.btnUnavailable.setMinimumSize(self.cmbBundles.size())
-			self.btnRemove.show()
-			self.cmbBundles.hide()
-		self._setLauncherStatus()
-		self.cmbBundles.blockSignals(False)
-	#def _setLauncherOptions
-
-	def _setReleasesInfo(self):
-		for i in range(self.cmbBundles.count()):
-			self.cmbBundles.removeItem(i)
-		self.cmbBundles.clear()
-		priority=self.helper.getBundlesByPriority(self.app)
-		if len(priority)<=0:
-			self.cmbBundles.setEnabled(False)
-		else:
-			priorityFinal=list(priority.keys())
-			priorityFinal.sort()
-			for idx in priorityFinal:
-				if "unknown" in priority[idx]:
-					priority[idx]=priority[idx].replace("unknown","zomando")
-				self.cmbBundles.addItem(priority[idx])
-			self.cmbBundles.setText(i18n["INSTALL"].upper())
-			for idx in range(0,len(priority)):
-				try:
-					self.cmbBundles.setState(idx,False)
-				except:
-					break
-	#def _setReleasesInfo
 
 	def _initScreen(self):
 		#Reload config if app has been epified
 		self.showMsg=self.parent().showMsg
 		if len(self.app)>0:
 			self.cmbBundles.setVisible(True)
-			self.lblRelease.setVisible(True)
+			#self.lblRelease.setVisible(True)
 			self.lblRelease.setEnabled(True)
 			self.lblRelease.setText(i18n.get("INSTALL"))
 			self.setCursor(self.oldCursor)

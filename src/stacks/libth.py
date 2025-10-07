@@ -87,6 +87,8 @@ class storeHelper(QThread):
 			self._getFreedesktopCategories()
 		elif self.action=="getAppsPerCategory":
 			self._getAppsPerCategory()
+		elif self.action=="getAppsInstalledPerCategory":
+			self._getAppsInstalledPerCategory()
 		elif self.action=="setAppState":
 			self._setAppState()
 	#def run
@@ -119,6 +121,12 @@ class storeHelper(QThread):
 		apps=self.rc.getAppsPerCategory()
 		self.gacEnded.emit(apps)
 	#def _getAppsPerCategory
+
+	def _getAppsInstalledPerCategory(self):
+		apps=[]
+		apps=self.rc.getAppsInstalledPerCategory()
+		self.gacEnded.emit(apps)
+	#def _getAppsInstalledPerCategory
 
 	def _search(self,*args):
 		#apps=json.loads(self.rc.execute("search",self.args[0]))
@@ -379,8 +387,8 @@ class thShowApp(QThread):
 			try:
 				app=json.loads(self.rc.refreshApp(self.app.get('id','')))[0]
 			except Exception as e:
-				print(e)
 				print("Error finding {}".format(self.app.get("id","")))
+				self._debug(e)
 				app=self.app.copy()
 				app["ERR"]=True
 			finally:

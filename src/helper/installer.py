@@ -13,8 +13,6 @@ class epiFile():
 		#	os.chmod("/tmp/rebost",0o777)
 		#tmpDir=tempfile.mkdtemp(dir="/tmp/rebost")
 		#os.chmod(tmpDir,0o755)
-		print("ESTOY")
-		print(app)
 		try:
 			epiJson,epiContent=self._jsonForEpi(tmpDir,app,pkg,bundle)
 		except Exception as e:
@@ -224,10 +222,11 @@ try:
 	epi=epiFile()
 except Exception as e:
 	print(e)
-tmpDir=tempfile.TemporaryDirectory(delete=False)
+tmpDir=tempfile.TemporaryDirectory()
 os.chmod(tmpDir.name,0o755)
 epiFile=epi.epiForPkg(tmpDir,pkg,bundle,app)
 cmd=["/usr/sbin/epi-gtk",epiFile]
 proc=subprocess.run(cmd)
+print(proc)
 tmpDir.cleanup()
 sys.exit(0)

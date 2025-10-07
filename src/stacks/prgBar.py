@@ -51,6 +51,7 @@ class QProgressImage(QWidget):
 		self.lblPxm.setAlignment(Qt.AlignCenter)
 		self.lblInfo.setAlignment(Qt.AlignCenter)
 		self.inc=-5
+		self.sleepSeconds=1
 		self.running=False
 		self.destroyed.connect(partial(QProgressImage._onDestroy,self.__dict__))
 	#def __init__
@@ -93,7 +94,7 @@ class QProgressImage(QWidget):
 		self.inc=inc
 
 	def start(self):
-		self.updateTimer.start(1)
+		self.updateTimer.start(self.sleepSeconds)
 	#	self.updateTimer.start()
 		self.show()
 	#def start
@@ -106,8 +107,6 @@ class QProgressImage(QWidget):
 	def _beginDoProgress(self,*args):
 		if self.running==False:
 			self._doProgress()
-		else:
-			print("R")
 	#def _beginDoProgress
 
 	def _doProgress(self,*args):

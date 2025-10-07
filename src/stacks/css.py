@@ -2,6 +2,26 @@
 import os
 from constants import *
 
+def btnToggle():
+	css=""
+	btnOption="""#btnOption[origin=false]{
+				/*background: qradialgradient(cx:0.5, cy:0.5,radius:0.7,fx:0.5,fy:0.9,stop:0 %s, stop:1 %s);*/
+				border: 3px dashed %s;
+				background-color: #1A%s
+			}
+
+				#btnOption[origin=true]{
+				border: 2px solid %s;
+/*				background: %s;*/
+			}
+				QLabel{
+				color: %s;
+			}
+			"""%(COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK,COLOR_BORDER,COLOR_BORDER_DARK.replace("#",""),COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARKEST,COLOR_FONT_LIGHT)
+	css+=btnOption
+	return(css)
+#def btnToggle
+
 def btnRebost():
 	css=""
 	rebostapp="""#rebostapp {
@@ -11,7 +31,11 @@ def btnRebost():
 				border-radius: 5px;
 				background: qradialgradient(cx:0.5, cy:1,radius:0.7,fx:0.5,fy:0.9,stop:0 %s, stop:1 %s);
 			}
-			"""%(COLOR_BORDER_DARK,COLOR_BACKGROUND_LIGHT)
+			#rebostapp:pressed
+			{
+				border:3px solid %s;
+			}
+			"""%(COLOR_BORDER_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BORDER)
 	css=css+rebostapp
 	rebostlbl="""QLabel{
 				color: unset;
@@ -34,8 +58,52 @@ def btnRebost():
 			#btnInstall:disabled
 			{
 				color:%s
-			}"""%(COLOR_BORDER_DARKEST,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER_DARK,COLOR_BORDER)
+			}"""%(COLOR_BORDER_DARKEST,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,COLOR_BORDER)
 	css=css+btnInstall
+
+	btnInstaller="""#btnInstaller{
+					color:#000000;
+					margin:1px;
+					border:1px solid;
+					border-color:%s;
+					border-radius:%spx;
+					background: qlineargradient(x1:0, y1:0, x2:0, y2:3, stop:0 %s, stop:1 %s);
+				}
+
+				#btnInstaller:disabled{
+					color:#AAAAAA;
+				}
+
+				*[clicked]{
+					border:3px inset silver;
+					color:#AAAAAA;
+				}
+
+				#btnInstaller::menu-indicator{
+					image: url("%s/drop-down16x16.png");
+					right:%spx;
+					border-left:1px solid %s;
+					/*padding:%spx;*/
+					margin-left:%spx;
+					margin-bottom:4px;
+					padding-bottom:6px;
+					padding-left:12px;
+				}
+
+				/* REM for reference */
+				/*#btnInstaller::drop-down{ subcontrol-origin: padding;*/
+
+				#btnInstaller::menu-indicator:disabled{
+					color:#AAAAAA;
+				}
+
+				#btnInstaller::menu-indicator:checked { /* shift the arrow when popup is open */
+					top: 1px;
+					right: %spx;
+				}
+				"""%(COLOR_BORDER,RADIUS,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,RSRC,int(MARGIN)*2,COLOR_BORDER,MARGIN,int(MARGIN)*2,int(MARGIN)*1.9)
+	css=css+btnInstaller
+
 	return(css)
 #def btnRebost
 
@@ -143,6 +211,7 @@ def detailPanel():
 	screenshot="""#screenshot{
 					margin:0px;
 					padding:0px;
+					border:0px;
 				}"""
 	css=css+screenshot
 
@@ -366,5 +435,6 @@ def prgBar():
 					font-size:24px;
 					color:%s;
 			}"""%(COLOR_FONT_LIGHT)
+	css=css+lblInfo
 	return(css)
 #def prgBar

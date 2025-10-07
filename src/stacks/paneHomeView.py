@@ -24,6 +24,7 @@ class main(QWidget):
 	clickedBlog=Signal("PyObject")
 	clickedApp=Signal("PyObject","PyObject","PyObject")
 	requestInstallApp=Signal("PyObject","PyObject")
+	loaded=Signal()
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=True
@@ -36,6 +37,7 @@ class main(QWidget):
 		self._rebost=args[0]
 		self._rebost.urlEnded.connect(self._setAppseduData)
 		self._rebost.gacEnded.connect(self._setAppsByCat)
+		self.appsEduApps=[]
 		self.btns={}
 		layout=QGridLayout()
 		layout.setVerticalSpacing(0)
@@ -68,7 +70,7 @@ class main(QWidget):
 			self._getAppsByCat()
 		if len(self.blog.children()[-1].app)==0:
 			self._getBlog()
-		if len(self.appsEdu.children()[3].app)==0: #3rd element as is a btn for sure
+		if len(self.appsEduApps)<=6: #6 because, well, why not?
 			self._getAppsedu()
 	#def showEvent
 
@@ -85,9 +87,9 @@ class main(QWidget):
 					urls.append(url)
 				self._rebost.setAction("urlSearch",urls)
 				self._rebost.start()
+				self._rebost.wait()
 			else:
-				if self._stop==False:
-					self._setBlogData(apps)
+				self._setBlogData(apps)
 	#def _processRss(self,*args,**kwargs):
 
 	def _setBlogData(self,*args):
@@ -109,11 +111,13 @@ class main(QWidget):
 			btn.iconUri.setFixedHeight(IMAGE_PREVIEW*0.5)
 			btn.label.setFixedWidth(IMAGE_PREVIEW)
 			btn.setMinimumWidth(IMAGE_PREVIEW)
+			btn.lockTooltip=True
 			btn.setApp(app)
 			btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 			btn.iconUri.setEnabled(True)
 			btn.clicked.connect(self._openBlog)
-			btn.setVisible(True)
+			btn.updateScreen()
+			btn.setToolTip(blogRss[cont]["summary"].capitalize())
 			cont+=1
 		self.blog.setCursor(self.oldCursor)
 	#def _setBlogData
@@ -127,7 +131,7 @@ class main(QWidget):
 
 	def _getBlog(self):
 		rssparser=rss.rssParser()
-		rssparser.rssEnded.connect(self._processRss)
+		rssparser.blogEnded.connect(self._processRss)
 		rssparser.feed="blog"
 		rssparser.start()
 		self.th.append(rssparser)
@@ -168,6 +172,9 @@ class main(QWidget):
 				continue
 
 			if isinstance(app,list) and len(app)>0:
+				if app[0].get("name") in self.appsEduApps:
+					continue
+				self.appsEduApps.append(app[0].get("name"))
 				btn.setApp(app[0])
 				btn._applyDecoration()
 				btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
@@ -179,6 +186,7 @@ class main(QWidget):
 				break
 			cont+=1
 		self.appsEdu.setCursor(self.oldCursor)
+		self.loaded.emit()
 	#def _setAppseduData
 
 	def _loadApp(self,*args):
@@ -189,7 +197,7 @@ class main(QWidget):
 	
 	def _getAppsedu(self):
 		rssparser=rss.rssParser()
-		rssparser.rssEnded.connect(self._processRss)
+		rssparser.appsEnded.connect(self._processRss)
 		rssparser.feed="appsedu"
 		rssparser.start()
 		self.th.append(rssparser)
@@ -223,7 +231,7 @@ class main(QWidget):
 	#def _loadCategory
 
 	def _setAppsByCat(self,*args):
-		categoryApps=json.loads(args[0])
+		categoryApps=args[0]
 		apps={}
 		for cat in categoryApps.keys():
 			apps[len(categoryApps[cat])]=cat
@@ -239,13 +247,19 @@ class main(QWidget):
 				icn="games"
 			elif ("audio" in icn) or ("video" in icn):
 				icn="multimedia"
-			if os.path.exists("/usr/share/icons/breeze/categories/24"):
-				for f in os.scandir("/usr/share/icons/breeze/categories/24"):
-					if icn in f.name:
-						icn=f.name
+			iconPath="/usr/share/icons/breeze/categories/" # Bad idea. Nested for, hardcoded paths, filename assumptions, non-agnostic... 
+			for size in ["24","32"]:
+				wrkPath=os.path.join(iconPath,size)
+				if os.path.exists(wrkPath):
+					for f in os.scandir(wrkPath):
+						if icn in f.name:
+							icn=f.name
+							break
+				if "applications" in icn:
+					break
 			if "applications" not in icn:
 				icn="applications-other"
-			app={"name":_(apps[idx]),"icon":icn,"pkgname":apps[idx],}
+			app={"name":_(apps[idx]),"icon":icn,"pkgname":apps[idx]}
 			btn=QPushButtonRebostApp(app,iconSize=64)
 			btn.autoUpdate=True
 			btn.clicked.connect(self._loadCategory)
@@ -254,12 +268,14 @@ class main(QWidget):
 			lay.addWidget(btn,Qt.AlignTop)
 		lay.addSpacing(int(MARGIN)*8)
 		self.appsByCat.setCursor(QtGui.QCursor(self.oldCursor))
+		self.loaded.emit()
 	#def _setAppsByCat
 
 	def _getAppsByCat(self):
 		self._debug("Get apps per category")
-		self._rebost.setAction("getAppsPerCategory")
+		self._rebost.setAction("getAppsInstalledPerCategory")
 		self._rebost.start()
+		#self._rebost.wait()
 	#def _getAppsByCat
 
 	def _defAppsByCat(self):
@@ -294,16 +310,3 @@ class main(QWidget):
 	#	self._getBlog()
 	#	self._getAppsedu()
 	#def updateScreen
-
-	def updateBtn(self,btn,app):
-		if btn!=None:
-			if btn in self.appsEdu.children():
-				btn.setApp(app)
-	#def updateBtn
-
-	def _stopThreads(self):
-		self._stop=True
-		for th in self.th:
-			th.quit()
-		self._rebost.blockSignals(False)
-	#def _stopThreads

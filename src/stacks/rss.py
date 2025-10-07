@@ -6,7 +6,8 @@ import urllib
 from urllib.request import Request
 
 class rssParser(QThread):
-	rssEnded=Signal("PyObject","PyObject")
+	appsEnded=Signal("PyObject","PyObject")
+	blogEnded=Signal("PyObject","PyObject")
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self, None)
 		self.dbg=True
@@ -18,7 +19,7 @@ class rssParser(QThread):
 
 	def _fetchArticle(self,url):
 		content=''
-		req=Request(url, headers={'User-Agent':'Mozilla/5.0'})
+		req=Request(url)#, headers={'User-Agent':'Mozilla/5.0'})
 		try:
 			with urllib.request.urlopen(req,timeout=2) as f:
 				content=(f.read().decode('utf-8'))
@@ -65,7 +66,8 @@ class rssParser(QThread):
 				articleInfo=bscontent.find_all("div",class_="imagen-destacada")
 				for info in articleInfo:
 					articleImg=info.find("img")
-					parsedFeeds[idx].update({"img":articleImg["src"]})
+					img=articleImg.get("src","")
+					parsedFeeds[idx].update({"img":img})
 					break
 			if self._stop==True:
 				break
@@ -79,14 +81,14 @@ class rssParser(QThread):
 			try:
 				fparse=feedparser.parse(self.rss[feed])
 			except Exception as e:
-				print("Error: {}".format(e))
+				print("Error parsing {}: {}".format(feed,e))
 				fparse={}
 			if len(fparse)>0:
 				for item in fparse["items"]:
 					if feed=="blog":
 						idx=len(parsedFeeds)
 						links=item.get("links",[""])[0]
-						parsedFeeds.update({idx:{"type":feed,"title":item.get("title",""),"link":links.href}})
+						parsedFeeds.update({idx:{"type":feed,"title":item.get("title",""),"summary":item.get("summary",""),"link":links.href}})
 					else:
 						lastApps=self._getLastApps(item.get("content"))
 						for app,link in lastApps:
@@ -96,7 +98,10 @@ class rssParser(QThread):
 						break
 		if len(parsedFeeds)>0:
 			parsedFeeds=self._getImgsForFeeds(parsedFeeds)
-		self.rssEnded.emit(self.rss[feed],parsedFeeds)
+		if feed=="blog":
+			self.blogEnded.emit(self.rss[feed],parsedFeeds)
+		else:
+			self.appsEnded.emit(self.rss[feed],parsedFeeds)
 		self._stop=False
 	#def run
 

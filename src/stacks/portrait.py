@@ -14,6 +14,7 @@ from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
 from libth import storeHelper,llxup
 from btnRebost import QPushButtonRebostApp
+from btnToggle import QPushButtonToggle
 from prgBar import QProgressImage
 from barCategories import QToolBarCategories
 import libhelper
@@ -128,6 +129,7 @@ class portrait(QStackedWindowItem):
 		self.i18nCat={}
 		self.oldCat=""
 		self.catI18n={}
+		self.apps={}
 		self.appsToLoad=-1
 		self.appsLoaded=0
 		self.appsSeen=[]
@@ -135,7 +137,7 @@ class portrait(QStackedWindowItem):
 		self.locked=True
 		self._rebost.setAction("config")
 		self._rebost.start()
-		self._rebost.wait()
+		#self._rebost.wait()
 		self.stopAdding=False
 		self.filters={"installed":False}
 		self.loading=False
@@ -170,8 +172,6 @@ class portrait(QStackedWindowItem):
 		self.refresh=True
 		self.released=True
 		self.maxCol=5
-		self._rebost.setAction("getCategories")
-		self._rebost.start()
 		self.setStyleSheet(css.portrait())
 	#def _initGUI
 
@@ -194,30 +194,27 @@ class portrait(QStackedWindowItem):
 	#def _chkNetwork
 
 	def _chkUserGroup(self):
+		lockedUser=False
 		grpData=grp.getgrnam("sudo")
 		if grpData.gr_gid not in os.getgroups():
-			self.locked=True
+			userlocked=True
+		return(lockedUser)
 	#def _chkUserGroup(self):
 
 	def _endGetLockStatus(self,*args):
-		self.certified.blockSignals(True)
 		jconfig=args[0]
 		self.locked=jconfig.get("onlyVerified",False)
+		lockedUser=self._chkUserGroup()
 		if not isinstance(self.locked,bool):
 			if int(self.locked)==0:
 				self.locked=False
 			else:
 				self.locked=True
 		if self.locked==False: #conf is unlocked, check groups 
-			self._chkUserGroup()
-			self.certified.setChkVisible(not(self.locked))
-			if self.locked==True:
+			if lockedUser==True:
 				self._unlockRebost()
-		self.certified.setChecked(self.locked)
-		self.certified.blockSignals(False)
+		self.certified.setLocked(self.locked,lockedUser)
 		self._debug("<-------- Rebost status acquired (lock {})".format(self.locked))
-		self._getApps()
-		self._endUpdate()
 	#def _endGetLockStatus
 
 	def _endLock(self,*args):
@@ -282,9 +279,9 @@ class portrait(QStackedWindowItem):
 			idx=list(priority.keys())
 			idx.sort()
 			bundle=priority[idx[0]].split(" ")[0]
-		if bundle=="zomando":
+		if bundle=="epi":
 			bundle="unknown"
-		pkg=app.get('bundle',{}).get(bundle,'')
+		pkg=app.get('id')
 		try:
 			if pkg!="":
 				installer=str(self.rc.getExternalInstaller())
@@ -294,7 +291,7 @@ class portrait(QStackedWindowItem):
 						self.installingBtn=wdg
 						if wdg.btn.text()==i18n["REMOVE"]:
 							state=8
-					elif isinstance(wdg,QPushButton):
+					elif hasattr(wdg,"text"):
 						if wdg.text()==i18n["REMOVE"]:
 							state=8
 					if bundle!="unknown":
@@ -347,6 +344,17 @@ class portrait(QStackedWindowItem):
 				self.searchBox.setText(args[0].text())
 	#def keyPressEvent
 
+	def _chkCategories(self,*args):
+		if self.lstCategories.count()<=0:
+			self._rebost.blockSignals(False)
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
+			self._rebost.wait()
+			self.prgCat.stop()
+			self.prgCat.hide()
+			self.lstCategories.show()
+	#def _chkCategories
+
 	def __initScreen__(self):
 		self.box=QGridLayout()
 		self.setLayout(self.box)
@@ -356,8 +364,8 @@ class portrait(QStackedWindowItem):
 		navwdg=self._defNavigationPane()
 		navwdg.setObjectName("wdg")
 		self.box.addWidget(navwdg,0,0,4,1,Qt.AlignLeft)
-		searchwdg=self._defSearch()
-		self.box.addWidget(searchwdg,0,1)
+		self.searchwdg=self._defSearch()
+		self.box.addWidget(self.searchwdg,0,1)
 		spacer=QLabel(" ")
 		spacer.setAttribute(Qt.WA_StyledBackground, True)
 		spacer.setStyleSheet("background:{};".format(COLOR_BACKGROUND_LIGHT))
@@ -374,7 +382,12 @@ class portrait(QStackedWindowItem):
 		self._detailView=self._getDetailViewPane()
 		self.box.addWidget(self._detailView,3,1)
 		self._detailView.hide()
-		self.btnSettings=QPushButton()
+		self.prgCat=QProgressImage(self)
+		self.prgCat.sleepSeconds=55
+		self.prgCat.setColor(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_DARKEST)
+		self.prgCat.lblInfo.setWordWrap(True)
+		self.box.addWidget(self.prgCat,0,0,4,2)
+		self.prgCat.start()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		self.box.setColumnStretch(1,1)
 		self.box.setRowStretch(0,0)
@@ -399,7 +412,8 @@ class portrait(QStackedWindowItem):
 		vbox=QVBoxLayout()
 		wdg.setLayout(vbox)
 		vbox.setContentsMargins(10,0,10,0)
-		self.certified=self._defAppseduChk()
+		self.certified=QPushButtonToggle()
+		self.certified.toggleClicked.connect(self._unlockRebost)
 		vbox.addWidget(self.certified,Qt.AlignCenter)
 		self.lstCategories=QListWidget()
 		self.lstCategories.setObjectName("lstCategories")
@@ -411,6 +425,7 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.currentItemChanged.connect(self._decoreLstCategories)
 		self.lstCategories.itemActivated.connect(self._loadCategory)
 		self.lstCategories.itemClicked.connect(self._loadCategory)
+		self.lstCategories.hide()
 		self.lblInfo=self._defInfo()
 		vbox.addSpacing(30)
 		vbox.addWidget(self.lblInfo,Qt.AlignBottom)
@@ -479,39 +494,14 @@ class portrait(QStackedWindowItem):
 			self._rebost.requestInterruption()
 			self._rebost.wait()
 		self._rebost.start()
-		self._rebost.wait()
-		#self.updateScreen()
+		#self._rebost.wait()
+		self._showPane(self._homeView)
 	#def _unlockRebost
-
-	def _defAppseduChk(self):
-		wdg=QWidget()
-		lay=QHBoxLayout()
-		lay.setSpacing(0)
-		lbl=QLabel()
-		chk=QCheckBox()
-		chk.setObjectName("certifiedChk")
-		wdg.setChecked=chk.setChecked
-		wdg.isChecked=chk.isChecked
-		wdg.setChkVisible=chk.setVisible
-		wdg.blockSignals=chk.blockSignals
-		if self.locked==True:
-			chk.setChecked(True)
-		chk.stateChanged.connect(self._unlockRebost)
-		wdg.setObjectName("certified")
-		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","appsedu128x64.png")
-		pxm=QtGui.QPixmap(img).scaled(132,40,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
-		lbl.setPixmap(pxm)
-		lbl.setAlignment(Qt.AlignCenter|Qt.AlignCenter)
-		lay.addWidget(lbl,Qt.AlignRight)
-		lay.addWidget(chk,Qt.AlignLeft)
-		wdg.setLayout(lay)
-		wdg.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
-		return(wdg)
-	#def _defAppseduChk
 
 	def _defInst(self):
 		btnInst=QPushButton(i18n.get("INSTALLED"))
 		btnInst.clicked.connect(self._loadInstalled)
+		btnInst.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		return(btnInst)
 	#def _defHome
 
@@ -632,6 +622,7 @@ class portrait(QStackedWindowItem):
 		hvp.clickedApp.connect(self._loadHomeDetails)
 		hvp.clickedCategory.connect(self._loadCategory)
 		hvp.requestInstallApp.connect(self._installApp)
+		hvp.loaded.connect(self._chkCategories)
 		return(hvp)
 	#def _getHomeViewPane
 
@@ -687,7 +678,7 @@ class portrait(QStackedWindowItem):
 	def _getUpgradables(self):
 		self._debug("Get available upgrades")
 		self._llxup.start()
-		self._llxup.wait()
+		#self._llxup.wait()
 	#def _getUpgradables
 
 	def _beginUpdate(self):
@@ -734,7 +725,14 @@ class portrait(QStackedWindowItem):
 
 	def _endLoadInstalled(self,*args):
 		self.appsRaw=json.loads(args[0])
-		self.apps=self.appsRaw.copy()
+		self.apps=[]
+		for app in self.appsRaw:
+			#Discard zmds from list
+			if app["bundle"].get("unknown","")!="":
+				if app["bundle"].get("unknown")==app["name"]==app["pkgname"]:
+					continue
+			self.apps.append(app)
+		#self.apps=self.appsRaw.copy()
 		self.loading=False
 		self._debug("LOAD INSTALLED END")
 		self._showPane(self._globalView)
@@ -865,7 +863,8 @@ class portrait(QStackedWindowItem):
 			self.appsRaw.extend(item)
 		self.apps=self.appsRaw.copy()
 		self._globalView.loadApps(self.apps)
-		self.barCategories.show()
+		#REM This show launches also after locking store. Investigate but disable ATM
+		#self.barCategories.show()
 		self.oldTime=time.time()
 	#def _endLoadCategory
 
@@ -875,6 +874,11 @@ class portrait(QStackedWindowItem):
 				continue
 			if showPane!=pane:
 				pane.hide()
+		#If categories are not populated load them
+		if self.lstCategories.count()<=0:
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
+			#self._rebost.wait()
 		showPane.show()
 		showPane.setCursor(self.oldCursor)
 		showPane.setFocus()
@@ -971,6 +975,11 @@ class portrait(QStackedWindowItem):
 			self._referrerPane=self._detailView
 			self._debug("Seeking for {}".format(pkgname))
 			self._detailView.setParms(pkgname)
+		#If categories are not populated load them
+		if self.lstCategories.count()<=0:
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
+			self._rebost.wait()
 	#def setParms
 
 	def _searchReferrerByName(self,name):
@@ -1028,23 +1037,27 @@ class portrait(QStackedWindowItem):
 	#def resetScreen
 
 	def updateScreen(self,addEnable=None):
-		self._getUpgradables()
-		self._rebost.setAction("config")
-		self._rebost.start()
-		self._rebost.wait()
+		#self._rebost.wait()
+		if self.lstCategories.count()<=0:
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
 		isConnected=self._chkNetwork()
 		if isConnected==False:
 			self._endUpdate()
 			self._showPane(self._errorView)
 			self._stopThreads()
 			return
+		self._rebost.setAction("config")
+		self._rebost.start()
 		if self._referrerPane!=None:
 			self._showPane(self._referrerPane)
 		if self._detailView.isVisible():
 			self._stopThreads()
 		elif self._homeView.isVisible():
-			self._stopThreads()
+			if self.init==True:
+				self._stopThreads()
 			if len(self._homeView.layout().children())==0:
 				self._homeView.updateScreen()
 			self._endUpdate()
+		self._getUpgradables()
 	#def _updateScreen

@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import os
-import json
 from PySide6.QtCore import Qt,Signal
 from QtExtraWidgets import QCheckableComboBox
 from constants import *
@@ -10,7 +9,6 @@ _ = gettext.gettext
 
 i18n={"INSTALL":_("Install")}
 
-LAYOUT="appsedu"
 class QComboButton(QCheckableComboBox):
 	cmbClicked=Signal("PyObject","PyObject")
 	installClicked=Signal("PyObject","PyObject")
