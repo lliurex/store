@@ -204,7 +204,7 @@ class portrait(QStackedWindowItem):
 	def _endGetLockStatus(self,*args):
 		jconfig=args[0]
 		self.locked=jconfig.get("onlyVerified",False)
-		lockedUser=not(self._chkUserGroup())
+		lockedUser=self._chkUserGroup()
 		if not isinstance(self.locked,bool):
 			if int(self.locked)==0:
 				self.locked=False
