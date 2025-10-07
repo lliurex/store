@@ -18,7 +18,7 @@ class _imageLoader(QThread):
 	fetched=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
 		super().__init__()
-		self.dbg=True
+		self.dbg=False
 		self.uri=kwargs.get("uri","")
 		self.pxm=kwargs.get("pxm","")
 		self.name=os.path.basename(self.uri)
