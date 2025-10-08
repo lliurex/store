@@ -53,9 +53,9 @@ class _imageLoader(QThread):
 					if uri.strip()=="":
 						#Wayland related? Qt seems to lose the ability for loading icons from main theme.
 						icn.setThemeName("hicolor")
-						icn=icn.fromTheme("appedu-generic")
+						icn.fromTheme("appedu-generic")
 					else:
-						icn=icn.fromTheme(uri)
+						icn.fromTheme(uri)
 						if icn.isNull():
 							if os.path.exists("/usr/share/rebost-data/icons/cache/{0}.png".format(uri)):
 								icn.addFile("/usr/share/rebost-data/icons/cache/{0}.png".format(uri))
@@ -65,9 +65,9 @@ class _imageLoader(QThread):
 								icn.addFile("/usr/share/rebost-data/icons/64x64/{}.png".format(uri))
 							elif os.path.exists("/usr/share/rebost-data/icons/64x64/{0}_{0}.png".format(uri)):
 								icn.addFile("/usr/share/rebost-data/icons/64x64/{0}_{0}.png".format(uri))
-							else:
-								icn.setThemeName("hicolor")
-								icn=icn.fromTheme("appedu-generic")
+						if icn.isNull():
+							icn.setThemeName("hicolor")
+							icn.fromTheme("appedu-generic")
 					pxm=icn.pixmap(QSize(64,64))
 				elif "://":
 					try:
@@ -78,9 +78,10 @@ class _imageLoader(QThread):
 							os.makedirs(self.cacheDir)
 						fPath=os.path.join(self.cacheDir,os.path.basename(uri))
 						if not os.path.exists(fPath):
-							pxm=pxm.scaled(64,64,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
+							pxm=pxm.scaled(256,256,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
 							pxm.save(fPath,"PNG")#,quality=5)
 					except Exception as e:
+						icn.setThemeName("hicolor")
 						icn=QtGui.QIcon.fromTheme("appedu-generic")
 						pxm=icn.pixmap(QSize(64,64))
 			else:
@@ -131,7 +132,13 @@ class QLabelRebostApp(QLabel):
 		else:
 			baseSize=ICON_SIZE
 		wsize=baseSize
-		self.setPixmap(args[0].scaled(wsize,baseSize,Qt.IgnoreAspectRatio,Qt.FastTransformation))
+		pxm=args[0]
+		if pxm.isNull()==True:
+			icn=QtGui.QIcon()
+			icn.setThemeName("hicolor")
+			icn=QtGui.QIcon.fromTheme("appedu-generic")
+			pxm=icn.pixmap(QSize(64,64))
+		self.setPixmap(pxm.scaled(wsize,baseSize,Qt.IgnoreAspectRatio,Qt.FastTransformation))
 	#def _setIcon(self,*args):
 
 	def loadImg(self,app):
