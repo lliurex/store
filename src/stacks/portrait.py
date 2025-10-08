@@ -201,6 +201,17 @@ class portrait(QStackedWindowItem):
 		return(lockedUser)
 	#def _chkUserGroup(self):
 
+	def _chkCategories(self,*args):
+		if self.lstCategories.count()<=0:
+			self._rebost.blockSignals(False)
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
+			self._rebost.wait()
+			self.prgCat.stop()
+			self.prgCat.hide()
+			self.lstCategories.show()
+	#def _chkCategories
+
 	def _endGetLockStatus(self,*args):
 		jconfig=args[0]
 		self.locked=jconfig.get("onlyVerified",False)
@@ -343,17 +354,6 @@ class portrait(QStackedWindowItem):
 			if args[0].text().strip()!="":
 				self.searchBox.setText(args[0].text())
 	#def keyPressEvent
-
-	def _chkCategories(self,*args):
-		if self.lstCategories.count()<=0:
-			self._rebost.blockSignals(False)
-			self._rebost.setAction("getCategories")
-			self._rebost.start()
-			self._rebost.wait()
-			self.prgCat.stop()
-			self.prgCat.hide()
-			self.lstCategories.show()
-	#def _chkCategories
 
 	def __initScreen__(self):
 		self.box=QGridLayout()
@@ -900,6 +900,8 @@ class portrait(QStackedWindowItem):
 					self.barCategories.hide()
 		else:
 			self.barCategories.hide()
+			self.searchBox.setText("")
+			self.lstCategories.setCurrentRow(-1)
 		self.setCursor(self.oldCursor)
 	#def _showPane
 

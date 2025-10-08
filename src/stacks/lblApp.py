@@ -6,7 +6,6 @@ import requests
 from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import Qt,Signal,QSize,QThread
 from PySide6 import QtGui
-from QtExtraWidgets import QScreenShotContainer
 import gettext
 from constants import *
 gettext.textdomain('lliurex-store')
@@ -18,7 +17,7 @@ class _imageLoader(QThread):
 	fetched=Signal("PyObject")
 	def __init__(self,*args,**kwargs):
 		super().__init__()
-		self.dbg=False
+		self.dbg=True
 		self.uri=kwargs.get("uri","")
 		self.pxm=kwargs.get("pxm","")
 		self.name=os.path.basename(self.uri)
@@ -50,27 +49,44 @@ class _imageLoader(QThread):
 					uri=self.uri
 			if not os.path.exists(uri):
 				if uri==os.path.basename(uri):
-					icn=QtGui.QIcon.fromTheme(uri)
-					if icn.isNull():
-						icn=QtGui.QIcon.fromTheme("appedu-generic")
+					icn=QtGui.QIcon()
+					if uri.strip()=="":
+						#Wayland related? Qt seems to lose the ability for loading icons from main theme.
+						icn.setThemeName("hicolor")
+						icn=icn.fromTheme("appedu-generic")
+					else:
+						icn=icn.fromTheme(uri)
+						if icn.isNull():
+							if os.path.exists("/usr/share/rebost-data/icons/cache/{0}.png".format(uri)):
+								icn.addFile("/usr/share/rebost-data/icons/cache/{0}.png".format(uri))
+							elif os.path.exists("/usr/share/rebost-data/icons/cache/{0}_{0}.png".format(uri)):
+								icn.addFile("/usr/share/rebost-data/icons/cache/{0}_{0}.png".format(uri))
+							elif os.path.exists("/usr/share/rebost-data/icons/64x64/{0}.png".format(uri)):
+								icn.addFile("/usr/share/rebost-data/icons/64x64/{}.png".format(uri))
+							elif os.path.exists("/usr/share/rebost-data/icons/64x64/{0}_{0}.png".format(uri)):
+								icn.addFile("/usr/share/rebost-data/icons/64x64/{0}_{0}.png".format(uri))
+							else:
+								icn.setThemeName("hicolor")
+								icn=icn.fromTheme("appedu-generic")
 					pxm=icn.pixmap(QSize(64,64))
 				elif "://":
 					try:
-						img=requests.get(uri,timeout=2)
+						img=requests.get(uri,timeout=5)
 						img.close()
 						pxm.loadFromData(img.content)
-						if self.cacheDir:
-							fPath=os.path.join(self.cacheDir,os.path.basename(uri))
-							if not os.path.exists(fPath):
-								pxm=pxm.scaled(256,256,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
-								pxm.save(fPath,"PNG")#,quality=5)
-					except:
+						if not os.path.exists(self.cacheDir):
+							os.makedirs(self.cacheDir)
+						fPath=os.path.join(self.cacheDir,os.path.basename(uri))
+						if not os.path.exists(fPath):
+							pxm=pxm.scaled(64,64,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
+							pxm.save(fPath,"PNG")#,quality=5)
+					except Exception as e:
 						icn=QtGui.QIcon.fromTheme("appedu-generic")
 						pxm=icn.pixmap(QSize(64,64))
 			else:
 				pxm=QtGui.QPixmap()
 				pxm.load(uri)
-		self._debug("Emit {}".format(pxm))
+		#self._debug("Emit {}".format(pxm))
 		self.fetched.emit(pxm)
 #class _imageLoader(QThread):
 
@@ -91,9 +107,6 @@ class QLabelRebostApp(QLabel):
 	@staticmethod
 	def _stop(*args):
 		selfDict=args[0]
-		#if "scrCnt" in selfDict.keys():
-		#	selfDict["scrCnt"].blockSignals(True)
-		#	selfDict["scrCnt"].deleteLater()
 		if "th" in selfDict.keys():
 			for th in selfDict["th"]:
 				th.finished.emit()
@@ -101,7 +114,11 @@ class QLabelRebostApp(QLabel):
 				th.requestInterruption()
 				th.quit()
 				th.deleteLater()
-				th.wait()
+			for th in selfDict["th"]:
+				if th.isRunning():
+					th.requestInterruption()
+					th.quit()
+					th.wait()
 	#def _stop(*args):
 
 	def setIconSize(self,size):
@@ -131,6 +148,8 @@ class QLabelRebostApp(QLabel):
 			self._imageLoader.setPxm(img)
 		elif not isinstance(img,str):
 			img=""
+		if img=="":
+			img=app["name"]
 		self._imageLoader.setUri(img)
 		self._imageLoader.start()
 		self.th.append(self._imageLoader)
