@@ -87,7 +87,7 @@ class main(QWidget):
 					urls.append(url)
 				self._rebost.setAction("urlSearch",urls)
 				self._rebost.start()
-				self._rebost.wait()
+				#self._rebost.wait()
 			else:
 				self._setBlogData(apps)
 	#def _processRss(self,*args,**kwargs):
