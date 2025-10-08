@@ -16,7 +16,7 @@ Depends: ${misc:Depends}, ${python3:Depends},
 		python3-qtextrawidgets (>=0.6),
 		python3-pyside2.qtgui, 
 		python3-pyside2.qtcore,
-		python3-pyside2.qtuitools
+		python3-pyside2.qtuitools,
 		lliurex-store-dbus
 Provides: appsedu
 Conflicts: appsedu
