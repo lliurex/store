@@ -1,6 +1,7 @@
-lliurex-store (1.4.9.99+0lliurex25) noble-testing; urgency=medium
+lliurex-store (1.4.9.99+1lliurex25) noble-testing; urgency=medium
 
   * RC1
+  * Fix krunner integration
   * More modular code
   * Improved thread management
   * New home screen
@@ -24,7 +25,6 @@ lliurex-store (1.4.9.99+0lliurex25) noble-testing; urgency=medium
   *  - Manage install/remove applications
   *  - Restored links for categories
   * ToDo (1.5)
-  *  - Relevant categories=categories with more installed apps
   *  - Update appsedu data on demand
 
  -- Juanma1980 <juanma1980@gmail.com>  Mon, 08 Sep 2025 12:22:41 +0200
