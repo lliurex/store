@@ -11,14 +11,20 @@ Package: lliurex-store
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, 
 		rebost (>=3.0), 
-		rebost-data (>=24.09.17), 
+		rebost-data (>=25.09.22-0lliurex23), 
 		python3-rebost (>=2.0), 
 		python3-qtextrawidgets (>=0.6),
 		python3-pyside2.qtgui, 
 		python3-pyside2.qtcore,
 		python3-pyside2.qtuitools
+		lliurex-store-dbus
 Provides: appsedu
 Conflicts: appsedu
 Replaces: appsedu
 Description: Application store for LliureX with appsedu integration
 
+Package: lliurex-store-dbus
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, 
+		lliurex-store(>=1.4.9.12)
+Description: Krunner plugin for lliurex-store
