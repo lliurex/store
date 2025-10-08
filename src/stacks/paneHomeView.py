@@ -253,7 +253,7 @@ class main(QWidget):
 				if os.path.exists(wrkPath):
 					for f in os.scandir(wrkPath):
 						if icn in f.name:
-							icn=f.name
+							icn=f.path
 							break
 				if "applications" in icn:
 					break
