@@ -81,6 +81,7 @@ class _imageLoader(QThread):
 							pxm=pxm.scaled(256,256,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
 							pxm.save(fPath,"PNG")#,quality=5)
 					except Exception as e:
+						icn=QtGui.QIcon()
 						icn.setThemeName("hicolor")
 						icn=QtGui.QIcon.fromTheme("appedu-generic")
 						pxm=icn.pixmap(QSize(64,64))

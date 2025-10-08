@@ -374,6 +374,9 @@ class main(QWidget):
 		if self.suggests.count()>0:
 			self.suggests.setMinimumHeight(btn.sizeHint().height()+int(MARGIN)*8)
 			self.suggests.show()
+			for chld in self.suggests.children():
+				if isinstance(chld,QPushButtonRebostApp):
+					chld.updateBtn()
 		else:
 			self.suggests.hide()
 	#def _endSuggestLoad(self,args):
