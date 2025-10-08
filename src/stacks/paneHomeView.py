@@ -310,3 +310,12 @@ class main(QWidget):
 	#	self._getBlog()
 	#	self._getAppsedu()
 	#def updateScreen
+
+	def updateBtn(self,btn,app):
+		if btn!=None:
+			for chld in self.appsEdu.children():
+				if isinstance(chld,QPushButtonRebostApp):
+					if chld==btn:
+						btn.setApp(app)
+						break
+	#def updateBtn
