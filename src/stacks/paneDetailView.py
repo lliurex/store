@@ -367,6 +367,7 @@ class main(QWidget):
 		self.suggests.setSpacing(int(MARGIN)*3)
 		for app in suggests:
 			btn=QPushButtonRebostApp("{}",iconSize=64)
+			btn.autoUpdate=True
 			btn.setCompactMode(True)
 			btn.clicked.connect(self._loadSuggested)
 			btn.setApp(app)
