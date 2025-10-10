@@ -1,16 +1,10 @@
 polkit.addRule(function(action, subject) {
-    if ((action.id == "net.lliurex.store.installer" &&
-        subject.active == true && subject.local == true) &&
-         subject.isInGroup("Admins")){
-            return polkit.Result.YES;
-    }
-
-    if ((action.id == "net.lliurex.store.installer" &&
-        subject.active == true ) &&
-        (subject.isInGroup("sudo") || subject.isInGroup("teachers"))){
-            return polkit.Result.YES;
-    }
-
+	if ( action.id == "net.lliurex.store.installer"){
+		const members = ['admins', 'sudo',"teachers"];
+		if (members.indexOf('*')>=0){
+			return polkit.Result.YES;
+		}
     return polkit.Result.NO;
+	}
 });
 
