@@ -148,9 +148,6 @@ class main(QWidget):
 			name=args[-1]
 			self._resetScreen(name,"")
 			if isinstance(args[0],dict):
-				name=args[0].get("name","")
-				pxm=args[0].get("icon","")
-				appid=args[0].get("id",name)
 				self.thParmShow.setArgs(args[0])
 				self.thParmShow.start()
 			elif isinstance(name,str):
@@ -664,6 +661,7 @@ class main(QWidget):
 
 	def _resetScreen(self,name,icon):
 		self.app={}
+		self.lblIcon.setPixmap(QtGui.QPixmap())
 		self.instBundle=""
 		self.app["name"]=name
 		self.app["icon"]=icon
