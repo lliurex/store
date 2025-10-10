@@ -23,6 +23,7 @@ then
 	IFS=$'\"'
 	for i in ${CATs}
 	do
+		echo $i
 		b=${i/ /}
 		[ ${#i} -ne ${#b} ] && continue
 		[ ${#i} -lt 2 ] && continue
