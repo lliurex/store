@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-10 08:27+0200\n"
+"POT-Creation-Date: 2025-10-10 08:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -237,6 +237,495 @@ msgstr ""
 
 #: ../src/stacks/prgBar.py:20
 msgid "Loading available applications"
+msgstr ""
+
+
+#
+msgid "AudioVideo"
+msgstr ""
+
+#
+msgid "DiscBurning"
+msgstr ""
+
+#
+msgid "Audio"
+msgstr ""
+
+#
+msgid "Midi"
+msgstr ""
+
+#
+msgid "Mixer"
+msgstr ""
+
+#
+msgid "Sequencer"
+msgstr ""
+
+#
+msgid "Tuner"
+msgstr ""
+
+#
+msgid "Recorder"
+msgstr ""
+
+#
+msgid "Player"
+msgstr ""
+
+#
+msgid "Video"
+msgstr ""
+
+#
+msgid "AudioVideoEditing"
+msgstr ""
+
+#
+msgid "TV"
+msgstr ""
+
+#
+msgid "Development"
+msgstr ""
+
+#
+msgid "Building"
+msgstr ""
+
+#
+msgid "Debugger"
+msgstr ""
+
+#
+msgid "IDE"
+msgstr ""
+
+#
+msgid "GUIDesigner"
+msgstr ""
+
+#
+msgid "Profiling"
+msgstr ""
+
+#
+msgid "RevisionControl"
+msgstr ""
+
+#
+msgid "Translation"
+msgstr ""
+
+#
+msgid "Database"
+msgstr ""
+
+#
+msgid "ProjectManagement"
+msgstr ""
+
+#
+msgid "WebDevelopment"
+msgstr ""
+
+#
+msgid "Education"
+msgstr ""
+
+#
+msgid "Art"
+msgstr ""
+
+#
+msgid "Construction"
+msgstr ""
+
+#
+msgid "Music"
+msgstr ""
+
+#
+msgid "Languages"
+msgstr ""
+
+#
+msgid "ArtificialIntelligence"
+msgstr ""
+
+#
+msgid "Astronomy"
+msgstr ""
+
+#
+msgid "Biology"
+msgstr ""
+
+#
+msgid "Chemistry"
+msgstr ""
+
+#
+msgid "ComputerScience"
+msgstr ""
+
+#
+msgid "DataVisualization"
+msgstr ""
+
+#
+msgid "Economy"
+msgstr ""
+
+#
+msgid "Electricity"
+msgstr ""
+
+#
+msgid "Geography"
+msgstr ""
+
+#
+msgid "Geology"
+msgstr ""
+
+#
+msgid "Geoscience"
+msgstr ""
+
+#
+msgid "History"
+msgstr ""
+
+#
+msgid "Humanities"
+msgstr ""
+
+#
+msgid "ImageProcessing"
+msgstr ""
+
+#
+msgid "Literature"
+msgstr ""
+
+#
+msgid "Maps"
+msgstr ""
+
+#
+msgid "Math"
+msgstr ""
+
+#
+msgid "NumericalAnalysis"
+msgstr ""
+
+#
+msgid "MedicalSoftware"
+msgstr ""
+
+#
+msgid "Physics"
+msgstr ""
+
+#
+msgid "Robotics"
+msgstr ""
+
+#
+msgid "Spirituality"
+msgstr ""
+
+#
+msgid "Sports"
+msgstr ""
+
+#
+msgid "ParallelComputing"
+msgstr ""
+
+#
+msgid "Game"
+msgstr ""
+
+#
+msgid "ActionGame"
+msgstr ""
+
+#
+msgid "AdventureGame"
+msgstr ""
+
+#
+msgid "ArcadeGame"
+msgstr ""
+
+#
+msgid "BoardGame"
+msgstr ""
+
+#
+msgid "BlocksGame"
+msgstr ""
+
+#
+msgid "CardGame"
+msgstr ""
+
+#
+msgid "Emulator"
+msgstr ""
+
+#
+msgid "KidsGame"
+msgstr ""
+
+#
+msgid "LogicGame"
+msgstr ""
+
+#
+msgid "RolePlaying"
+msgstr ""
+
+#
+msgid "Shooter"
+msgstr ""
+
+#
+msgid "Simulation"
+msgstr ""
+
+#
+msgid "SportsGame"
+msgstr ""
+
+#
+msgid "StrategyGame"
+msgstr ""
+
+#
+msgid "LauncherStore"
+msgstr ""
+
+#
+msgid "Graphics"
+msgstr ""
+
+#
+msgid "2DGraphics"
+msgstr ""
+
+#
+msgid "VectorGraphics"
+msgstr ""
+
+#
+msgid "RasterGraphics"
+msgstr ""
+
+#
+msgid "3DGraphics"
+msgstr ""
+
+#
+msgid "Scanning"
+msgstr ""
+
+#
+msgid "OCR"
+msgstr ""
+
+#
+msgid "Photography"
+msgstr ""
+
+#
+msgid "Publishing"
+msgstr ""
+
+#
+msgid "Viewer"
+msgstr ""
+
+#
+msgid "Network"
+msgstr ""
+
+#
+msgid "Email"
+msgstr ""
+
+#
+msgid "Dialup"
+msgstr ""
+
+#
+msgid "InstantMessaging"
+msgstr ""
+
+#
+msgid "Chat"
+msgstr ""
+
+#
+msgid "IRCCLient"
+msgstr ""
+
+#
+msgid "Feed"
+msgstr ""
+
+#
+msgid "FileTransfer"
+msgstr ""
+
+#
+msgid "HamRadio"
+msgstr ""
+
+#
+msgid "News"
+msgstr ""
+
+#
+msgid "P2P"
+msgstr ""
+
+#
+msgid "RemoteAcces"
+msgstr ""
+
+#
+msgid "Telephony"
+msgstr ""
+
+#
+msgid "TelephonyTools"
+msgstr ""
+
+#
+msgid "VideoConference"
+msgstr ""
+
+#
+msgid "WebBrowser"
+msgstr ""
+
+#
+msgid "Office"
+msgstr ""
+
+#
+msgid "Calendar"
+msgstr ""
+
+#
+msgid "ContactManagement"
+msgstr ""
+
+#
+msgid "Dictionary"
+msgstr ""
+
+#
+msgid "Chart"
+msgstr ""
+
+#
+msgid "Finance"
+msgstr ""
+
+#
+msgid "FlowChart"
+msgstr ""
+
+#
+msgid "PDA"
+msgstr ""
+
+#
+msgid "Presentation"
+msgstr ""
+
+#
+msgid "Spreadsheet"
+msgstr ""
+
+#
+msgid "WordProcessor"
+msgstr ""
+
+#
+msgid "Science"
+msgstr ""
+
+#
+msgid "Settings"
+msgstr ""
+
+#
+msgid "Security"
+msgstr ""
+
+#
+msgid "Accessibility"
+msgstr ""
+
+#
+msgid "System"
+msgstr ""
+
+#
+msgid "FileTools"
+msgstr ""
+
+#
+msgid "FileManager"
+msgstr ""
+
+#
+msgid "TerminalEmulator"
+msgstr ""
+
+#
+msgid "FileSystem"
+msgstr ""
+
+#
+msgid "Monitor"
+msgstr ""
+
+#
+msgid "Utility"
+msgstr ""
+
+#
+msgid "TextTools"
+msgstr ""
+
+#
+msgid "Archiving"
+msgstr ""
+
+#
+msgid "Compression"
+msgstr ""
+
+#
+msgid "Calculator"
+msgstr ""
+
+#
+msgid "Clock"
+msgstr ""
+
+#
+msgid "TextEditor"
 msgstr ""
 msgid "Authentication is required to manage software"
 msgstr ""
