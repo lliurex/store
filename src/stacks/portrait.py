@@ -207,9 +207,9 @@ class portrait(QStackedWindowItem):
 			self._rebost.setAction("getCategories")
 			self._rebost.start()
 			self._rebost.wait()
-			self.prgCat.stop()
-			self.prgCat.hide()
-			self.lstCategories.show()
+		self.prgCat.stop()
+		self.prgCat.hide()
+		self.lstCategories.show()
 	#def _chkCategories
 
 	def _endGetLockStatus(self,*args):
@@ -325,6 +325,8 @@ class portrait(QStackedWindowItem):
 
 	def _progressHide(self):
 		self.progress.stop()
+		self.prgCat.stop()
+		self.prgCat.hide()
 		#self.updateTimer.stop()
 	#def _progressHide
 
