@@ -413,10 +413,10 @@ class portrait(QStackedWindowItem):
 		wdg=QWidget()
 		vbox=QVBoxLayout()
 		wdg.setLayout(vbox)
-		vbox.setContentsMargins(10,0,10,0)
+		vbox.setContentsMargins(int(MARGIN),0,int(MARGIN),0)
 		self.certified=QPushButtonToggle()
 		self.certified.toggleClicked.connect(self._unlockRebost)
-		vbox.addWidget(self.certified,Qt.AlignCenter)
+		vbox.addWidget(self.certified)
 		self.lstCategories=QListWidget()
 		self.lstCategories.setObjectName("lstCategories")
 		self.lstCategories.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -431,7 +431,7 @@ class portrait(QStackedWindowItem):
 		self.lblInfo=self._defInfo()
 		vbox.addSpacing(30)
 		vbox.addWidget(self.lblInfo,Qt.AlignBottom)
-		vbox.setStretch(0,0)
+		#vbox.setStretch(0,0)
 		vbox.setStretch(1,1)
 		vbox.setStretch(2,0)
 		vbox.setStretch(3,0)
@@ -460,12 +460,12 @@ class portrait(QStackedWindowItem):
 		lay=QVBoxLayout()
 		self.sortAsc=False
 		banner=self._defBanner()
-		lay.addWidget(banner)
+		lay.addWidget(banner,Qt.Alignment(0))
 		_defBtnBar=self._defBtnBar()
 		hlay=QHBoxLayout()
 		wdg2=QWidget()
 		wdg2.setLayout(hlay)
-		hlay.addWidget(_defBtnBar,Qt.AlignCenter)
+		hlay.addWidget(_defBtnBar,Qt.AlignCenter|Qt.AlignTop)
 		lay.addWidget(wdg2)
 		navBar=self._defNavigationBar()
 		lay.addWidget(navBar)
@@ -675,6 +675,7 @@ class portrait(QStackedWindowItem):
 	def _endGetUpgradables(self,*args):
 		if args[0]==True:
 			self.lblInfo.show()
+		self._chkCategories()
 	#def _endGetUpgradables(self,*args):
 
 	def _getUpgradables(self):
