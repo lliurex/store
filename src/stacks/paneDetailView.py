@@ -590,11 +590,11 @@ class main(QWidget):
 			self.lblTags.hide()
 		else:
 			self.lblTags.show()
+		self.loaded.emit(self.app)
 		self._populateSuggestsList()
 		self._populateLinks()
 		self._populateBoxBundles()
 		self.cmbBundles.setApp(self.app)
-		self.loaded.emit(self.app)
 	#def _updateScreen
 
 	def _getLauncherForApp(self):

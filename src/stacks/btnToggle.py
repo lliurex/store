@@ -54,9 +54,11 @@ class QPushButtonToggle(QWidget):
 		#layout.addWidget(self.btnLliurex,0,1,1,1,Qt.AlignCenter)
 		hlayout.addWidget(self.btnLliurex)
 		self.btnLliurex.setDisabled(True)
+		layout.addWidget(wdg,0,0,1,1,Qt.AlignCenter|Qt.AlignTop)
 		self.lblOrigin=QLabel("{}: appsedu".format(i18n["ORIGIN"]))
-		layout.addWidget(wdg,0,0,1,1,Qt.AlignCenter)
-		layout.addWidget(self.lblOrigin,1,0,1,1,Qt.AlignCenter)
+		layout.addWidget(self.lblOrigin,1,0,1,1,Qt.AlignCenter|Qt.AlignTop)
+		layout.setRowStretch(1,1)
+		layout.setRowStretch(0,0)
 	#def __init__
 
 	def _debug(self,msg):

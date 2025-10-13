@@ -335,9 +335,9 @@ def portrait():
 	banner="""#banner{
 					margin-top:%spx;
 					margin-bottom:%spx;
-					margin-left:%spx;
-					margin-right:%spx;
-			}"""%(int(MARGIN)*3,int(MARGIN)*1,int(MARGIN)*3,int(MARGIN)*2)
+					/*margin-left:%spx;
+					margin-right:%spx;*/
+			}"""%(int(MARGIN)*3,int(MARGIN)*1,int(MARGIN)*3,int(MARGIN)*3)
 	css=css+banner
 	lstCategories="""#lstCategories{
 					color:%s;
@@ -403,7 +403,7 @@ def portrait():
 				#upgrades:pressed{
 					border:2px inset %s;
 				}
-				"""%(COLOR_BACKGROUND_DARK,COLOR_BORDER,RADIUS,MARGIN,int(MARGIN),COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK)
+				"""%(COLOR_BACKGROUND_DARK,COLOR_BORDER,RADIUS,MARGIN,int(MARGIN)*2,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK)
 	css=css+upgrades
 	working="""#working{
 					color:%s;
