@@ -82,7 +82,7 @@ class QPushButtonInstaller(QPushButton):
 		what.setIcon(QIcon.fromTheme("system-help"))
 		what.setIconSize(QSize(16,16))
 		what.setFixedSize(QSize(24,24))
-		what.setStyleSheet("""padding:0px;margin:0px;border:0px,color:black""")
+		what.setStyleSheet("""padding:0px;margin:0px;border:0px;color:black""")
 		what.clicked.connect(self._openWiki)
 		what.setToolTip(i18n["HELP"])
 		what.setCursor(Qt.WhatsThisCursor)
