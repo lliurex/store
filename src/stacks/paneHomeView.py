@@ -151,7 +151,7 @@ class main(QWidget):
 			btn.setObjectName("mp")
 			btn.autoUpdate=True
 			#REM preview img
-			pxm.load("/home/lliurex/git/store/src/rsrc/blog128x128.png")
+			pxm.load(os.path.join(RSRC,"blog128x128.png"))
 			btn.loadFullScreen(pxm)
 			layout.addWidget(btn)
 		wdg.setLayout(layout)
@@ -217,7 +217,7 @@ class main(QWidget):
 			btn.autoUpdate=True
 			if i<3:
 				#btn.setObjectName("mp")
-				pxm.load("/home/lliurex/git/store/src/rsrc/appsedu128x128.png")
+				pxm.load(os.path.join(RSRC,"appsedu128x128.png"))
 				btn.loadFullScreen(pxm)
 			else:
 				btn.setVisible(False)
