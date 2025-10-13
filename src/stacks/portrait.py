@@ -365,7 +365,7 @@ class portrait(QStackedWindowItem):
 		self.sortAsc=False
 		navwdg=self._defNavigationPane()
 		navwdg.setObjectName("wdg")
-		self.box.addWidget(navwdg,0,0,4,1,Qt.AlignLeft)
+		self.box.addWidget(navwdg,0,0,4,1)
 		self.searchwdg=self._defSearch()
 		self.box.addWidget(self.searchwdg,0,1)
 		spacer=QLabel(" ")
@@ -401,10 +401,7 @@ class portrait(QStackedWindowItem):
 		self._errorView.setVisible(not(self.isConnected))
 		self.box.addWidget(self._errorView,0,1,self.box.rowCount(),self.box.columnCount())
 		self.progress=self._defProgress()
-		#self.updateTimer.timeout.connect(self.progress._doProgress)
 		self.progress.lblInfo.hide()
-		#self.loadStart.connect(self._progressShow)
-		#self.loadStop.connect(self._progressHide)
 		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		self.progress.setAttribute(Qt.WA_StyledBackground, False)
 	#def __initScreen__
@@ -413,7 +410,7 @@ class portrait(QStackedWindowItem):
 		wdg=QWidget()
 		vbox=QVBoxLayout()
 		wdg.setLayout(vbox)
-		vbox.setContentsMargins(10,0,10,0)
+		vbox.setContentsMargins(int(MARGIN)*3,0,int(MARGIN)*3,0)
 		self.certified=QPushButtonToggle()
 		self.certified.toggleClicked.connect(self._unlockRebost)
 		vbox.addWidget(self.certified,Qt.AlignCenter)
@@ -423,18 +420,16 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		vbox.addWidget(self.lstCategories,Qt.AlignTop|Qt.AlignCenter)
 		self.lstCategories.setMinimumHeight(int(ICON_SIZE/3))
-		self.lstCategories.setMaximumWidth(wdg.sizeHint().width()-int(MARGIN)*5)
+		self.lstCategories.setMaximumWidth(wdg.sizeHint().width()-int(MARGIN)*3)
 		self.lstCategories.currentItemChanged.connect(self._decoreLstCategories)
 		self.lstCategories.itemActivated.connect(self._loadCategory)
 		self.lstCategories.itemClicked.connect(self._loadCategory)
 		self.lstCategories.hide()
 		self.lblInfo=self._defInfo()
-		vbox.addSpacing(30)
-		vbox.addWidget(self.lblInfo,Qt.AlignBottom)
+		vbox.addWidget(self.lblInfo,Qt.Alignment(-1))
 		vbox.setStretch(0,0)
-		vbox.setStretch(1,1)
-		vbox.setStretch(2,0)
-		vbox.setStretch(3,0)
+		vbox.setStretch(1,2)
+		vbox.setStretch(3,1)
 		return(wdg)
 	#def _defNavigationBar
 
@@ -449,27 +444,36 @@ class portrait(QStackedWindowItem):
 		btnInst=self._defInst()
 		btnInst.setObjectName("btnHome")
 		lay.addWidget(btnInst,Qt.AlignLeft)
-		btnHome.setMaximumWidth(btnInst.sizeHint().width())
-		wdg.setMaximumWidth(btnInst.sizeHint().width()*2+10)
+		btnHome.setFixedWidth(btnInst.sizeHint().width()+int(MARGIN))
+		btnInst.setFixedWidth(btnInst.sizeHint().width()+int(MARGIN))
 		return(wdg)
 	#def _defBtnBar
 
+	def _defBanner(self):
+		lbl=QLabel()
+		#lbl.setObjectName("banner")
+		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.svg")
+		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
+		lbl.setPixmap(pxm)
+		return lbl
+	#def _defBanner
+
 	def _defNavigationPane(self):
 		wdg=QWidget()
-		wdg.setObjectName("wdg")
-		lay=QVBoxLayout()
+		#wdg.setObjectName("wdg")
+		lay=QGridLayout()
+		lay.setContentsMargins(0,int(MARGIN)*3,0,0)
+		wdg.setLayout(lay)
 		self.sortAsc=False
 		banner=self._defBanner()
-		lay.addWidget(banner)
+		lay.addWidget(banner,0,0,1,1,Qt.AlignCenter|Qt.AlignTop)
 		_defBtnBar=self._defBtnBar()
-		hlay=QHBoxLayout()
-		wdg2=QWidget()
-		wdg2.setLayout(hlay)
-		hlay.addWidget(_defBtnBar,Qt.AlignCenter)
-		lay.addWidget(wdg2)
+		lay.addWidget(_defBtnBar,1,0,1,1,Qt.AlignCenter)
 		navBar=self._defNavigationBar()
-		lay.addWidget(navBar)
-		wdg.setLayout(lay)
+		lay.addWidget(navBar,2,0,1,1)
+		lay.setRowStretch(0,0)
+		lay.setRowStretch(1,0)
+		lay.setRowStretch(2,1)
 		return(wdg)
 	#def _defNavigationPane
 
@@ -477,16 +481,7 @@ class portrait(QStackedWindowItem):
 		wdg=QToolBarCategories()
 		wdg.requestLoadCategory.connect(self._loadCategory)
 		return(wdg)
-	#def _defNavigationPane
-
-	def _defBanner(self):
-		lbl=QLabel()
-		lbl.setObjectName("banner")
-		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.svg")
-		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
-		lbl.setPixmap(pxm)
-		return lbl
-	#def _defBanner
+	#def _defBarCategories
 
 	def _unlockRebost(self,*args):
 		self.resetScreen()
