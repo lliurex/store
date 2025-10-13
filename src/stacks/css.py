@@ -323,9 +323,9 @@ def portrait():
 					background:%s;
 					color:%s;
 					padding:1px;
-					padding-bottom:3px;
+					padding-top:%spx;
 					border-radius:%spx;
-					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,RADIUS_HIGH)
+					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,int(MARGIN)/2,RADIUS_HIGH)
 	css=css+categoryTag
 
 	error="""#errorMsg{
