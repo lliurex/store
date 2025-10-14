@@ -436,6 +436,7 @@ class portrait(QStackedWindowItem):
 		vbox.setStretch(0,0)
 		vbox.setStretch(1,2)
 		vbox.setStretch(3,1)
+		wdg.setMinimumWidth(self.lblInfo.sizeHint().width())
 		return(wdg)
 	#def _defNavigationBar
 

@@ -31,7 +31,7 @@ class main(QWidget):
 		self.destroyed.connect(partial(main._onDestroy,self.__dict__))
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self._debug("home load")
-		self.setStyleSheet(css.tablePanel())
+		self.setStyleSheet(css.homePanel())
 		self.setObjectName("mp")
 		self.th=[]
 		self._rebost=args[0]
@@ -140,7 +140,7 @@ class main(QWidget):
 	def _defBlog(self):
 		wdg=QWidget()
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-		layout=QHBoxLayout()
+		layout=QHBoxLayout(wdg)
 		layout.setSpacing(0)
 		pxm=QtGui.QPixmap()
 		for i in range(0,5):
@@ -148,13 +148,12 @@ class main(QWidget):
 			btn.setMaximumWidth(IMAGE_PREVIEW/3)
 			btn.showBtn=False
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
-			btn.setObjectName("mp")
+			btn.setObjectName("btn")
 			btn.autoUpdate=True
 			#REM preview img
 			pxm.load(os.path.join(RSRC,"blog128x128.png"))
 			btn.loadFullScreen(pxm)
-			layout.addWidget(btn)
-		wdg.setLayout(layout)
+			layout.addWidget(btn,Qt.AlignCenter)
 		return(wdg)
 	#def _defBlog
 
@@ -289,14 +288,17 @@ class main(QWidget):
 
 	def __initScreen__(self):
 		lblBlog=QLabel("{}<hr>".format(i18n["LBL_BLOG"]))
+		lblBlog.setObjectName("lbl")
 		self.layout().addWidget(lblBlog,0,0)
 		self.blog=self._defBlog()
 		self.layout().addWidget(self.blog,1,0)
 		lblAppsedu=QLabel("{}<hr>".format(i18n["LBL_APPSEDU"]))
+		lblAppsedu.setObjectName("lbl")
 		self.layout().addWidget(lblAppsedu,2,0)
 		self.appsEdu=self._defAppsedu()
 		self.layout().addWidget(self.appsEdu,3,0)
 		lblCats=QLabel("{}<hr>".format(i18n["LBL_CATEGORIES"]))
+		lblCats.setObjectName("lbl")
 		self.layout().addWidget(lblCats,4,0)
 		self.appsByCat=self._defAppsByCat()
 		self.layout().addWidget(self.appsByCat,5,0)

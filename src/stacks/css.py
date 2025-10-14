@@ -242,6 +242,28 @@ def detailPanel():
 	return(css)
 #def detailPanel
 
+def homePanel():
+	css=""
+	mp="""#mp{
+					padding:%spx;
+					border:0px;
+					margin:0px;
+					background:%s;
+			}"""%(int(MARGIN)/3,COLOR_BACKGROUND_LIGHT)
+	css=css+mp
+	lbl="""#lbl{
+					padding-left:%spx;
+					padding-right:%spx;
+		}"""%(int(MARGIN)*5,int(MARGIN)*5)
+	css=css+lbl
+	btn="""#btn{
+					border:0px;
+					background:%s;
+		}"""%(COLOR_BACKGROUND_LIGHT)
+	css=css+btn
+	return(css)
+#def homePanel
+
 def tablePanel():
 	css=""
 	mp="""#mp{
@@ -260,7 +282,7 @@ def tablePanel():
 				#qFlow::item{
 					padding:%spx;
 				}
-				"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN*2),MARGIN,int(MARGIN)/4)
+				"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN)*15,int(MARGIN),int(MARGIN)/4)
 	css=css+qflow
 	flyIcon="""#flyIcon{background:transparent;}"""
 	css=css+flyIcon
