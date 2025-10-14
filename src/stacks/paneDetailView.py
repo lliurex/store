@@ -451,6 +451,7 @@ class main(QWidget):
 			if " " not in bundleData:
 				bundleData+=" contrib"
 			bundles.append(bundleData.split()[0])
+		defBund=None
 		for children in self.boxBundles.children():
 			if isinstance(children,QLabel):
 				children.hide()
@@ -458,6 +459,8 @@ class main(QWidget):
 				bundle=chldText.split(":")[-1].lower().strip()
 				if bundle=="epi":
 					bundle="unknown"
+					defBund=children
+					defBund.setEnabled(True)
 				if bundle in bundles:
 					release=self.app.get("versions",{}).get(bundle,"")
 					if bundle=="unknown":
@@ -465,6 +468,11 @@ class main(QWidget):
 					text="Kind: {0}\nRelease: {1}".format(bundle.capitalize(),release)
 					children.setToolTip(text)
 					children.show()
+					added=True
+					defBund=None
+		if defBund!=None:
+			defBund.setEnabled(False)
+			defBund.show()
 	#def _populateBundleIcons
 
 	def _defBoxBundles(self):
