@@ -207,9 +207,6 @@ class portrait(QStackedWindowItem):
 			self._rebost.setAction("getCategories")
 			self._rebost.start()
 			self._rebost.wait()
-		self.prgCat.stop()
-		self.prgCat.hide()
-		self.lstCategories.show()
 	#def _chkCategories
 
 	def _endGetLockStatus(self,*args):
@@ -325,8 +322,8 @@ class portrait(QStackedWindowItem):
 
 	def _progressHide(self):
 		self.progress.stop()
-		self.prgCat.stop()
-		self.prgCat.hide()
+		#self.prgCat.stop()
+		#self.prgCat.hide()
 		#self.updateTimer.stop()
 	#def _progressHide
 
@@ -393,7 +390,7 @@ class portrait(QStackedWindowItem):
 		self.prgCat.sleepSeconds=55
 		self.prgCat.setColor(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_DARKEST)
 		self.prgCat.lblInfo.setWordWrap(True)
-		self.box.addWidget(self.prgCat,0,0,4,2)
+		self.box.addWidget(self.prgCat,0,0,5,2)
 		self.prgCat.start()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		self.box.setColumnStretch(1,1)
@@ -631,6 +628,9 @@ class portrait(QStackedWindowItem):
 	#def _getHomeViewPane
 
 	def _populateCategories(self,cats):
+		self.prgCat.stop()
+		self.prgCat.hide()
+		self.lstCategories.show()
 		self.lstCategories.clear()
 		self.lstCategories.setSizeAdjustPolicy(self.lstCategories.SizeAdjustPolicy.AdjustToContents)
 		self.i18nCat={}
