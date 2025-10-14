@@ -307,6 +307,7 @@ def portrait():
 					margin-right:%spx;
 				}
 				#wdgsearch{
+					border-top:35px solid white;
 					background:%s;
 				}"""%(COLOR_BORDER,COLOR_BACKGROUND_DARK,int(RADIUS)*3,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN)*1.5,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN),COLOR_BACKGROUND_LIGHT)
 	css=css+search
@@ -322,10 +323,9 @@ def portrait():
 	categoryTag="""#categoryTag{
 					background:%s;
 					color:%s;
-					padding:1px;
-					padding-bottom:3px;
+					padding:%spx;
 					border-radius:%spx;
-					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,RADIUS_HIGH)
+					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,int(MARGIN)/3,RADIUS_HIGH)
 	css=css+categoryTag
 
 	error="""#errorMsg{
