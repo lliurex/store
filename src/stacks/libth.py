@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os
+import libhelper
 from PySide6.QtCore import Signal,QThread
 import json,time,subprocess,random
 try:
@@ -372,6 +373,7 @@ class thShowApp(QThread):
 		QThread.__init__(self, None)
 		self.rc=kwargs["rc"]
 		self.app={}
+		self.helper=libhelper.helper()
 	#def __init__
 
 	def setArgs(self,*args):
@@ -394,6 +396,11 @@ class thShowApp(QThread):
 			finally:
 				if isinstance(app,str):
 					app=json.loads(app)
-				self.showEnded.emit(app)
+			homepage=app.get('homepage','')
+			if homepage.startswith("https://portal.edu.gva.es/appsedu")==True and app["description"].count(" ")<3:
+				content=self.helper.getAppseduDetails(homepage)
+				if len(content)>len(app["description"]):
+					app["description"]=content
+			self.showEnded.emit(app)
 	#def run
 #class thShowApp

@@ -187,7 +187,7 @@ class main(QWidget):
 			#pkexec ret values
 			#127 -> Not authorized
 			if proc.returncode==127:
-				self.showMsg(title="AppsEdu Store",summary=self.app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=self.app["icon"],timeout=5000)
+				self.showMsg(title="LliureX Store",summary=self.app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=self.app["icon"],timeout=5000)
 		self._rebost.setAction("setAppState",self.app["id"],0)
 		self._rebost.start()
 		self._rebost.wait()
@@ -419,7 +419,6 @@ class main(QWidget):
 		if homepage:
 			homepage=homepage.rstrip("/")
 			desc=homepage
-			print(desc)
 			if desc.startswith("https://portal.edu.gva.es/appsedu")==True:
 				desc=i18n.get("SEEIT")
 			else:
@@ -682,7 +681,7 @@ class main(QWidget):
 		self._debug("Error detected")
 		qpal=QtGui.QPalette()
 		color=qpal.color(QtGui.QPalette.Dark)
-		self.parent().setWindowTitle("AppsEdu - {}".format("ERROR"))
+		self.parent().setWindowTitle("LLiureX - {}".format("ERROR"))
 		if "Forbidden" not in self.app.get("categories",[]):
 			self.app["categories"]=["Forbidden"]
 		self.cmbBundles.setEnabled(False)
