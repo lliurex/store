@@ -7,7 +7,7 @@ import html
 from rebost import store
 from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QScrollArea,QListWidget,QListWidgetItem
 from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread,Slot
+from PySide6.QtCore import Qt,QSize,Signal,QThread,Slot,QUrl
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
 import libhelper
 import css
@@ -423,13 +423,15 @@ class main(QWidget):
 				desc=i18n.get("SEEIT")
 			else:
 				desc=i18n.get("SITE")
-			text='<a href="{0}" style="text-decoration:none;"><strong>{1}</strong></a> '.format(homepage,desc)
+			text='<a href="{0}"><strong>{1}</strong></a> '.format(homepage,desc)
+			text=desc
 		if len(text)>0:
 			item=QListWidgetItem()
 			self.lstLinks.addItem(item)
 			lbl=QLabelLink(text)
+			lbl.setObjectName("lblLink")
 			lbl.setToolTip(homepage)
-			lbl.setOpenExternalLinks(True)
+			#lbl.setOpenExternalLinks(True)
 			item.setSizeHint(QSize(lbl.sizeHint()))
 			self.lstLinks.setItemWidget(item,lbl)
 			self.lstLinks.show()
@@ -438,7 +440,12 @@ class main(QWidget):
 	#def _populateLinks
 
 	def _defLstLinks(self):
+		def _enableLink(*args):
+			lnk=self.lstLinks.itemWidget(args[0])
+			url=QUrl(lnk.toolTip())
+			QtGui.QDesktopServices.openUrl(url)
 		wdg=QListWidget()
+		wdg.itemPressed.connect(_enableLink)
 		return(wdg)
 	#def _defLstLinks
 
