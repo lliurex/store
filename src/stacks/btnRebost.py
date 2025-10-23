@@ -181,7 +181,7 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setText(i18n.get("UNAUTHORIZED"))
 			self.btn.blockSignals(True)
 			#self.btn.setStyleSheet("""color:#AAAAAA""")
-		elif len(self.app.get("bundle",[]))==0:
+		elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
 			self.btn.setText(i18n.get("UNAVAILABLE"))
 			self.btn.blockSignals(True)
 			#self.btn.setStyleSheet("""color:#AAAAAA""")
@@ -228,7 +228,8 @@ class QPushButtonRebostApp(QPushButton):
 		if self.app.get("forbidden",False)==True:
 			self.btn.setEnabled(False)
 			self.btn.setText(i18n["UNAUTHORIZED"])
-		elif len(self.app.get("bundle",{}))==0:
+		elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
+			self.btn.setText(i18n.get("UNAVAILABLE"))
 			self.btn.setText(i18n["UNAVAILABLE"])
 			self.btn.setEnabled(False)
 		else: #app seems authorized and available
@@ -273,6 +274,7 @@ class QPushButtonRebostApp(QPushButton):
 			else:
 				text="<p>{0}</p>".format(self.app.get('name','').strip().capitalize())
 				self.iconUri.setEnabled(True)
+				self.label.setStyleSheet("padding-top:{0}px;".format(int(MARGIN)))
 		else:
 			text="<p>{0}</p>".format(self.app.get('summary','').strip())
 			_showBtn=False

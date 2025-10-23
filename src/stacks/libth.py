@@ -397,6 +397,8 @@ class thShowApp(QThread):
 				if isinstance(app,str):
 					app=json.loads(app)
 			homepage=app.get('homepage','')
+			if isinstance(homepage,str)==False:
+				homepage=""
 			if homepage.startswith("https://portal.edu.gva.es/appsedu")==True and app["description"].count(" ")<3:
 				content=self.helper.getAppseduDetails(homepage)
 				if len(content)>len(app["description"]):

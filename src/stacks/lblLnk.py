@@ -20,7 +20,12 @@ class QLabelLink(QWidget):
 		lblIcn.setMinimumWidth(16)
 		hbox.addWidget(lblIcn)
 		self.lbl=QLabel(args[0])
+		self.lbl.setAttribute(Qt.WA_StyledBackground, True)
+		self.setAttribute(Qt.WA_StyledBackground, True)
 		hbox.addWidget(self.lbl,Qt.AlignLeft)
+		self.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+		self.lbl.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+		self.lbl.setObjectName("lblLink")
 		self.setLayout(hbox)
 	#def __init__
 	

@@ -223,10 +223,46 @@ def detailPanel():
 
 	css=css+lblTags
 
-	lstLinks="""#lstLinks{
+	lstLinks="""QLabel#lblLink{
+					text-decoration:none;
+					color:%s;
+					border:0px;
+					margin:0px;
+					padding:0px;
+					 } 
+				#lblLink:hover{
+					background-color:%s;
+					text-decoration:underline;
+					color:%s;
+					 } 
+				QLabel#lblLink:hover{
+					background-color:transparent;
+				}
+				#lstLinks{
 					border:0px;
 					margin-left:%spx;
-				}"""%(MARGIN)
+				}
+				#lstLinks::item {
+					text-decoration:none;
+					color:silver;
+					border:0px;
+				}
+				#lstLinks::item:active {
+					text-decoration:none;
+					border:0px;
+				}
+				#lstLinks::item:selected {
+					border:0px;
+				}
+				/*#lstLinks::item:hover {
+					text-decoration:underline;
+					background-color: %s;
+					margin-left:%spx;
+					margin-top:%spx;
+					margin-bottom:%spx;
+					padding:%spx;
+					border-bottom:0px;
+				}*/"""%(COLOR_BACKGROUND_DARK.replace("#","#A9"),COLOR_BACKGROUND_DARKEST.replace("#","#11"),COLOR_BACKGROUND_DARK,int(MARGIN),COLOR_BACKGROUND_DARKEST.replace("#","#AA"),int(MARGIN)/1,int(MARGIN)/1,int(MARGIN)/1,int(MARGIN))
 
 	css=css+lstLinks
 
