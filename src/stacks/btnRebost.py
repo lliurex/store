@@ -273,6 +273,7 @@ class QPushButtonRebostApp(QPushButton):
 			else:
 				text="<p>{0}</p>".format(self.app.get('name','').strip().capitalize())
 				self.iconUri.setEnabled(True)
+				self.label.setStyleSheet("padding-top:{0}px;".format(int(MARGIN)))
 		else:
 			text="<p>{0}</p>".format(self.app.get('summary','').strip())
 			_showBtn=False
