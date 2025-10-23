@@ -1,3 +1,11 @@
+lliurex-store (1.4.9.999+0lliurex25) noble-testing; urgency=medium
+
+  * RC2
+  * All features implemented
+  * Bugfix
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 23 Oct 2025 14:45:36 +0200
+
 lliurex-store (1.4.9.99+8lliurex25) noble-testing; urgency=medium
 
   * RC1
