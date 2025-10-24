@@ -986,9 +986,7 @@ class portrait(QStackedWindowItem):
 			self._detailView.setParms(pkgname)
 		else:
 			#If categories are not populated load them
-			print("portrait setparms end")
 			self._chkCategories()
-		print("portrait setparms end")
 	#def setParms
 
 	def _searchReferrerByName(self,name):
