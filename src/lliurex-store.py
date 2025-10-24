@@ -37,9 +37,9 @@ mw.setStyleSheet("""QWidget#MAIN{background:#002c4f; color:#FFFFFF;margin:0px;pa
 (w,h) = app.primaryScreen().size().toTuple()
 mw.setMinimumWidth(int(w*0.9))
 mw.setMinimumHeight(int(h*0.8))
+mw.show()
 if len(sys.argv)>1:
 	if ("://") in sys.argv[1] or os.path.isfile(sys.argv[1]):
 		wdg=mw.getCurrentStack()
 		wdg.setParms(sys.argv[1])
-mw.show()
 app.exec()
