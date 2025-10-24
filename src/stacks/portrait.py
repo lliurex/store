@@ -223,6 +223,9 @@ class portrait(QStackedWindowItem):
 				self._unlockRebost()
 		self.certified.setLocked(self.locked,lockedUser)
 		self._debug("<-------- Rebost status acquired (lock {})".format(self.locked))
+		self._chkCategories()
+		self.prgCat.stop()
+		self.prgCat.hide()
 	#def _endGetLockStatus
 
 	def _endLock(self,*args):
@@ -889,7 +892,7 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		self.lstCategories.setEnabled(True)
 		if self._detailView.isVisible()==True:
-			self.barCategories.populateCategories(self._detailView.app["categories"])
+			self.barCategories.populateCategories(self._detailView.app.get("categories",[]))
 			self.barCategories.show()
 		elif self._globalView.isVisible()==True:
 			item=self.lstCategories.currentItem()
@@ -976,16 +979,16 @@ class portrait(QStackedWindowItem):
 		appsedu=args[0]
 		self._debug("** Detected parm on init **")
 		if "://" in appsedu:
-			self._stopThreads()
+			self._stopThreads(ignoreProgress=True)
 			pkgname=appsedu.split("://")[-1]
 			self._referrerPane=self._detailView
 			self._debug("Seeking for {}".format(pkgname))
 			self._detailView.setParms(pkgname)
-		#If categories are not populated load them
-		if self.lstCategories.count()<=0:
-			self._rebost.setAction("getCategories")
-			self._rebost.start()
-			self._rebost.wait()
+		else:
+			#If categories are not populated load them
+			print("portrait setparms end")
+			self._chkCategories()
+		print("portrait setparms end")
 	#def setParms
 
 	def _searchReferrerByName(self,name):
