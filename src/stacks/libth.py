@@ -415,9 +415,11 @@ class thShowApp(QThread):
 			if isinstance(homepage,str)==False:
 				homepage=""
 			if homepage.startswith("https://portal.edu.gva.es/appsedu")==True and app["description"].count(" ")<3:
-				content=self.helper.getAppseduDetails(homepage)
-				if len(content)>len(app["description"]):
-					app["description"]=content
+				details=self.helper.getAppseduDetails(homepage)
+				if len(details.get("description",""))>len(app["description"]):
+					app["description"]=details["description"]
+				if len(details.get("icon",""))>0:
+					app["icon"]=details["icon"]
 			self.showEnded.emit(app)
 	#def run
 #class thShowApp
