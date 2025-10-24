@@ -360,9 +360,11 @@ class QPushButtonRebostApp(QPushButton):
 		self.clicked.emit(self,self.app)
 	#def mousePressEvent
 
-	def setApp(self,app):
+	def setApp(self,app,updateIcon=False):
 		self.app=app
 		if self.autoUpdate==True:
 			self.updateScreen()
+		if updateIcon==True:
+			self.iconUri.loadImg(self.app)
 	#def setApp
 #class QPushButtonRebostApp
