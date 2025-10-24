@@ -229,7 +229,6 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setEnabled(False)
 			self.btn.setText(i18n["UNAUTHORIZED"])
 		elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
-			self.btn.setText(i18n.get("UNAVAILABLE"))
 			self.btn.setText(i18n["UNAVAILABLE"])
 			self.btn.setEnabled(False)
 		else: #app seems authorized and available
