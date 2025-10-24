@@ -229,6 +229,7 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setEnabled(False)
 			self.btn.setText(i18n["UNAUTHORIZED"])
 		elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
+			self.btn.setText(i18n.get("UNAVAILABLE"))
 			self.btn.setText(i18n["UNAVAILABLE"])
 			self.btn.setEnabled(False)
 		else: #app seems authorized and available
@@ -359,9 +360,11 @@ class QPushButtonRebostApp(QPushButton):
 		self.clicked.emit(self,self.app)
 	#def mousePressEvent
 
-	def setApp(self,app):
+	def setApp(self,app,updateIcon=False):
 		self.app=app
 		if self.autoUpdate==True:
 			self.updateScreen()
+		if updateIcon==True:
+			self.iconUri.loadImg(self.app)
 	#def setApp
 #class QPushButtonRebostApp
