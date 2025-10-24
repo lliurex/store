@@ -36,6 +36,7 @@ class _imageLoader(QThread):
 
 	def setUri(self,uri):
 		self.uri=uri
+		self.pxm=QtGui.QPixmap()
 	#def setUri
 
 	def run(self):
@@ -154,11 +155,12 @@ class QLabelRebostApp(QLabel):
 		img=app.get('icon','')
 		if isinstance(img,QtGui.QPixmap):
 			self._imageLoader.setPxm(img)
-		elif not isinstance(img,str):
-			img=""
-		if img=="":
-			img=app["name"]
-		self._imageLoader.setUri(img)
+		else:
+			if not isinstance(img,str):
+				img=""
+			if img=="":
+				img=app["name"]
+			self._imageLoader.setUri(img)
 		self._imageLoader.start()
 		self.th.append(self._imageLoader)
 	#def loadImg
