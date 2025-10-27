@@ -386,6 +386,7 @@ class main(QWidget):
 		wdg.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
 		wdg.setMinimumWidth(ICON_SIZE*3+(int(MARGIN)*3))
+		wdg.setMaximumWidth(ICON_SIZE*3+(int(MARGIN)*4))
 		return(wdg)
 	#def _defLblTags
 
