@@ -1,12 +1,12 @@
 [/usr/share/store/helper/installer.py]
 Identity=unix-group:admins;
-Action=net.lliurex.rebost.software-manager.launcher
+Action=net.lliurex.store.installer
 ResultActive=yes
 ResultAny=yes
 ResultInactive=yes
 [Allow teachers to authenticate]
 Identity=unix-group:teachers;unix-group:sudo;
-Action=net.lliurex.rebost.software-manager.launcher
+Action=net.lliurex.store.installer
 ResultActive=yes
 ResultAny=no
 ResultInactive=no

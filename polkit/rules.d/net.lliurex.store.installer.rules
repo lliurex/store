@@ -1,0 +1,17 @@
+polkit.addRule(function(action, subject) {
+	if ( action.id == "net.lliurex.store.installer"){
+		const members = ['sudo', 'admins', 'teachers'];
+		if (members.indexOf('*')>=0) return polkit.Result.YES;
+		for ( i in members ){
+			var group_name = members[i];
+			if ( subject.isInGroup(group_name)){
+				if ( subject.active && subject.local ) return "yes";
+				else if ( !subject.active && subject.local ) return "yes";
+				else return "yes";
+			}
+
+		}
+
+	}
+});
+

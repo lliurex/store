@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-29 11:41+0200\n"
-"PO-Revision-Date: 2025-09-29 11:43+0200\n"
+"POT-Creation-Date: 2025-10-10 08:39+0200\n"
+"PO-Revision-Date: 2025-10-10 08:40+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -11,35 +11,54 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-Basepath: .\n"
-
-#: ../src/stacks/btnInstallers.py:14 ../src/stacks/btnRebost.py:16
-#: ../src/stacks/btnRebost.py:17 ../src/stacks/cmbBtn.py:10
-#: ../src/stacks/lblApp.py:14 ../src/stacks/paneDetailView.py:35
-msgid "Install"
-msgstr "Instala"
 
 #: ../src/stacks/btnInstallers.py:15
 msgid "What's this?"
 msgstr "Que es açò?"
 
-#: ../src/stacks/btnRebost.py:18
+#: ../src/stacks/btnInstallers.py:16 ../src/stacks/btnRebost.py:15
+#: ../src/stacks/cmbBtn.py:10 ../src/stacks/lblApp.py:14
+#: ../src/stacks/paneDetailView.py:35
+msgid "Install"
+msgstr "Instala"
+
+#: ../src/stacks/btnInstallers.py:17 ../src/stacks/btnRebost.py:16
 msgid "Z-Install"
 msgstr "Instala"
 
-#: ../src/stacks/btnRebost.py:19 ../src/stacks/paneDetailView.py:40
-#: ../src/stacks/portrait.py:54
+#: ../src/stacks/btnInstallers.py:18 ../src/stacks/btnRebost.py:17
+#: ../src/stacks/paneDetailView.py:40 ../src/stacks/portrait.py:55
 msgid "Remove"
 msgstr "Elimina"
 
-#: ../src/stacks/btnRebost.py:20 ../src/stacks/paneDetailView.py:44
+#: ../src/stacks/btnInstallers.py:19 ../src/stacks/btnRebost.py:18
+#: ../src/stacks/paneDetailView.py:44
 msgid "Blocked"
 msgstr "Bloqueada"
 
-#: ../src/stacks/btnRebost.py:21 ../src/stacks/paneDetailView.py:45
+#: ../src/stacks/btnInstallers.py:20 ../src/stacks/btnRebost.py:19
+#: ../src/stacks/paneDetailView.py:45
 msgid "Unavailable"
 msgstr "Pendiente"
+
+#: ../src/stacks/btnToggle.py:15 ../src/stacks/paneGlobalView.py:15
+#: ../src/stacks/portrait.py:34
+msgid "All"
+msgstr "Todo"
+
+#: ../src/stacks/btnToggle.py:16
+msgid "Origin"
+msgstr "Origen"
+
+#: ../src/stacks/btnToggle.py:17
+msgid "Click: Show only from"
+msgstr "Click: Restringir a"
+
+#: ../src/stacks/btnToggle.py:18
+msgid "Click: Show all applications"
+msgstr "Click: Mostrar todo"
 
 #: ../src/stacks/paneDetailView.py:26
 msgid ""
@@ -58,23 +77,23 @@ msgstr ""
 "En caso de duda puede contactarse con el SAI en <a href='https://portal.edu."
 "gva.es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
 
-#: ../src/stacks/paneDetailView.py:28 ../src/stacks/portrait.py:39
+#: ../src/stacks/paneDetailView.py:28 ../src/stacks/portrait.py:40
 msgid "Could not open"
 msgstr "No se pudo abrir"
 
-#: ../src/stacks/paneDetailView.py:29 ../src/stacks/portrait.py:40
+#: ../src/stacks/paneDetailView.py:29 ../src/stacks/portrait.py:41
 msgid "Error opening"
 msgstr "Error al cargar"
 
-#: ../src/stacks/paneDetailView.py:30 ../src/stacks/portrait.py:41
+#: ../src/stacks/paneDetailView.py:30 ../src/stacks/portrait.py:42
 msgid "There's another action in progress"
 msgstr "Ya se está realizando otra instalación"
 
-#: ../src/stacks/paneDetailView.py:31 ../src/stacks/portrait.py:43
+#: ../src/stacks/paneDetailView.py:31 ../src/stacks/portrait.py:44
 msgid "System apps can't be removed"
 msgstr "Aplicación de sistema. No se desinstalará"
 
-#: ../src/stacks/paneDetailView.py:32 ../src/stacks/portrait.py:44
+#: ../src/stacks/paneDetailView.py:32 ../src/stacks/portrait.py:45
 msgid "Unknown error"
 msgstr "Error desconocido"
 
@@ -90,7 +109,7 @@ msgstr "Para más información ir a"
 msgid "More apps"
 msgstr "Mès apps"
 
-#: ../src/stacks/paneDetailView.py:37 ../src/stacks/portrait.py:53
+#: ../src/stacks/paneDetailView.py:37 ../src/stacks/portrait.py:54
 msgid "Z·Install"
 msgstr "Instala"
 
@@ -114,11 +133,11 @@ msgstr "Mostrar en Appsedu"
 msgid "Website"
 msgstr "Sitio web"
 
-#: ../src/stacks/paneErrorView.py:13 ../src/stacks/portrait.py:60
+#: ../src/stacks/paneErrorView.py:13 ../src/stacks/portrait.py:61
 msgid "Store was unable to get information from internet"
 msgstr "No parece haber conexión a internet"
 
-#: ../src/stacks/paneErrorView.py:14 ../src/stacks/portrait.py:61
+#: ../src/stacks/paneErrorView.py:14 ../src/stacks/portrait.py:62
 msgid "Open network settings"
 msgstr "Configurar acceso a internet"
 
@@ -126,11 +145,7 @@ msgstr "Configurar acceso a internet"
 msgid "Go to store anyway"
 msgstr "Ir a la tienda"
 
-#: ../src/stacks/paneGlobalView.py:15 ../src/stacks/portrait.py:33
-msgid "All"
-msgstr "Todo"
-
-#: ../src/stacks/paneGlobalView.py:16 ../src/stacks/portrait.py:55
+#: ../src/stacks/paneGlobalView.py:16 ../src/stacks/portrait.py:56
 msgid "Search"
 msgstr "Busca"
 
@@ -146,71 +161,71 @@ msgstr "Últimas aplicaciones en AppsEdu"
 msgid "Relevant categories"
 msgstr "Categorías relevantes"
 
-#: ../src/stacks/portrait.py:34
+#: ../src/stacks/portrait.py:35
 msgid "Available"
 msgstr "Disponible"
 
-#: ../src/stacks/portrait.py:35
+#: ../src/stacks/portrait.py:36
 msgid "Filter by category"
 msgstr "Filtrar por categoría"
 
-#: ../src/stacks/portrait.py:36
+#: ../src/stacks/portrait.py:37
 msgid "Certified by Appsedu"
 msgstr "Certificadas por Appsedu"
 
-#: ../src/stacks/portrait.py:37 ../src/stacks/portrait.py:57
+#: ../src/stacks/portrait.py:38 ../src/stacks/portrait.py:58
 msgid "Portrait"
 msgstr "Portada"
 
-#: ../src/stacks/portrait.py:38
+#: ../src/stacks/portrait.py:39
 msgid "Navigate through all applications"
 msgstr "Mostrar todas las aplicaciones"
 
-#: ../src/stacks/portrait.py:42
+#: ../src/stacks/portrait.py:43
 msgid "Authorization is required"
 msgstr "Es necesario autenticarse para gestionar la aplicación"
 
-#: ../src/stacks/portrait.py:45
+#: ../src/stacks/portrait.py:46
 msgid "Filters"
 msgstr "Filtros"
 
-#: ../src/stacks/portrait.py:46
+#: ../src/stacks/portrait.py:47
 msgid "Filter by formats and states"
 msgstr "Filtar por formatos y estados"
 
-#: ../src/stacks/portrait.py:47
+#: ../src/stacks/portrait.py:48
 msgid "Home"
 msgstr "Inicio"
 
-#: ../src/stacks/portrait.py:48
+#: ../src/stacks/portrait.py:49
 msgid "Main page"
 msgstr "Página principal"
 
-#: ../src/stacks/portrait.py:49
+#: ../src/stacks/portrait.py:50
 msgid "Installed"
 msgstr "Instalado"
 
-#: ../src/stacks/portrait.py:50
+#: ../src/stacks/portrait.py:51
 msgid "Launch LliurexUp"
 msgstr "LliurexUp"
 
-#: ../src/stacks/portrait.py:51
+#: ../src/stacks/portrait.py:52
 msgid "Show applications"
 msgstr "Mostrar aplicaciones"
 
-#: ../src/stacks/portrait.py:52
+#: ../src/stacks/portrait.py:53
 msgid "Updating info"
 msgstr "Actualizando datos"
 
-#: ../src/stacks/portrait.py:56
+#: ../src/stacks/portrait.py:57
 msgid "Sort alphabetically"
 msgstr "Orden alfabético"
 
-#: ../src/stacks/portrait.py:58
+#: ../src/stacks/portrait.py:59
 msgid "Upgradables"
 msgstr "Actualizables"
 
-#: ../src/stacks/portrait.py:59
+#: ../src/stacks/portrait.py:60
 msgid "There're upgrades available"
 msgstr "Hay actualizaciones pendientes"
 

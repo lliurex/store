@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
-from PySide2.QtCore import Signal,QThread
+import libhelper
+from PySide6.QtCore import Signal,QThread
 import json,time,subprocess,random
 try:
        from lliurex import lliurexup
@@ -372,6 +373,8 @@ class thShowApp(QThread):
 		QThread.__init__(self, None)
 		self.rc=kwargs["rc"]
 		self.app={}
+		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
+		self.helper=libhelper.helper()
 	#def __init__
 
 	def setArgs(self,*args):
@@ -385,15 +388,38 @@ class thShowApp(QThread):
 	def run(self):
 		if len(self.app.keys())>0:
 			try:
-				app=json.loads(self.rc.refreshApp(self.app.get('id','')))[0]
+				app=self.app.copy()
+				apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
 			except Exception as e:
 				print("Error finding {}".format(self.app.get("id","")))
-				self._debug(e)
+				print(e)
 				app=self.app.copy()
 				app["ERR"]=True
 			finally:
-				if isinstance(app,str):
-					app=json.loads(app)
-				self.showEnded.emit(app)
+				if len(app)<=2:
+					if os.path.exists(self.mapFile):
+						fcontent={}
+						with open(self.mapFile,"r") as f:
+							fcontent=f.read()
+						jcontent=json.loads(fcontent)
+						vname=jcontent.get(name,"")
+						self._debug("Find virtual pkg {0} for  {1}".format(vname,name))
+						if len(vname)>0:
+							name=vname
+					apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
+				if len(apps)>0:
+					app=apps[0]
+			if isinstance(app,str):
+				app=json.loads(app)
+			homepage=app.get('homepage','')
+			if isinstance(homepage,str)==False:
+				homepage=""
+			if homepage.startswith("https://portal.edu.gva.es/appsedu")==True and app["description"].count(" ")<3:
+				details=self.helper.getAppseduDetails(homepage)
+				if len(details.get("description",""))>len(app["description"]):
+					app["description"]=details["description"]
+				if len(details.get("icon",""))>0:
+					app["icon"]=details["icon"]
+			self.showEnded.emit(app)
 	#def run
 #class thShowApp

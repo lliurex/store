@@ -1,6 +1,13 @@
 #!/usr/bin/python3
 import os
 import subprocess
+from urllib.request import Request
+from urllib.request import urlretrieve
+from urllib import request
+from bs4 import BeautifulSoup as bs
+from constants import *
+
+CACHE=os.path.join(CACHE,"html")
 
 class helper():
 	def __init__(self):
@@ -176,3 +183,32 @@ class helper():
 		return(priorityIdx)
 	#def getBundlesByPriority
 
+	def getAppseduDetails(self,url):
+		details={"icon":"","description":"","summary":""}
+		page=os.path.basename(url.removesuffix("/"))
+		if os.path.exists(os.path.join(CACHE,page)):
+			with open(os.path.join(CACHE,page),"r") as f:
+				content=f.read()
+		else:
+			req=Request(url, headers={'User-Agent':'Mozilla/5.0'})
+			try:
+				with request.urlopen(req,timeout=2) as f:
+					content=f.read().decode('utf-8')
+				if os.path.exists(os.path.join(CACHE))==False:
+					os.makedirs(os.path.join(CACHE))
+				with open(os.path.join(CACHE,page),"w") as f:
+					f.write(content)
+			except Exception as e:
+				self._debug("Couldn't fetch {}".format(url))
+				self._debug(e)
+		if len(content)>0:
+			bscontent=bs(content,"html.parser")
+			appDesc=bscontent.find("div",["acf-view__descripcio-field"])
+			if appDesc!=None:
+				details["description"]=appDesc.text
+			appIcon=bscontent.find("img",class_="acf-view__image")
+			if appIcon!=None:
+				details["icon"]=appIcon.get("src","")
+		return(details)
+	#def getAppseduDetails
+		

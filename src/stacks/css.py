@@ -223,10 +223,46 @@ def detailPanel():
 
 	css=css+lblTags
 
-	lstLinks="""#lstLinks{
+	lstLinks="""QLabel#lblLink{
+					text-decoration:none;
+					color:%s;
+					border:0px;
+					margin:0px;
+					padding:0px;
+					 } 
+				#lblLink:hover{
+					/*background: qradialgradient(cx:0.5, cy:0.6,radius:5,fx:0.5,fy:0.9,stop:0 %s, stop:1 %s);
+					text-decoration:underline;
+					color:%s;*/
+					 } 
+				QLabel#lblLink:hover{
+					background-color:transparent;
+				}
+				#lstLinks{
 					border:0px;
 					margin-left:%spx;
-				}"""%(MARGIN)
+				}
+				#lstLinks::item {
+					text-decoration:none;
+					color:silver;
+					border:0px;
+				}
+				#lstLinks::item:active {
+					text-decoration:none;
+					border:0px;
+				}
+				#lstLinks::item:selected {
+					border:0px;
+				}
+				/*#lstLinks::item:hover {
+					text-decoration:underline;
+					background-color: %s;
+					margin-left:%spx;
+					margin-top:%spx;
+					margin-bottom:%spx;
+					padding:%spx;
+					border-bottom:0px;
+				}*/"""%(COLOR_BACKGROUND_DARK.replace("#","#A9"),COLOR_BACKGROUND_DARKEST.replace("#","#51"),COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN),COLOR_BACKGROUND_DARKEST.replace("#","#AA"),int(MARGIN)/1,int(MARGIN)/1,int(MARGIN)/1,int(MARGIN))
 
 	css=css+lstLinks
 
@@ -241,6 +277,28 @@ def detailPanel():
 
 	return(css)
 #def detailPanel
+
+def homePanel():
+	css=""
+	mp="""#mp{
+					padding:%spx;
+					border:0px;
+					margin:0px;
+					background:%s;
+			}"""%(int(MARGIN)/3,COLOR_BACKGROUND_LIGHT)
+	css=css+mp
+	lbl="""#lbl{
+					padding-left:%spx;
+					padding-right:%spx;
+		}"""%(int(MARGIN)*5,int(MARGIN)*5)
+	css=css+lbl
+	btn="""#btn{
+					border:0px;
+					background:%s;
+		}"""%(COLOR_BACKGROUND_LIGHT)
+	css=css+btn
+	return(css)
+#def homePanel
 
 def tablePanel():
 	css=""
@@ -260,7 +318,7 @@ def tablePanel():
 				#qFlow::item{
 					padding:%spx;
 				}
-				"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN*2),MARGIN,int(MARGIN)/4)
+				"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN)*15,int(MARGIN),int(MARGIN)/4)
 	css=css+qflow
 	flyIcon="""#flyIcon{background:transparent;}"""
 	css=css+flyIcon
@@ -307,6 +365,7 @@ def portrait():
 					margin-right:%spx;
 				}
 				#wdgsearch{
+					border-top:35px solid white;
 					background:%s;
 				}"""%(COLOR_BORDER,COLOR_BACKGROUND_DARK,int(RADIUS)*3,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN)*1.5,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN),COLOR_BACKGROUND_LIGHT)
 	css=css+search
@@ -322,10 +381,9 @@ def portrait():
 	categoryTag="""#categoryTag{
 					background:%s;
 					color:%s;
-					padding:1px;
-					padding-bottom:3px;
+					padding:%spx;
 					border-radius:%spx;
-					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,RADIUS_HIGH)
+					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,int(MARGIN)/3,RADIUS_HIGH)
 	css=css+categoryTag
 
 	error="""#errorMsg{
@@ -335,9 +393,9 @@ def portrait():
 	banner="""#banner{
 					margin-top:%spx;
 					margin-bottom:%spx;
-					margin-left:%spx;
-					margin-right:%spx;
-			}"""%(int(MARGIN)*3,int(MARGIN)*1,int(MARGIN)*3,int(MARGIN)*2)
+					/*margin-left:%spx;
+					margin-right:%spx;*/
+			}"""%(int(MARGIN)*3,int(MARGIN)*1,int(MARGIN)*3,int(MARGIN)*3)
 	css=css+banner
 	lstCategories="""#lstCategories{
 					color:%s;
@@ -403,7 +461,7 @@ def portrait():
 				#upgrades:pressed{
 					border:2px inset %s;
 				}
-				"""%(COLOR_BACKGROUND_DARK,COLOR_BORDER,RADIUS,MARGIN,int(MARGIN),COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK)
+				"""%(COLOR_BACKGROUND_DARK,COLOR_BORDER,RADIUS,MARGIN,int(MARGIN)*2,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK)
 	css=css+upgrades
 	working="""#working{
 					color:%s;

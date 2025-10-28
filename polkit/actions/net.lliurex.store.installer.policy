@@ -3,7 +3,7 @@
  "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
  "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
 <policyconfig>
-  <action id="net.lliurex.rebost.software-manager.launcher">
+  <action id="net.lliurex.store.installer">
 	<message gettext-domain="lliurex-store">Authentication is required to manage software</message>
     <icon_name>epi-gtk</icon_name>
     <defaults>

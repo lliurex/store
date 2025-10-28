@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os
 import json
-from PySide2.QtWidgets import QLabel
-from PySide2.QtCore import Qt,Signal
+from PySide6.QtWidgets import QLabel
+from PySide6.QtCore import Qt,Signal
 from QtExtraWidgets import QFlowTouchWidget
 from constants import *
 import css
@@ -49,7 +49,7 @@ class QToolBarCategories(QFlowTouchWidget):
 				current.setText(text)
 	#def _catUndecorate
 
-	def populateCategories(self,*args): #subcats,cat=""):
+	def populateCategories(self,*args):
 		self.clean()
 		self.leaveEvent=self._catUndecorate
 		subcategories=[]
@@ -62,6 +62,7 @@ class QToolBarCategories(QFlowTouchWidget):
 					subcategories=arg
 		if category not in subcategories and category!="":
 			subcategories.insert(0,category)
+		h=0
 		for subcategory in subcategories:
 			wdg=QLabel()
 			if subcategory!=category:
@@ -78,6 +79,9 @@ class QToolBarCategories(QFlowTouchWidget):
 			wdg.setObjectName("categoryTag")
 			wdg.linkActivated.connect(self._categoryLinkClicked)
 			self.addWidget(wdg)
+			h=wdg.sizeHint().height()
+		if h>0:
+			self.setFixedHeight((h*2)+int(MARGIN))
 	#def populateCategories
 #class categoriesBar
 

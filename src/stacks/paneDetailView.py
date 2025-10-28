@@ -5,9 +5,9 @@ from functools import partial
 import json
 import html
 from rebost import store
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QScrollArea,QListWidget,QListWidgetItem
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal,QThread,Slot
+from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QScrollArea,QListWidget,QListWidgetItem
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal,QThread,Slot,QUrl
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
 import libhelper
 import css
@@ -62,7 +62,6 @@ class main(QWidget):
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setStyleSheet(css.detailPanel())
 		self.refresh=False
-		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
 		self.rc=store.client()
 		self.helper=libhelper.helper()
 		self.oldCursor=self.cursor()
@@ -117,23 +116,7 @@ class main(QWidget):
 			else:
 				name=args.replace(".desktop","").replace(".flatpakref","")
 				name=name.split(".")[-1]
-			if len(name)>0:
-				app=self.rc.refreshApp(name)
-				if len(app)>2:
-					self.app=json.loads(app)[0]
-				else: #look for an aliases mapped from virtual app
-					if os.path.exists(self.mapFile):
-						fcontent={}
-						with open(self.mapFile,"r") as f:
-							fcontent=f.read()
-						jcontent=json.loads(fcontent)
-						vname=jcontent.get(name,"")
-						self._debug("Find virtual pkg {0} for  {1}".format(vname,name))
-						if len(vname)>0:
-							app=self.rc.refreshApp(vname)
-							if len(app)>2:
-								self.app=json.loads(app)[0]
-								self.app=json.loads(self.app)
+		return(name)
 	#def _processStreams
 
 	def setParms(self,*args,**kwargs):
@@ -148,21 +131,16 @@ class main(QWidget):
 			name=args[-1]
 			self._resetScreen(name,"")
 			if isinstance(args[0],dict):
-				name=args[0].get("name","")
-				pxm=args[0].get("icon","")
-				appid=args[0].get("id",name)
 				self.thParmShow.setArgs(args[0])
 				self.thParmShow.start()
 			elif isinstance(name,str):
-				self._processStreams(name)
-				self.thParmShow.setArgs(self.app)
+				name=self._processStreams(name)
+				self.thParmShow.setArgs({'id':name})
 				self.thParmShow.start()
 	#def setParms
 
 	def _endSetParms(self,*args):
 		if len(args)>0:
-			#Preserve icon 
-			icn=self.app.get("icon")
 			app=args[0]
 			if isinstance(app,dict):
 				self.app=app
@@ -190,7 +168,7 @@ class main(QWidget):
 			#pkexec ret values
 			#127 -> Not authorized
 			if proc.returncode==127:
-				self.showMsg(title="AppsEdu Store",summary=self.app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=self.app["icon"],timeout=5000)
+				self.showMsg(title="LliureX Store",summary=self.app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=self.app["icon"],timeout=5000)
 		self._rebost.setAction("setAppState",self.app["id"],0)
 		self._rebost.start()
 		self._rebost.wait()
@@ -367,6 +345,7 @@ class main(QWidget):
 		self.suggests.setSpacing(int(MARGIN)*3)
 		for app in suggests:
 			btn=QPushButtonRebostApp("{}",iconSize=64)
+			btn.autoUpdate=True
 			btn.setCompactMode(True)
 			btn.clicked.connect(self._loadSuggested)
 			btn.setApp(app)
@@ -374,6 +353,9 @@ class main(QWidget):
 		if self.suggests.count()>0:
 			self.suggests.setMinimumHeight(btn.sizeHint().height()+int(MARGIN)*8)
 			self.suggests.show()
+			for chld in self.suggests.children():
+				if isinstance(chld,QPushButtonRebostApp):
+					chld.updateBtn()
 		else:
 			self.suggests.hide()
 	#def _endSuggestLoad(self,args):
@@ -404,6 +386,7 @@ class main(QWidget):
 		wdg.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
 		wdg.setMinimumWidth(ICON_SIZE*3+(int(MARGIN)*3))
+		wdg.setMaximumWidth(ICON_SIZE*3+(int(MARGIN)*4))
 		return(wdg)
 	#def _defLblTags
 
@@ -418,18 +401,19 @@ class main(QWidget):
 		if homepage:
 			homepage=homepage.rstrip("/")
 			desc=homepage
-			print(desc)
 			if desc.startswith("https://portal.edu.gva.es/appsedu")==True:
 				desc=i18n.get("SEEIT")
 			else:
 				desc=i18n.get("SITE")
-			text='<a href="{0}" style="text-decoration:none;"><strong>{1}</strong></a> '.format(homepage,desc)
+			text='<a href="{0}"><strong>{1}</strong></a> '.format(homepage,desc)
+			text=desc
 		if len(text)>0:
 			item=QListWidgetItem()
 			self.lstLinks.addItem(item)
 			lbl=QLabelLink(text)
+			lbl.setObjectName("lblLink")
 			lbl.setToolTip(homepage)
-			lbl.setOpenExternalLinks(True)
+			#lbl.setOpenExternalLinks(True)
 			item.setSizeHint(QSize(lbl.sizeHint()))
 			self.lstLinks.setItemWidget(item,lbl)
 			self.lstLinks.show()
@@ -438,7 +422,13 @@ class main(QWidget):
 	#def _populateLinks
 
 	def _defLstLinks(self):
+		def _enableLink(*args):
+			lnk=self.lstLinks.itemWidget(args[0])
+			url=QUrl(lnk.toolTip())
+			QtGui.QDesktopServices.openUrl(url)
 		wdg=QListWidget()
+		wdg.setMouseTracking(True)
+		wdg.itemPressed.connect(_enableLink)
 		return(wdg)
 	#def _defLstLinks
 
@@ -450,6 +440,7 @@ class main(QWidget):
 			if " " not in bundleData:
 				bundleData+=" contrib"
 			bundles.append(bundleData.split()[0])
+		defBund=None
 		for children in self.boxBundles.children():
 			if isinstance(children,QLabel):
 				children.hide()
@@ -457,6 +448,8 @@ class main(QWidget):
 				bundle=chldText.split(":")[-1].lower().strip()
 				if bundle=="epi":
 					bundle="unknown"
+					defBund=children
+					defBund.setEnabled(True)
 				if bundle in bundles:
 					release=self.app.get("versions",{}).get(bundle,"")
 					if bundle=="unknown":
@@ -464,6 +457,11 @@ class main(QWidget):
 					text="Kind: {0}\nRelease: {1}".format(bundle.capitalize(),release)
 					children.setToolTip(text)
 					children.show()
+					added=True
+					defBund=None
+		if defBund!=None:
+			defBund.setEnabled(False)
+			defBund.show()
 	#def _populateBundleIcons
 
 	def _defBoxBundles(self):
@@ -551,8 +549,9 @@ class main(QWidget):
 		if self.app.get("bundle",None)==None:
 			self._setUnknownAppInfo()
 			return
-		self.lblIcon.loadImg(self.app)
 		pxm=self.lblIcon.pixmap()
+		if pxm.isNull()==True:
+			self.lblIcon.loadImg(self.app)
 		if pxm!=None:
 			if pxm.isNull()==False:
 				self.app["icon"]=self.lblIcon.pixmapPath
@@ -589,11 +588,11 @@ class main(QWidget):
 			self.lblTags.hide()
 		else:
 			self.lblTags.show()
+		self.loaded.emit(self.app)
 		self._populateSuggestsList()
 		self._populateLinks()
 		self._populateBoxBundles()
 		self.cmbBundles.setApp(self.app)
-		self.loaded.emit(self.app)
 	#def _updateScreen
 
 	def _getLauncherForApp(self):
@@ -660,6 +659,7 @@ class main(QWidget):
 
 	def _resetScreen(self,name,icon):
 		self.app={}
+		self.lblIcon.setPixmap(QtGui.QPixmap())
 		self.instBundle=""
 		self.app["name"]=name
 		self.app["icon"]=icon
@@ -672,7 +672,7 @@ class main(QWidget):
 		self._debug("Error detected")
 		qpal=QtGui.QPalette()
 		color=qpal.color(QtGui.QPalette.Dark)
-		self.parent().setWindowTitle("AppsEdu - {}".format("ERROR"))
+		self.parent().setWindowTitle("LLiureX - {}".format("ERROR"))
 		if "Forbidden" not in self.app.get("categories",[]):
 			self.app["categories"]=["Forbidden"]
 		self.cmbBundles.setEnabled(False)

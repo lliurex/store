@@ -6,10 +6,10 @@ import subprocess
 import json
 import dbus
 import dbus.mainloop.glib
-from PySide2.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
+from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
 							QCheckBox,QListWidgetItem,QSizePolicy
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
 from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
 from libth import storeHelper,llxup
@@ -201,6 +201,14 @@ class portrait(QStackedWindowItem):
 		return(lockedUser)
 	#def _chkUserGroup(self):
 
+	def _chkCategories(self,*args):
+		if self.lstCategories.count()<=0:
+			self._rebost.blockSignals(False)
+			self._rebost.setAction("getCategories")
+			self._rebost.start()
+			self._rebost.wait()
+	#def _chkCategories
+
 	def _endGetLockStatus(self,*args):
 		jconfig=args[0]
 		self.locked=jconfig.get("onlyVerified",False)
@@ -215,6 +223,9 @@ class portrait(QStackedWindowItem):
 				self._unlockRebost()
 		self.certified.setLocked(self.locked,lockedUser)
 		self._debug("<-------- Rebost status acquired (lock {})".format(self.locked))
+		self._chkCategories()
+		self.prgCat.stop()
+		self.prgCat.hide()
 	#def _endGetLockStatus
 
 	def _endLock(self,*args):
@@ -314,6 +325,8 @@ class portrait(QStackedWindowItem):
 
 	def _progressHide(self):
 		self.progress.stop()
+		#self.prgCat.stop()
+		#self.prgCat.hide()
 		#self.updateTimer.stop()
 	#def _progressHide
 
@@ -344,65 +357,57 @@ class portrait(QStackedWindowItem):
 				self.searchBox.setText(args[0].text())
 	#def keyPressEvent
 
-	def _chkCategories(self,*args):
-		if self.lstCategories.count()<=0:
-			self._rebost.blockSignals(False)
-			self._rebost.setAction("getCategories")
-			self._rebost.start()
-			self._rebost.wait()
-			self.prgCat.stop()
-			self.prgCat.hide()
-			self.lstCategories.show()
-	#def _chkCategories
-
 	def __initScreen__(self):
 		self.box=QGridLayout()
 		self.setLayout(self.box)
 		self.box.setContentsMargins(0,0,0,0)
 		self.box.setSpacing(0)
 		self.sortAsc=False
-		navwdg=self._defNavigationPane()
-		navwdg.setObjectName("wdg")
-		self.box.addWidget(navwdg,0,0,4,1,Qt.AlignLeft)
-		self.searchwdg=self._defSearch()
-		self.box.addWidget(self.searchwdg,0,1)
 		spacer=QLabel(" ")
 		spacer.setAttribute(Qt.WA_StyledBackground, True)
 		spacer.setStyleSheet("background:{};".format(COLOR_BACKGROUND_LIGHT))
-		spacer.setFixedHeight(int(MARGIN)*8)
-		self.box.addWidget(spacer,1,1)
+		spacer.setFixedHeight(int(MARGIN)*3)
+		self.box.addWidget(spacer,0,1)
+		navwdg=self._defNavigationPane()
+		navwdg.setObjectName("wdg")
+		self.box.addWidget(navwdg,0,0,5,1)
+		self.searchwdg=self._defSearch()
+		self.box.addWidget(self.searchwdg,1,1)
+		spacer=QLabel(" ")
+		spacer.setAttribute(Qt.WA_StyledBackground, True)
+		spacer.setStyleSheet("background:{};".format(COLOR_BACKGROUND_LIGHT))
+		spacer.setFixedHeight(int(MARGIN)*4)
+		self.box.addWidget(spacer,2,1)
 		self.barCategories=self._defBarCategories()
-		self.box.addWidget(self.barCategories,2,1,Qt.AlignTop)
-		self.barCategories.setMinimumHeight(int(MARGIN)*6)
+		self.box.addWidget(self.barCategories,3,1,Qt.AlignTop)
+		#self.barCategories.setMinimumHeight(int(MARGIN)*6)
 		self._homeView=self._getHomeViewPane()
-		self.box.addWidget(self._homeView,3,1)
+		self.box.addWidget(self._homeView,4,1)
 		self._globalView=self._getGlobalViewPane()
 		self._globalView.hide()
-		self.box.addWidget(self._globalView,3,1)
+		self.box.addWidget(self._globalView,4,1)
 		self._detailView=self._getDetailViewPane()
-		self.box.addWidget(self._detailView,3,1)
+		self.box.addWidget(self._detailView,4,1)
 		self._detailView.hide()
 		self.prgCat=QProgressImage(self)
 		self.prgCat.sleepSeconds=55
 		self.prgCat.setColor(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_DARKEST)
 		self.prgCat.lblInfo.setWordWrap(True)
-		self.box.addWidget(self.prgCat,0,0,4,2)
+		self.box.addWidget(self.prgCat,0,0,5,2)
 		self.prgCat.start()
 		icn=QtGui.QIcon.fromTheme("settings-configure")
 		self.box.setColumnStretch(1,1)
 		self.box.setRowStretch(0,0)
 		self.box.setRowStretch(1,0)
 		self.box.setRowStretch(2,0)
-		self.box.setRowStretch(3,1)
+		self.box.setRowStretch(3,0)
+		self.box.setRowStretch(4,1)
 		self.setObjectName("portrait")
 		self._errorView=self._defError()
 		self._errorView.setVisible(not(self.isConnected))
 		self.box.addWidget(self._errorView,0,1,self.box.rowCount(),self.box.columnCount())
 		self.progress=self._defProgress()
-		#self.updateTimer.timeout.connect(self.progress._doProgress)
 		self.progress.lblInfo.hide()
-		#self.loadStart.connect(self._progressShow)
-		#self.loadStop.connect(self._progressHide)
 		self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		self.progress.setAttribute(Qt.WA_StyledBackground, False)
 	#def __initScreen__
@@ -411,7 +416,7 @@ class portrait(QStackedWindowItem):
 		wdg=QWidget()
 		vbox=QVBoxLayout()
 		wdg.setLayout(vbox)
-		vbox.setContentsMargins(10,0,10,0)
+		vbox.setContentsMargins(int(MARGIN)*3,0,int(MARGIN)*3,0)
 		self.certified=QPushButtonToggle()
 		self.certified.toggleClicked.connect(self._unlockRebost)
 		vbox.addWidget(self.certified,Qt.AlignCenter)
@@ -421,18 +426,17 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		vbox.addWidget(self.lstCategories,Qt.AlignTop|Qt.AlignCenter)
 		self.lstCategories.setMinimumHeight(int(ICON_SIZE/3))
-		self.lstCategories.setMaximumWidth(wdg.sizeHint().width()-int(MARGIN)*5)
+		self.lstCategories.setFixedWidth(wdg.sizeHint().width()-int(MARGIN)*3)
 		self.lstCategories.currentItemChanged.connect(self._decoreLstCategories)
 		self.lstCategories.itemActivated.connect(self._loadCategory)
 		self.lstCategories.itemClicked.connect(self._loadCategory)
 		self.lstCategories.hide()
 		self.lblInfo=self._defInfo()
-		vbox.addSpacing(30)
-		vbox.addWidget(self.lblInfo,Qt.AlignBottom)
+		vbox.addWidget(self.lblInfo,Qt.Alignment(-1))
 		vbox.setStretch(0,0)
-		vbox.setStretch(1,1)
-		vbox.setStretch(2,0)
-		vbox.setStretch(3,0)
+		vbox.setStretch(1,2)
+		vbox.setStretch(3,1)
+		wdg.setMinimumWidth(self.lblInfo.sizeHint().width())
 		return(wdg)
 	#def _defNavigationBar
 
@@ -447,27 +451,36 @@ class portrait(QStackedWindowItem):
 		btnInst=self._defInst()
 		btnInst.setObjectName("btnHome")
 		lay.addWidget(btnInst,Qt.AlignLeft)
-		btnHome.setMaximumWidth(btnInst.sizeHint().width())
-		wdg.setMaximumWidth(btnInst.sizeHint().width()*2+10)
+		btnHome.setFixedWidth(btnInst.sizeHint().width()+int(MARGIN))
+		btnInst.setFixedWidth(btnInst.sizeHint().width()+int(MARGIN))
 		return(wdg)
 	#def _defBtnBar
 
+	def _defBanner(self):
+		lbl=QLabel()
+		#lbl.setObjectName("banner")
+		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.svg")
+		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
+		lbl.setPixmap(pxm)
+		return lbl
+	#def _defBanner
+
 	def _defNavigationPane(self):
 		wdg=QWidget()
-		wdg.setObjectName("wdg")
-		lay=QVBoxLayout()
+		#wdg.setObjectName("wdg")
+		lay=QGridLayout()
+		lay.setContentsMargins(0,int(MARGIN)*3,0,0)
+		wdg.setLayout(lay)
 		self.sortAsc=False
 		banner=self._defBanner()
-		lay.addWidget(banner)
+		lay.addWidget(banner,0,0,1,1,Qt.AlignCenter|Qt.AlignTop)
 		_defBtnBar=self._defBtnBar()
-		hlay=QHBoxLayout()
-		wdg2=QWidget()
-		wdg2.setLayout(hlay)
-		hlay.addWidget(_defBtnBar,Qt.AlignCenter)
-		lay.addWidget(wdg2)
+		lay.addWidget(_defBtnBar,1,0,1,1,Qt.AlignCenter)
 		navBar=self._defNavigationBar()
-		lay.addWidget(navBar)
-		wdg.setLayout(lay)
+		lay.addWidget(navBar,2,0,1,1)
+		lay.setRowStretch(0,0)
+		lay.setRowStretch(1,0)
+		lay.setRowStretch(2,1)
 		return(wdg)
 	#def _defNavigationPane
 
@@ -475,16 +488,7 @@ class portrait(QStackedWindowItem):
 		wdg=QToolBarCategories()
 		wdg.requestLoadCategory.connect(self._loadCategory)
 		return(wdg)
-	#def _defNavigationPane
-
-	def _defBanner(self):
-		lbl=QLabel()
-		lbl.setObjectName("banner")
-		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.svg")
-		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
-		lbl.setPixmap(pxm)
-		return lbl
-	#def _defBanner
+	#def _defBarCategories
 
 	def _unlockRebost(self,*args):
 		self.resetScreen()
@@ -627,6 +631,9 @@ class portrait(QStackedWindowItem):
 	#def _getHomeViewPane
 
 	def _populateCategories(self,cats):
+		self.prgCat.stop()
+		self.prgCat.hide()
+		self.lstCategories.show()
 		self.lstCategories.clear()
 		self.lstCategories.setSizeAdjustPolicy(self.lstCategories.SizeAdjustPolicy.AdjustToContents)
 		self.i18nCat={}
@@ -885,7 +892,7 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		self.lstCategories.setEnabled(True)
 		if self._detailView.isVisible()==True:
-			self.barCategories.populateCategories(self._detailView.app["categories"])
+			self.barCategories.populateCategories(self._detailView.app.get("categories",[]))
 			self.barCategories.show()
 		elif self._globalView.isVisible()==True:
 			item=self.lstCategories.currentItem()
@@ -900,6 +907,8 @@ class portrait(QStackedWindowItem):
 					self.barCategories.hide()
 		else:
 			self.barCategories.hide()
+			self.searchBox.setText("")
+			self.lstCategories.setCurrentRow(-1)
 		self.setCursor(self.oldCursor)
 	#def _showPane
 
@@ -970,16 +979,14 @@ class portrait(QStackedWindowItem):
 		appsedu=args[0]
 		self._debug("** Detected parm on init **")
 		if "://" in appsedu:
-			self._stopThreads()
+			self._stopThreads(ignoreProgress=True)
 			pkgname=appsedu.split("://")[-1]
 			self._referrerPane=self._detailView
 			self._debug("Seeking for {}".format(pkgname))
 			self._detailView.setParms(pkgname)
-		#If categories are not populated load them
-		if self.lstCategories.count()<=0:
-			self._rebost.setAction("getCategories")
-			self._rebost.start()
-			self._rebost.wait()
+		else:
+			#If categories are not populated load them
+			self._chkCategories()
 	#def setParms
 
 	def _searchReferrerByName(self,name):

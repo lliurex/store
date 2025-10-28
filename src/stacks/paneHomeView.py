@@ -3,9 +3,9 @@ import sys,signal
 import os,json,time
 import subprocess
 from functools import partial
-from PySide2.QtWidgets import QLabel, QWidget,QHBoxLayout,QVBoxLayout,QSizePolicy,QPushButton,QGridLayout,QApplication
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal
+from PySide6.QtWidgets import QLabel, QWidget,QHBoxLayout,QVBoxLayout,QSizePolicy,QPushButton,QGridLayout,QApplication
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal
 from QtExtraWidgets import QScreenShotContainer
 import gettext
 import css
@@ -31,7 +31,7 @@ class main(QWidget):
 		self.destroyed.connect(partial(main._onDestroy,self.__dict__))
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self._debug("home load")
-		self.setStyleSheet(css.tablePanel())
+		self.setStyleSheet(css.homePanel())
 		self.setObjectName("mp")
 		self.th=[]
 		self._rebost=args[0]
@@ -87,7 +87,7 @@ class main(QWidget):
 					urls.append(url)
 				self._rebost.setAction("urlSearch",urls)
 				self._rebost.start()
-				self._rebost.wait()
+				#self._rebost.wait()
 			else:
 				self._setBlogData(apps)
 	#def _processRss(self,*args,**kwargs):
@@ -109,7 +109,9 @@ class main(QWidget):
 				"description":""}
 			btn.iconSize=IMAGE_PREVIEW
 			btn.iconUri.setFixedHeight(IMAGE_PREVIEW*0.5)
-			btn.label.setFixedWidth(IMAGE_PREVIEW)
+			btn.label.setFixedWidth(IMAGE_PREVIEW-(int(MARGIN)*2))
+			fSize=btn.label.font().pointSize()
+			btn.label.setMaximumHeight(fSize*5)
 			btn.setMinimumWidth(IMAGE_PREVIEW)
 			btn.lockTooltip=True
 			btn.setApp(app)
@@ -140,7 +142,7 @@ class main(QWidget):
 	def _defBlog(self):
 		wdg=QWidget()
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-		layout=QHBoxLayout()
+		layout=QHBoxLayout(wdg)
 		layout.setSpacing(0)
 		pxm=QtGui.QPixmap()
 		for i in range(0,5):
@@ -148,13 +150,12 @@ class main(QWidget):
 			btn.setMaximumWidth(IMAGE_PREVIEW/3)
 			btn.showBtn=False
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
-			btn.setObjectName("mp")
+			btn.setObjectName("btn")
 			btn.autoUpdate=True
 			#REM preview img
-			pxm.load("/home/lliurex/git/store/src/rsrc/blog128x128.png")
+			pxm.load(os.path.join(RSRC,"blog128x128.png"))
 			btn.loadFullScreen(pxm)
-			layout.addWidget(btn)
-		wdg.setLayout(layout)
+			layout.addWidget(btn,Qt.AlignCenter)
 		return(wdg)
 	#def _defBlog
 
@@ -217,7 +218,7 @@ class main(QWidget):
 			btn.autoUpdate=True
 			if i<3:
 				#btn.setObjectName("mp")
-				pxm.load("/home/lliurex/git/store/src/rsrc/appsedu128x128.png")
+				pxm.load(os.path.join(RSRC,"appsedu128x128.png"))
 				btn.loadFullScreen(pxm)
 			else:
 				btn.setVisible(False)
@@ -253,7 +254,7 @@ class main(QWidget):
 				if os.path.exists(wrkPath):
 					for f in os.scandir(wrkPath):
 						if icn in f.name:
-							icn=f.name
+							icn=f.path
 							break
 				if "applications" in icn:
 					break
@@ -289,14 +290,17 @@ class main(QWidget):
 
 	def __initScreen__(self):
 		lblBlog=QLabel("{}<hr>".format(i18n["LBL_BLOG"]))
+		lblBlog.setObjectName("lbl")
 		self.layout().addWidget(lblBlog,0,0)
 		self.blog=self._defBlog()
 		self.layout().addWidget(self.blog,1,0)
 		lblAppsedu=QLabel("{}<hr>".format(i18n["LBL_APPSEDU"]))
+		lblAppsedu.setObjectName("lbl")
 		self.layout().addWidget(lblAppsedu,2,0)
 		self.appsEdu=self._defAppsedu()
 		self.layout().addWidget(self.appsEdu,3,0)
 		lblCats=QLabel("{}<hr>".format(i18n["LBL_CATEGORIES"]))
+		lblCats.setObjectName("lbl")
 		self.layout().addWidget(lblCats,4,0)
 		self.appsByCat=self._defAppsByCat()
 		self.layout().addWidget(self.appsByCat,5,0)
@@ -310,3 +314,12 @@ class main(QWidget):
 	#	self._getBlog()
 	#	self._getAppsedu()
 	#def updateScreen
+
+	def updateBtn(self,btn,app):
+		if btn!=None:
+			for chld in self.appsEdu.children():
+				if isinstance(chld,QPushButtonRebostApp):
+					if chld==btn:
+						btn.setApp(app)
+						break
+	#def updateBtn

@@ -2,9 +2,9 @@
 from functools import partial
 import os,time
 import json
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout
-from PySide2.QtCore import Qt,Signal,QEvent,QSize
-from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
+from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout
+from PySide6.QtCore import Qt,Signal,QEvent,QSize
+from PySide6.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
 from lblApp import QLabelRebostApp
 import css
 from constants import *
@@ -181,7 +181,7 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setText(i18n.get("UNAUTHORIZED"))
 			self.btn.blockSignals(True)
 			#self.btn.setStyleSheet("""color:#AAAAAA""")
-		elif len(self.app.get("bundle",[]))==0:
+		elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
 			self.btn.setText(i18n.get("UNAVAILABLE"))
 			self.btn.blockSignals(True)
 			#self.btn.setStyleSheet("""color:#AAAAAA""")
@@ -228,7 +228,8 @@ class QPushButtonRebostApp(QPushButton):
 		if self.app.get("forbidden",False)==True:
 			self.btn.setEnabled(False)
 			self.btn.setText(i18n["UNAUTHORIZED"])
-		elif len(self.app.get("bundle",{}))==0:
+		elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
+			self.btn.setText(i18n.get("UNAVAILABLE"))
 			self.btn.setText(i18n["UNAVAILABLE"])
 			self.btn.setEnabled(False)
 		else: #app seems authorized and available
@@ -273,6 +274,7 @@ class QPushButtonRebostApp(QPushButton):
 			else:
 				text="<p>{0}</p>".format(self.app.get('name','').strip().capitalize())
 				self.iconUri.setEnabled(True)
+				self.label.setStyleSheet("padding-top:{0}px;".format(int(MARGIN)))
 		else:
 			text="<p>{0}</p>".format(self.app.get('summary','').strip())
 			_showBtn=False
@@ -287,7 +289,11 @@ class QPushButtonRebostApp(QPushButton):
 			self._setActionForButton()
 		self.iconUri.setVisible(True)
 		self.flyIcon=""
-		if self.app.get("name","").startswith("zero-"):
+		if self.app.get("forbidden",False)==True:
+			self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu_forbidden128x128.png"))
+		elif self.app.get("unavailable",False)==True:
+			self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu_unavailable128x128.png"))
+		elif self.app.get("name","").startswith("zero-"):
 			self.flyIcon=QPixmap(os.path.join(RSRC,"zero-center128x128.png"))
 		elif self.app.get("homepage")!=None:
 			if "appsedu" in self.app["homepage"].lower():
@@ -358,9 +364,11 @@ class QPushButtonRebostApp(QPushButton):
 		self.clicked.emit(self,self.app)
 	#def mousePressEvent
 
-	def setApp(self,app):
+	def setApp(self,app,updateIcon=False):
 		self.app=app
 		if self.autoUpdate==True:
 			self.updateScreen()
+		if updateIcon==True:
+			self.iconUri.loadImg(self.app)
 	#def setApp
 #class QPushButtonRebostApp

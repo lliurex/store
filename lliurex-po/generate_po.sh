@@ -7,7 +7,7 @@ mkdir -p lliurex-store
 xgettext $GUI_FILES -o lliurex-store/lliurex-store.pot
 
 #Categories
-CATs=$(qdbus --literal net.lliurex.rebost /net/lliurex/rebost net.lliurex.rebost.getFreedesktopCategories)
+CATs=$(qdbus6 --literal net.lliurex.rebost /net/lliurex/rebost net.lliurex.rebost.getFreedesktopCategories)
 if [[ $? -eq 0 ]]
 then
 	CATs=${CATs//[/}
@@ -23,6 +23,7 @@ then
 	IFS=$'\"'
 	for i in ${CATs}
 	do
+		echo $i
 		b=${i/ /}
 		[ ${#i} -ne ${#b} ] && continue
 		[ ${#i} -lt 2 ] && continue
