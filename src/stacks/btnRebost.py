@@ -289,7 +289,11 @@ class QPushButtonRebostApp(QPushButton):
 			self._setActionForButton()
 		self.iconUri.setVisible(True)
 		self.flyIcon=""
-		if self.app.get("name","").startswith("zero-"):
+		if self.app.get("forbidden",False)==True:
+			self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu_forbidden128x128.png"))
+		elif self.app.get("unavailable",False)==True:
+			self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu_unavailable128x128.png"))
+		elif self.app.get("name","").startswith("zero-"):
 			self.flyIcon=QPixmap(os.path.join(RSRC,"zero-center128x128.png"))
 		elif self.app.get("homepage")!=None:
 			if "appsedu" in self.app["homepage"].lower():
