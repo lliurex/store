@@ -109,7 +109,9 @@ class main(QWidget):
 				"description":""}
 			btn.iconSize=IMAGE_PREVIEW
 			btn.iconUri.setFixedHeight(IMAGE_PREVIEW*0.5)
-			btn.label.setFixedWidth(IMAGE_PREVIEW)
+			btn.label.setFixedWidth(IMAGE_PREVIEW-(int(MARGIN)*2))
+			fSize=btn.label.font().pointSize()
+			btn.label.setMaximumHeight(fSize*5)
 			btn.setMinimumWidth(IMAGE_PREVIEW)
 			btn.lockTooltip=True
 			btn.setApp(app)
