@@ -1,9 +1,11 @@
-lliurex-store (1.4.9.999+2lliurex25) noble-testing; urgency=medium
+lliurex-store (1.4.9.999+3lliurex25) noble-testing; urgency=medium
 
   * RC2
   * All features implemented
   * Bugfix
   * Dbus-Store for epi-gtk
+  * Icons for unavailable and forbidden apps
+  * Layout corrections
 
  -- Juanma1980 <juanma1980@gmail.com>  Thu, 23 Oct 2025 14:45:36 +0200
 
