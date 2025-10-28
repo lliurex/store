@@ -741,7 +741,7 @@ class portrait(QStackedWindowItem):
 			self.apps.append(app)
 		#self.apps=self.appsRaw.copy()
 		self.loading=False
-		self._debug("LOAD INSTALLED END")
+		self._debug("End loading installed apps")
 		self._showPane(self._globalView)
 		self._endUpdate()
 		self._globalView.loadApps(self.apps)
@@ -765,7 +765,7 @@ class portrait(QStackedWindowItem):
 	#def _searchApps
 
 	def _endSearchApps(self,*args):
-		self._debug("LOAD CATEGORY END")
+		self._debug("End loading category")
 		self._showPane(self._globalView)
 		self._endUpdate()
 		self.appsRaw=[]

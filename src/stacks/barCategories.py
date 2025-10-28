@@ -43,7 +43,6 @@ class QToolBarCategories(QFlowTouchWidget):
 		self.leaveEvent=self._catUndecorate
 		subcategories=[]
 		category=""
-		print(args)
 		if len(args)>0:
 			for arg in args:
 				if isinstance(arg,str):
@@ -56,12 +55,10 @@ class QToolBarCategories(QFlowTouchWidget):
 		for subcategory in subcategories:
 			wdg=QLabel()
 			wdg.setObjectName("categoryTag")
-			print(subcategory,category)
 			if subcategory!=category:
 				text="<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'>{0}</a>".format(_(subcategory))
 			else:
 				text="<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'><strong>{0}</strong></a>".format(_(subcategory))
-				wdg.setObjectName("categoryTagCurrent")
 			wdg.setText(text)
 			wdg.setAttribute(Qt.WA_Hover,True)
 			wdg.setAttribute(Qt.WA_StyledBackground, True)
