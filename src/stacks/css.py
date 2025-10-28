@@ -383,7 +383,16 @@ def portrait():
 					color:%s;
 					padding:%spx;
 					border-radius:%spx;
-					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,int(MARGIN)/3,RADIUS_HIGH)
+					}
+					#categoryTag:hover{
+						background-color:%s;
+					}
+					#categoryTagCurrent{
+						background-color:%s;
+					padding:%spx;
+					border-radius:%spx;
+					}
+					"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,int(MARGIN)/3,RADIUS_HIGH,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARKEST,int(MARGIN)/3,RADIUS_HIGH)
 	css=css+categoryTag
 
 	error="""#errorMsg{
