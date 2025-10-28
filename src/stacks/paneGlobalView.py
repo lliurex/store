@@ -114,9 +114,7 @@ class paneGlobalView(QWidget):
 			self._rebost.blockSignals(True)
 			self._reobst.quit()
 			#self._rebost.wait()
-		QApplication.processEvents()
 		self._rebost.start()
-		QApplication.processEvents()
 	#def getApps
 
 	def loadAppsStop(self):
