@@ -154,6 +154,7 @@ class QProgressImage(QWidget):
 		self.pxmOverlay.fill(color)
 		self.pxmOverlay.setMask(self.pxm.createMaskFromColor(Qt.transparent))
 		self.lblPxm.setPixmap(self.pxmOverlay)
+		print(".")
 		self.update()
 		self.running=False
 	#def _doProgress

@@ -176,6 +176,6 @@ class paneGlobalView(QWidget):
 			self.table.indexOf(btn)
 			idx=self.table.indexOf(btn)
 			if idx>=0:
-				btn.setApp(app)
+				btn.setApp(app,updateIcon=True)
 	#def updateBtn
 

@@ -231,9 +231,9 @@ def detailPanel():
 					padding:0px;
 					 } 
 				#lblLink:hover{
-					background-color:%s;
+					/*background: qradialgradient(cx:0.5, cy:0.6,radius:5,fx:0.5,fy:0.9,stop:0 %s, stop:1 %s);
 					text-decoration:underline;
-					color:%s;
+					color:%s;*/
 					 } 
 				QLabel#lblLink:hover{
 					background-color:transparent;
@@ -262,7 +262,7 @@ def detailPanel():
 					margin-bottom:%spx;
 					padding:%spx;
 					border-bottom:0px;
-				}*/"""%(COLOR_BACKGROUND_DARK.replace("#","#A9"),COLOR_BACKGROUND_DARKEST.replace("#","#11"),COLOR_BACKGROUND_DARK,int(MARGIN),COLOR_BACKGROUND_DARKEST.replace("#","#AA"),int(MARGIN)/1,int(MARGIN)/1,int(MARGIN)/1,int(MARGIN))
+				}*/"""%(COLOR_BACKGROUND_DARK.replace("#","#A9"),COLOR_BACKGROUND_DARKEST.replace("#","#51"),COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN),COLOR_BACKGROUND_DARKEST.replace("#","#AA"),int(MARGIN)/1,int(MARGIN)/1,int(MARGIN)/1,int(MARGIN))
 
 	css=css+lstLinks
 
@@ -383,7 +383,16 @@ def portrait():
 					color:%s;
 					padding:%spx;
 					border-radius:%spx;
-					}"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,int(MARGIN)/3,RADIUS_HIGH)
+					}
+					#categoryTag:hover{
+						background-color:%s;
+					}
+					#categoryTagCurrent{
+						background-color:%s;
+					padding:%spx;
+					border-radius:%spx;
+					}
+					"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,int(MARGIN)/3,RADIUS_HIGH,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARKEST,int(MARGIN)/3,RADIUS_HIGH)
 	css=css+categoryTag
 
 	error="""#errorMsg{

@@ -5,6 +5,10 @@ from gi.repository import GLib
 
 from rebost import store
 import json,os,subprocess
+from urllib.request import Request
+from urllib.request import urlretrieve
+from urllib import request
+from bs4 import BeautifulSoup as bs
 
 import gettext
 gettext.textdomain('lliurex-store')
@@ -14,6 +18,7 @@ DBusGMainLoop(set_as_default=True)
 OBJPATH = "/"
 IFACE="org.kde.krunner1"
 SERVICE = "net.lliurex.store"
+CACHE=os.path.join(os.environ.get("HOME"),".cache","store")
 
 class storeRunner(dbus.service.Object):
 	def __init__(self):
@@ -29,6 +34,47 @@ class storeRunner(dbus.service.Object):
 	def Actions(self,*args):
 		return [("id", "Tooltip", "lliurex-store")]
 	
+	@dbus.service.method(IFACE, in_signature="ss", out_signature="s")
+	def show(self, query,extra):
+		result=[]
+		if len(query)>1:
+			app=json.loads(self.rebost.showApp(query))[0]
+
+			homepage=app.get('homepage','')
+			if isinstance(homepage,str)==False:
+				homepage=""
+			if homepage.startswith("https://portal.edu.gva.es/appsedu")==True and app["description"].count(" ")<3:
+				details={"icon":"","description":"","summary":""}
+				page=os.path.basename(homepage.removesuffix("/"))
+				if os.path.exists(os.path.join(CACHE,page)):
+					with open(os.path.join(CACHE,page),"r") as f:
+						content=f.read()
+				else:
+					req=Request(homepage, headers={'User-Agent':'Mozilla/5.0'})
+					try:
+						with request.urlopen(req,timeout=2) as f:
+							content=f.read().decode('utf-8')
+						if os.path.exists(os.path.join(CACHE))==False:
+							os.makedirs(os.path.join(CACHE))
+						with open(os.path.join(CACHE,page),"w") as f:
+							f.write(content)
+					except Exception as e:
+						self._debug("Couldn't fetch {}".format(url))
+						self._debug(e)
+				if len(content)>0:
+					bscontent=bs(content,"html.parser")
+					appDesc=bscontent.find("div",["acf-view__descripcio-field"])
+					if appDesc!=None:
+						details["description"]=appDesc.text
+					appIcon=bscontent.find("img",class_="acf-view__image")
+					if appIcon!=None:
+						details["icon"]=appIcon.get("src","")
+				if len(details.get("description",""))>len(app["description"]):
+					app["description"]=details["description"]
+				if len(details.get("icon",""))>0:
+					app["icon"]=details["icon"]
+		return(json.dumps([json.dumps(app)]))
+
 	@dbus.service.method(IFACE, in_signature="s", out_signature="a(sssida{sv})")
 	def Match(self, query):
 		matches=[]

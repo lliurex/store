@@ -184,7 +184,7 @@ class helper():
 	#def getBundlesByPriority
 
 	def getAppseduDetails(self,url):
-		content=''
+		details={"icon":"","description":"","summary":""}
 		page=os.path.basename(url.removesuffix("/"))
 		if os.path.exists(os.path.join(CACHE,page)):
 			with open(os.path.join(CACHE,page),"r") as f:
@@ -196,7 +196,6 @@ class helper():
 					content=f.read().decode('utf-8')
 				if os.path.exists(os.path.join(CACHE))==False:
 					os.makedirs(os.path.join(CACHE))
-				print(os.path.join(CACHE,page))
 				with open(os.path.join(CACHE,page),"w") as f:
 					f.write(content)
 			except Exception as e:
@@ -204,9 +203,12 @@ class helper():
 				self._debug(e)
 		if len(content)>0:
 			bscontent=bs(content,"html.parser")
-			appInfo=bscontent.find_all("div",["acf-view__descripcio-field"])
-			for info in appInfo:
-				content=info.text
-		return(content)
+			appDesc=bscontent.find("div",["acf-view__descripcio-field"])
+			if appDesc!=None:
+				details["description"]=appDesc.text
+			appIcon=bscontent.find("img",class_="acf-view__image")
+			if appIcon!=None:
+				details["icon"]=appIcon.get("src","")
+		return(details)
 	#def getAppseduDetails
 		

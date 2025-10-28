@@ -223,6 +223,9 @@ class portrait(QStackedWindowItem):
 				self._unlockRebost()
 		self.certified.setLocked(self.locked,lockedUser)
 		self._debug("<-------- Rebost status acquired (lock {})".format(self.locked))
+		self._chkCategories()
+		self.prgCat.stop()
+		self.prgCat.hide()
 	#def _endGetLockStatus
 
 	def _endLock(self,*args):
@@ -377,7 +380,7 @@ class portrait(QStackedWindowItem):
 		self.box.addWidget(spacer,2,1)
 		self.barCategories=self._defBarCategories()
 		self.box.addWidget(self.barCategories,3,1,Qt.AlignTop)
-		self.barCategories.setMinimumHeight(int(MARGIN)*6)
+		#self.barCategories.setMinimumHeight(int(MARGIN)*6)
 		self._homeView=self._getHomeViewPane()
 		self.box.addWidget(self._homeView,4,1)
 		self._globalView=self._getGlobalViewPane()
@@ -423,7 +426,7 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		vbox.addWidget(self.lstCategories,Qt.AlignTop|Qt.AlignCenter)
 		self.lstCategories.setMinimumHeight(int(ICON_SIZE/3))
-		self.lstCategories.setMaximumWidth(wdg.sizeHint().width()-int(MARGIN)*3)
+		self.lstCategories.setFixedWidth(wdg.sizeHint().width()-int(MARGIN)*3)
 		self.lstCategories.currentItemChanged.connect(self._decoreLstCategories)
 		self.lstCategories.itemActivated.connect(self._loadCategory)
 		self.lstCategories.itemClicked.connect(self._loadCategory)
@@ -738,7 +741,7 @@ class portrait(QStackedWindowItem):
 			self.apps.append(app)
 		#self.apps=self.appsRaw.copy()
 		self.loading=False
-		self._debug("LOAD INSTALLED END")
+		self._debug("End loading installed apps")
 		self._showPane(self._globalView)
 		self._endUpdate()
 		self._globalView.loadApps(self.apps)
@@ -762,7 +765,7 @@ class portrait(QStackedWindowItem):
 	#def _searchApps
 
 	def _endSearchApps(self,*args):
-		self._debug("LOAD CATEGORY END")
+		self._debug("End loading category")
 		self._showPane(self._globalView)
 		self._endUpdate()
 		self.appsRaw=[]
@@ -844,17 +847,16 @@ class portrait(QStackedWindowItem):
 		self.searchBox.setText("")
 		if cat in self.categoriesTree.keys():
 			self.barCategories.populateCategories(self.categoriesTree[cat],cat)
-		elif cat!="":
-			wdg=self.barCategories.currentItem()
-			if wdg!=None:
-				font=wdg.font()
-				font.setBold(False)
-				for idx in range(0,self.barCategories.count()):
-					self.barCategories.itemAt(idx).widget().setFont(font)
-				font.setBold(True)
-				wdg.setFont(font)
+		else:
+			for idx in range(0,self.barCategories.count()):
+				wdg=self.barCategories.itemAt(idx).widget()
+				self.style().unpolish(wdg)
+				wdg.setObjectName("categoryTag")
+				self.style().polish(wdg)
+			self.style().unpolish(self.barCategories.currentItem())
+			self.barCategories.currentItem().setObjectName("categoryTagCurrent")
+			self.style().polish(self.barCategories.currentItem())
 		self.requestGetApps.emit(cat)
-		#QApplication.processEvents()
 	#def _loadCategory
 
 	def _endLoadCategory(self,*args):
@@ -889,15 +891,15 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		self.lstCategories.setEnabled(True)
 		if self._detailView.isVisible()==True:
-			self.barCategories.populateCategories(self._detailView.app["categories"])
+			self.barCategories.populateCategories(self._detailView.app.get("categories",[]))
 			self.barCategories.show()
 		elif self._globalView.isVisible()==True:
 			item=self.lstCategories.currentItem()
 			if item!=None:
 				cat=item.text()
 				cat=self._getRawCategory(cat)
-				if cat in self.categoriesTree.keys():
-					self.barCategories.populateCategories(self.categoriesTree[cat],cat)
+				#if cat in self.categoriesTree.keys():
+				#	self.barCategories.populateCategories(self.categoriesTree[cat],cat)
 				self.barCategories.show()
 			else:
 				if self.searchBox.text!="":
@@ -976,16 +978,14 @@ class portrait(QStackedWindowItem):
 		appsedu=args[0]
 		self._debug("** Detected parm on init **")
 		if "://" in appsedu:
-			self._stopThreads()
+			self._stopThreads(ignoreProgress=True)
 			pkgname=appsedu.split("://")[-1]
 			self._referrerPane=self._detailView
 			self._debug("Seeking for {}".format(pkgname))
 			self._detailView.setParms(pkgname)
-		#If categories are not populated load them
-		if self.lstCategories.count()<=0:
-			self._rebost.setAction("getCategories")
-			self._rebost.start()
-			self._rebost.wait()
+		else:
+			#If categories are not populated load them
+			self._chkCategories()
 	#def setParms
 
 	def _searchReferrerByName(self,name):

@@ -62,7 +62,6 @@ class main(QWidget):
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setStyleSheet(css.detailPanel())
 		self.refresh=False
-		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
 		self.rc=store.client()
 		self.helper=libhelper.helper()
 		self.oldCursor=self.cursor()
@@ -117,23 +116,7 @@ class main(QWidget):
 			else:
 				name=args.replace(".desktop","").replace(".flatpakref","")
 				name=name.split(".")[-1]
-			if len(name)>0:
-				app=self.rc.refreshApp(name)
-				if len(app)>2:
-					self.app=json.loads(app)[0]
-				else: #look for an aliases mapped from virtual app
-					if os.path.exists(self.mapFile):
-						fcontent={}
-						with open(self.mapFile,"r") as f:
-							fcontent=f.read()
-						jcontent=json.loads(fcontent)
-						vname=jcontent.get(name,"")
-						self._debug("Find virtual pkg {0} for  {1}".format(vname,name))
-						if len(vname)>0:
-							app=self.rc.refreshApp(vname)
-							if len(app)>2:
-								self.app=json.loads(app)[0]
-								self.app=json.loads(self.app)
+		return(name)
 	#def _processStreams
 
 	def setParms(self,*args,**kwargs):
@@ -151,15 +134,13 @@ class main(QWidget):
 				self.thParmShow.setArgs(args[0])
 				self.thParmShow.start()
 			elif isinstance(name,str):
-				self._processStreams(name)
-				self.thParmShow.setArgs(self.app)
+				name=self._processStreams(name)
+				self.thParmShow.setArgs({'id':name})
 				self.thParmShow.start()
 	#def setParms
 
 	def _endSetParms(self,*args):
 		if len(args)>0:
-			#Preserve icon 
-			icn=self.app.get("icon")
 			app=args[0]
 			if isinstance(app,dict):
 				self.app=app
@@ -405,6 +386,7 @@ class main(QWidget):
 		wdg.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
 		wdg.setMinimumWidth(ICON_SIZE*3+(int(MARGIN)*3))
+		wdg.setMaximumWidth(ICON_SIZE*3+(int(MARGIN)*4))
 		return(wdg)
 	#def _defLblTags
 
@@ -445,6 +427,7 @@ class main(QWidget):
 			url=QUrl(lnk.toolTip())
 			QtGui.QDesktopServices.openUrl(url)
 		wdg=QListWidget()
+		wdg.setMouseTracking(True)
 		wdg.itemPressed.connect(_enableLink)
 		return(wdg)
 	#def _defLstLinks
@@ -566,8 +549,9 @@ class main(QWidget):
 		if self.app.get("bundle",None)==None:
 			self._setUnknownAppInfo()
 			return
-		self.lblIcon.loadImg(self.app)
 		pxm=self.lblIcon.pixmap()
+		if pxm.isNull()==True:
+			self.lblIcon.loadImg(self.app)
 		if pxm!=None:
 			if pxm.isNull()==False:
 				self.app["icon"]=self.lblIcon.pixmapPath
