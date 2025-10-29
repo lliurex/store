@@ -626,6 +626,10 @@ class main(QWidget):
 				continue
 			if keyword in self.app.get("suggests",[]):
 				continue
+			elif keyword.lower() in ["open","source","system","the","with","some","any","installer","zero"]:
+				continue
+			elif keyword.lower().endswith(".epi"):
+				continue
 			if keyword not in tags and len(keyword)>1:
 				#Disabled as requisite  (250214-11:52)
 				tags+="<a href=\"#{0}\" style=\"{1}\">#{0}</a> ".format(keyword,style)
@@ -634,7 +638,7 @@ class main(QWidget):
 			for word in self.app.get("summary","").split(" "):
 				if len(word)<3:
 					continue
-				elif word.lower() in ["open","source","system","the","with","some","any"]:
+				elif word.lower() in ["open","source","system","the","with","some","any","installer","zero"]:
 					continue
 				b="".join([ w for w in word if w.isalpha() ])
 				tags+="<a href=\"#{0}\" style=\"{1}\">#{0}</a> ".format(b,style)
