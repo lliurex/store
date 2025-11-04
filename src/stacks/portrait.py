@@ -741,7 +741,7 @@ class portrait(QStackedWindowItem):
 			self.apps.append(app)
 		#self.apps=self.appsRaw.copy()
 		self.loading=False
-		self._debug("LOAD INSTALLED END")
+		self._debug("End loading installed apps")
 		self._showPane(self._globalView)
 		self._endUpdate()
 		self._globalView.loadApps(self.apps)
@@ -765,7 +765,7 @@ class portrait(QStackedWindowItem):
 	#def _searchApps
 
 	def _endSearchApps(self,*args):
-		self._debug("LOAD CATEGORY END")
+		self._debug("End loading category")
 		self._showPane(self._globalView)
 		self._endUpdate()
 		self.appsRaw=[]
@@ -847,17 +847,16 @@ class portrait(QStackedWindowItem):
 		self.searchBox.setText("")
 		if cat in self.categoriesTree.keys():
 			self.barCategories.populateCategories(self.categoriesTree[cat],cat)
-		elif cat!="":
-			wdg=self.barCategories.currentItem()
-			if wdg!=None:
-				font=wdg.font()
-				font.setBold(False)
-				for idx in range(0,self.barCategories.count()):
-					self.barCategories.itemAt(idx).widget().setFont(font)
-				font.setBold(True)
-				wdg.setFont(font)
+		else:
+			for idx in range(0,self.barCategories.count()):
+				wdg=self.barCategories.itemAt(idx).widget()
+				self.style().unpolish(wdg)
+				wdg.setObjectName("categoryTag")
+				self.style().polish(wdg)
+			self.style().unpolish(self.barCategories.currentItem())
+			self.barCategories.currentItem().setObjectName("categoryTagCurrent")
+			self.style().polish(self.barCategories.currentItem())
 		self.requestGetApps.emit(cat)
-		#QApplication.processEvents()
 	#def _loadCategory
 
 	def _endLoadCategory(self,*args):
@@ -899,8 +898,8 @@ class portrait(QStackedWindowItem):
 			if item!=None:
 				cat=item.text()
 				cat=self._getRawCategory(cat)
-				if cat in self.categoriesTree.keys():
-					self.barCategories.populateCategories(self.categoriesTree[cat],cat)
+				#if cat in self.categoriesTree.keys():
+				#	self.barCategories.populateCategories(self.categoriesTree[cat],cat)
 				self.barCategories.show()
 			else:
 				if self.searchBox.text!="":
