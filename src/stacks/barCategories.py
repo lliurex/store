@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os
 import json
-from PySide2.QtWidgets import QLabel
+from PySide2.QtWidgets import QLabel,QApplication
 from PySide2.QtCore import Qt,Signal
 from QtExtraWidgets import QFlowTouchWidget
 from constants import *
@@ -16,7 +16,7 @@ class QToolBarCategories(QFlowTouchWidget):
 		super().__init__()
 		self.setObjectName("categoriesBar")
 		#self.setStyleSheet("margin-left:{}".format(MARGIN))
-		self.setAttribute(Qt.WA_StyledBackground, True)
+		#self.setAttribute(Qt.WA_StyledBackground, True)
 		self.currentItemChanged.connect(self._catDecorate)
 		self.setVisible(False)
 	#def __init__
@@ -27,26 +27,15 @@ class QToolBarCategories(QFlowTouchWidget):
 	#def _categoryLinkClicked(self,*args)
 
 	def _catDecorate(self,*args):
-		self._catUndecorate()
 		current=args[1]
-		text=current.text()
-		text=text.replace("none'>","none'><strong>").replace("</a>","</strong></a>")
-		current.setText(text)
+		if current.property("decorated")==False:
+			current.setProperty("decorated",True)
 	#def _catDecorate
 
 	def _catUndecorate(self,*args):
 		for idx in range(0,self.count()):
-			w=self.itemAt(idx).widget()
-			t=w.text()
-			if "<strong>" in t:
-				t=t.replace("<strong>","").replace("</strong>","")
-				w.setText(t)
-		if len(args):
-			if self.itemAt(0)!=None:
-				current=self.itemAt(0).widget()
-				text=current.text()
-				text=text.replace("none'>","none'><strong>").replace("</a>","</strong></a>")
-				current.setText(text)
+			current=self.itemAt(idx).widget()
+			current.setProperty("decorated",False)
 	#def _catUndecorate
 
 	def populateCategories(self,*args):
@@ -65,19 +54,17 @@ class QToolBarCategories(QFlowTouchWidget):
 		h=0
 		for subcategory in subcategories:
 			wdg=QLabel()
+			wdg.setObjectName("categoryTag")
 			if subcategory!=category:
 				text="<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'>{0}</a>".format(_(subcategory))
 			else:
 				text="<a href=\"#{0}\" style='color:#FFFFFF;text-decoration:none'><strong>{0}</strong></a>".format(_(subcategory))
 			wdg.setText(text)
 			wdg.setAttribute(Qt.WA_Hover,True)
-			wdg.hoverLeave=self._catUndecorate
-			wdg.hoverEnter=self._catDecorate
-			wdg.installEventFilter(self)
 			wdg.setAttribute(Qt.WA_StyledBackground, True)
 			wdg.setOpenExternalLinks(False)
-			wdg.setObjectName("categoryTag")
 			wdg.linkActivated.connect(self._categoryLinkClicked)
+			wdg.setCursor(Qt.PointingHandCursor)
 			self.addWidget(wdg)
 			h=wdg.sizeHint().height()
 		if h>0:
