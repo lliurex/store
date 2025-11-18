@@ -153,13 +153,13 @@ class QProgressImage(QWidget):
 		self.pxmOverlay.fill(color)
 		self.pxmOverlay.setMask(self.pxm.createMaskFromColor(Qt.transparent))
 		self.lblPxm.setPixmap(self.pxmOverlay)
+	#def _pulsate
 
 	def _doProgress(self,*args):
 		self.running=True
 		QApplication.processEvents()
 		self._pulsate(args)
 		QApplication.processEvents()
-		self.update()
 		self.running=False
 	#def _doProgress
 
