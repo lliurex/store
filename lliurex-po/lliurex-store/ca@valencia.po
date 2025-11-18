@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-10 08:39+0200\n"
-"PO-Revision-Date: 2025-10-14 10:00+0200\n"
+"PO-Revision-Date: 2025-11-19 00:23+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -40,7 +40,7 @@ msgstr "Elimina"
 #: ../src/stacks/btnInstallers.py:19 ../src/stacks/btnRebost.py:18
 #: ../src/stacks/paneDetailView.py:44
 msgid "Blocked"
-msgstr "Bloquejades"
+msgstr "Bloquejada"
 
 #: ../src/stacks/btnInstallers.py:20 ../src/stacks/btnRebost.py:19
 #: ../src/stacks/paneDetailView.py:45
