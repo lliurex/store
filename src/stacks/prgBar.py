@@ -109,8 +109,7 @@ class QProgressImage(QWidget):
 			self._doProgress()
 	#def _beginDoProgress
 
-	def _doProgress(self,*args):
-		self.running=True
+	def _pulsate(self,*args):
 		if self.lblInfo.text()!="":
 			if self.unlocking==False:
 				i18n=i18nUnlock
@@ -154,7 +153,12 @@ class QProgressImage(QWidget):
 		self.pxmOverlay.fill(color)
 		self.pxmOverlay.setMask(self.pxm.createMaskFromColor(Qt.transparent))
 		self.lblPxm.setPixmap(self.pxmOverlay)
-		print(".")
+
+	def _doProgress(self,*args):
+		self.running=True
+		QApplication.processEvents()
+		self._pulsate(args)
+		QApplication.processEvents()
 		self.update()
 		self.running=False
 	#def _doProgress
