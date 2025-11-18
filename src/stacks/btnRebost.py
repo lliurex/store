@@ -225,38 +225,43 @@ class QPushButtonRebostApp(QPushButton):
 	def _setActionForButton(self):
 		self.btn.setText(i18n["INSTALL"])
 		self.btn.setEnabled(True)
-		if len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
-			self.btn.setText(i18n.get("UNAVAILABLE"))
-			self.btn.setText(i18n["UNAVAILABLE"])
-			self.btn.setEnabled(False)
-		elif self.app.get("forbidden",False)==True:
-			self.btn.setEnabled(False)
-			self.btn.setText(i18n["UNAUTHORIZED"])
-		else: #app seems authorized and available
-			bundles=self.app["bundle"]
-			status=self.app["status"]
-			zmd=bundles.get("unknown","")
-			action="install"
-			if zmd==self.app["name"]==self.app["pkgname"]:
-				action="open"
-			else:
-				for bundle,appstatus in status.items():
-					if int(appstatus)==0:# and zmdInstalled!="0":
-						action="remove"
-						break
-			if action=="install":
-				self.btn.setVisible(True)
-				self.btn.setEnabled(True)
-				self.iconUri.setEnabled(True)
-				self.btn.setText(i18n["INSTALL"])
-			elif action=="open":
-				self.btn.setVisible(True)
-				self.btn.setEnabled(True)
-				self.btn.setText(i18n["OPEN"])
-				self.iconUri.setEnabled(True)
-				self.instBundle="unknown"
-			else:
-				self.btn.setText(i18n["REMOVE"])
+		if len(self.app.get("bundle",{}))==0 and self.app.get("forbidden",False)==True:
+			self.setText(i18n["UNAUTHORIZED"])
+			self.setMenu(None)
+			self.setEnabled(False)
+		else:
+			if len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
+				self.btn.setText(i18n.get("UNAVAILABLE"))
+				self.btn.setText(i18n["UNAVAILABLE"])
+				self.btn.setEnabled(False)
+			elif self.app.get("forbidden",False)==True:
+				self.btn.setEnabled(False)
+				self.btn.setText(i18n["UNAUTHORIZED"])
+			else: #app seems authorized and available
+				bundles=self.app["bundle"]
+				status=self.app["status"]
+				zmd=bundles.get("unknown","")
+				action="install"
+				if zmd==self.app["name"]==self.app["pkgname"]:
+					action="open"
+				else:
+					for bundle,appstatus in status.items():
+						if int(appstatus)==0:# and zmdInstalled!="0":
+							action="remove"
+							break
+				if action=="install":
+					self.btn.setVisible(True)
+					self.btn.setEnabled(True)
+					self.iconUri.setEnabled(True)
+					self.btn.setText(i18n["INSTALL"])
+				elif action=="open":
+					self.btn.setVisible(True)
+					self.btn.setEnabled(True)
+					self.btn.setText(i18n["OPEN"])
+					self.iconUri.setEnabled(True)
+					self.instBundle="unknown"
+				else:
+					self.btn.setText(i18n["REMOVE"])
 	#def _setActionForButton
 
 	def updateScreen(self):
