@@ -11,7 +11,7 @@ Package: lliurex-store
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, 
 		rebost (>=3.0), 
-		rebost-data (>=25.09.22-0lliurex23), 
+		rebost-data (>=25.10.29-0llx25), 
 		python3-rebost (>=2.0), 
 		python3-qtextrawidgets (>=0.6),
 		python3-pyside2.qtgui, 

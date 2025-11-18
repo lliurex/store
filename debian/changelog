@@ -1,4 +1,10 @@
-lliurex-store (1.4.9.999+3lliurex25) noble-testing; urgency=medium
+lliurex-store (1.5.0+2lliurex25) noble; urgency=medium
+
+  * Stable release
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 29 Oct 2025 11:16:14 +0100
+
+lliurex-store (1.4.99.0+0lliurex25) noble-testing; urgency=medium
 
   * RC2
   * All features implemented
