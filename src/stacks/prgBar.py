@@ -95,6 +95,7 @@ class QProgressImage(QWidget):
 
 	def start(self):
 		self.updateTimer.start(self.sleepSeconds)
+		self.lblPxm.resize(QSize(0,0))
 	#	self.updateTimer.start()
 		self.show()
 	#def start
@@ -109,19 +110,12 @@ class QProgressImage(QWidget):
 			self._doProgress()
 	#def _beginDoProgress
 
+	def _bigger(self,args):
+		self.lblPxm.resize(self.lblPxm.size().width()+10,self.lblPxm.size().height()+10)
+		print(self.lblPxm.size())
+
+
 	def _pulsate(self,*args):
-		if self.lblInfo.text()!="":
-			if self.unlocking==False:
-				i18n=i18nUnlock
-			else:
-				i18n=i18nLoad
-			if (self.oldTime!=0) and (int(time.time())-self.oldTime>3):
-				rnd=random.randint(0,len(i18n))-1
-				key=list(i18n.keys())[rnd]
-				self.lblInfo.setText(i18n[key])
-				self.oldTime=time.time()
-			elif self.oldTime==0:
-				self.oldTime=time.time()
 		red=self.colorCur.red()+self.inc
 		blue=self.colorCur.blue()+self.inc
 		green=self.colorCur.green()+self.inc
@@ -157,8 +151,21 @@ class QProgressImage(QWidget):
 
 	def _doProgress(self,*args):
 		self.running=True
+		if self.lblInfo.text()!="":
+			if self.unlocking==False:
+				i18n=i18nUnlock
+			else:
+				i18n=i18nLoad
+			if (self.oldTime!=0) and (int(time.time())-self.oldTime>3):
+				rnd=random.randint(0,len(i18n))-1
+				key=list(i18n.keys())[rnd]
+				self.lblInfo.setText(i18n[key])
+				self.oldTime=time.time()
+			elif self.oldTime==0:
+				self.oldTime=time.time()
 		QApplication.processEvents()
-		self._pulsate(args)
+		#self._pulsate(args)
+		self._bigger(args)
 		QApplication.processEvents()
 		self.running=False
 	#def _doProgress
