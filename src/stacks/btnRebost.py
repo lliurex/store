@@ -226,9 +226,8 @@ class QPushButtonRebostApp(QPushButton):
 		self.btn.setText(i18n["INSTALL"])
 		self.btn.setEnabled(True)
 		if len(self.app.get("bundle",{}))==0 and self.app.get("forbidden",False)==True:
-			self.setText(i18n["UNAUTHORIZED"])
-			self.setMenu(None)
-			self.setEnabled(False)
+			self.btn.setText(i18n["UNAUTHORIZED"])
+			self.btn.setEnabled(False)
 		else:
 			if len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
 				self.btn.setText(i18n.get("UNAVAILABLE"))

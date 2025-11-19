@@ -156,7 +156,6 @@ class QPushButtonInstaller(QPushButton):
 	def _setActionForButton(self):
 		self.setText(i18n["INSTALL"])
 		self.setMenu(self.menuInstaller)
-		print(self.app)
 		if len(self.app.get("bundle",{}))==0 and self.app.get("forbidden",False)==True:
 			self.setText(i18n["UNAUTHORIZED"])
 			self.setMenu(None)
