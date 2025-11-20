@@ -136,6 +136,8 @@ class paneGlobalView(QWidget):
 		self.stopAdding=False
 		self.table.setSpacing(int(MARGIN)*5)
 		while apps:
+			if hasattr(self,"stopAdding")==False:
+				return
 			if self.stopAdding==True:
 				break
 			jsonapp=apps.pop(0)

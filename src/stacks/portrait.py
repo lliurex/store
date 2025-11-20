@@ -85,6 +85,7 @@ class portrait(QStackedWindowItem):
 		self.apps=[]
 		self.helper=libhelper.helper()
 		#self.updateTimer=QTimer()
+		#self.updateTimer.timeout.connect(QApplication.processEvents)
 		self.rc=store.client()
 		self._referrerPane=None
 		self._rebost=storeHelper(rc=self.rc)
@@ -150,6 +151,7 @@ class portrait(QStackedWindowItem):
 
 	def _initThreads(self):
 		self.requestGetApps.connect(self._getApps)
+		self.loadStart.connect(self._progressShow)
 		self._llxup.chkEnded.connect(self._endGetUpgradables)
 		self._rebost.lstEnded.connect(self._endLoadCategory)
 		self._rebost.linEnded.connect(self._endLoadInstalled)
@@ -318,9 +320,8 @@ class portrait(QStackedWindowItem):
 	#def _installApp
 
 	def _progressShow(self):
-		#self.updateTimer.start(5)
+	#	self.updateTimer.start(1)
 		self.progress.start()
-		QApplication.processEvents()
 	#def _progressShow
 
 	def _progressHide(self):
@@ -354,7 +355,7 @@ class portrait(QStackedWindowItem):
 		if self.searchBox.hasFocus()==False:
 			self.searchBox.setFocus()
 			if args[0].text().strip()!="":
-				self.searchBox.setText(args[0].text())
+				self.searchBox.setText(args[0].text().strip())
 	#def keyPressEvent
 
 	def __initScreen__(self):
@@ -601,6 +602,10 @@ class portrait(QStackedWindowItem):
 
 	def _defProgress(self):
 		wdg=QProgressImage(self)
+		wdg.inc=-1
+		wdg.setImageFromFile(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","progressBar267x267.png"))
+		wdg.animation="bigger"
+		wdg.animation="pulsate"
 		return(wdg)
 	#def _defProgress
 
@@ -694,7 +699,8 @@ class portrait(QStackedWindowItem):
 		self.btnSettings.hide()
 		if self.init==False:
 			self.loadStart.emit()
-		self._progressShow()
+		else:
+			self._progressShow()
 		self.stopAdding=True
 		self._homeView.hide()
 	#def _beginUpdate
@@ -712,7 +718,7 @@ class portrait(QStackedWindowItem):
 
 	def _beginLoad(self,resetScreen=True):
 		self.loadStart.emit()	
-		self._progressShow()
+		#self._progressShow()
 		cursor=QtGui.QCursor(Qt.WaitCursor)
 		self.setCursor(cursor)
 		self.lstCategories.setEnabled(False)
@@ -753,6 +759,7 @@ class portrait(QStackedWindowItem):
 			txt=self.searchBox.text()
 		else:
 			txt=tag
+		txt=txt.strip().removeprefix("\x08")
 		self.lstCategories.setCurrentRow(-1)
 		if len(txt)==0:
 			return
@@ -969,7 +976,7 @@ class portrait(QStackedWindowItem):
 	def _loadLockedRebost(self):
 		#self.progress.start()
 		self.loadStart.emit()
-		self._progressShow()
+		#self._progressShow()
 		self._rebost.setAction("restart")
 		self._rebost.start()
 	#def _loadLockedRebost
