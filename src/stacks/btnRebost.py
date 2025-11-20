@@ -225,38 +225,42 @@ class QPushButtonRebostApp(QPushButton):
 	def _setActionForButton(self):
 		self.btn.setText(i18n["INSTALL"])
 		self.btn.setEnabled(True)
-		if self.app.get("forbidden",False)==True:
-			self.btn.setEnabled(False)
+		if len(self.app.get("bundle",{}))==0 and self.app.get("forbidden",False)==True:
 			self.btn.setText(i18n["UNAUTHORIZED"])
-		elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
-			self.btn.setText(i18n.get("UNAVAILABLE"))
-			self.btn.setText(i18n["UNAVAILABLE"])
 			self.btn.setEnabled(False)
-		else: #app seems authorized and available
-			bundles=self.app["bundle"]
-			status=self.app["status"]
-			zmd=bundles.get("unknown","")
-			action="install"
-			if zmd==self.app["name"]==self.app["pkgname"]:
-				action="open"
-			else:
-				for bundle,appstatus in status.items():
-					if int(appstatus)==0:# and zmdInstalled!="0":
-						action="remove"
-						break
-			if action=="install":
-				self.btn.setVisible(True)
-				self.btn.setEnabled(True)
-				self.iconUri.setEnabled(True)
-				self.btn.setText(i18n["INSTALL"])
-			elif action=="open":
-				self.btn.setVisible(True)
-				self.btn.setEnabled(True)
-				self.btn.setText(i18n["OPEN"])
-				self.iconUri.setEnabled(True)
-				self.instBundle="unknown"
-			else:
-				self.btn.setText(i18n["REMOVE"])
+		else:
+			if len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
+				self.btn.setText(i18n.get("UNAVAILABLE"))
+				self.btn.setText(i18n["UNAVAILABLE"])
+				self.btn.setEnabled(False)
+			elif self.app.get("forbidden",False)==True:
+				self.btn.setEnabled(False)
+				self.btn.setText(i18n["UNAUTHORIZED"])
+			else: #app seems authorized and available
+				bundles=self.app["bundle"]
+				status=self.app["status"]
+				zmd=bundles.get("unknown","")
+				action="install"
+				if zmd==self.app["name"]==self.app["pkgname"]:
+					action="open"
+				else:
+					for bundle,appstatus in status.items():
+						if int(appstatus)==0:# and zmdInstalled!="0":
+							action="remove"
+							break
+				if action=="install":
+					self.btn.setVisible(True)
+					self.btn.setEnabled(True)
+					self.iconUri.setEnabled(True)
+					self.btn.setText(i18n["INSTALL"])
+				elif action=="open":
+					self.btn.setVisible(True)
+					self.btn.setEnabled(True)
+					self.btn.setText(i18n["OPEN"])
+					self.iconUri.setEnabled(True)
+					self.instBundle="unknown"
+				else:
+					self.btn.setText(i18n["REMOVE"])
 	#def _setActionForButton
 
 	def updateScreen(self):
@@ -289,10 +293,10 @@ class QPushButtonRebostApp(QPushButton):
 			self._setActionForButton()
 		self.iconUri.setVisible(True)
 		self.flyIcon=""
-		if self.app.get("forbidden",False)==True:
-			self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu_forbidden128x128.png"))
-		elif self.app.get("unavailable",False)==True:
+		if self.app.get("unavailable",False)==True:
 			self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu_unavailable128x128.png"))
+		elif self.app.get("forbidden",False)==True:
+			self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu_forbidden128x128.png"))
 		elif self.app.get("name","").startswith("zero-"):
 			self.flyIcon=QPixmap(os.path.join(RSRC,"zero-center128x128.png"))
 		elif self.app.get("homepage")!=None:

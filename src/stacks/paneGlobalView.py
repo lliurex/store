@@ -58,15 +58,15 @@ class paneGlobalView(QWidget):
 						idx=self.table.currentIndex()
 						elements=1
 						if args[1].key()==Qt.Key_Up:
-							elements=int(self.width()/(args[0].width()+int(self.table.flowLayout.spacing())*2))+1
+							elements=int(self.width()/(args[0].width()+int(self.table.flowLayout.spacing())*2))
 						newPos=idx-elements
 					elif args[1].key()==Qt.Key_Right or args[1].key()==Qt.Key_Down:
 						idx=self.table.currentIndex()
 						elements=1
 						if args[1].key()==Qt.Key_Down:
-							elements=int(self.width()/(args[0].width()+int(self.table.flowLayout.spacing())*2))+1
+							elements=int(self.width()/(args[0].width()+int(self.table.flowLayout.spacing())*2))
 						newPos=idx+elements
-						#Ugly hack for autoscroll to focused item
+					#Ugly hack for autoscroll to focused item
 					if newPos!=-1:
 						if newPos<self.table.count() and newPos>=0:
 							btn=self.table.itemAt(newPos)
@@ -136,6 +136,8 @@ class paneGlobalView(QWidget):
 		self.stopAdding=False
 		self.table.setSpacing(int(MARGIN)*5)
 		while apps:
+			if hasattr(self,"stopAdding")==False:
+				return
 			if self.stopAdding==True:
 				break
 			jsonapp=apps.pop(0)

@@ -32,12 +32,12 @@ class QProgressImage(QWidget):
 		self.setStyleSheet(css.prgBar())
 		#lblProgress=QLabel(i18n["NEWDATA"])
 		#vbox.addWidget(lblProgress)#,Qt.AlignCenter|Qt.AlignBottom)
-		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","progressBar267x267.png")
 		#self.color=QColor(255,255,255)
 		self.color=QColor(COLOR_BACKGROUND_DARKEST)
 		self.colorEnd=QColor(COLOR_BACKGROUND_LIGHT)
 		self.colorCur=self.colorEnd
-		self.pxm=QPixmap(img)#.scaled(267,267,Qt.KeepAspectRatio,Qt.SmoothTransformation)
+		self.img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","progressBar267x267.png")
+		self.pxm=QPixmap(self.img)#.scaled(267,267,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		self.pxmOverlay=QPixmap(self.pxm.size())
 		self.lblPxm=QLabel()
 		self.lblInfo=QLabel(i18nLoad["GETTINGINFO"])
@@ -52,6 +52,7 @@ class QProgressImage(QWidget):
 		self.lblInfo.setAlignment(Qt.AlignCenter)
 		self.inc=-5
 		self.sleepSeconds=1
+		self.animation="pulsate"
 		self.running=False
 		self.destroyed.connect(partial(QProgressImage._onDestroy,self.__dict__))
 	#def __init__
@@ -84,6 +85,11 @@ class QProgressImage(QWidget):
 			self.pxmOverlay=QPixmap(sizex,sizey)
 	#def setPixmap
 
+	def setImageFromFile(self,img):
+		self.img=img
+		self.pxm=QPixmap(self.img)
+		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","blog300x300.png")
+
 	def adjustSize(self):
 		self.setFixedSize(QSize(self.pxm.width(),self.pxm.height()*2))
 	#def adjustSize
@@ -94,7 +100,9 @@ class QProgressImage(QWidget):
 		self.inc=inc
 
 	def start(self):
+		QApplication.processEvents()
 		self.updateTimer.start(self.sleepSeconds)
+		self.lblPxm.resize(QSize(0,0))
 	#	self.updateTimer.start()
 		self.show()
 	#def start
@@ -109,20 +117,18 @@ class QProgressImage(QWidget):
 			self._doProgress()
 	#def _beginDoProgress
 
-	def _doProgress(self,*args):
-		self.running=True
-		if self.lblInfo.text()!="":
-			if self.unlocking==False:
-				i18n=i18nUnlock
-			else:
-				i18n=i18nLoad
-			if (self.oldTime!=0) and (int(time.time())-self.oldTime>3):
-				rnd=random.randint(0,len(i18n))-1
-				key=list(i18n.keys())[rnd]
-				self.lblInfo.setText(i18n[key])
-				self.oldTime=time.time()
-			elif self.oldTime==0:
-				self.oldTime=time.time()
+	def _bigger(self,args):
+		if (self.pxm.width()>300) or (self.pxm.width()<64):
+			self.inc*=-1 
+		self.pxm=QPixmap(self.img).scaled(self.pxm.size().width()+self.inc,self.pxm.size().height()+self.inc)
+		self.lblPxm.resize(self.pxm.size().width()+self.inc,self.pxm.size().height()+self.inc)
+		self.lblPxm.setPixmap(self.pxm)
+		self.update()
+		#print(self.lblPxm.size())
+	#def _bigger(self,args):
+
+
+	def _pulsate(self,*args):
 		red=self.colorCur.red()+self.inc
 		blue=self.colorCur.blue()+self.inc
 		green=self.colorCur.green()+self.inc
@@ -154,7 +160,26 @@ class QProgressImage(QWidget):
 		self.pxmOverlay.fill(color)
 		self.pxmOverlay.setMask(self.pxm.createMaskFromColor(Qt.transparent))
 		self.lblPxm.setPixmap(self.pxmOverlay)
-		self.update()
+	#def _pulsate
+
+	def _doProgress(self,*args):
+		self.running=True
+		if self.lblInfo.text()!="":
+			if self.unlocking==False:
+				i18n=i18nUnlock
+			else:
+				i18n=i18nLoad
+			if (self.oldTime!=0) and (int(time.time())-self.oldTime>3):
+				rnd=random.randint(0,len(i18n))-1
+				key=list(i18n.keys())[rnd]
+				self.lblInfo.setText(i18n[key])
+				self.oldTime=time.time()
+			elif self.oldTime==0:
+				self.oldTime=time.time()
+		if self.animation=="pulsate":
+			self._pulsate(args)
+		elif self.animation=="bigger":
+			self._bigger(args)
 		self.running=False
 	#def _doProgress
 

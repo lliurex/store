@@ -186,6 +186,7 @@ class helper():
 	def getAppseduDetails(self,url):
 		details={"icon":"","description":"","summary":""}
 		page=os.path.basename(url.removesuffix("/"))
+		content=""
 		if os.path.exists(os.path.join(CACHE,page)):
 			with open(os.path.join(CACHE,page),"r") as f:
 				content=f.read()

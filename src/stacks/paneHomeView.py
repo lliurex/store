@@ -211,7 +211,7 @@ class main(QWidget):
 		layout.setSpacing(int(MARGIN)*4)
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		pxm=QtGui.QPixmap()
-		for i in range(0,8):
+		for i in range(0,6):
 			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE/2))
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			btn.setMaximumWidth(IMAGE_PREVIEW/3)
