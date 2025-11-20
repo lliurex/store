@@ -373,7 +373,10 @@ class thShowApp(QThread):
 		QThread.__init__(self, None)
 		self.rc=kwargs["rc"]
 		self.app={}
-		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
+		self.mapFile=os.path.join(os.environ.get("HOME"),".cache","rebost","raw","appsedu.map")
+		print(self.mapFile)
+		if os.path.exists(self.mapFile)==False:
+			self.mapFile="/usr/share/rebost-data/lists.d/llx23/eduapps.map"
 		self.helper=libhelper.helper()
 	#def __init__
 
@@ -397,16 +400,17 @@ class thShowApp(QThread):
 				app["ERR"]=True
 			finally:
 				if len(app)<=2:
-					if os.path.exists(self.mapFile):
-						fcontent={}
-						with open(self.mapFile,"r") as f:
-							fcontent=f.read()
-						jcontent=json.loads(fcontent)
-						vname=jcontent.get(name,"")
-						self._debug("Find virtual pkg {0} for  {1}".format(vname,name))
-						if len(vname)>0:
-							name=vname
 					apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
+					if len(apps)==0:
+						if os.path.exists(self.mapFile):
+							fcontent={}
+							with open(self.mapFile,"r") as f:
+								fcontent=f.read()
+							jcontent=json.loads(fcontent)
+							vname=jcontent["aliases"].get(self.app["id"],"")
+							if len(vname)>0:
+								self.app["id"]=vname
+							apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
 				if len(apps)>0:
 					app=apps[0]
 			if isinstance(app,str):
