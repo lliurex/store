@@ -156,39 +156,44 @@ class QPushButtonInstaller(QPushButton):
 	def _setActionForButton(self):
 		self.setText(i18n["INSTALL"])
 		self.setMenu(self.menuInstaller)
-		if len(self.app.get("bundle",{}))==0 or self.app.get("unavailable",False)==True:
-			self.setText(i18n["UNAVAILABLE"])
-			self.setMenu(None)
-			self.setEnabled(False)
-		elif self.app.get("forbidden",False)==True:
+		if len(self.app.get("bundle",{}))==0 and self.app.get("forbidden",False)==True:
 			self.setText(i18n["UNAUTHORIZED"])
 			self.setMenu(None)
 			self.setEnabled(False)
-		else: #app seems authorized and available
-			self.setEnabled(True)
-			bundles=self.app["bundle"]
-			status=self.app["status"]
-			zmd=bundles.get("unknown","")
-			action="install"
-			if zmd==self.app["name"]==self.app["pkgname"]:
-				action="open"
-			else:
-				for bundle,appstatus in status.items():
-					if int(appstatus)==0:# and zmdInstalled!="0":
-						action="remove"
-						break
-			if action=="install":
-				self.setVisible(True)
-				self.setEnabled(True)
-				self.setText(i18n["INSTALL"])
-			elif action=="open":
-				self.setVisible(True)
-				self.setEnabled(True)
-				self.setText(i18n["OPEN"])
-				self.instBundle="unknown"
-			else:
+		else:
+			if len(self.app.get("bundle",{}))==0 or self.app.get("unavailable",False)==True:
+				self.setText(i18n["UNAVAILABLE"])
 				self.setMenu(None)
-				self.setText(i18n["REMOVE"])
+				self.setEnabled(False)
+			elif self.app.get("forbidden",False)==True:
+				self.setText(i18n["UNAUTHORIZED"])
+				self.setMenu(None)
+				self.setEnabled(False)
+			else: #app seems authorized and available
+				self.setEnabled(True)
+				bundles=self.app["bundle"]
+				status=self.app["status"]
+				zmd=bundles.get("unknown","")
+				action="install"
+				if zmd==self.app["name"]==self.app["pkgname"]:
+					action="open"
+				else:
+					for bundle,appstatus in status.items():
+						if int(appstatus)==0:# and zmdInstalled!="0":
+							action="remove"
+							break
+				if action=="install":
+					self.setVisible(True)
+					self.setEnabled(True)
+					self.setText(i18n["INSTALL"])
+				elif action=="open":
+					self.setVisible(True)
+					self.setEnabled(True)
+					self.setText(i18n["OPEN"])
+					self.instBundle="unknown"
+				else:
+					self.setMenu(None)
+					self.setText(i18n["REMOVE"])
 	#def _setActionForButton
 
 	def _loadLaunchers(self,bundlesSorted):
