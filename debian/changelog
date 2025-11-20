@@ -1,6 +1,8 @@
 lliurex-store (1.5.1+0lliurex25) noble; urgency=medium
 
   * Improve appsedu pending apps label
+  * Fix erratic transitions
+  * Reduce memory footprint
 
  -- Juanma1980 <juanma1980@gmail.com>  Wed, 19 Nov 2025 07:45:10 +0100
 
