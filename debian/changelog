@@ -1,3 +1,9 @@
+lliurex-store (1.5.1+0lliurex23) jammy; urgency=medium
+
+  * Sync with llx25
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 20 Nov 2025 08:19:23 +0100
+
 lliurex-store (1.5.0+2lliurex23) jammy; urgency=medium
 
   * Sync with llx25
