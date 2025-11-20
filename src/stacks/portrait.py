@@ -152,6 +152,7 @@ class portrait(QStackedWindowItem):
 	def _initThreads(self):
 		self.requestGetApps.connect(self._getApps)
 		self.loadStart.connect(self._progressShow)
+		self.loadStop.connect(self._progressHide)
 		self._llxup.chkEnded.connect(self._endGetUpgradables)
 		self._rebost.lstEnded.connect(self._endLoadCategory)
 		self._rebost.linEnded.connect(self._endLoadInstalled)
@@ -920,7 +921,7 @@ class portrait(QStackedWindowItem):
 
 	def _endLoadDetail(self,*args,**kwargs):
 		self.loadStop.emit()
-		self._progressHide()
+		#self._progressHide()
 		self._showPane(self._detailView)
 	#def _endLoadDetail
 
@@ -943,7 +944,7 @@ class portrait(QStackedWindowItem):
 			elif isinstance(arg,dict):
 				app=arg.copy()
 				break
-		self._stopThreads()
+		self._stopThreads(ignoreProgress=True)
 		if app!="":
 			self.parent.setWindowTitle("{} - {}".format(APPNAME,args[-1].get("name","").capitalize()))
 			self._detailView.setParms({"name":app.get("name",""),"id":app.get("id",""),"icon":icn})
@@ -1032,7 +1033,7 @@ class portrait(QStackedWindowItem):
 		self.parent.setWindowTitle("{}".format(APPNAME))
 		self.loading=False
 		self.loadStop.emit()
-		self._progressHide()
+		#self._progressHide()
 	#def _return
 
 	def softresetScreen(self):
@@ -1040,7 +1041,7 @@ class portrait(QStackedWindowItem):
 	#def resetScreen
 
 	def resetScreen(self):
-		self._stopThreads()
+		self._stopThreads(ignoreProgress=True)
 		self.appsLoaded=0
 		self.pendingApps={}
 		self.refererApp=None
