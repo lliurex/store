@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import os
+import os,subprocess
 import libhelper
 from PySide2.QtCore import Signal,QThread
 import json,time,subprocess,random
@@ -374,9 +374,14 @@ class thShowApp(QThread):
 		self.rc=kwargs["rc"]
 		self.app={}
 		self.mapFile=os.path.join(os.environ.get("HOME"),".cache","rebost","raw","appsedu.map")
-		print(self.mapFile)
 		if os.path.exists(self.mapFile)==False:
-			self.mapFile="/usr/share/rebost-data/lists.d/llx23/eduapps.map"
+			llxRelease=["lliurex-version","-n"]
+			majorRelease=subprocess.check_output(llxRelease,encoding="utf8",universal_newlines=True)
+			if os.path.exists("/usr/share/rebost-data/lists.d/"):
+				for d in os.scandir("/usr/share/rebost-data/lists.d/"):
+					if d.name=="llx{}".format(majorRelease.split(".")[0]):
+						self.mapFile="/usr/share/rebost-data/lists.d/{}/eduapps.map".format(d.name)
+						break
 		self.helper=libhelper.helper()
 	#def __init__
 
