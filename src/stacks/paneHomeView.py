@@ -25,6 +25,7 @@ class main(QWidget):
 	clickedApp=Signal("PyObject","PyObject","PyObject")
 	requestInstallApp=Signal("PyObject","PyObject")
 	loaded=Signal()
+	rebostToggled=Signal()
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=True
@@ -55,13 +56,13 @@ class main(QWidget):
 	@staticmethod
 	def _onDestroy(*args):
 		selfDict=args[0]
-		if selfDict.get("th",[])!=[]:
-			for th in selfDict["th"]:
-				th.blockSignals(True)
-				th.requestInterruption()
-				th.deleteLater()
-				th.quit()
-				th.wait()
+		for th in selfDict.get("th",[]):
+			th.blockSignals(True)
+			th.requestInterruption()
+			th.deleteLater()
+			th.stop()
+			th.quit()
+			th.wait()
 	#def _onDestroy
 
 	def showEvent(self,*args,**kwargs):
@@ -152,7 +153,6 @@ class main(QWidget):
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			btn.setObjectName("btn")
 			btn.autoUpdate=True
-			#REM preview img
 			pxm.load(os.path.join(RSRC,"blog128x128.png"))
 			btn.loadFullScreen(pxm)
 			layout.addWidget(btn,Qt.AlignCenter)
@@ -171,12 +171,11 @@ class main(QWidget):
 				continue
 			if len(btn.app.get("name",""))>0:
 				continue
-
 			if isinstance(app,list) and len(app)>0:
 				if app[0].get("name") in self.appsEduApps:
 					continue
 				self.appsEduApps.append(app[0].get("name"))
-				btn.setApp(app[0])
+				btn.setApp(app[0],updateIcon=True)
 				btn._applyDecoration()
 				btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 				btn.install.connect(self._emitInstallApp)
@@ -203,6 +202,26 @@ class main(QWidget):
 		rssparser.start()
 		self.th.append(rssparser)
 	#def _getAppsedu
+
+	def reloadAppsedu(self):
+		i=0
+		pxm=QtGui.QPixmap()
+		for chld in self.appsEdu.children():
+			if isinstance(chld,QPushButtonRebostApp):
+				chld.setCursor(QtGui.QCursor(Qt.WaitCursor))
+				chld.setApp({})
+				chld.iconUri.setEnabled(False)
+				chld.lblFlyIcon.hide()
+				if i<3:
+					#btn.setObjectName("mp")
+					pxm.load(os.path.join(RSRC,"appsedu128x128.png"))
+					chld.loadFullScreen(pxm)
+				else:
+					chld.hide()
+				i+=1
+		self.appsEduApps=[]
+		self._getAppsedu()
+	#def reloadAppsedu
 
 	def _defAppsedu(self):
 		wdg=QWidget()
