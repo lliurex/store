@@ -66,6 +66,7 @@ class portrait(QStackedWindowItem):
 	requestGetApps=Signal(str)
 	loadStart=Signal()
 	loadStop=Signal()
+	rebostToggled=Signal()
 	def __init_stack__(self):
 		self.init=False
 		self.minTime=1
@@ -116,13 +117,13 @@ class portrait(QStackedWindowItem):
 		selfDict=args[0]
 		selfDict["_rebost"].blockSignals(True)
 		selfDict["_rebost"].requestInterruption()
-		selfDict["_rebost"].wait()
 		selfDict["_rebost"].quit()
-		selfDict["_rebost"].blockSignals(False)
+		selfDict["_rebost"].wait()
 		selfDict["_llxup"].blockSignals(True)
-		selfDict["_llxup"].wait()
 		selfDict["_llxup"].quit()
-		selfDict["_llxup"].blockSignals(False)
+		selfDict["_llxup"].wait()
+		selfDict["progress"].blockSignals(True)
+		selfDict["progress"].stop()
 	#def _onDestroy
 
 	def _initRegisters(self):
@@ -502,6 +503,8 @@ class portrait(QStackedWindowItem):
 		self._rebost.start()
 		#self._rebost.wait()
 		self._showPane(self._homeView)
+		self.rebostToggled.emit()
+		self.loadStop.emit()
 	#def _unlockRebost
 
 	def _defInst(self):
@@ -633,6 +636,7 @@ class portrait(QStackedWindowItem):
 		hvp.clickedCategory.connect(self._loadCategory)
 		hvp.requestInstallApp.connect(self._installApp)
 		hvp.loaded.connect(self._chkCategories)
+		self.rebostToggled.connect(hvp.reloadAppsedu)
 		return(hvp)
 	#def _getHomeViewPane
 

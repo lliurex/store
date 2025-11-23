@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import os
+import os,subprocess
 import libhelper
 from PySide6.QtCore import Signal,QThread
 import json,time,subprocess,random
@@ -374,6 +374,16 @@ class thShowApp(QThread):
 		self.rc=kwargs["rc"]
 		self.app={}
 		self.mapFile="/usr/share/rebost/lists.d/eduapps.map"
+		self.mapFile=os.path.join(os.environ.get("HOME"),".cache","rebost","raw","appsedu.map")
+		if os.path.exists(self.mapFile)==False:
+			llxRelease=["lliurex-version","-n"]
+			majorRelease=subprocess.check_output(llxRelease,encoding="utf8",universal_newlines=True)
+			if os.path.exists("/usr/share/rebost-data/lists.d/"):
+				for d in os.scandir("/usr/share/rebost-data/lists.d/"):
+					if d.name=="llx{}".format(majorRelease.split(".")[0]):
+						self.mapFile="/usr/share/rebost-data/lists.d/{}/eduapps.map".format(d.name)
+						break
+		print(self.mapFile)
 		self.helper=libhelper.helper()
 	#def __init__
 
@@ -397,16 +407,17 @@ class thShowApp(QThread):
 				app["ERR"]=True
 			finally:
 				if len(app)<=2:
-					if os.path.exists(self.mapFile):
-						fcontent={}
-						with open(self.mapFile,"r") as f:
-							fcontent=f.read()
-						jcontent=json.loads(fcontent)
-						vname=jcontent.get(name,"")
-						self._debug("Find virtual pkg {0} for  {1}".format(vname,name))
-						if len(vname)>0:
-							name=vname
 					apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
+					if len(apps)==0:
+						if os.path.exists(self.mapFile):
+							fcontent={}
+							with open(self.mapFile,"r") as f:
+								fcontent=f.read()
+							jcontent=json.loads(fcontent)
+							vname=jcontent["aliases"].get(self.app["id"],"")
+							if len(vname)>0:
+								self.app["id"]=vname
+							apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
 				if len(apps)>0:
 					app=apps[0]
 			if isinstance(app,str):
