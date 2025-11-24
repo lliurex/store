@@ -189,7 +189,8 @@ class portrait(QStackedWindowItem):
 				objbus=bus.get_object("org.freedesktop.NetworkManager","/org/freedesktop/NetworkManager")
 				proxbus=dbus.Interface(objbus,"org.freedesktop.NetworkManager")
 				status=proxbus.state()
-			except:
+			except Exception as e:
+				self._debug("Chk network: {}".format(e))
 				state=True
 			else:
 				if status==70:
@@ -210,7 +211,7 @@ class portrait(QStackedWindowItem):
 			self._rebost.blockSignals(False)
 			self._rebost.setAction("getCategories")
 			self._rebost.start()
-			self._rebost.wait()
+			#self._rebost.wait()
 	#def _chkCategories
 
 	def _endGetLockStatus(self,*args):
@@ -1059,12 +1060,13 @@ class portrait(QStackedWindowItem):
 		if self.lstCategories.count()<=0:
 			self._rebost.setAction("getCategories")
 			self._rebost.start()
-		isConnected=self._chkNetwork()
-		if isConnected==False:
-			self._endUpdate()
-			self._showPane(self._errorView)
-			self._stopThreads()
-			return
+		else:
+			isConnected=self._chkNetwork()
+			if isConnected==False:
+				self._endUpdate()
+				self._showPane(self._errorView)
+				self._stopThreads()
+				return
 		self._rebost.setAction("config")
 		self._rebost.start()
 		if self._referrerPane!=None:
