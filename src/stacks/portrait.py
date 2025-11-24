@@ -101,7 +101,7 @@ class portrait(QStackedWindowItem):
 		#DBUS loop
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 		#DBUS connections
-		bus=dbus.Bus()
+		bus=dbus.SystemBus()
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
 	#	objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 	#	(self.locked,self.userLocked)=self._rebost.isLocked()
