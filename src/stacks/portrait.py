@@ -66,6 +66,7 @@ class portrait(QStackedWindowItem):
 	requestGetApps=Signal(str)
 	loadStart=Signal()
 	loadStop=Signal()
+	rebostToggled=Signal()
 	def __init_stack__(self):
 		self.init=False
 		self.minTime=1
@@ -100,7 +101,7 @@ class portrait(QStackedWindowItem):
 		#DBUS loop
 		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 		#DBUS connections
-		bus=dbus.SessionBus()
+		bus=dbus.SystemBus()
 		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
 	#	objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
 	#	(self.locked,self.userLocked)=self._rebost.isLocked()
@@ -116,13 +117,13 @@ class portrait(QStackedWindowItem):
 		selfDict=args[0]
 		selfDict["_rebost"].blockSignals(True)
 		selfDict["_rebost"].requestInterruption()
-		selfDict["_rebost"].wait()
 		selfDict["_rebost"].quit()
-		selfDict["_rebost"].blockSignals(False)
+		selfDict["_rebost"].wait()
 		selfDict["_llxup"].blockSignals(True)
-		selfDict["_llxup"].wait()
 		selfDict["_llxup"].quit()
-		selfDict["_llxup"].blockSignals(False)
+		selfDict["_llxup"].wait()
+		selfDict["progress"].blockSignals(True)
+		selfDict["progress"].stop()
 	#def _onDestroy
 
 	def _initRegisters(self):
@@ -188,7 +189,8 @@ class portrait(QStackedWindowItem):
 				objbus=bus.get_object("org.freedesktop.NetworkManager","/org/freedesktop/NetworkManager")
 				proxbus=dbus.Interface(objbus,"org.freedesktop.NetworkManager")
 				status=proxbus.state()
-			except:
+			except Exception as e:
+				self._debug("Chk network: {}".format(e))
 				state=True
 			else:
 				if status==70:
@@ -209,7 +211,7 @@ class portrait(QStackedWindowItem):
 			self._rebost.blockSignals(False)
 			self._rebost.setAction("getCategories")
 			self._rebost.start()
-			self._rebost.wait()
+			#self._rebost.wait()
 	#def _chkCategories
 
 	def _endGetLockStatus(self,*args):
@@ -502,6 +504,8 @@ class portrait(QStackedWindowItem):
 		self._rebost.start()
 		#self._rebost.wait()
 		self._showPane(self._homeView)
+		self.rebostToggled.emit()
+		self.loadStop.emit()
 	#def _unlockRebost
 
 	def _defInst(self):
@@ -633,6 +637,7 @@ class portrait(QStackedWindowItem):
 		hvp.clickedCategory.connect(self._loadCategory)
 		hvp.requestInstallApp.connect(self._installApp)
 		hvp.loaded.connect(self._chkCategories)
+		self.rebostToggled.connect(hvp.reloadAppsedu)
 		return(hvp)
 	#def _getHomeViewPane
 
@@ -1055,12 +1060,13 @@ class portrait(QStackedWindowItem):
 		if self.lstCategories.count()<=0:
 			self._rebost.setAction("getCategories")
 			self._rebost.start()
-		isConnected=self._chkNetwork()
-		if isConnected==False:
-			self._endUpdate()
-			self._showPane(self._errorView)
-			self._stopThreads()
-			return
+		else:
+			isConnected=self._chkNetwork()
+			if isConnected==False:
+				self._endUpdate()
+				self._showPane(self._errorView)
+				self._stopThreads()
+				return
 		self._rebost.setAction("config")
 		self._rebost.start()
 		if self._referrerPane!=None:
