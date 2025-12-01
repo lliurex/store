@@ -187,7 +187,11 @@ class QPushButtonRebostApp(QPushButton):
 			#self.btn.setStyleSheet("""color:#AAAAAA""")
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper().replace("L*","L·"),self.app.get('summary','').strip().replace("l*","·"))
 		self.label.setText(text)
-		if len(text)>0:
+		if len(self.app.get("description","").strip())>0:
+			descArray=self.app.get("description","").strip().split(" ")
+			tt=" ".join(descArray[0:min(len(descArray),20)])
+			self.setToolTip(tt)
+		elif len(text)>0:
 			self.setToolTip(text)
 		img=self.app.get('icon','')
 	#def __init__
@@ -325,7 +329,7 @@ class QPushButtonRebostApp(QPushButton):
 	def _applyDecoration(self,app={},forbidden=False,installed=False):
 		if app=={}:
 			app=self.app
-		if (self.app.get("forbidden",False)==True) or len(self.app.get("bundle",[]))==0:
+		if (self.app.get("forbidden",False)==True) or (self.app.get("unavailable",False)==True) or (len(self.app.get("bundle",[]))==0):
 			if len(self.app.get("bundle",[]))==0 and self._showBtn==True:
 				self.iconUri.setEnabled(False)
 			else:
