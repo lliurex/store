@@ -70,22 +70,27 @@ class _imageLoader(QThread):
 							icn.setThemeName("hicolor")
 							icn.fromTheme("appedu-generic")
 					pxm=icn.pixmap(QSize(64,64))
-				elif "://":
-					try:
-						img=requests.get(uri,timeout=5)
-						img.close()
-						pxm.loadFromData(img.content)
-						if not os.path.exists(self.cacheDir):
-							os.makedirs(self.cacheDir)
-						fPath=os.path.join(self.cacheDir,os.path.basename(uri))
-						if not os.path.exists(fPath):
-							pxm=pxm.scaled(256,256,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
-							pxm.save(fPath,"PNG")#,quality=5)
-					except Exception as e:
+				elif "://" in uri:
+					if pxm.isNull(): #First attempt, search in rebost own cache
 						icn=QtGui.QIcon()
-						icn.setThemeName("hicolor")
-						icn=QtGui.QIcon.fromTheme("appedu-generic")
-						pxm=icn.pixmap(QSize(64,64))
+						cacheIcon=os.path.basename(uri)
+						for cacheDir in ["128x128","64x64","cache"]:
+							if os.path.exists("/usr/share/rebost-data/icons/{0}/{1}".format(cacheDir,cacheIcon)):
+								pxm.load("/usr/share/rebost-data/icons/{0}/{1}".format(cacheDir,cacheIcon))
+								break
+					if pxm.isNull(): #First attempt, search in rebost own cache
+						try:
+							img=requests.get(uri,timeout=5)
+							pxm.loadFromData(img.content)
+							img.close()
+							if not os.path.exists(self.cacheDir):
+								os.makedirs(self.cacheDir)
+							fPath=os.path.join(self.cacheDir,os.path.basename(uri))
+							if not os.path.exists(fPath):
+								pxm=pxm.scaled(256,256,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation)
+								pxm.save(fPath,"PNG")#,quality=5)
+						except Exception as e:
+							self._debug("Connection error")
 			else:
 				pxm=QtGui.QPixmap()
 				pxm.load(uri)
