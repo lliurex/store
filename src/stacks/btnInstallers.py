@@ -12,6 +12,7 @@ gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
 i18n={
+	"ASSISTED":_("Assisted"),
 	"HELP":_("What's this?"),
 	"INSTALL":_("Install"),
 	"OPEN":_("Z-Install"),
@@ -161,7 +162,10 @@ class QPushButtonInstaller(QPushButton):
 			self.setMenu(None)
 			self.setEnabled(False)
 		else:
-			if len(self.app.get("bundle",{}))==0 or self.app.get("unavailable",False)==True:
+			if self.app.get("assisted",False)==True:
+				self.setEnabled(False)
+				self.setText(i18n["ASSISTED"])
+			elif len(self.app.get("bundle",{}))==0 or self.app.get("unavailable",False)==True:
 				self.setText(i18n["UNAVAILABLE"])
 				self.setMenu(None)
 				self.setEnabled(False)
