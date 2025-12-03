@@ -1,4 +1,4 @@
-lliurex-store (1.5.2+0lliurex23) jammy; urgency=medium
+lliurex-store (1.5.2+1lliurex23) jammy; urgency=medium
 
   * Best effort for getting an app when loading through appsedu link
 
