@@ -12,7 +12,9 @@ import gettext
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
-i18n={"INSTALL":_("Install"),
+i18n={
+	"ASSISTED":_("Assisted"),
+	"INSTALL":_("Install"),
 	"OPEN":_("Z-Install"),
 	"REMOVE":_("Remove"),
 	"UNAUTHORIZED":_("Blocked"),
@@ -187,7 +189,11 @@ class QPushButtonRebostApp(QPushButton):
 			#self.btn.setStyleSheet("""color:#AAAAAA""")
 		text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper().replace("L*","L·"),self.app.get('summary','').strip().replace("l*","·"))
 		self.label.setText(text)
-		if len(text)>0:
+		if len(self.app.get("description","").strip())>0:
+			descArray=self.app.get("description","").strip().split(" ")
+			tt=" ".join(descArray[0:min(len(descArray),20)])
+			self.setToolTip(tt)
+		elif len(text)>0:
 			self.setToolTip(text)
 		img=self.app.get('icon','')
 	#def __init__
@@ -229,7 +235,10 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setText(i18n["UNAUTHORIZED"])
 			self.btn.setEnabled(False)
 		else:
-			if len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
+			if self.app.get("assisted",False)==True:
+				self.btn.setEnabled(False)
+				self.btn.setText(i18n["ASSISTED"])
+			elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
 				self.btn.setText(i18n.get("UNAVAILABLE"))
 				self.btn.setText(i18n["UNAVAILABLE"])
 				self.btn.setEnabled(False)
@@ -325,7 +334,7 @@ class QPushButtonRebostApp(QPushButton):
 	def _applyDecoration(self,app={},forbidden=False,installed=False):
 		if app=={}:
 			app=self.app
-		if (self.app.get("forbidden",False)==True) or len(self.app.get("bundle",[]))==0:
+		if (self.app.get("forbidden",False)==True) or (self.app.get("unavailable",False)==True) or (len(self.app.get("bundle",[]))==0):
 			if len(self.app.get("bundle",[]))==0 and self._showBtn==True:
 				self.iconUri.setEnabled(False)
 			else:

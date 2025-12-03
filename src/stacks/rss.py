@@ -21,7 +21,7 @@ class rssParser(QThread):
 		content=''
 		req=Request(url)#, headers={'User-Agent':'Mozilla/5.0'})
 		try:
-			with urllib.request.urlopen(req,timeout=2) as f:
+			with urllib.request.urlopen(req,timeout=4) as f:
 				content=(f.read().decode('utf-8'))
 		except Exception as e:
 			print("Couldn't fetch {}".format(url))
