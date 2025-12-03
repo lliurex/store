@@ -12,7 +12,9 @@ import gettext
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
-i18n={"INSTALL":_("Install"),
+i18n={
+	"ASSISTED":_("Assisted"),
+	"INSTALL":_("Install"),
 	"OPEN":_("Z-Install"),
 	"REMOVE":_("Remove"),
 	"UNAUTHORIZED":_("Blocked"),
@@ -233,7 +235,10 @@ class QPushButtonRebostApp(QPushButton):
 			self.btn.setText(i18n["UNAUTHORIZED"])
 			self.btn.setEnabled(False)
 		else:
-			if len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
+			if self.app.get("assisted",False)==True:
+				self.btn.setEnabled(False)
+				self.btn.setText(i18n["ASSISTED"])
+			elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
 				self.btn.setText(i18n.get("UNAVAILABLE"))
 				self.btn.setText(i18n["UNAVAILABLE"])
 				self.btn.setEnabled(False)
