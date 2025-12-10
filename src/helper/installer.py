@@ -185,7 +185,7 @@ class epiFile():
 		destPath=os.path.join(destdir,"{}.appimage".format(app['pkgname']))
 		deskName="{}-appimage.desktop".format(app['pkgname'])
 		installCmdLine.append("chmod +x {}".format(destPath))
-		installCmdLine.append("/usr/share/app2menu/app2menu-helper.py {0} \"{1}\" \"{2}\" \"{3}\" \"{4}\" /home/{5}/.local/share/applications/{6} {4}".format(app['pkgname'],app['icon'],app['summary'],";".join(app['categories']),destPath,user,deskName))
+		installCmdLine.append("/usr/share/app2menu/app2menu-helper.py {0} \"{1}\" \"{2}\" \"{3}\" \"{4}\" /usr/share/applications/{6} {4}".format(app['pkgname'],app['icon'],app['summary'],";".join(app['categories']),destPath,user,deskName))
 		removeCmd="rm {0} && rm /home/{1}/.local/share/applications/{2}-appimage.desktop;ERR=$?".format(destPath,user,app['pkgname'])
 		statusTestLine=("TEST=$( ls {}  1>/dev/null 2>&1 && echo 'installed')".format(destPath))
 		return(installCmd,installCmdLine,removeCmd,removeCmdLine,statusTestLine)
