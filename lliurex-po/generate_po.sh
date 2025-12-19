@@ -7,7 +7,7 @@ mkdir -p lliurex-store
 xgettext $GUI_FILES -o lliurex-store/lliurex-store.pot
 
 #Categories
-CATs=$(qdbus6 --literal net.lliurex.rebost /net/lliurex/rebost net.lliurex.rebost.getFreedesktopCategories)
+CATs=$(qdbus --literal net.lliurex.rebost /net/lliurex/rebost net.lliurex.rebost.getFreedesktopCategories)
 if [[ $? -eq 0 ]]
 then
 	CATs=${CATs//[/}
