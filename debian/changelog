@@ -1,3 +1,9 @@
+lliurex-store (1.5.3+0lliurex23) jammy; urgency=medium
+
+  * Add button for invoke reload info from rebost
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 19 Dec 2025 19:28:33 +0100
+
 lliurex-store (1.5.2+1lliurex23) jammy; urgency=medium
 
   * Best effort for getting an app when loading through appsedu link
