@@ -101,11 +101,22 @@ class QLabelRebostApp(QLabel):
 		self._imageLoader=_imageLoader()
 		self._imageLoader.fetched.connect(self._setIcon)
 		self.iconSize=-1
+		self.clickable=False
 		self.pixmapPath=""
 		self.app={}
 		self.th=[]
 		self.destroyed.connect(partial(QLabelRebostApp._stop,self.__dict__))
 	#def __init__
+
+	def setClickable(self,clickable=True):
+		self.clickable=clickable
+		self.setCursor(Qt.PointingHandCursor)
+	#def setClickable
+
+	def mousePressEvent(self,*args):
+		if self.clickable==True:
+			self.clicked.emit(*args)
+	#def mousePressEvent
 
 	@staticmethod
 	def _stop(*args):
