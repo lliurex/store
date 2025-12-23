@@ -3,9 +3,9 @@ import os
 from functools import partial
 import json
 import requests
-from PySide6.QtWidgets import QLabel
-from PySide6.QtCore import Qt,Signal,QSize,QThread
-from PySide6 import QtGui
+from PySide2.QtWidgets import QLabel
+from PySide2.QtCore import Qt,Signal,QSize,QThread
+from PySide2 import QtGui
 import gettext
 from constants import *
 gettext.textdomain('lliurex-store')
@@ -106,11 +106,22 @@ class QLabelRebostApp(QLabel):
 		self._imageLoader=_imageLoader()
 		self._imageLoader.fetched.connect(self._setIcon)
 		self.iconSize=-1
+		self.clickable=False
 		self.pixmapPath=""
 		self.app={}
 		self.th=[]
 		self.destroyed.connect(partial(QLabelRebostApp._stop,self.__dict__))
 	#def __init__
+
+	def setClickable(self,clickable=True):
+		self.clickable=clickable
+		self.setCursor(Qt.PointingHandCursor)
+	#def setClickable
+
+	def mousePressEvent(self,*args):
+		if self.clickable==True:
+			self.clicked.emit(*args)
+	#def mousePressEvent
 
 	@staticmethod
 	def _stop(*args):

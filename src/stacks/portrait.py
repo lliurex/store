@@ -6,10 +6,10 @@ import subprocess
 import json
 import dbus
 import dbus.mainloop.glib
-from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
+from PySide2.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
 							QCheckBox,QListWidgetItem,QSizePolicy
-from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
+from PySide2 import QtGui
+from PySide2.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
 from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
 from libth import storeHelper,llxup
@@ -17,6 +17,7 @@ from btnRebost import QPushButtonRebostApp
 from btnToggle import QPushButtonToggle
 from prgBar import QProgressImage
 from barCategories import QToolBarCategories
+from lblApp import QLabelRebostApp
 import libhelper
 import exehelper
 import paneDetailView
@@ -52,6 +53,7 @@ i18n={
 	"MENU":_("Show applications"),
 	"NEWDATA":_("Updating info"),
 	"OPEN":_("Z·Install"),
+	"REFRESH":_("Reload Apps"),
 	"REMOVE":_("Remove"),
 	"SEARCH":_("Search"),
 	"SORTDSC":_("Sort alphabetically"),
@@ -159,7 +161,7 @@ class portrait(QStackedWindowItem):
 		self._rebost.linEnded.connect(self._endLoadInstalled)
 		self._rebost.srcEnded.connect(self._endSearchApps)
 		#self._rebost.lckEnded.connect(self._endLock)
-		self._rebost.rstEnded.connect(self._endRestart)
+		self._rebost.rstEnded.connect(self._endReloadApps)
 		#self._rebost.staEnded.connect(self._endGetLockStatus)
 		self._rebost.cnfEnded.connect(self._endGetLockStatus)
 		self._rebost.catEnded.connect(self._populateCategories)
@@ -449,23 +451,25 @@ class portrait(QStackedWindowItem):
 		wdg.setObjectName("_defBtnBar")
 		lay=QHBoxLayout()
 		wdg.setLayout(lay)
-		btnHome=self._defHome()
-		btnHome.setObjectName("btnHome")
-		lay.addWidget(btnHome,Qt.AlignRight)
+		btnRefresh=self._defRefresh()
+		btnRefresh.setObjectName("btnHome")
+		lay.addWidget(btnRefresh,Qt.AlignRight)
 		btnInst=self._defInst()
 		btnInst.setObjectName("btnHome")
 		lay.addWidget(btnInst,Qt.AlignLeft)
-		btnHome.setFixedWidth(btnInst.sizeHint().width()+int(MARGIN))
+		btnRefresh.setFixedWidth(btnInst.sizeHint().width()+int(MARGIN))
 		btnInst.setFixedWidth(btnInst.sizeHint().width()+int(MARGIN))
 		return(wdg)
 	#def _defBtnBar
 
 	def _defBanner(self):
-		lbl=QLabel()
+		lbl=QLabelRebostApp()
+		lbl.setClickable(True)
 		#lbl.setObjectName("banner")
 		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.svg")
 		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		lbl.setPixmap(pxm)
+		lbl.clicked.connect(self._goHome)
 		return lbl
 	#def _defBanner
 
@@ -513,15 +517,14 @@ class portrait(QStackedWindowItem):
 		btnInst.clicked.connect(self._loadInstalled)
 		btnInst.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		return(btnInst)
-	#def _defHome
+	#def _defInst
 
-	def _defHome(self):
-		btnHome=QPushButton(i18n.get("HOME"))
-		#btnHome.setIcon(icn)
-		btnHome.clicked.connect(self._goHome)
-		btnHome.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
-		return(btnHome)
-	#def _defHome
+	def _defRefresh(self):
+		btnRefresh=QPushButton(i18n.get("REFRESH"))
+		btnRefresh.clicked.connect(self._reloadApps)
+		btnRefresh.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+		return(btnRefresh)
+	#def _defRefresh
 
 	def _launchLlxUp(self):
 		self.parent.hide()
@@ -721,6 +724,24 @@ class portrait(QStackedWindowItem):
 		self.resetScreen()
 		self._showPane(self._homeView)
 	#def _goHome
+
+	def _reloadApps(self,*args,**kwargs):
+		self._goHome()
+		self.setCursor(Qt.WaitCursor)
+		self.setDisabled(True)
+		self._beginLoad()
+		self._rebost.setAction("restart")
+		self._rebost.blockSignals(False)
+		self._rebost.start()
+	#def _reloadApps
+
+	def _endReloadApps(self,*args):
+		self.loading=False
+		self._debug("End reloading apps")
+		self.loadStop.emit()
+		self.setEnabled(True)
+		self._goHome()
+	#def _endReloadApps
 
 	def _beginLoad(self,resetScreen=True):
 		self.loadStart.emit()	
@@ -978,14 +999,6 @@ class portrait(QStackedWindowItem):
 		if len(jargs)>0:
 			self._loadDetails(json.loads(args[0])[0],kwargs)
 	#def _loadFromArgs
-
-	def _loadLockedRebost(self):
-		#self.progress.start()
-		self.loadStart.emit()
-		#self._progressShow()
-		self._rebost.setAction("restart")
-		self._rebost.start()
-	#def _loadLockedRebost
 
 	def setParms(self,*args):
 		appsedu=args[0]
