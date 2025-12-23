@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-19 19:50+0100\n"
-"PO-Revision-Date: 2025-12-19 19:52+0100\n"
+"POT-Creation-Date: 2025-12-23 16:45+0100\n"
+"PO-Revision-Date: 2025-12-23 16:47+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -18,51 +18,67 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.0.1\n"
 
-#: ../src/stacks/btnInstallers.py:15
+#: ../src/stacks/barButtons.py:15 ../src/stacks/paneGlobalView.py:15
+#: ../src/stacks/portrait.py:35
+msgid "All"
+msgstr "Tot"
+
+#: ../src/stacks/barButtons.py:16
+msgid "Go to portrait"
+msgstr "Portada"
+
+#: ../src/stacks/barButtons.py:17
+msgid "Show installed apps"
+msgstr "Programari instaŀlat"
+
+#: ../src/stacks/barButtons.py:18
+msgid "Origin"
+msgstr "Origen"
+
+#: ../src/stacks/barButtons.py:19
+msgid "Click: Show only from"
+msgstr "Click: Restringir a"
+
+#: ../src/stacks/barButtons.py:20
+msgid "Click: Show all applications"
+msgstr "Click: Mostrar tot"
+
+#: ../src/stacks/barButtons.py:21
+msgid "Reload applications"
+msgstr "Refrescar botiga"
+
+#: ../src/stacks/btnInstallers.py:15 ../src/stacks/btnRebost.py:16
+msgid "Assisted"
+msgstr "Atesa"
+
+#: ../src/stacks/btnInstallers.py:16
 msgid "What's this?"
 msgstr "Què és açò?"
 
-#: ../src/stacks/btnInstallers.py:16 ../src/stacks/btnRebost.py:15
+#: ../src/stacks/btnInstallers.py:17 ../src/stacks/btnRebost.py:17
 #: ../src/stacks/cmbBtn.py:10 ../src/stacks/lblApp.py:14
 #: ../src/stacks/paneDetailView.py:35
 msgid "Install"
 msgstr "Instal·la"
 
-#: ../src/stacks/btnInstallers.py:17 ../src/stacks/btnRebost.py:16
+#: ../src/stacks/btnInstallers.py:18 ../src/stacks/btnRebost.py:18
 msgid "Z-Install"
 msgstr "Instal·la"
 
-#: ../src/stacks/btnInstallers.py:18 ../src/stacks/btnRebost.py:17
+#: ../src/stacks/btnInstallers.py:19 ../src/stacks/btnRebost.py:19
 #: ../src/stacks/paneDetailView.py:40 ../src/stacks/portrait.py:57
 msgid "Remove"
 msgstr "Elimina"
 
-#: ../src/stacks/btnInstallers.py:19 ../src/stacks/btnRebost.py:18
+#: ../src/stacks/btnInstallers.py:20 ../src/stacks/btnRebost.py:20
 #: ../src/stacks/paneDetailView.py:44
 msgid "Blocked"
 msgstr "Bloquejada"
 
-#: ../src/stacks/btnInstallers.py:20 ../src/stacks/btnRebost.py:19
+#: ../src/stacks/btnInstallers.py:21 ../src/stacks/btnRebost.py:21
 #: ../src/stacks/paneDetailView.py:45
 msgid "Unavailable"
 msgstr "Pendent"
-
-#: ../src/stacks/btnToggle.py:15 ../src/stacks/paneGlobalView.py:15
-#: ../src/stacks/portrait.py:35
-msgid "All"
-msgstr "Tot"
-
-#: ../src/stacks/btnToggle.py:16
-msgid "Origin"
-msgstr "Origen"
-
-#: ../src/stacks/btnToggle.py:17
-msgid "Click: Show only from"
-msgstr "Click: Restringir a"
-
-#: ../src/stacks/btnToggle.py:18
-msgid "Click: Show all applications"
-msgstr "Click: Mostrar tot"
 
 #: ../src/stacks/paneDetailView.py:26
 msgid ""
@@ -250,378 +266,378 @@ msgstr "Actualitzant la base de dades de les aplicacions"
 msgid "Loading available applications"
 msgstr "Carregant els catàlegs d'aplicacions"
 
+msgid "AudioVideo"
+msgstr "Vídeo i so"
+
+msgid "DiscBurning"
+msgstr "Gravació de discs"
+
+msgid "Audio"
+msgstr "So"
+
+msgid "Midi"
+msgstr "Midi"
+
+msgid "Mixer"
+msgstr "Mescladors"
+
+msgid "Sequencer"
+msgstr "Seqüenciadors"
+
+msgid "Tuner"
+msgstr "Sintonitzadors"
+
+msgid "Recorder"
+msgstr "Gravació"
+
+msgid "Player"
+msgstr "Reproductors"
+
+msgid "Video"
+msgstr "Vídeo"
+
+msgid "AudioVideoEditing"
+msgstr "Edició de so i vídeo"
+
+msgid "TV"
+msgstr "TV"
+
+msgid "Development"
+msgstr "Desenvolupament"
+
+msgid "Building"
+msgstr "Construcció"
+
+msgid "Debugger"
+msgstr "Debug"
+
+msgid "IDE"
+msgstr "IDE"
+
+msgid "GUIDesigner"
+msgstr "Disseny d'interfícies"
+
+msgid "Profiling"
+msgstr "Perfils"
+
+msgid "RevisionControl"
+msgstr "Control de versions"
+
+msgid "Translation"
+msgstr "Traducció"
+
+msgid "Database"
+msgstr "Bases de dades"
+
+msgid "ProjectManagement"
+msgstr "Gestió de projectes"
+
+msgid "WebDevelopment"
+msgstr "Desenvolupament web"
+
+msgid "Education"
+msgstr "Educació"
+
+msgid "Art"
+msgstr "Art"
+
+msgid "Construction"
+msgstr "Construcció"
+
+msgid "Music"
+msgstr "Música"
+
+msgid "Languages"
+msgstr "Idiomes"
+
+msgid "ArtificialIntelligence"
+msgstr "Intel·ligència artificial"
+
+msgid "Astronomy"
+msgstr "Astronomia"
+
+msgid "Biology"
+msgstr "Biologia"
+
+msgid "Chemistry"
+msgstr "Química"
+
+msgid "ComputerScience"
+msgstr "Ciència computacional"
+
+msgid "DataVisualization"
+msgstr "Visualització de dades"
+
+msgid "Economy"
+msgstr "Economia"
+
+msgid "Electricity"
+msgstr "Electricitat"
+
+msgid "Geography"
+msgstr "Geografia"
+
+msgid "Geology"
+msgstr "Geologia"
+
+msgid "Geoscience"
+msgstr "Geociència"
+
+#
+msgid "History"
+msgstr "Historia"
+
+msgid "Humanities"
+msgstr "Humanitats"
+
+msgid "ImageProcessing"
+msgstr "Processament d'imatges"
+
+msgid "Literature"
+msgstr "Literatura"
+
+msgid "Maps"
+msgstr "Mapes"
+
+msgid "Math"
+msgstr "Matemàtiques"
+
+msgid "NumericalAnalysis"
+msgstr "Anàlisi numèric"
+
+msgid "MedicalSoftware"
+msgstr "Programari mèdic"
+
+msgid "Physics"
+msgstr "Física"
+
+msgid "Robotics"
+msgstr "Robòtica"
+
+msgid "Spirituality"
+msgstr "Espiritualitat"
+
+msgid "Sports"
+msgstr "Esports"
+
+msgid "ParallelComputing"
+msgstr "Computació paral·lela"
+
+msgid "Game"
+msgstr "Joc"
+
+msgid "ActionGame"
+msgstr "Jocs d'acció"
+
+msgid "AdventureGame"
+msgstr "Jocs d'aventura"
+
+msgid "ArcadeGame"
+msgstr "Jocs arcade"
+
+msgid "BoardGame"
+msgstr "Jocs de tauler"
+
+msgid "BlocksGame"
+msgstr "Jocs de blocs"
+
+msgid "CardGame"
+msgstr "Jocs de cartes"
+
+msgid "Emulator"
+msgstr "Emuladors"
+
+msgid "KidsGame"
+msgstr "Jocs infantils"
+
+msgid "LogicGame"
+msgstr "Jocs de lògica"
+
+msgid "RolePlaying"
+msgstr "Jocs de rol"
+
+msgid "Shooter"
+msgstr "Jocs de tirs"
+
+msgid "Simulation"
+msgstr "Simulació"
+
+msgid "SportsGame"
+msgstr "Jocs d'esports"
+
+msgid "StrategyGame"
+msgstr "Jocs d'estratègia"
+
+#
+msgid "LauncherStore"
+msgstr "Llançador"
+
+msgid "Graphics"
+msgstr "Gràfics"
+
+msgid "2DGraphics"
+msgstr "Gràfics 2D"
+
+msgid "VectorGraphics"
+msgstr "Gràfics vectorials"
+
+msgid "RasterGraphics"
+msgstr "Gràfics raster"
+
+msgid "3DGraphics"
+msgstr "Gràfics 3D"
+
+msgid "Scanning"
+msgstr "Escaneig"
+
+msgid "OCR"
+msgstr "OCR"
+
+msgid "Photography"
+msgstr "Fotografia"
+
+msgid "Publishing"
+msgstr "Publicacions"
+
+msgid "Viewer"
+msgstr "Visors"
+
+msgid "Network"
+msgstr "Xarxes"
+
+msgid "Email"
+msgstr "Email"
+
+#
+msgid "Dialup"
+msgstr "Dial"
+
+msgid "InstantMessaging"
+msgstr "Missatgeria instantània"
+
+msgid "Chat"
+msgstr "Xat"
+
+msgid "IRCCLient"
+msgstr "IRC"
+
+msgid "Feed"
+msgstr "Origen RSS"
+
+msgid "FileTransfer"
+msgstr "Transferència de fitxers"
+
+msgid "HamRadio"
+msgstr "Radio"
+
+msgid "News"
+msgstr "Noticies"
+
+msgid "P2P"
+msgstr "P2P"
+
+msgid "RemoteAcces"
+msgstr "Accés remot"
+
+msgid "Telephony"
+msgstr "Telefonia"
+
+msgid "TelephonyTools"
+msgstr "Eines de telefonia"
+
+msgid "VideoConference"
+msgstr "Videoconferència"
+
+msgid "WebBrowser"
+msgstr "Fullejadors web"
+
+msgid "Office"
+msgstr "Oficina"
+
+msgid "Calendar"
+msgstr "Calendari"
+
+msgid "ContactManagement"
+msgstr "Gestió de contactes"
+
+msgid "Dictionary"
+msgstr "Diccionari"
+
+msgid "Chart"
+msgstr "Gràfiques"
+
+msgid "Finance"
+msgstr "Finances"
+
+msgid "FlowChart"
+msgstr "Gràfiques"
+
+#
+msgid "PDA"
+msgstr "PDA"
+
+msgid "Presentation"
+msgstr "Presentacions"
+
+msgid "Spreadsheet"
+msgstr "Fulles de càlcul"
+
+msgid "WordProcessor"
+msgstr "Processadors de text"
+
+msgid "Science"
+msgstr "Ciència"
+
+msgid "Settings"
+msgstr "Configuracions"
+
+msgid "Security"
+msgstr "Seguretat"
+
+msgid "Accessibility"
+msgstr "Accessibilitat"
+
+msgid "System"
+msgstr "Sistema"
+
+msgid "FileTools"
+msgstr "Eines de fitxers"
+
+msgid "FileManager"
+msgstr "Gestió de fitxers"
+
+msgid "TerminalEmulator"
+msgstr "Emuladors de terminal"
+
+msgid "FileSystem"
+msgstr "Fitxers"
+
+msgid "Monitor"
+msgstr "Monitors"
+
+msgid "Utility"
+msgstr "Utilitat"
+
+msgid "TextTools"
+msgstr "Eines de text"
+
+msgid "Archiving"
+msgstr "Arxiu"
+
+msgid "Compression"
+msgstr "Compressió"
+
+msgid "Calculator"
+msgstr "Càlcul"
+
+msgid "Clock"
+msgstr "Rellotge"
+
+msgid "TextEditor"
+msgstr "Editors de text"
+
 msgid "Authentication is required to manage software"
 msgstr "Cal autenticar-se per a gestionar l'aplicació"
-
-#~ msgid "AudioVideo"
-#~ msgstr "Vídeo i so"
-
-#~ msgid "DiscBurning"
-#~ msgstr "Gravació de discs"
-
-#~ msgid "Audio"
-#~ msgstr "So"
-
-#~ msgid "Midi"
-#~ msgstr "Midi"
-
-#~ msgid "Mixer"
-#~ msgstr "Mescladors"
-
-#~ msgid "Sequencer"
-#~ msgstr "Seqüenciadors"
-
-#~ msgid "Tuner"
-#~ msgstr "Sintonitzadors"
-
-#~ msgid "Recorder"
-#~ msgstr "Gravació"
-
-#~ msgid "Player"
-#~ msgstr "Reproductors"
-
-#~ msgid "Video"
-#~ msgstr "Vídeo"
-
-#~ msgid "AudioVideoEditing"
-#~ msgstr "Edició de so i vídeo"
-
-#~ msgid "TV"
-#~ msgstr "TV"
-
-#~ msgid "Development"
-#~ msgstr "Desenvolupament"
-
-#~ msgid "Building"
-#~ msgstr "Construcció"
-
-#~ msgid "Debugger"
-#~ msgstr "Debug"
-
-#~ msgid "IDE"
-#~ msgstr "IDE"
-
-#~ msgid "GUIDesigner"
-#~ msgstr "Disseny d'interfícies"
-
-#~ msgid "Profiling"
-#~ msgstr "Perfils"
-
-#~ msgid "RevisionControl"
-#~ msgstr "Control de versions"
-
-#~ msgid "Translation"
-#~ msgstr "Traducció"
-
-#~ msgid "Database"
-#~ msgstr "Bases de dades"
-
-#~ msgid "ProjectManagement"
-#~ msgstr "Gestió de projectes"
-
-#~ msgid "WebDevelopment"
-#~ msgstr "Desenvolupament web"
-
-#~ msgid "Education"
-#~ msgstr "Educació"
-
-#~ msgid "Art"
-#~ msgstr "Art"
-
-#~ msgid "Construction"
-#~ msgstr "Construcció"
-
-#~ msgid "Music"
-#~ msgstr "Música"
-
-#~ msgid "Languages"
-#~ msgstr "Idiomes"
-
-#~ msgid "ArtificialIntelligence"
-#~ msgstr "Intel·ligència artificial"
-
-#~ msgid "Astronomy"
-#~ msgstr "Astronomia"
-
-#~ msgid "Biology"
-#~ msgstr "Biologia"
-
-#~ msgid "Chemistry"
-#~ msgstr "Química"
-
-#~ msgid "ComputerScience"
-#~ msgstr "Ciència computacional"
-
-#~ msgid "DataVisualization"
-#~ msgstr "Visualització de dades"
-
-#~ msgid "Economy"
-#~ msgstr "Economia"
-
-#~ msgid "Electricity"
-#~ msgstr "Electricitat"
-
-#~ msgid "Geography"
-#~ msgstr "Geografia"
-
-#~ msgid "Geology"
-#~ msgstr "Geologia"
-
-#~ msgid "Geoscience"
-#~ msgstr "Geociència"
-
-#
-#~ msgid "History"
-#~ msgstr "Historia"
-
-#~ msgid "Humanities"
-#~ msgstr "Humanitats"
-
-#~ msgid "ImageProcessing"
-#~ msgstr "Processament d'imatges"
-
-#~ msgid "Literature"
-#~ msgstr "Literatura"
-
-#~ msgid "Maps"
-#~ msgstr "Mapes"
-
-#~ msgid "Math"
-#~ msgstr "Matemàtiques"
-
-#~ msgid "NumericalAnalysis"
-#~ msgstr "Anàlisi numèric"
-
-#~ msgid "MedicalSoftware"
-#~ msgstr "Programari mèdic"
-
-#~ msgid "Physics"
-#~ msgstr "Física"
-
-#~ msgid "Robotics"
-#~ msgstr "Robòtica"
-
-#~ msgid "Spirituality"
-#~ msgstr "Espiritualitat"
-
-#~ msgid "Sports"
-#~ msgstr "Esports"
-
-#~ msgid "ParallelComputing"
-#~ msgstr "Computació paral·lela"
-
-#~ msgid "Game"
-#~ msgstr "Joc"
-
-#~ msgid "ActionGame"
-#~ msgstr "Jocs d'acció"
-
-#~ msgid "AdventureGame"
-#~ msgstr "Jocs d'aventura"
-
-#~ msgid "ArcadeGame"
-#~ msgstr "Jocs arcade"
-
-#~ msgid "BoardGame"
-#~ msgstr "Jocs de tauler"
-
-#~ msgid "BlocksGame"
-#~ msgstr "Jocs de blocs"
-
-#~ msgid "CardGame"
-#~ msgstr "Jocs de cartes"
-
-#~ msgid "Emulator"
-#~ msgstr "Emuladors"
-
-#~ msgid "KidsGame"
-#~ msgstr "Jocs infantils"
-
-#~ msgid "LogicGame"
-#~ msgstr "Jocs de lògica"
-
-#~ msgid "RolePlaying"
-#~ msgstr "Jocs de rol"
-
-#~ msgid "Shooter"
-#~ msgstr "Jocs de tirs"
-
-#~ msgid "Simulation"
-#~ msgstr "Simulació"
-
-#~ msgid "SportsGame"
-#~ msgstr "Jocs d'esports"
-
-#~ msgid "StrategyGame"
-#~ msgstr "Jocs d'estratègia"
-
-#
-#~ msgid "LauncherStore"
-#~ msgstr "Llançador"
-
-#~ msgid "Graphics"
-#~ msgstr "Gràfics"
-
-#~ msgid "2DGraphics"
-#~ msgstr "Gràfics 2D"
-
-#~ msgid "VectorGraphics"
-#~ msgstr "Gràfics vectorials"
-
-#~ msgid "RasterGraphics"
-#~ msgstr "Gràfics raster"
-
-#~ msgid "3DGraphics"
-#~ msgstr "Gràfics 3D"
-
-#~ msgid "Scanning"
-#~ msgstr "Escaneig"
-
-#~ msgid "OCR"
-#~ msgstr "OCR"
-
-#~ msgid "Photography"
-#~ msgstr "Fotografia"
-
-#~ msgid "Publishing"
-#~ msgstr "Publicacions"
-
-#~ msgid "Viewer"
-#~ msgstr "Visors"
-
-#~ msgid "Network"
-#~ msgstr "Xarxes"
-
-#~ msgid "Email"
-#~ msgstr "Email"
-
-#
-#~ msgid "Dialup"
-#~ msgstr "Dial"
-
-#~ msgid "InstantMessaging"
-#~ msgstr "Missatgeria instantània"
-
-#~ msgid "Chat"
-#~ msgstr "Xat"
-
-#~ msgid "IRCCLient"
-#~ msgstr "IRC"
-
-#~ msgid "Feed"
-#~ msgstr "Origen RSS"
-
-#~ msgid "FileTransfer"
-#~ msgstr "Transferència de fitxers"
-
-#~ msgid "HamRadio"
-#~ msgstr "Radio"
-
-#~ msgid "News"
-#~ msgstr "Noticies"
-
-#~ msgid "P2P"
-#~ msgstr "P2P"
-
-#~ msgid "RemoteAcces"
-#~ msgstr "Accés remot"
-
-#~ msgid "Telephony"
-#~ msgstr "Telefonia"
-
-#~ msgid "TelephonyTools"
-#~ msgstr "Eines de telefonia"
-
-#~ msgid "VideoConference"
-#~ msgstr "Videoconferència"
-
-#~ msgid "WebBrowser"
-#~ msgstr "Fullejadors web"
-
-#~ msgid "Office"
-#~ msgstr "Oficina"
-
-#~ msgid "Calendar"
-#~ msgstr "Calendari"
-
-#~ msgid "ContactManagement"
-#~ msgstr "Gestió de contactes"
-
-#~ msgid "Dictionary"
-#~ msgstr "Diccionari"
-
-#~ msgid "Chart"
-#~ msgstr "Gràfiques"
-
-#~ msgid "Finance"
-#~ msgstr "Finances"
-
-#~ msgid "FlowChart"
-#~ msgstr "Gràfiques"
-
-#
-#~ msgid "PDA"
-#~ msgstr "PDA"
-
-#~ msgid "Presentation"
-#~ msgstr "Presentacions"
-
-#~ msgid "Spreadsheet"
-#~ msgstr "Fulles de càlcul"
-
-#~ msgid "WordProcessor"
-#~ msgstr "Processadors de text"
-
-#~ msgid "Science"
-#~ msgstr "Ciència"
-
-#~ msgid "Settings"
-#~ msgstr "Configuracions"
-
-#~ msgid "Security"
-#~ msgstr "Seguretat"
-
-#~ msgid "Accessibility"
-#~ msgstr "Accessibilitat"
-
-#~ msgid "System"
-#~ msgstr "Sistema"
-
-#~ msgid "FileTools"
-#~ msgstr "Eines de fitxers"
-
-#~ msgid "FileManager"
-#~ msgstr "Gestió de fitxers"
-
-#~ msgid "TerminalEmulator"
-#~ msgstr "Emuladors de terminal"
-
-#~ msgid "FileSystem"
-#~ msgstr "Fitxers"
-
-#~ msgid "Monitor"
-#~ msgstr "Monitors"
-
-#~ msgid "Utility"
-#~ msgstr "Utilitat"
-
-#~ msgid "TextTools"
-#~ msgstr "Eines de text"
-
-#~ msgid "Archiving"
-#~ msgstr "Arxiu"
-
-#~ msgid "Compression"
-#~ msgstr "Compressió"
-
-#~ msgid "Calculator"
-#~ msgstr "Càlcul"
-
-#~ msgid "Clock"
-#~ msgstr "Rellotge"
-
-#~ msgid "TextEditor"
-#~ msgstr "Editors de text"
 
 #~ msgid "ALL"
 #~ msgstr "Tot"
