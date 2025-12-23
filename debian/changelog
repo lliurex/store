@@ -1,3 +1,9 @@
+lliurex-store (1.5.4+0lliurex23) jammy; urgency=medium
+
+  * Replace toggleButton with bar
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 23 Dec 2025 17:25:40 +0100
+
 lliurex-store (1.5.3+1lliurex23) jammy; urgency=medium
 
   * Add button for invoke reload info from rebost
