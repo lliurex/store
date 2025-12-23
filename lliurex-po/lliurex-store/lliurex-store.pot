@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-19 19:50+0100\n"
+"POT-Creation-Date: 2025-12-23 17:51+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,50 +17,66 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/stacks/btnInstallers.py:15
+#: ../src/stacks/barButtons.py:15 ../src/stacks/paneGlobalView.py:15
+#: ../src/stacks/portrait.py:35
+msgid "All"
+msgstr ""
+
+#: ../src/stacks/barButtons.py:16
+msgid "Go to portrait"
+msgstr ""
+
+#: ../src/stacks/barButtons.py:17
+msgid "Show installed apps"
+msgstr ""
+
+#: ../src/stacks/barButtons.py:18
+msgid "Origin"
+msgstr ""
+
+#: ../src/stacks/barButtons.py:19
+msgid "Click: Show only from"
+msgstr ""
+
+#: ../src/stacks/barButtons.py:20
+msgid "Click: Show all applications"
+msgstr ""
+
+#: ../src/stacks/barButtons.py:21
+msgid "Reload applications"
+msgstr ""
+
+#: ../src/stacks/btnInstallers.py:15 ../src/stacks/btnRebost.py:16
+msgid "Assisted"
+msgstr ""
+
+#: ../src/stacks/btnInstallers.py:16
 msgid "What's this?"
 msgstr ""
 
-#: ../src/stacks/btnInstallers.py:16 ../src/stacks/btnRebost.py:15
+#: ../src/stacks/btnInstallers.py:17 ../src/stacks/btnRebost.py:17
 #: ../src/stacks/cmbBtn.py:10 ../src/stacks/lblApp.py:14
 #: ../src/stacks/paneDetailView.py:35
 msgid "Install"
 msgstr ""
 
-#: ../src/stacks/btnInstallers.py:17 ../src/stacks/btnRebost.py:16
+#: ../src/stacks/btnInstallers.py:18 ../src/stacks/btnRebost.py:18
 msgid "Z-Install"
 msgstr ""
 
-#: ../src/stacks/btnInstallers.py:18 ../src/stacks/btnRebost.py:17
+#: ../src/stacks/btnInstallers.py:19 ../src/stacks/btnRebost.py:19
 #: ../src/stacks/paneDetailView.py:40 ../src/stacks/portrait.py:57
 msgid "Remove"
 msgstr ""
 
-#: ../src/stacks/btnInstallers.py:19 ../src/stacks/btnRebost.py:18
+#: ../src/stacks/btnInstallers.py:20 ../src/stacks/btnRebost.py:20
 #: ../src/stacks/paneDetailView.py:44
 msgid "Blocked"
 msgstr ""
 
-#: ../src/stacks/btnInstallers.py:20 ../src/stacks/btnRebost.py:19
+#: ../src/stacks/btnInstallers.py:21 ../src/stacks/btnRebost.py:21
 #: ../src/stacks/paneDetailView.py:45
 msgid "Unavailable"
-msgstr ""
-
-#: ../src/stacks/btnToggle.py:15 ../src/stacks/paneGlobalView.py:15
-#: ../src/stacks/portrait.py:35
-msgid "All"
-msgstr ""
-
-#: ../src/stacks/btnToggle.py:16
-msgid "Origin"
-msgstr ""
-
-#: ../src/stacks/btnToggle.py:17
-msgid "Click: Show only from"
-msgstr ""
-
-#: ../src/stacks/btnToggle.py:18
-msgid "Click: Show all applications"
 msgstr ""
 
 #: ../src/stacks/paneDetailView.py:26
@@ -241,6 +257,495 @@ msgstr ""
 
 #: ../src/stacks/prgBar.py:20
 msgid "Loading available applications"
+msgstr ""
+
+
+#
+msgid "AudioVideo"
+msgstr ""
+
+#
+msgid "DiscBurning"
+msgstr ""
+
+#
+msgid "Audio"
+msgstr ""
+
+#
+msgid "Midi"
+msgstr ""
+
+#
+msgid "Mixer"
+msgstr ""
+
+#
+msgid "Sequencer"
+msgstr ""
+
+#
+msgid "Tuner"
+msgstr ""
+
+#
+msgid "Recorder"
+msgstr ""
+
+#
+msgid "Player"
+msgstr ""
+
+#
+msgid "Video"
+msgstr ""
+
+#
+msgid "AudioVideoEditing"
+msgstr ""
+
+#
+msgid "TV"
+msgstr ""
+
+#
+msgid "Development"
+msgstr ""
+
+#
+msgid "Building"
+msgstr ""
+
+#
+msgid "Debugger"
+msgstr ""
+
+#
+msgid "IDE"
+msgstr ""
+
+#
+msgid "GUIDesigner"
+msgstr ""
+
+#
+msgid "Profiling"
+msgstr ""
+
+#
+msgid "RevisionControl"
+msgstr ""
+
+#
+msgid "Translation"
+msgstr ""
+
+#
+msgid "Database"
+msgstr ""
+
+#
+msgid "ProjectManagement"
+msgstr ""
+
+#
+msgid "WebDevelopment"
+msgstr ""
+
+#
+msgid "Education"
+msgstr ""
+
+#
+msgid "Art"
+msgstr ""
+
+#
+msgid "Construction"
+msgstr ""
+
+#
+msgid "Music"
+msgstr ""
+
+#
+msgid "Languages"
+msgstr ""
+
+#
+msgid "ArtificialIntelligence"
+msgstr ""
+
+#
+msgid "Astronomy"
+msgstr ""
+
+#
+msgid "Biology"
+msgstr ""
+
+#
+msgid "Chemistry"
+msgstr ""
+
+#
+msgid "ComputerScience"
+msgstr ""
+
+#
+msgid "DataVisualization"
+msgstr ""
+
+#
+msgid "Economy"
+msgstr ""
+
+#
+msgid "Electricity"
+msgstr ""
+
+#
+msgid "Geography"
+msgstr ""
+
+#
+msgid "Geology"
+msgstr ""
+
+#
+msgid "Geoscience"
+msgstr ""
+
+#
+msgid "History"
+msgstr ""
+
+#
+msgid "Humanities"
+msgstr ""
+
+#
+msgid "ImageProcessing"
+msgstr ""
+
+#
+msgid "Literature"
+msgstr ""
+
+#
+msgid "Maps"
+msgstr ""
+
+#
+msgid "Math"
+msgstr ""
+
+#
+msgid "NumericalAnalysis"
+msgstr ""
+
+#
+msgid "MedicalSoftware"
+msgstr ""
+
+#
+msgid "Physics"
+msgstr ""
+
+#
+msgid "Robotics"
+msgstr ""
+
+#
+msgid "Spirituality"
+msgstr ""
+
+#
+msgid "Sports"
+msgstr ""
+
+#
+msgid "ParallelComputing"
+msgstr ""
+
+#
+msgid "Game"
+msgstr ""
+
+#
+msgid "ActionGame"
+msgstr ""
+
+#
+msgid "AdventureGame"
+msgstr ""
+
+#
+msgid "ArcadeGame"
+msgstr ""
+
+#
+msgid "BoardGame"
+msgstr ""
+
+#
+msgid "BlocksGame"
+msgstr ""
+
+#
+msgid "CardGame"
+msgstr ""
+
+#
+msgid "Emulator"
+msgstr ""
+
+#
+msgid "KidsGame"
+msgstr ""
+
+#
+msgid "LogicGame"
+msgstr ""
+
+#
+msgid "RolePlaying"
+msgstr ""
+
+#
+msgid "Shooter"
+msgstr ""
+
+#
+msgid "Simulation"
+msgstr ""
+
+#
+msgid "SportsGame"
+msgstr ""
+
+#
+msgid "StrategyGame"
+msgstr ""
+
+#
+msgid "LauncherStore"
+msgstr ""
+
+#
+msgid "Graphics"
+msgstr ""
+
+#
+msgid "2DGraphics"
+msgstr ""
+
+#
+msgid "VectorGraphics"
+msgstr ""
+
+#
+msgid "RasterGraphics"
+msgstr ""
+
+#
+msgid "3DGraphics"
+msgstr ""
+
+#
+msgid "Scanning"
+msgstr ""
+
+#
+msgid "OCR"
+msgstr ""
+
+#
+msgid "Photography"
+msgstr ""
+
+#
+msgid "Publishing"
+msgstr ""
+
+#
+msgid "Viewer"
+msgstr ""
+
+#
+msgid "Network"
+msgstr ""
+
+#
+msgid "Email"
+msgstr ""
+
+#
+msgid "Dialup"
+msgstr ""
+
+#
+msgid "InstantMessaging"
+msgstr ""
+
+#
+msgid "Chat"
+msgstr ""
+
+#
+msgid "IRCCLient"
+msgstr ""
+
+#
+msgid "Feed"
+msgstr ""
+
+#
+msgid "FileTransfer"
+msgstr ""
+
+#
+msgid "HamRadio"
+msgstr ""
+
+#
+msgid "News"
+msgstr ""
+
+#
+msgid "P2P"
+msgstr ""
+
+#
+msgid "RemoteAcces"
+msgstr ""
+
+#
+msgid "Telephony"
+msgstr ""
+
+#
+msgid "TelephonyTools"
+msgstr ""
+
+#
+msgid "VideoConference"
+msgstr ""
+
+#
+msgid "WebBrowser"
+msgstr ""
+
+#
+msgid "Office"
+msgstr ""
+
+#
+msgid "Calendar"
+msgstr ""
+
+#
+msgid "ContactManagement"
+msgstr ""
+
+#
+msgid "Dictionary"
+msgstr ""
+
+#
+msgid "Chart"
+msgstr ""
+
+#
+msgid "Finance"
+msgstr ""
+
+#
+msgid "FlowChart"
+msgstr ""
+
+#
+msgid "PDA"
+msgstr ""
+
+#
+msgid "Presentation"
+msgstr ""
+
+#
+msgid "Spreadsheet"
+msgstr ""
+
+#
+msgid "WordProcessor"
+msgstr ""
+
+#
+msgid "Science"
+msgstr ""
+
+#
+msgid "Settings"
+msgstr ""
+
+#
+msgid "Security"
+msgstr ""
+
+#
+msgid "Accessibility"
+msgstr ""
+
+#
+msgid "System"
+msgstr ""
+
+#
+msgid "FileTools"
+msgstr ""
+
+#
+msgid "FileManager"
+msgstr ""
+
+#
+msgid "TerminalEmulator"
+msgstr ""
+
+#
+msgid "FileSystem"
+msgstr ""
+
+#
+msgid "Monitor"
+msgstr ""
+
+#
+msgid "Utility"
+msgstr ""
+
+#
+msgid "TextTools"
+msgstr ""
+
+#
+msgid "Archiving"
+msgstr ""
+
+#
+msgid "Compression"
+msgstr ""
+
+#
+msgid "Calculator"
+msgstr ""
+
+#
+msgid "Clock"
+msgstr ""
+
+#
+msgid "TextEditor"
 msgstr ""
 msgid "Authentication is required to manage software"
 msgstr ""
