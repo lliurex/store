@@ -5,9 +5,9 @@ from functools import partial
 import json
 import html
 from rebost import store
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QScrollArea,QListWidget,QListWidgetItem
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal,QThread,Slot,QUrl
+from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QScrollArea,QListWidget,QListWidgetItem
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal,QThread,Slot,QUrl
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
 import libhelper
 import css
