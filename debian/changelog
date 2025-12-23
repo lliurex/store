@@ -1,3 +1,15 @@
+lliurex-store (1.5.4+0lliurex25) noble; urgency=medium
+
+  * Replace toggleButton with bar
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 23 Dec 2025 17:25:40 +0100
+
+lliurex-store (1.5.3+1lliurex25) noble; urgency=medium
+
+  * Add button for invoke reload info from rebost
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 19 Dec 2025 19:28:33 +0100
+
 lliurex-store (1.5.2+0lliurex25) noble; urgency=medium
 
   * Use rebost system daemon
