@@ -14,8 +14,8 @@ from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
 from libth import storeHelper,llxup
 from btnRebost import QPushButtonRebostApp
-from btnToggle import QPushButtonToggle
 from prgBar import QProgressImage
+from barButtons import QPushButtonBar
 from barCategories import QToolBarCategories
 from lblApp import QLabelRebostApp
 import libhelper
@@ -228,7 +228,7 @@ class portrait(QStackedWindowItem):
 		if self.locked==False: #conf is unlocked, check groups 
 			if lockedUser==True:
 				self._unlockRebost()
-		self.certified.setLocked(self.locked,lockedUser)
+		self.btnBar.setLocked(self.locked,lockedUser)
 		self._debug("<-------- Rebost status acquired (lock {})".format(self.locked))
 		self._chkCategories()
 		self.prgCat.stop()
@@ -423,9 +423,13 @@ class portrait(QStackedWindowItem):
 		vbox=QVBoxLayout()
 		wdg.setLayout(vbox)
 		vbox.setContentsMargins(int(MARGIN)*3,0,int(MARGIN)*3,0)
-		self.certified=QPushButtonToggle()
-		self.certified.toggleClicked.connect(self._unlockRebost)
-		vbox.addWidget(self.certified,Qt.AlignCenter)
+		self.btnBar=QPushButtonBar()
+		#self.certified=QPushButtonToggle()
+		self.btnBar.toggleClicked.connect(self._unlockRebost)
+		self.btnBar.homeClicked.connect(self._goHome)
+		self.btnBar.installedClicked.connect(self._loadInstalled)
+		self.btnBar.reloadClicked.connect(self._reloadApps)
+		vbox.addWidget(self.btnBar,Qt.AlignCenter)
 		self.lstCategories=QListWidget()
 		self.lstCategories.setObjectName("lstCategories")
 		self.lstCategories.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -483,7 +487,7 @@ class portrait(QStackedWindowItem):
 		banner=self._defBanner()
 		lay.addWidget(banner,0,0,1,1,Qt.AlignCenter|Qt.AlignTop)
 		_defBtnBar=self._defBtnBar()
-		lay.addWidget(_defBtnBar,1,0,1,1,Qt.AlignCenter)
+		#lay.addWidget(_defBtnBar,1,0,1,1,Qt.AlignCenter)
 		navBar=self._defNavigationBar()
 		lay.addWidget(navBar,2,0,1,1)
 		lay.setRowStretch(0,0)

@@ -13,24 +13,30 @@ _ = gettext.gettext
 
 i18n={
 	"ALL":_("All"),
+	"HOME":_("Go to portrait"),
+	"INSTALLED":_("Show installed apps"),
 	"ORIGIN":_("Origin"),
 	"ORIGINDEL":_("Click: Show only from"),
-	"ORIGINSET":_("Click: Show all applications")
+	"ORIGINSET":_("Click: Show all applications"),
+	"REFRESH":_("Reload applications")
 	}
 
-class QPushButtonToggle(QWidget):
+class QPushButtonBar(QWidget):
 	toggleClicked=Signal()
+	homeClicked=Signal()
+	installedClicked=Signal()
+	reloadClicked=Signal()
 	def __init__(self,parent=None,**kwargs):
 		QWidget.__init__(self, parent)
 		self.dbg=True
 		self.setObjectName("btnToggle")
 		self.setStyleSheet(css.btnToggle())
 		layout=QGridLayout()
+		layout.setSpacing(int(MARGIN)*2)
+		layout.setContentsMargins(0,0,0,0)
 		self.setLayout(layout)
-		wdg=QWidget()
-		hlayout=QHBoxLayout()
-		hlayout.setSpacing(int(MARGIN)*2)
-		wdg.setLayout(hlayout)
+		topRow=self._defTopRow()
+		layout.addWidget(topRow,0,0,1,2,Qt.AlignCenter)
 		self.btnAppsedu=QPushButton()
 		self.btnAppsedu.setObjectName("btnOption")
 		self.btnAppsedu.setProperty("origin",True)
@@ -38,8 +44,7 @@ class QPushButtonToggle(QWidget):
 		self.btnAppsedu.setIcon(icn)
 		self.btnAppsedu.setIconSize(QSize(64,64))
 		self.btnAppsedu.setMaximumSize(QSize(64,64))
-		#layout.addWidget(self.btnAppsedu,0,0,1,1)
-		hlayout.addWidget(self.btnAppsedu)
+		layout.addWidget(self.btnAppsedu,1,0,1,1,Qt.AlignRight)
 		self.btnLliurex=QPushButton()
 		self.btnLliurex.enterEvent=lambda x:self._switchPalette("enter",self.btnLliurex)
 		self.btnLliurex.leaveEvent=lambda x:self._switchPalette("leave",self.btnLliurex)
@@ -51,12 +56,10 @@ class QPushButtonToggle(QWidget):
 		self.btnLliurex.setIconSize(QSize(64,64))
 		self.btnLliurex.setMaximumSize(QSize(64,64))
 		self.btnLliurex.setCursor(Qt.PointingHandCursor)
-		#layout.addWidget(self.btnLliurex,0,1,1,1,Qt.AlignCenter)
-		hlayout.addWidget(self.btnLliurex)
+		layout.addWidget(self.btnLliurex,1,1,1,1,Qt.AlignLeft)
 		self.btnLliurex.setDisabled(True)
-		layout.addWidget(wdg,0,0,1,1,Qt.AlignCenter|Qt.AlignTop)
 		self.lblOrigin=QLabel("{}: appsedu".format(i18n["ORIGIN"]))
-		layout.addWidget(self.lblOrigin,1,0,1,1,Qt.AlignCenter|Qt.AlignTop)
+		layout.addWidget(self.lblOrigin,2,0,1,2,Qt.AlignCenter|Qt.AlignTop)
 		layout.setRowStretch(1,1)
 		layout.setRowStretch(0,0)
 	#def __init__
@@ -65,6 +68,50 @@ class QPushButtonToggle(QWidget):
 		if self.dbg==True:
 			print("btnInstallers: {}".format(msg))
 	#def _debug(self,msg):
+
+	def _defTopRow(self):
+		wdg=QWidget()
+		hlay=QHBoxLayout()
+		hlay.setSpacing(int(MARGIN))
+		wdg.setLayout(hlay)
+		#HOME
+		self.btnHome=QPushButton()
+		self.btnHome.setObjectName("btnOption")
+		self.btnHome.setProperty("origin",True)
+		icn=QIcon(os.path.join(RSRC,"appsedu_home128x128.png"))
+		self.btnHome.setIcon(icn)
+		self.btnHome.setIconSize(QSize(48,48))
+		self.btnHome.setMaximumSize(QSize(48,48))
+		self.btnHome.setToolTip(i18n["HOME"])
+		self.btnHome.setCursor(Qt.PointingHandCursor)
+		self.btnHome.clicked.connect(self.homeClicked.emit)
+		hlay.addWidget(self.btnHome)
+		#INSTALLED
+		self.btnInstalled=QPushButton()
+		self.btnInstalled.setObjectName("btnOption")
+		self.btnInstalled.setProperty("origin",True)
+		icn=QIcon(os.path.join(RSRC,"appsedu_installed128x128.png"))
+		self.btnInstalled.setIcon(icn)
+		self.btnInstalled.setIconSize(QSize(48,48))
+		self.btnInstalled.setMaximumSize(QSize(48,48))
+		self.btnInstalled.setToolTip(i18n["INSTALLED"])
+		self.btnInstalled.setCursor(Qt.PointingHandCursor)
+		self.btnInstalled.clicked.connect(self.installedClicked.emit)
+		hlay.addWidget(self.btnInstalled)
+		#REFRESH
+		self.btnRefresh=QPushButton()
+		self.btnRefresh.setObjectName("btnOption")
+		self.btnRefresh.setProperty("origin",True)
+		self.btnRefresh.setCursor(Qt.PointingHandCursor)
+		icn=QIcon(os.path.join(RSRC,"appsedu_refresh128x128.png"))
+		self.btnRefresh.setIcon(icn)
+		self.btnRefresh.setIconSize(QSize(48,48))
+		self.btnRefresh.setMaximumSize(QSize(48,48))
+		self.btnRefresh.setToolTip(i18n["REFRESH"])
+		self.btnRefresh.clicked.connect(self.reloadClicked.emit)
+		hlay.addWidget(self.btnRefresh)
+		return(wdg)
+	#def _topRow
 
 	def _switchPalette(self,*args):
 		ev=args[0]
