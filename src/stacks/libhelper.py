@@ -156,7 +156,7 @@ class helper():
 	#def runApp(self,app,bundle)
 
 	def getBundlesByPriority(self,app):
-		priority=["epi","package","flatpak","snap","appimage","eduapp"]
+		priority=["epi","package","flatpak","snap","appimage","eduapp","webapp"]
 		priorityIdx={}
 		priorityTmp={}
 		bundles=app.get('bundle',{})
@@ -210,6 +210,8 @@ class helper():
 			appIcon=bscontent.find("img",class_="acf-view__image")
 			if appIcon!=None:
 				details["icon"]=appIcon.get("src","")
+			urlEditor=bscontent.find("a",["acf-view__url_editor-link acf-view__link"],href=True)
+			details["url"]=urlEditor.get("href","")
 		return(details)
 	#def getAppseduDetails
 		

@@ -27,10 +27,11 @@ class appLauncher(QThread):
 	def __init__(self,parent=None):
 		QThread.__init__(self, parent)
 		self.app={}
+		self.url=""
 		self.args=''
 	#def __init__
 
-	def setArgs(self,app,args,bundle=""):
+	def setArgs(self,app,args,bundle="",pk=True):
 		if isinstance(app,str):
 			self.app={}
 			self.app["name"]=app
@@ -43,17 +44,27 @@ class appLauncher(QThread):
 		#	self.app['bundle']=newBundle
 	#def setArgs
 
+	def setUrl(self,app):
+		self.app=app
+		self.url=app["bundle"]["webapp"]
+	#def setUrl
+
 	def run(self):
-		if self.app and self.args:
+		if (self.app and self.args) or (len(self.url)>0):
 			proc=None
 			if "attempted" not in self.app.keys():
 				self.app["attempted"]=[]
 			if " ".join(self.args[1:]) not in self.app["attempted"]:
 				self.app["attempted"].append(" ".join(self.args[1:]))
 			try:
-				cmd=self.args.copy()
-				cmd.append(json.dumps(self.app))
-				cmd.insert(0,"pkexec")
+				if self.url=="":
+					cmd=self.args.copy()
+					cmd.append(json.dumps(self.app))
+					cmd.insert(0,"pkexec")
+				else:
+					cmd=["xdg-open",self.url]
+					self.url=""
+				print(cmd)
 				proc=subprocess.run(cmd,stderr=subprocess.PIPE,universal_newlines=True)
 			except Exception as e:
 				print(e)

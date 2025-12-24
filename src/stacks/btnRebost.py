@@ -19,6 +19,7 @@ i18n={
 	"REMOVE":_("Remove"),
 	"UNAUTHORIZED":_("Blocked"),
 	"UNAVAILABLE":_("Unavailable"),
+	"WEBAPP":_("Web app")
 	}
 
 class QPushButtonRebostApp(QPushButton):
@@ -238,6 +239,12 @@ class QPushButtonRebostApp(QPushButton):
 			if self.app.get("assisted",False)==True:
 				self.btn.setEnabled(False)
 				self.btn.setText(i18n["ASSISTED"])
+			elif self.app.get("webapp",False)==True:
+				self.btn.setEnabled(True)
+				self.btn.blockSignals(False)
+				self.btn.setText(i18n["WEBAPP"])
+				if "webapp" not in self.app.get("bundle").keys():
+					self.app["bundle"].update({"webapp":self.app["homepage"]})
 			elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
 				self.btn.setText(i18n.get("UNAVAILABLE"))
 				self.btn.setText(i18n["UNAVAILABLE"])
