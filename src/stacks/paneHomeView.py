@@ -313,6 +313,7 @@ class main(QWidget):
 		self.layout().addWidget(lblBlog,0,0)
 		icn=QtGui.QIcon.fromTheme("list-add")
 		btnBlog=QPushButton()
+		btnBlog.setToolTip("Blog LliureX")
 		btnBlog.setIcon(icn)
 		dataBlog={"homepage":"https://portal.edu.gva.es/blogs/s1/lliurex/"}
 		btnBlog.clicked.connect(lambda x: self._openBlog("",dataBlog))
@@ -323,6 +324,7 @@ class main(QWidget):
 		lblAppsedu.setObjectName("lbl")
 		self.layout().addWidget(lblAppsedu,2,0)
 		btnApps=QPushButton()
+		btnApps.setToolTip("Appsedu")
 		btnApps.setIcon(icn)
 		dataApps={"homepage":"https://portal.edu.gva.es/appsedu/aplicacions-lliurex/"}
 		btnApps.clicked.connect(lambda x: self._openBlog("",dataApps))
