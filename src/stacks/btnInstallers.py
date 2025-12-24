@@ -18,7 +18,8 @@ i18n={
 	"OPEN":_("Z-Install"),
 	"REMOVE":_("Remove"),
 	"UNAUTHORIZED":_("Blocked"),
-	"UNAVAILABLE":_("Unavailable")
+	"UNAVAILABLE":_("Unavailable"),
+	"WEBAPP":_("Web app")
 	}
 
 class QPushButtonInstaller(QPushButton):
@@ -103,6 +104,8 @@ class QPushButtonInstaller(QPushButton):
 	#def _setActionForMenu
 
 	def mousePressEvent(self,*args,**kwargs):
+		if self.app.get("webapp",False)==True:
+			self.app["bundle"].update({"webapp":self.app["homepage"]})
 		bundlesSorted=self.helper.getBundlesByPriority(self.app)
 		if len(bundlesSorted)==0:
 			return
@@ -165,6 +168,9 @@ class QPushButtonInstaller(QPushButton):
 			if self.app.get("assisted",False)==True:
 				self.setEnabled(False)
 				self.setText(i18n["ASSISTED"])
+			elif self.app.get("webapp",False)==True:
+				self.setEnabled(True)
+				self.setText(i18n["WEBAPP"])
 			elif len(self.app.get("bundle",{}))==0 or self.app.get("unavailable",False)==True:
 				self.setText(i18n["UNAVAILABLE"])
 				self.setMenu(None)

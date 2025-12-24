@@ -432,6 +432,8 @@ class thShowApp(QThread):
 					app["description"]=details["description"]
 				if len(details.get("icon",""))>0:
 					app["icon"]=details["icon"]
+				if self.app.get("webapp",False)==True:
+					self.app["bundle"].update({"webapp":details.get("url","")})
 			self.showEnded.emit(app)
 	#def run
 #class thShowApp

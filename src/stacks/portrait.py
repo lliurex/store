@@ -312,7 +312,12 @@ class portrait(QStackedWindowItem):
 					elif hasattr(wdg,"text"):
 						if wdg.text()==i18n["REMOVE"]:
 							state=8
-					if bundle!="unknown":
+					if bundle=="webapp":
+						details=self.helper.getAppseduDetails(app["homepage"])
+						app["bundle"]["webapp"]=details["url"]
+						self.runapp.setUrl(app)
+						self.runapp.start()
+					elif bundle!="unknown":
 						self._setInstallingState(app,state)
 						self.runapp.setArgs(app,[installer,pkg,bundle])
 						self.runapp.start()
