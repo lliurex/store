@@ -230,8 +230,10 @@ class storeHelper(QThread):
 	def _restart(self):
 		self.rc.restart()
 		time.sleep(4)
-		self.rc.getAppsInstalledPerCategory()
-		print(self.rc.searchApp("zero-center"))
+		try:
+			self.rc.getAppsInstalledPerCategory()
+		except:
+			pass
 		self.rstEnded.emit()
 	#def _restart
 
