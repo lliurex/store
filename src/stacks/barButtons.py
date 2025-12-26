@@ -82,9 +82,10 @@ class QPushButtonBar(QWidget):
 		self.btnHome.setIcon(icn)
 		self.btnHome.setIconSize(QSize(48,48))
 		self.btnHome.setMaximumSize(QSize(48,48))
-		self.btnHome.setToolTip(i18n["HOME"])
 		self.btnHome.setCursor(Qt.PointingHandCursor)
 		self.btnHome.clicked.connect(self.homeClicked.emit)
+		self.btnHome.enterEvent=lambda x:self._switchPalette("enter",self.btnHome)
+		self.btnHome.leaveEvent=lambda x:self._switchPalette("leave",self.btnLliurex)
 		hlay.addWidget(self.btnHome)
 		#INSTALLED
 		self.btnInstalled=QPushButton()
@@ -94,9 +95,10 @@ class QPushButtonBar(QWidget):
 		self.btnInstalled.setIcon(icn)
 		self.btnInstalled.setIconSize(QSize(48,48))
 		self.btnInstalled.setMaximumSize(QSize(48,48))
-		self.btnInstalled.setToolTip(i18n["INSTALLED"])
 		self.btnInstalled.setCursor(Qt.PointingHandCursor)
 		self.btnInstalled.clicked.connect(self.installedClicked.emit)
+		self.btnInstalled.enterEvent=lambda x:self._switchPalette("enter",self.btnInstalled)
+		self.btnInstalled.leaveEvent=lambda x:self._switchPalette("leave",self.btnLliurex)
 		hlay.addWidget(self.btnInstalled)
 		#REFRESH
 		self.btnRefresh=QPushButton()
@@ -107,8 +109,9 @@ class QPushButtonBar(QWidget):
 		self.btnRefresh.setIcon(icn)
 		self.btnRefresh.setIconSize(QSize(48,48))
 		self.btnRefresh.setMaximumSize(QSize(48,48))
-		self.btnRefresh.setToolTip(i18n["REFRESH"])
 		self.btnRefresh.clicked.connect(self.reloadClicked.emit)
+		self.btnRefresh.enterEvent=lambda x:self._switchPalette("enter",self.btnRefresh)
+		self.btnRefresh.leaveEvent=lambda x:self._switchPalette("leave",self.btnLliurex)
 		hlay.addWidget(self.btnRefresh)
 		return(wdg)
 	#def _topRow
@@ -117,12 +120,19 @@ class QPushButtonBar(QWidget):
 		ev=args[0]
 		source=args[1]
 		if ev=="enter":
-			if source==self.btnLliurex:
-				if source.property("origin")==False:
-					self.lblOrigin.setText("{}".format(i18n["ORIGINSET"]))
-				else:
-					self.lblOrigin.setText("{} Appsedu".format(i18n["ORIGINDEL"]))
-			source.setEnabled(True)
+			if source==self.btnHome:
+				self.lblOrigin.setText("{}".format(i18n["HOME"]))
+			elif source==self.btnInstalled:
+				self.lblOrigin.setText("{}".format(i18n["INSTALLED"]))
+			elif source==self.btnRefresh:
+				self.lblOrigin.setText("{}".format(i18n["REFRESH"]))
+			else:
+				if source==self.btnLliurex:
+					if source.property("origin")==False:
+						self.lblOrigin.setText("{}".format(i18n["ORIGINSET"]))
+					else:
+						self.lblOrigin.setText("{} Appsedu".format(i18n["ORIGINDEL"]))
+				source.setEnabled(True)
 		else:
 			if source==self.btnLliurex:
 				self.btnLliurex.setEnabled(self.btnLliurex.property("origin"))
