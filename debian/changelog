@@ -1,3 +1,9 @@
+lliurex-store (1.5.5+0lliurex23) jammy; urgency=medium
+
+  * Launch appsedu webapps with browser
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 26 Dec 2025 09:32:06 +0100
+
 lliurex-store (1.5.4+0lliurex23) jammy; urgency=medium
 
   * Replace toggleButton with bar
