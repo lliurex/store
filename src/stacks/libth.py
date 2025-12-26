@@ -230,8 +230,10 @@ class storeHelper(QThread):
 	def _restart(self):
 		self.rc.restart()
 		time.sleep(4)
-		self.rc.getAppsInstalledPerCategory()
-		print(self.rc.searchApp("zero-center"))
+		try:
+			self.rc.getAppsInstalledPerCategory()
+		except:
+			pass
 		self.rstEnded.emit()
 	#def _restart
 
@@ -432,6 +434,8 @@ class thShowApp(QThread):
 					app["description"]=details["description"]
 				if len(details.get("icon",""))>0:
 					app["icon"]=details["icon"]
+				if self.app.get("webapp",False)==True:
+					self.app["bundle"].update({"webapp":details.get("url","")})
 			self.showEnded.emit(app)
 	#def run
 #class thShowApp
