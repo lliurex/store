@@ -7,13 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-<<<<<<< HEAD
-"POT-Creation-Date: 2025-12-23 16:45+0100\n"
-"PO-Revision-Date: 2025-12-23 16:47+0100\n"
-=======
 "POT-Creation-Date: 2025-12-23 17:51+0100\n"
 "PO-Revision-Date: 2025-12-23 17:53+0100\n"
->>>>>>> master
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
