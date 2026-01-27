@@ -311,9 +311,10 @@ class main(QWidget):
 		lblBlog=QLabel("{}<hr>".format(i18n["LBL_BLOG"]))
 		lblBlog.setObjectName("lbl")
 		self.layout().addWidget(lblBlog,0,0)
-		icn=QtGui.QIcon.fromTheme("list-add")
 		btnBlog=QPushButton()
+		btnBlog.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		btnBlog.setToolTip("Blog LliureX")
+		icn=QtGui.QIcon.fromTheme("list-add")
 		btnBlog.setIcon(icn)
 		dataBlog={"homepage":"https://portal.edu.gva.es/blogs/s1/lliurex/"}
 		btnBlog.clicked.connect(lambda x: self._openBlog("",dataBlog))
@@ -324,6 +325,7 @@ class main(QWidget):
 		lblAppsedu.setObjectName("lbl")
 		self.layout().addWidget(lblAppsedu,2,0)
 		btnApps=QPushButton()
+		btnApps.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		btnApps.setToolTip("Appsedu")
 		btnApps.setIcon(icn)
 		dataApps={"homepage":"https://portal.edu.gva.es/appsedu/aplicacions-lliurex/"}
