@@ -1,3 +1,9 @@
+lliurex-store (1.5.6+0lliurex23) noble; urgency=medium
+
+  * Improve: Change cursor shape on hover for open blog/appsedu buttons
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 27 Jan 2026 11:39:07 +0100
+
 lliurex-store (1.5.5+0lliurex23) jammy; urgency=medium
 
   * Launch appsedu webapps with browser
