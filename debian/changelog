@@ -1,4 +1,4 @@
-lliurex-store (1.5.6+0lliurex23) noble; urgency=medium
+lliurex-store (1.5.6+0lliurex23) jammy; urgency=medium
 
   * Improve: Change cursor shape on hover for open blog/appsedu buttons
 
