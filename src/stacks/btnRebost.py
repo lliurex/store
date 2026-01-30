@@ -278,9 +278,6 @@ class QPushButtonRebostApp(QPushButton):
 					self.iconUri.setEnabled(True)
 					self.instBundle="unknown"
 				else:
-					print("*****")
-					print(self.instBundle)
-					print("*****")
 					self.btn.setText(i18n["REMOVE"])
 	#def _setActionForButton
 
