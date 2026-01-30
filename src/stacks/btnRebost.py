@@ -262,6 +262,7 @@ class QPushButtonRebostApp(QPushButton):
 				else:
 					for bundle,appstatus in status.items():
 						if int(appstatus)==0:# and zmdInstalled!="0":
+							self.instBundle=bundle
 							action="remove"
 							break
 				if action=="install":
@@ -269,6 +270,7 @@ class QPushButtonRebostApp(QPushButton):
 					self.btn.setEnabled(True)
 					self.iconUri.setEnabled(True)
 					self.btn.setText(i18n["INSTALL"])
+					self.instBundle=""
 				elif action=="open":
 					self.btn.setVisible(True)
 					self.btn.setEnabled(True)
@@ -276,6 +278,9 @@ class QPushButtonRebostApp(QPushButton):
 					self.iconUri.setEnabled(True)
 					self.instBundle="unknown"
 				else:
+					print("*****")
+					print(self.instBundle)
+					print("*****")
 					self.btn.setText(i18n["REMOVE"])
 	#def _setActionForButton
 
