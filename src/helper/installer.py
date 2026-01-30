@@ -98,7 +98,7 @@ class epiFile():
 			f.write("\t\techo \"Installing...\"\n")
 			f.write("\t\t;;\n")
 			f.write("esac\n")
-			f.write("exit $ERR\n")
+			f.write("[ $ERR -gt 0 ] && exit 1 || exit 0\n")
 	#def _populateEpi
 
 	def _getCommandsForBundle(self,bundle,app,user=''):
