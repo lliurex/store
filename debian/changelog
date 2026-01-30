@@ -1,3 +1,9 @@
+lliurex-store (1.5.7+0lliurex23) jammy; urgency=medium
+
+  * Installer returns 0 on exit, 1 on failure
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 30 Jan 2026 09:21:54 +0100
+
 lliurex-store (1.5.6+0lliurex23) jammy; urgency=medium
 
   * Improve: Change cursor shape on hover for open blog/appsedu buttons
