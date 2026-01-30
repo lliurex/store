@@ -65,6 +65,8 @@ class QPushButtonInstaller(QPushButton):
 		else:
 			self.setCursor(Qt.WaitCursor)
 		bundle=args[1]["name"].split("<br>")[-1]
+		if self.instBundle!="":
+			bundle=self.instBundle
 		self.installerClicked.emit(bundle)
 		time.sleep(2)
 		if args[0]!=None:
@@ -190,12 +192,14 @@ class QPushButtonInstaller(QPushButton):
 				else:
 					for bundle,appstatus in status.items():
 						if int(appstatus)==0:# and zmdInstalled!="0":
+							self.instBundle=bundle
 							action="remove"
 							break
 				if action=="install":
 					self.setVisible(True)
 					self.setEnabled(True)
 					self.setText(i18n["INSTALL"])
+					self.instBundle=""
 				elif action=="open":
 					self.setVisible(True)
 					self.setEnabled(True)

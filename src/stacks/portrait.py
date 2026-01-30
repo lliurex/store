@@ -293,10 +293,14 @@ class portrait(QStackedWindowItem):
 		if len(args)>2:
 			bundle=args[2]
 		else:
-			priority=self.helper.getBundlesByPriority(app)
-			idx=list(priority.keys())
-			idx.sort()
-			bundle=priority[idx[0]].split(" ")[0]
+			if hasattr(wdg,"instBundle"):
+				if len(wdg.instBundle)>0:
+					bundle=wdg.instBundle
+			if len(bundle)==0:
+				priority=self.helper.getBundlesByPriority(app)
+				idx=list(priority.keys())
+				idx.sort()
+				bundle=priority[idx[0]].split(" ")[0]
 		if bundle=="epi":
 			bundle="unknown"
 		pkg=app.get('id')
