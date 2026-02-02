@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os,subprocess,time
 import libhelper
-from PySide2.QtCore import Signal,QThread
+from PySide6.QtCore import Signal,QThread
 import json,time,subprocess,random
 try:
        from lliurex import lliurexup

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import os
-from PySide2.QtCore import Qt,Signal
+from PySide6.QtCore import Qt,Signal
 from QtExtraWidgets import QCheckableComboBox
 from constants import *
 import gettext
