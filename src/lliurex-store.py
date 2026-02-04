@@ -41,5 +41,5 @@ mw.show()
 if len(sys.argv)>1:
 	if ("://") in sys.argv[1] or os.path.isfile(sys.argv[1]):
 		wdg=mw.getCurrentStack()
-		wdg.setParms(sys.argv[1])
+		dg.setParms(sys.argv[1])
 app.exec_()

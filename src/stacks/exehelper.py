@@ -16,8 +16,9 @@ class zmdLauncher(QThread):
 	#def setApp
 
 	def run(self):
+		ret=None
 		if self.app:
-			self.helper.runZmd(self.app)
+			ret=self.helper.runZmd(self.app)
 		self.zmdEnded.emit(self.app)
 	#def run
 #class zmdLauncher
@@ -64,11 +65,10 @@ class appLauncher(QThread):
 				else:
 					cmd=["xdg-open",self.url]
 					self.url=""
-				print(cmd)
 				proc=subprocess.run(cmd,stderr=subprocess.PIPE,universal_newlines=True)
 			except Exception as e:
 				print(e)
-			self.runEnded.emit(self.app,proc)
+		self.runEnded.emit(self.app,proc)
 	#def run
 #class appLauncher
 

@@ -54,6 +54,7 @@ class storeHelper(QThread):
 	def setAction(self,action,*args):
 		self.action=action
 		if len(args)>0:
+			print("ARGS: {}".format(args))
 			self.args=args
 		else:
 			self.args=[]
@@ -92,6 +93,8 @@ class storeHelper(QThread):
 			self._getAppsInstalledPerCategory()
 		elif self.action=="setAppState":
 			self._setAppState()
+		elif self.action=="refreshApp":
+			self._refreshApp()
 	#def run
 
 	def _test(self):
@@ -159,6 +162,13 @@ class storeHelper(QThread):
 		self.shwEnded.emit(app)
 	#def _show
 
+	def _refreshApp(self,*args):
+		app={}
+		if self.args[0]!="":
+			app=self.rc.refreshApp(self.args[0])
+		return(app)
+	#def _refreshApp
+
 	def _getAppSuggests(self,*args):
 		apps=[]
 		if self.args[0]!="":
@@ -207,9 +217,12 @@ class storeHelper(QThread):
 	def _setAppState(self,*args):
 		if self.args[0]!="":
 			temp=True
-			if len(self.args)>2:
-				temp=self.args[2]
-			app=self.rc.setAppState(self.args[0],self.args[1],temp)
+			if isinstance(self.args[-1],bool):
+				temp=self.args[-1]
+			if len(self.args)>3:
+				app=self.rc.setAppState(self.args[0],self.args[1],self.args[2],temp)
+			else:
+				app=self.rc.setAppState(self.args[0],self.args[1],temp)
 	#def _setAppState
 
 	def _updatePkgData(self):

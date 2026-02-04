@@ -255,6 +255,20 @@ class portrait(QStackedWindowItem):
 				proc=args[1]
 		else:
 			return
+		if proc!=None:
+			if isinstance(proc,int)==False:
+				if proc.returncode>1: #app is installed
+					#pkexec ret values
+					#127 -> Not authorized
+					if proc.returncode==127:
+						self.showMsg(title="LliureX Store",summary=app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=app["icon"],timeout=5000)
+					else:
+						self.showMsg(title="LliureX Store",summary=app["name"],text=i18n.get("ERRUNKNOWN"),icon=app["icon"],timeout=5000)
+		self._rebost.setAction("refreshApp",app["id"])
+		app=json.loads(self._rebost._refreshApp())[0]
+		self._rebost.setAction("setAppState",app["id"],0)
+		self._rebost.start()
+		self._rebost.wait()
 		app["state"]=0 #App is in "normal" state
 		if self.installingBtn!=None:
 			oldReferrer=self.referrerBtn
@@ -262,17 +276,8 @@ class portrait(QStackedWindowItem):
 			self._returnFromDetail(None,app)
 			self.referrerBtn=oldReferrer
 			self.installingBtn=None
-		if proc!=None:
-			if proc.returncode!=0:
-				#pkexec ret values
-				#127 -> Not authorized
-				if proc.returncode==127:
-					self.showMsg(title="LliureX Store",summary=app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=app["icon"],timeout=5000)
-				else:
-					self.showMsg(title="LliureX Store",summary=app["name"],text=i18n.get("ERRUNKNOWN"),icon=app["icon"],timeout=5000)
-		self._rebost.setAction("setAppState",app["id"],0)
-		self._rebost.start()
-		self._rebost.wait()
+		elif self._detailView.isVisible():
+			self._detailView.endInstall(app)
 	#def _endRunApp
 
 	def _setInstallingState(self,app,state):
