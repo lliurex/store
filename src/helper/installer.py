@@ -18,7 +18,7 @@ class epiFile():
 		except Exception as e:
 			print(e)
 		episcript=self._shForEpi(epiJson,app,pkg,bundle,postaction)
-		return(epiJson)
+		return(epiJson,episcript)
 	#def epiFromPkg
 		
 	def _jsonForEpi(self,tmpDir,app,pkg,bundle):
@@ -207,8 +207,6 @@ class epiFile():
 	#		statusTestLine=("TEST=$([ -e %s ]  && echo installed || n4d-vars getvalues ZEROCENTER | tr \",\" \"\\n\"|awk -F ',' 'BEGIN{a=0}{if ($1~\"%s\"){a=1};if (a==1){if ($1~\"state\"){ b=split($1,c,\": \");if (c[b]==1) print \"installed\";a=0}}}')"%(zpath,os.path.basename(zpath).replace(".zmd","")))
 		return(installCmd,installCmdLine,removeCmd,removeCmdLine,statusTestLine)
 	#def _getCommandsForZomando
-	
-	
 		
 pkg=sys.argv[1]
 bundle=sys.argv[2]
@@ -219,9 +217,10 @@ except Exception as e:
 	print(e)
 tmpDir=tempfile.TemporaryDirectory()
 os.chmod(tmpDir.name,0o755)
-epiFile=epi.epiForPkg(tmpDir,pkg,bundle,app)
+epiFile,epiScript=epi.epiForPkg(tmpDir,pkg,bundle,app)
 cmd=["/usr/sbin/epi-gtk",epiFile]
 proc=subprocess.run(cmd)
-print(proc)
+cmd=[epiScript,"getStatus"]
+status=subprocess.check_output(cmd,encoding="utf8",universal_newlines=True)
 tmpDir.cleanup()
-sys.exit(0)
+sys.exit(status)

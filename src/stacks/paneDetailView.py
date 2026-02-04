@@ -12,7 +12,6 @@ from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
 import libhelper
 import css
 from btnInstallers import QPushButtonInstaller
-from cmbBtn import QComboButton
 from lblApp import QLabelRebostApp
 from lblLnk import QLabelLink
 from btnRebost import QPushButtonRebostApp
@@ -172,10 +171,19 @@ class main(QWidget):
 		self._rebost.setAction("setAppState",self.app["id"],0)
 		self._rebost.start()
 		self._rebost.wait()
-		self.app["state"]=0
 		self._setLauncherStatus()
 		return
 	#def _getRunappResults
+
+	def endInstall(self,app=None):
+		if app!=None:
+			self.app=app
+		self._rebost.setAction("setAppState",self.app["id"],0)
+		self._rebost.start()
+		self._rebost.wait()
+		self.cmbBundles.setApp(self.app)
+		self._setLauncherStatus()
+	#def endInstall
 
 	def _setInstallingState(self):
 		if self.cmbBundles.text()==i18n["REMOVE"]:
