@@ -39,16 +39,16 @@ class helper():
 	def runZmd(self,app):
 		ret=-1
 		cmd=[]
-		zmdCmd=app.get('bundle',{}).get('unknown','')
+		epiCmd=app.get('bundle',{}).get('unknown','')
 		appName=app.get("pkgname","")
 		if appName=="":
 			appName=zmdCmd
+		if epiCmd.endswith(".epi")==False:
+			epiCmd+=".epi"
+		zmdCmd=epiCmd.replace(".epi",".zmd")
 		#Patch for zero-lliurex-adobereader
-		if zmdCmd=="acroread.epi":
+		if epiCmd=="acroread.epi":
 			zmdCmd="zero-lliurex-adobereader.zmd"
-		if zmdCmd.endswith(".zmd")==zmdCmd.endswith(".epi")==False:
-			zmdCmd+=".zmd"
-		zmdCmd=zmdCmd.replace(".epi",".zmd")
 		zmdPath=os.path.join("/usr/share/zero-center/zmds",zmdCmd)
 		if os.path.exists(zmdPath)==False:
 			alternatives=["zero-lliurex-{}".format(zmdCmd),"zero-installer-{}".format(zmdCmd),"zero-fp-{}".format(zmdCmd)]
@@ -78,7 +78,15 @@ class helper():
 				if zmdPath!=newPath:
 					cmd=self._getCmdFromZmd(newPath)
 					#subprocess.run(["pkexec",zmdPath])
-		return(ret)
+			cmd=["epic","showinfo",os.path.basename(epiCmd)]
+			status=subprocess.check_output(cmd,encoding="utf8",universal_newlines=True)
+			installed=False
+			for l in status.split("\n"):
+				if app["id"] in l:
+					if "already installed" in l.lower():
+						installed=True
+						break
+		return(installed)
 	#def runZmd
 
 	def getLauncherForBundle(self,app,bundle):
