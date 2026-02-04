@@ -1,3 +1,9 @@
+lliurex-store (1.6.0+0lliurex25) noble; urgency=medium
+
+  * Ensure app states are coherent
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 04 Feb 2026 09:46:18 +0100
+
 lliurex-store (1.5.7+0lliurex25) noble; urgency=medium
 
   * Installer returns 0 on exit, 1 on failure
