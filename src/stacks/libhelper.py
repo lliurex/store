@@ -79,13 +79,24 @@ class helper():
 					cmd=self._getCmdFromZmd(newPath)
 					#subprocess.run(["pkexec",zmdPath])
 			cmd=["epic","showinfo",os.path.basename(epiCmd)]
-			status=subprocess.check_output(cmd,encoding="utf8",universal_newlines=True)
+			try:
+				status=subprocess.check_output(cmd,encoding="utf8",universal_newlines=True)
+			except:
+				cmd=["epic","showinfo",os.path.basename(epiCmd.replace("zero-lliurex-",""))]
+				print(cmd)
+				try:
+					status=subprocess.check_output(cmd,encoding="utf8",universal_newlines=True)
+				except:
+					status=""
 			installed=False
 			for l in status.split("\n"):
 				if app["id"] in l:
 					if "already installed" in l.lower():
 						installed=True
 						break
+				elif "status: installed" in l.lower():
+					installed=True
+					break
 		return(installed)
 	#def runZmd
 

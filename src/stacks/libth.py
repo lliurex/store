@@ -54,7 +54,6 @@ class storeHelper(QThread):
 	def setAction(self,action,*args):
 		self.action=action
 		if len(args)>0:
-			print("ARGS: {}".format(args))
 			self.args=args
 		else:
 			self.args=[]
