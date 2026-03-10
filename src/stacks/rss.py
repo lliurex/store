@@ -41,7 +41,8 @@ class rssParser(QThread):
 						continue
 					for li in ul.find_all("li"):
 						link=li.find("a")
-						lastApps.append((li.text.split("(")[0].strip(),link.get("href","")))
+						if isinstance(link,dict):
+							lastApps.append((li.text.split("(")[0].strip(),link.get("href","")))
 						if len(lastApps)>5:
 							break
 					break
