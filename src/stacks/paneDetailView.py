@@ -449,6 +449,7 @@ class main(QWidget):
 				bundleData+=" contrib"
 			bundles.append(bundleData.split()[0])
 		defBund=None
+		epi=False
 		for children in self.boxBundles.children():
 			if isinstance(children,QLabel):
 				children.hide()
@@ -464,7 +465,11 @@ class main(QWidget):
 						bundle="epi"
 					text="Kind: {0}\nRelease: {1}".format(bundle.capitalize(),release)
 					children.setToolTip(text)
-					children.show()
+					if bundle=="epi":
+						epi=True
+						children.show()
+					elif epi==False:
+						children.show()
 					added=True
 					defBund=None
 		if defBund!=None:

@@ -127,6 +127,7 @@ class QPushButtonInstaller(QPushButton):
 
 	def _populateInstallers(self,bundlesSorted):
 		cont=0
+		epi=False
 		for idx,bundleData in bundlesSorted.items():
 			try:
 				bundleData=bundleData.strip()
@@ -155,7 +156,11 @@ class QPushButtonInstaller(QPushButton):
 				wdg.flyIcon=QPixmap(os.path.join(RSRC,"emblem-favorite32x32.png"))
 				wdg.lblFlyIcon.setPixmap(wdg.flyIcon.scaled(16,16,Qt.KeepAspectRatioByExpanding,Qt.FastTransformation))
 				wdg.lblFlyIcon.show()
-			self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
+			if bundle=="epi":
+				epi=True
+				self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
+			elif epi==False:
+				self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
 			cont+=1
 	#def _populateInstallers
 
