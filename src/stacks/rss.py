@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from PySide2.QtCore import Signal,QThread
+from PySide6.QtCore import Signal,QThread
 import feedparser
 from bs4 import BeautifulSoup as bs
 import urllib
@@ -41,6 +41,8 @@ class rssParser(QThread):
 						continue
 					for li in ul.find_all("li"):
 						link=li.find("a")
+						if link==None:
+							continue
 						lastApps.append((li.text.split("(")[0].strip(),link.get("href","")))
 						if len(lastApps)>5:
 							break
