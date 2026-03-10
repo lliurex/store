@@ -1,4 +1,4 @@
-lliurex-store (1.6.1+0lliurex23) jammy; urgency=medium
+lliurex-store (1.6.1+1lliurex23) jammy; urgency=medium
 
   * Fix exception if link not found when processing appsedu rss
 
