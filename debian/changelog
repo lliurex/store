@@ -1,3 +1,9 @@
+lliurex-store (1.6.1+0lliurex25) noble; urgency=medium
+
+  * Fix exception if appsedu rss is malformed
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 10 Mar 2026 11:27:32 +0100
+
 lliurex-store (1.6.0+1lliurex25) noble; urgency=medium
 
   * Ensure app states are coherent
