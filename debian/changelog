@@ -1,3 +1,9 @@
+lliurex-store (1.6.1+0lliurex23) jammy; urgency=medium
+
+  * Fix exception if link not found when processing appsedu rss
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 10 Mar 2026 17:32:58 +0100
+
 lliurex-store (1.6.0+1lliurex23) jammy; urgency=medium
 
   * Ensure app states are coherent
