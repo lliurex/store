@@ -141,6 +141,8 @@ class paneGlobalView(QWidget):
 			if self.stopAdding==True:
 				break
 			jsonapp=apps.pop(0)
+			if jsonapp.get("hidden",False)==True:
+				continue
 			btn=QPushButtonRebostApp(jsonapp)
 			btn.autoUpdate=True
 			btn.clicked.connect(self._emitLoadDetails)
