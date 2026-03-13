@@ -912,7 +912,7 @@ class portrait(QStackedWindowItem):
 	#def _loadCategory
 
 	def _endLoadCategory(self,*args):
-		self._debug("LOAD CATEGORY END")
+		self._debug("Load category end")
 		self._showPane(self._globalView)
 		self._endUpdate()
 		self.appsRaw=[]

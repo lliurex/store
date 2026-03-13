@@ -39,7 +39,7 @@ mw.setMinimumWidth(int(w*0.9))
 mw.setMinimumHeight(int(h*0.8))
 mw.show()
 if len(sys.argv)>1:
-	if ("://") in sys.argv[1] or os.path.isfile(sys.argv[1]):
+	if ("://") in sys.argv[1]:
 		wdg=mw.getCurrentStack()
 		wdg.setParms(sys.argv[1])
 app.exec()
