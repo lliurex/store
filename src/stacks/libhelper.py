@@ -230,7 +230,10 @@ class helper():
 			if appIcon!=None:
 				details["icon"]=appIcon.get("src","")
 			urlEditor=bscontent.find("a",["acf-view__url_editor-link acf-view__link"],href=True)
-			details["url"]=urlEditor.get("href","")
+			if urlEditor!=None:
+				details["url"]=urlEditor.get("href","")
+			else:
+				details["url"]=""
 		return(details)
 	#def getAppseduDetails
 		
