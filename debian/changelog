@@ -1,3 +1,9 @@
+lliurex-store (1.6.2+0lliurex23) jammy; urgency=medium
+
+  * Support for hidden apps
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 13 Mar 2026 17:48:01 +0100
+
 lliurex-store (1.6.1+1lliurex23) jammy; urgency=medium
 
   * Fix exception if link not found when processing appsedu rss
