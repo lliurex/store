@@ -391,14 +391,13 @@ class thShowApp(QThread):
 		self.rc=kwargs["rc"]
 		self.app={}
 		self.mapFile=os.path.join(os.environ.get("HOME"),".cache","rebost","raw","appsedu.map")
-		if os.path.exists(self.mapFile)==False:
-			llxRelease=["lliurex-version","-n"]
-			majorRelease=subprocess.check_output(llxRelease,encoding="utf8",universal_newlines=True)
-			if os.path.exists("/usr/share/rebost-data/lists.d/"):
-				for d in os.scandir("/usr/share/rebost-data/lists.d/"):
-					if d.name=="llx{}".format(majorRelease.split(".")[0]):
-						self.mapFile="/usr/share/rebost-data/lists.d/{}/eduapps.map".format(d.name)
-						break
+		llxRelease=["lliurex-version","-n"]
+		majorRelease=subprocess.check_output(llxRelease,encoding="utf8",universal_newlines=True)
+		if os.path.exists("/usr/share/rebost-data/lists.d/"):
+			for d in os.scandir("/usr/share/rebost-data/lists.d/"):
+				if d.name=="llx{}".format(majorRelease.split(".")[0]):
+					self.mapFile="/usr/share/rebost-data/lists.d/{}/eduapps.map".format(d.name)
+					break
 		self.helper=libhelper.helper()
 	#def __init__
 
