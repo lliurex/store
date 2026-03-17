@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 from functools import partial
 import subprocess
-from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QWidget,QHBoxLayout
-from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QWidget,QHBoxLayout
+from PySide2 import QtGui
+from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel
 import gettext
 import css

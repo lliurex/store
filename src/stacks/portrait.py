@@ -6,10 +6,10 @@ import subprocess
 import json
 import dbus
 import dbus.mainloop.glib
-from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
+from PySide2.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
 							QCheckBox,QListWidgetItem,QSizePolicy
-from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
+from PySide2 import QtGui
+from PySide2.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
 from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
 from libth import storeHelper,llxup

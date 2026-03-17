@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os,subprocess,time
-from PySide6.QtWidgets import QLabel, QPushButton,QWidget,QGridLayout,QHBoxLayout
-from PySide6.QtCore import Qt,Signal,QSize,QPoint
-from PySide6.QtGui import QIcon,QPixmap,QPalette
+from PySide2.QtWidgets import QLabel, QPushButton,QWidget,QGridLayout,QHBoxLayout
+from PySide2.QtCore import Qt,Signal,QSize,QPoint
+from PySide2.QtGui import QIcon,QPixmap,QPalette
 from btnRebost import QPushButtonRebostApp
 import libhelper
 import css
