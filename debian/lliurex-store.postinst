@@ -4,7 +4,7 @@ set -e
 case "$1" in
 	configure)
 		echo "Updating icon cache"
-		gtk-update-icon-cache -f -t /usr/share/icons/hicolor
+		gtk-update-icon-cache -f -t /usr/share/icons/hicolor || true
 	;;
 esac
 exit 0
