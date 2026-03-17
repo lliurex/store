@@ -151,6 +151,8 @@ class QLabelRebostApp(QLabel):
 			baseSize=ICON_SIZE
 		wsize=baseSize
 		pxm=args[0]
+		if pxm.width()>pxm.height() and pxm.width()==235:
+			wsize*=2
 		if pxm.isNull()==True:
 			icn=QtGui.QIcon()
 			icn.setThemeName("hicolor")
