@@ -301,7 +301,7 @@ class main(QWidget):
 		lay.setSpacing(int(MARGIN)*2)
 		self.lblIcon=QLabelRebostApp()
 		self.lblIcon.setObjectName("lblIcon")
-		self.lblIcon.setMaximumWidth(ICON_SIZE+int(MARGIN)*2)
+		self.lblIcon.setMaximumWidth(ICON_SIZE*2+int(MARGIN)*2)
 		lay.addWidget(self.lblIcon,0,1,3,1)
 		self.lblName=QLabel()
 		self.lblName.setObjectName("lblName")
