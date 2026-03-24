@@ -24,9 +24,8 @@ As simply as search and install/remove applications. There're some caveats:
 
 ## Integration with appsedu
 
-From [Appsedu portal](https://portal.edu.gva.es/appsedu/aplicacions-lliurex/) an application could be installed directly pushing on its "Install in LliureX" button.
+From [Appsedu portal](https://portal.edu.gva.es/appsedu/aplicacions-lliurex/) an application could be installed directly pressing the "Install in LliureX" button showed in approved applications.
 
 ## Integration with appstream
 
 As with Appsedu, Botiga manages the appstream:// url-scheme provided by different portals like https://flathub.org or https://snapcraft.io 
-
