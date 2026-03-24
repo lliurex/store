@@ -8,7 +8,7 @@ Its main purpose is to give an easy way for managing software.
 LliureX has some peculiarities that made existing App Stores not well suited for it:
 - Zomandos (LliureX own installers) must be supported
 - Included apps must be validated before they could be installed at classrooms
-- Target users could not be tech savy nor gnu/linux users so concepts like "snap", "package", "flatpak", etc... must be avoided
+- Target users could be not tech savy nor gnu/linux users so concepts like "snap", "package", "flatpak", etc... must be avoided
 - Installation and management must be as easy as possible for privileged users (teachers and staff) but impossible for students and restricted users
 - There must be a mechanism to avoid all the restrictions as LliureX could be used at home
   
