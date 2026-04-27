@@ -3,6 +3,8 @@ import os,subprocess,time
 import libhelper
 from PySide6.QtCore import Signal,QThread
 import json,time,subprocess,random
+import urllib
+from urllib.request import Request
 try:
        from lliurex import lliurexup
 except:
@@ -398,6 +400,7 @@ class thShowApp(QThread):
 				if d.name=="llx{}".format(majorRelease.split(".")[0]):
 					self.mapFile="/usr/share/rebost-data/lists.d/{}/eduapps.map".format(d.name)
 					break
+		self.mapUrl="https://github.com/lliurex/rebost-data/raw/refs/heads/master/lists.d/{}/eduapps.map".format(d.name)
 		self.helper=libhelper.helper()
 	#def __init__
 
@@ -408,6 +411,40 @@ class thShowApp(QThread):
 		else:
 			self.app=args[0]
 	#def setArgs(self:
+
+	def _readLocalMap(self):
+		vname=""
+		if os.path.exists(self.mapFile):
+			fcontent={}
+			with open(self.mapFile,"r") as f:
+				fcontent=f.read()
+			try:
+				jcontent=json.loads(fcontent)
+			except:
+				jcontent={}
+			vname=jcontent.get("aliases",{}).get(self.app["id"],"")
+		return(vname)
+	#def _readLocalMap
+
+	def _readRemoteMap(self):
+		content=''
+		vname=""
+		req=Request(self.mapUrl, headers={'User-Agent':'Mozilla/5.0'})
+		try:
+			with urllib.request.urlopen(req,timeout=2) as f:
+				content=(f.read().decode('utf-8'))
+		except Exception as e:
+			print("Couldn't fetch {}".format(self.mapUrl))
+			print(e)
+		if len(content)>0:
+			try:
+				jcontent=json.loads(content)
+			except Exception as e:
+				print(e)
+				jcontent={}
+			vname=jcontent["aliases"].get(self.app["id"],"")
+		return(vname)
+	#def _readRemoteMap
 
 	def run(self):
 		if len(self.app.keys())>0:
@@ -423,15 +460,16 @@ class thShowApp(QThread):
 				if len(app)<=2:
 					apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
 					if len(apps)==0:
-						if os.path.exists(self.mapFile):
-							fcontent={}
-							with open(self.mapFile,"r") as f:
-								fcontent=f.read()
-							jcontent=json.loads(fcontent)
-							vname=jcontent["aliases"].get(self.app["id"],"")
+							vname=self._readLocalMap()
 							if len(vname)>0:
 								self.app["id"]=vname
 							apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
+							if len(apps)==0:
+							#Last chance, load map from inet
+								vname=self._readRemoteMap()
+								if len(vname)>0:
+									self.app["id"]=vname
+								apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
 				if len(apps)>0:
 					app=apps[0]
 			if isinstance(app,str):
