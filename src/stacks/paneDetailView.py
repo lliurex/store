@@ -701,6 +701,7 @@ class main(QWidget):
 		#self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
 		self.app["summary"]=i18n.get("APPUNKNOWN").split(".")[1]
 		self.app["pkgname"]="rebost"
+		self.app["name"]=self.app["id"]
 		self.app["description"]="{0}\n{1}".format(i18n.get("APPUNKNOWN"),i18n.get("APPUNKNOWN_SAI"))
 		self.app["bundle"]={}
 		#self.lblHomepage.setVisible(False)
