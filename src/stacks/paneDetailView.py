@@ -586,7 +586,8 @@ class main(QWidget):
 
 			if self.app.get("ERR",False)!=False:
 				description=i18n.get("APPUNKNOWN_SAI")
-				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("APPUNKNOWN").split(".")[0],i18n.get("INFO"),i18n["APPUNKNOWN_SAI"],description,forbReason)
+				description="<h2>{0}</h2>{1}<hr>{3}".format(i18n.get("APPUNKNOWN").split(".")[0],i18n.get("APPUNKNOWN"),i18n["APPUNKNOWN_SAI"],description,forbReason)
+				self.lblTags.setText("")
 			else:
 				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),i18n["APPUNKNOWN_SAI"],description,forbReason)
 			self.lblDesc.label.setOpenExternalLinks(True)
@@ -596,7 +597,8 @@ class main(QWidget):
 		if applicense:
 			text="<strong>{}</strong>".format(applicense)
 		self._loadScreenshots()	
-		self.lblTags.setText(self._generateAppTags())
+		if self.app.get("ERR",False)==False:
+			self.lblTags.setText(self._generateAppTags())
 		if len(self.lblTags.text())==0:
 			self.lblTags.hide()
 		else:
@@ -699,10 +701,10 @@ class main(QWidget):
 		self.lblBkg.setGraphicsEffect(self.blur)
 		self.lblBkg.setStyleSheet("QLabel{background-color:rgba(%s,%s,%s,0.7);}"%(color.red(),color.green(),color.blue()))
 		#self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
-		self.app["summary"]=i18n.get("APPUNKNOWN").split(".")[1]
+		self.app["summary"]=i18n.get("APPUNKNOWN").split(".")[0]
 		self.app["pkgname"]="rebost"
 		self.app["name"]=self.app["id"]
-		self.app["description"]="{0}\n{1}".format(i18n.get("APPUNKNOWN"),i18n.get("APPUNKNOWN_SAI"))
+		self.app["description"]="{0}".format(i18n.get("APPUNKNOWN_SAI"))
 		self.app["bundle"]={}
 		#self.lblHomepage.setVisible(False)
 		self.loaded.emit(self.app)
