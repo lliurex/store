@@ -1,3 +1,9 @@
+lliurex-store (1.6.4) jammy; urgency=medium
+
+  * Sync with noble
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 27 Apr 2026 13:06:33 +0200
+
 lliurex-store (1.6.2.1+0lliurex23) jammy; urgency=medium
 
   * Support for hidden apps
