@@ -1,3 +1,10 @@
+lliurex-store (1.6.4) noble; urgency=medium
+
+  * If alias not found load file from remote
+  * Fix error tab for unknowed apps not loading properly
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 27 Apr 2026 11:51:22 +0200
+
 lliurex-store (1.6.3) noble; urgency=medium
 
   * Support for hidden apps
