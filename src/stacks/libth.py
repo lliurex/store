@@ -455,7 +455,6 @@ class thShowApp(QThread):
 				print("Error finding {}".format(self.app.get("id","")))
 				print(e)
 				app=self.app.copy()
-				app["ERR"]=True
 			finally:
 				if len(app)<=2:
 					apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
@@ -472,6 +471,8 @@ class thShowApp(QThread):
 								apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
 				if len(apps)>0:
 					app=apps[0]
+				else:
+					app["ERR"]=True
 			if isinstance(app,str):
 				app=json.loads(app)
 			homepage=app.get('homepage','')
