@@ -1,3 +1,9 @@
+lliurex-store (1.6.4.1) jammy; urgency=medium
+
+  * Show busy animation if loading an app from args
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 28 Apr 2026 10:57:40 +0200
+
 lliurex-store (1.6.4) jammy; urgency=medium
 
   * Sync with noble
