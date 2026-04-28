@@ -1,6 +1,6 @@
-lliurex-store (1.6.4.1) noble; urgency=medium
+lliurex-store (1.6.4.2) noble; urgency=medium
 
-  * Show busy animation when loading app from args
+  * Show busy animation fullwindow when loading app from args
 
  -- Juanma1980 <juanma1980@gmail.com>  Tue, 28 Apr 2026 11:17:47 +0200
 
