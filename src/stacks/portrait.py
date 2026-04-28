@@ -1023,6 +1023,10 @@ class portrait(QStackedWindowItem):
 		self._debug("** Detected parm on init **")
 		if "://" in appsedu:
 			self.lstCategories.setEnabled(False)
+			self.progress.lblInfo.show()
+			self.progress.setAttribute(Qt.WA_StyledBackground, True)
+			self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
+			self._referrerPane=self._homeView
 			self.loadStart.emit()
 			self._stopThreads(ignoreProgress=True)
 			pkgname=appsedu.split("://")[-1]
@@ -1043,6 +1047,10 @@ class portrait(QStackedWindowItem):
 	#def _searchReferrerByName
 	
 	def _returnFromDetail(self,*args,**kwargs):
+		if self.progress.testAttribute(Qt.WA_StyledBackground)==True:
+			self.progress.setAttribute(Qt.WA_StyledBackground, False)
+			self.progress.lblInfo.hide()
+			self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		if isinstance(self.referrerBtn,QPushButtonRebostApp):
 			if self.referrerBtn.app["name"]!=args[1]["name"]:
 				#Referrer doesn't match with last seen app. Search in table
