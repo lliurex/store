@@ -1,4 +1,4 @@
-lliurex-store (1.6.4.1) jammy; urgency=medium
+lliurex-store (1.6.4.2) jammy; urgency=medium
 
   * Show busy animation if loading an app from args
 
