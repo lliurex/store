@@ -35,6 +35,8 @@ class storeHelper(QThread):
 	lstEnded=Signal("PyObject")
 	lsgEnded=Signal("PyObject")
 	shwEnded=Signal("PyObject")
+	rfrEnded=Signal("PyObject")
+	mtcEnded=Signal(list)
 	srcEnded=Signal("PyObject")
 	urlEnded=Signal("PyObject")
 	rstEnded=Signal()
@@ -96,6 +98,8 @@ class storeHelper(QThread):
 			self._setAppState()
 		elif self.action=="refreshApp":
 			self._refreshApp()
+		elif self.action=="matchApps":
+			self._matchApps()
 	#def run
 
 	def _test(self):
@@ -167,6 +171,16 @@ class storeHelper(QThread):
 		app={}
 		if self.args[0]!="":
 			app=self.rc.refreshApp(self.args[0])
+		self.rfrEnded.emit(app)
+		return(app)
+	#def _refreshApp
+
+	def _matchApps(self,*args):
+		apps=[]
+		if len(self.args[0])>0:
+			for app in self.args[0]:
+				apps.append(self.rc.showApp(app))
+		self.mtcEnded.emit(apps)
 		return(app)
 	#def _refreshApp
 
