@@ -45,6 +45,8 @@ class QPushButtonRebostApp(QPushButton):
 		self.label=self._defLabel()
 		self.iconUri=QLabelRebostApp()
 		self.iconUri.setIconSize(self.appIconSize)
+		self.iconUri.setClickable(True)
+		self.iconUri.clicked.connect(self.activate)
 		self.iconUri.setObjectName("iconUri")
 		self.focusFrame=self._defFrame()
 		#Btn Layout
