@@ -3,6 +3,7 @@ import sys,signal
 import os,json,time
 import subprocess
 from functools import partial
+from random import shuffle
 from PySide2.QtWidgets import QLabel, QWidget,QHBoxLayout,QVBoxLayout,QSizePolicy,QPushButton,QGridLayout,QApplication
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal
@@ -263,9 +264,15 @@ class main(QWidget):
 	
 	def _setChoiceData(self,choiceApps):
 		lay=self.choiceApps.layout()
+		luckApps=self._rebost.getLuck()
+		choiceApps.extend(luckApps[0:2])
+		print(luckApps[0:2])
+		shuffle(choiceApps)
 		if len(choiceApps)>0:
 			for choiceApp in choiceApps[0:min(len(choiceApps)-1,9)]:
-				app=json.loads(choiceApp)
+				app=[choiceApp]
+				if isinstance(choiceApp,str):
+					app=json.loads(choiceApp)
 				if len(app)>0:
 					btn=QPushButtonRebostApp(app[0],iconSize=ICON_SIZE)
 					btn._showBtn=False
