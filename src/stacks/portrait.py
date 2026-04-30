@@ -967,6 +967,10 @@ class portrait(QStackedWindowItem):
 		self.loadStop.emit()
 		#self._progressHide()
 		self._showPane(self._detailView)
+		if self.progress.testAttribute(Qt.WA_StyledBackground)==True:
+			self.progress.setAttribute(Qt.WA_StyledBackground, False)
+			self.progress.lblInfo.hide()
+			self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 	#def _endLoadDetail
 
 	def _loadDetails(self,*args,**kwargs):
@@ -1047,10 +1051,6 @@ class portrait(QStackedWindowItem):
 	#def _searchReferrerByName
 	
 	def _returnFromDetail(self,*args,**kwargs):
-		if self.progress.testAttribute(Qt.WA_StyledBackground)==True:
-			self.progress.setAttribute(Qt.WA_StyledBackground, False)
-			self.progress.lblInfo.hide()
-			self.box.addWidget(self.progress,0,1,self.box.rowCount(),self.box.columnCount()-1)
 		if isinstance(self.referrerBtn,QPushButtonRebostApp):
 			if self.referrerBtn.app["name"]!=args[1]["name"]:
 				#Referrer doesn't match with last seen app. Search in table
