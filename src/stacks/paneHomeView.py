@@ -17,7 +17,8 @@ _ = gettext.gettext
 
 i18n={"LBL_BLOG":_("Blog entries"),
 	"LBL_APPSEDU":_("Latest apps in appsedu"),
-	"LBL_CATEGORIES":_("Relevant categories")}
+	"LBL_CATEGORIES":_("Relevant categories"),
+	"LBL_CHOICE":_("Editor's choice")}
 
 class main(QWidget):
 	clickedCategory=Signal("PyObject")
@@ -38,6 +39,7 @@ class main(QWidget):
 		self._rebost=args[0]
 		self._rebost.urlEnded.connect(self._setAppseduData)
 		self._rebost.gacEnded.connect(self._setAppsByCat)
+		self._rebost.mtcEnded.connect(self._setChoiceData)
 		self.appsEduApps=[]
 		self.btns={}
 		layout=QGridLayout()
@@ -67,6 +69,8 @@ class main(QWidget):
 
 	def showEvent(self,*args,**kwargs):
 		#Ensure that there's info after all
+		if len(self.choiceApps.children())<=1:
+			self._getChoiceApps()
 		if len(self.appsByCat.children())<=1:
 			self._getAppsByCat()
 		if len(self.blog.children()[-1].app)==0:
@@ -89,8 +93,19 @@ class main(QWidget):
 				self._rebost.setAction("urlSearch",urls)
 				self._rebost.start()
 				#self._rebost.wait()
-			else:
+			elif apps[0]["type"]=="blog":
 				self._setBlogData(apps)
+			elif apps[0]["type"]=="lliurexnet":
+				choiceApps=[]
+				for app in apps.values():
+					if self._stop==True:
+						break
+					#Aliases
+					if app["title"]=="scratch":
+						app["title"]="zero-lliurex-scratch3"
+					choiceApps.append(app["title"])
+				self._rebost.setAction("matchApps",choiceApps)
+				self._rebost.start()
 	#def _processRss(self,*args,**kwargs):
 
 	def _setBlogData(self,*args):
@@ -155,6 +170,7 @@ class main(QWidget):
 			btn.autoUpdate=True
 			pxm.load(os.path.join(RSRC,"blog128x128.png"))
 			btn.loadFullScreen(pxm)
+			btn.setMinimumHeight(IMAGE_PREVIEW*0.8)
 			layout.addWidget(btn,Qt.AlignCenter)
 		return(wdg)
 	#def _defBlog
@@ -244,6 +260,40 @@ class main(QWidget):
 			layout.addWidget(btn,Qt.AlignCenter)
 		return(wdg)
 	#def _defAppsedu
+	
+	def _setChoiceData(self,choiceApps):
+		lay=self.choiceApps.layout()
+		if len(choiceApps)>0:
+			for choiceApp in choiceApps:
+				app=json.loads(choiceApp)
+				if len(app)>0:
+					btn=QPushButtonRebostApp(app[0],iconSize=ICON_SIZE)
+					btn._showBtn=False
+					btn.clicked.connect(self._loadApp)
+					btn.setMinimumHeight(128)
+					btn.lblFlyIcon.hide()
+					#btn.clicked.connect(self._loadCategory)
+					btn.updateScreen()
+					lay.addWidget(btn,Qt.AlignTop)
+		lay.addSpacing(int(MARGIN)*8)
+	#def _setChoiceData
+
+	def _getChoiceApps(self):
+		rssparser=rss.rssParser()
+		rssparser.feed="lliurexnet"
+		rssparser.choiceEnded.connect(self._processRss)
+		rssparser.start()
+		self.th.append(rssparser)
+	#def _getEditorsChoice
+
+	def _defChoice(self):
+		wdg=QWidget()
+		lay=QHBoxLayout()
+		wdg.setLayout(lay)
+		lay.setSpacing(int(MARGIN)*8)
+		lay.addSpacing(int(MARGIN)*8)
+		return(wdg)
+	#def _defChoice
 
 	def _loadCategory(self,*args):
 		app=args[1]
@@ -308,6 +358,7 @@ class main(QWidget):
 	#def _defAppsByCategory:
 
 	def __initScreen__(self):
+		#Blog
 		lblBlog=QLabel("{}<hr>".format(i18n["LBL_BLOG"]))
 		lblBlog.setObjectName("lbl")
 		self.layout().addWidget(lblBlog,0,0)
@@ -321,23 +372,30 @@ class main(QWidget):
 		self.layout().addWidget(btnBlog,0,0,Qt.AlignRight)
 		self.blog=self._defBlog()
 		self.layout().addWidget(self.blog,1,0)
+		#Editor's choice
+		lblChoi=QLabel("{}<hr>".format(i18n["LBL_CHOICE"]))
+		self.layout().addWidget(lblChoi,2,0,Qt.AlignTop)
+		lblChoi.setObjectName("lbl")
+		self.choiceApps=self._defChoice()
+		self.layout().addWidget(self.choiceApps,3,0)
+		#Appsedu
 		lblAppsedu=QLabel("{}<hr>".format(i18n["LBL_APPSEDU"]))
 		lblAppsedu.setObjectName("lbl")
-		self.layout().addWidget(lblAppsedu,2,0)
+		self.layout().addWidget(lblAppsedu,4,0)
 		btnApps=QPushButton()
 		btnApps.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		btnApps.setToolTip("Appsedu")
 		btnApps.setIcon(icn)
 		dataApps={"homepage":"https://portal.edu.gva.es/appsedu/aplicacions-lliurex/"}
 		btnApps.clicked.connect(lambda x: self._openBlog("",dataApps))
-		self.layout().addWidget(btnApps,2,0,Qt.AlignRight)
+		self.layout().addWidget(btnApps,4,0,Qt.AlignRight)
 		self.appsEdu=self._defAppsedu()
-		self.layout().addWidget(self.appsEdu,3,0)
-		lblCats=QLabel("{}<hr>".format(i18n["LBL_CATEGORIES"]))
+		self.layout().addWidget(self.appsEdu,5,0)
+		lblCats=QLabel("<br>{}<hr>".format(i18n["LBL_CATEGORIES"]))
 		lblCats.setObjectName("lbl")
-		self.layout().addWidget(lblCats,4,0)
+		#self.layout().addWidget(lblCats,6,0)
 		self.appsByCat=self._defAppsByCat()
-		self.layout().addWidget(self.appsByCat,5,0)
+		#self.layout().addWidget(self.appsByCat,7,0)
 	#def __initScreen__
 
 	def updateScreen(self):
