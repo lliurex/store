@@ -266,7 +266,6 @@ class main(QWidget):
 		lay=self.choiceApps.layout()
 		luckApps=self._rebost.getLuck()
 		choiceApps.extend(luckApps[0:2])
-		print(luckApps[0:2])
 		shuffle(choiceApps)
 		if len(choiceApps)>0:
 			for choiceApp in choiceApps[0:min(len(choiceApps)-1,9)]:
@@ -282,6 +281,9 @@ class main(QWidget):
 					#btn.clicked.connect(self._loadCategory)
 					btn.updateScreen()
 					lay.addWidget(btn,Qt.AlignTop)
+					#force button repaint
+					btn.hide()
+					btn.show()
 		lay.addSpacing(int(MARGIN)*8)
 	#def _setChoiceData
 
