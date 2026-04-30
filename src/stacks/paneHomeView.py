@@ -264,7 +264,7 @@ class main(QWidget):
 	def _setChoiceData(self,choiceApps):
 		lay=self.choiceApps.layout()
 		if len(choiceApps)>0:
-			for choiceApp in choiceApps:
+			for choiceApp in choiceApps[0:min(len(choiceApps)-1,9)]:
 				app=json.loads(choiceApp)
 				if len(app)>0:
 					btn=QPushButtonRebostApp(app[0],iconSize=ICON_SIZE)
