@@ -307,8 +307,7 @@ class QPushButtonRebostApp(QPushButton):
 			elif self.lockTooltip==False:
 				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
 				self.setToolTip(text)
-		if self._compactMode==False:
-			self._setActionForButton()
+		self._setActionForButton()
 		self.iconUri.setVisible(True)
 		self.flyIcon=""
 		if self.app.get("unavailable",False)==True:
