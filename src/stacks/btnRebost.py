@@ -45,6 +45,8 @@ class QPushButtonRebostApp(QPushButton):
 		self.label=self._defLabel()
 		self.iconUri=QLabelRebostApp()
 		self.iconUri.setIconSize(self.appIconSize)
+		self.iconUri.setClickable(True)
+		self.iconUri.clicked.connect(self.activate)
 		self.iconUri.setObjectName("iconUri")
 		self.focusFrame=self._defFrame()
 		#Btn Layout
@@ -307,8 +309,7 @@ class QPushButtonRebostApp(QPushButton):
 			elif self.lockTooltip==False:
 				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
 				self.setToolTip(text)
-		if self._compactMode==False:
-			self._setActionForButton()
+		self._setActionForButton()
 		self.iconUri.setVisible(True)
 		self.flyIcon=""
 		if self.app.get("unavailable",False)==True:
