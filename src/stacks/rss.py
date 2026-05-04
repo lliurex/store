@@ -8,11 +8,13 @@ from urllib.request import Request
 class rssParser(QThread):
 	appsEnded=Signal("PyObject","PyObject")
 	blogEnded=Signal("PyObject","PyObject")
+	choiceEnded=Signal("PyObject","PyObject")
 	def __init__(self,*args,**kwargs):
 		QThread.__init__(self, None)
 		self.dbg=True
 		self.rss={"blog":"https://portal.edu.gva.es/blogs/s1/lliurex/feed/",
 				"appsedu":"https://portal.edu.gva.es/appsedu/feed/"}
+		self.webpage={"lliurexnet":"https://portal.edu.gva.es/lliurex/va/"}
 		self.feed="blog"
 		self._stop=False
 	#def __init__
@@ -98,12 +100,25 @@ class rssParser(QThread):
 							parsedFeeds.update({idx:{"type":feed,"title":app,"link":link}})
 					if self._stop==True:
 						break
-		if len(parsedFeeds)>0:
-			parsedFeeds=self._getImgsForFeeds(parsedFeeds)
+			if len(parsedFeeds)>0:
+				parsedFeeds=self._getImgsForFeeds(parsedFeeds)
+		elif self.feed in self.webpage.keys():
+			rawcontent=self._fetchArticle(self.webpage[feed])
+			bsContent=bs(rawcontent,"html.parser")
+			carousel=bsContent.find_all("li",class_="glide__slide")
+			idx=0
+			for item in carousel:
+				links=item.find("a",href=True)
+				img=item.find("img")
+				title=links["href"].removesuffix("/").split("/")[-1]
+				parsedFeeds.update({idx:{"type":feed,"title":title,"link":links["href"],"img":img["src"]}})
+				idx+=1
 		if feed=="blog":
 			self.blogEnded.emit(self.rss[feed],parsedFeeds)
-		else:
+		elif feed=="appsedu":
 			self.appsEnded.emit(self.rss[feed],parsedFeeds)
+		elif feed=="lliurexnet":
+			self.choiceEnded.emit(feed,parsedFeeds)
 		self._stop=False
 	#def run
 
