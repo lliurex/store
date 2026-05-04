@@ -1,3 +1,13 @@
+lliurex-store (1.6.5) noble; urgency=medium
+
+  * Portrait: Replace section "Relevant Categories" with Editor's Choice
+  * Fix click in app icon not working
+  * Rebost bridge (libth):
+  *  Add getLuck method 
+  *  Add matchApps method 
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 04 May 2026 07:54:54 +0200
+
 lliurex-store (1.6.4.2) noble; urgency=medium
 
   * Show busy animation fullwindow when loading app from args
