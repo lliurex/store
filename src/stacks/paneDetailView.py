@@ -370,7 +370,7 @@ class main(QWidget):
 
 	def _populateSuggestsList(self):
 		self.suggests.clean()
-		self._rebost.setAction("getAppSuggests",self.app,6) #Load 6 apps
+		self._rebost.setAction("getAppSuggests",self.app,4) #Load 4 apps
 		self._rebost.start()
 	#def _defSuggestsLoad
 
