@@ -59,7 +59,7 @@ i18n={
 	"SORTDSC":_("Sort alphabetically"),
 	"TOOLTIP":_("Portrait"),
 	"UPGRADABLE":_("Upgradables"),
-	"UPGRADES":_("There're upgrades available"),
+	"UPGRADES":_("Updates available"),
 	"CHK_NETWORK":_("Store was unable to get information from internet"),
 	"OPN_NETWORK":_("Open network settings")
 	}
@@ -667,7 +667,7 @@ class portrait(QStackedWindowItem):
 		self.prgCat.hide()
 		self.lstCategories.show()
 		self.lstCategories.clear()
-		self.lstCategories.setSizeAdjustPolicy(self.lstCategories.SizeAdjustPolicy.AdjustToContents)
+		self.lstCategories.setSizeAdjustPolicy(self.lstCategories.SizeAdjustPolicy.AdjustToContentsOnFirstShow)
 		self.i18nCat={}
 		self.catI18n={}
 		self.categoriesTree=cats
