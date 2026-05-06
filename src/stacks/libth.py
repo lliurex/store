@@ -131,7 +131,7 @@ class storeHelper(QThread):
 	def _getAppSuggests(self,*args):
 		apps=[]
 		if self.args[0]!="":
-			limit=10
+			limit=5
 			if len(self.args)>1:
 				limit=self.args[1]
 			seen=[self.args[0].get("name")]
@@ -161,6 +161,8 @@ class storeHelper(QThread):
 					search=self.rc.searchApp(extra)
 					jsearch=json.loads(search)
 					for app in jsearch:
+						if app.get("hidden",False) == True:
+							continue
 						if app.get("name") not in seen:
 							seen.append(app.get("name"))
 							apps.append(app)
