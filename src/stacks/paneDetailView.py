@@ -15,7 +15,6 @@ from btnInstallers import QPushButtonInstaller
 from lblApp import QLabelRebostApp
 from lblLnk import QLabelLink
 from btnRebost import QPushButtonRebostApp
-from libth import thShowApp
 from constants import *
 import gettext
 _ = gettext.gettext
@@ -74,9 +73,8 @@ class main(QWidget):
 	#def __init__
 
 	def _connectThreads(self):
-		self.thParmShow=thShowApp(rc=self.rc)
-		self.thParmShow.showEnded.connect(self._endSetParms)
 		self._rebost.lsgEnded.connect(self._endSuggestsLoad)
+		self._rebost.rfrEnded.connect(self._endSetParms)
 	#def _connectThreads
 
 	def _debug(self,msg):
@@ -87,9 +85,6 @@ class main(QWidget):
 	@staticmethod
 	def _onDestroy(*args):
 		selfDict=args[0]
-		selfDict["thParmShow"].blockSignals(True)
-		selfDict["thParmShow"].quit()
-		selfDict["thParmShow"].wait()
 	#def _onDestroy
 
 	def hide(self,*args):
@@ -102,9 +97,9 @@ class main(QWidget):
 		self.app={}
 		if isinstance(args,str):
 			name=""
-			args=args.split("://")[-1]
-			if args.startswith("install?"):
-				ocs=args.split("&")[-1]
+			cmd=args.split("://")[-1]
+			if cmd.startswith("install?"):
+				ocs=cmd.split("&")[-1]
 				idx=1
 				for i in ocs.split("=")[-1]:
 					if i.isalnum():
@@ -113,29 +108,25 @@ class main(QWidget):
 						break
 				name=ocs.split("=")[-1][:idx-1]
 			else:
-				name=args.replace(".desktop","").replace(".flatpakref","")
-				name=name.split(".")[-1]
+				name=cmd.replace(".desktop","").replace(".flatpakref","")
+				if name.count(".")>1:
+					if len(name.split(".")[0])==3:
+						name=name.split(".")[-1]
 		return(name)
 	#def _processStreams
 
 	def setParms(self,*args,**kwargs):
-		#self.hideMsg()
-		self.thParmShow.blockSignals(True)
-		self.thParmShow.quit()
-		self.thParmShow.wait()
 		pxm=""
 		self.referrerBtn=kwargs.get("btn",None)
 		if len(args)>0:
-			self.thParmShow.blockSignals(False)
-			name=args[-1]
-			self._resetScreen(name,"")
 			if isinstance(args[0],dict):
-				self.thParmShow.setArgs(args[0])
-				self.thParmShow.start()
-			elif isinstance(name,str):
+				name=args[0]["id"]
+			else:
+				name=args[-1]
 				name=self._processStreams(name)
-				self.thParmShow.setArgs({'id':name})
-				self.thParmShow.start()
+			self._resetScreen(name,"")
+			self._rebost.setAction("refreshApp",name)
+			self._rebost.start()
 	#def setParms
 
 	def _endSetParms(self,*args):
@@ -145,16 +136,27 @@ class main(QWidget):
 				self.app=app
 			else:
 				try:
-					self.app=json.loads(app)
+					app=json.loads(app)
 				except Exception as e:
 					pass
+				if isinstance(app,list):
+					if len(app)>0:
+						app=app[0]
+						if isinstance(app,str):
+							try:
+								app=json.loads(app)
+							except Exception as e:
+								pass
+						self.app=app
+					else:
+						self.app["ERR"]=True
 		swErr=False
 		if len(self.app)>0:
 			for bundle,name in (self.app.get('bundle',{}).items()):
 				if bundle=='package':
 					continue
 		self.setCursor(self.oldCursor)
-		if "ERR" in app.keys():
+		if "ERR" in self.app.keys():
 			self._onError()
 		self.updateScreen()
 	#def _endSetParms
@@ -703,7 +705,6 @@ class main(QWidget):
 		#self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
 		self.app["summary"]=i18n.get("APPUNKNOWN").split(".")[0]
 		self.app["pkgname"]="rebost"
-		self.app["name"]=self.app["id"]
 		self.app["description"]="{0}".format(i18n.get("APPUNKNOWN_SAI"))
 		self.app["bundle"]={}
 		#self.lblHomepage.setVisible(False)
