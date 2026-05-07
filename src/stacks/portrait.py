@@ -1026,12 +1026,12 @@ class portrait(QStackedWindowItem):
 		appsedu=args[0]
 		self._debug("** Detected parm on init **")
 		if "://" in appsedu:
+			self._beginLoad()
 			self.lstCategories.setEnabled(False)
 			self.progress.lblInfo.show()
 			self.progress.setAttribute(Qt.WA_StyledBackground, True)
 			self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
 			self._referrerPane=self._homeView
-			self.loadStart.emit()
 			self._stopThreads(ignoreProgress=True)
 			pkgname=appsedu.split("://")[-1]
 			self._referrerPane=self._detailView
