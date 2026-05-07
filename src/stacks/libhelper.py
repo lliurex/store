@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 import os
 import subprocess
-from urllib.request import Request
-from urllib.request import urlretrieve
-from urllib import request
+from urllib.request import Request,urlopen
 from bs4 import BeautifulSoup as bs
 from constants import *
 
@@ -212,7 +210,7 @@ class helper():
 		else:
 			req=Request(url, headers={'User-Agent':'Mozilla/5.0'})
 			try:
-				with request.urlopen(req,timeout=2) as f:
+				with urlopen(req,timeout=2) as f:
 					content=f.read().decode('utf-8')
 				if os.path.exists(os.path.join(CACHE))==False:
 					os.makedirs(os.path.join(CACHE))
