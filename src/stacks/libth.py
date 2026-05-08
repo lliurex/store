@@ -178,7 +178,7 @@ class storeHelper(QThread):
 				if len(app)>0:
 					if app[0].get("hidden",False) == True:
 						continue
-					if app.get("forbidden",False) == True:
+					if app[0].get("forbidden",False) == True:
 						continue
 					apps.insert(0,app[0])
 			apps=apps[0:min(limit,len(apps))]
