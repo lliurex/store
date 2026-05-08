@@ -152,6 +152,17 @@ class main(QWidget):
 						self.app["ERR"]=True
 		swErr=False
 		if len(self.app)>0:
+			homepage=self.app.get('homepage','')
+			if isinstance(homepage,str)==False:
+				homepage=""
+			if homepage.startswith("https://portal.edu.gva.es/appsedu")==True and self.app["description"].count(" ")<3:
+				details=self.helper.getAppseduDetails(homepage)
+				if len(details.get("description",""))>len(self.app["description"]):
+					self.app["description"]=details["description"]
+				if len(details.get("icon",""))>0:
+					self.app["icon"]=details["icon"]
+				if self.app.get("webapp",False)==True:
+					self.app["bundle"].update({"webapp":details.get("url","")})
 			for bundle,name in (self.app.get('bundle',{}).items()):
 				if bundle=='package':
 					continue
