@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-30 13:09+0200\n"
-"PO-Revision-Date: 2026-04-30 13:11+0200\n"
+"POT-Creation-Date: 2026-05-08 13:50+0200\n"
+"PO-Revision-Date: 2026-05-08 13:50+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -57,7 +57,7 @@ msgstr "Què és açò?"
 
 #: ../src/stacks/btnInstallers.py:17 ../src/stacks/btnRebost.py:17
 #: ../src/stacks/cmbBtn.py:10 ../src/stacks/lblApp.py:14
-#: ../src/stacks/paneDetailView.py:34
+#: ../src/stacks/paneDetailView.py:33
 msgid "Install"
 msgstr "Instal·la"
 
@@ -66,17 +66,17 @@ msgid "Z-Install"
 msgstr "Instal·la"
 
 #: ../src/stacks/btnInstallers.py:19 ../src/stacks/btnRebost.py:19
-#: ../src/stacks/paneDetailView.py:39 ../src/stacks/portrait.py:57
+#: ../src/stacks/paneDetailView.py:38 ../src/stacks/portrait.py:57
 msgid "Remove"
 msgstr "Elimina"
 
 #: ../src/stacks/btnInstallers.py:20 ../src/stacks/btnRebost.py:20
-#: ../src/stacks/paneDetailView.py:43
+#: ../src/stacks/paneDetailView.py:42
 msgid "Blocked"
 msgstr "Bloquejada"
 
 #: ../src/stacks/btnInstallers.py:21 ../src/stacks/btnRebost.py:21
-#: ../src/stacks/paneDetailView.py:44
+#: ../src/stacks/paneDetailView.py:43
 msgid "Unavailable"
 msgstr "Pendent"
 
@@ -84,7 +84,7 @@ msgstr "Pendent"
 msgid "Web app"
 msgstr "Web app"
 
-#: ../src/stacks/paneDetailView.py:25
+#: ../src/stacks/paneDetailView.py:24
 msgid ""
 "The app could not be loaded. Until included in LliureX catalogue it can't be "
 "installed"
@@ -92,7 +92,7 @@ msgstr ""
 "No es pot carregar la app. Fins que no estiga catalogada a  <a "
 "href=\"https://portal.edu.gva.es/appsedu/\">appsedu</a> no estarà disponible"
 
-#: ../src/stacks/paneDetailView.py:26
+#: ../src/stacks/paneDetailView.py:25
 msgid ""
 "For any question the SAI can be contacted at <a href='https://portal.edu.gva."
 "es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
@@ -101,59 +101,59 @@ msgstr ""
 "href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/"
 "sai/es/inicio/</a>"
 
-#: ../src/stacks/paneDetailView.py:27 ../src/stacks/portrait.py:41
+#: ../src/stacks/paneDetailView.py:26 ../src/stacks/portrait.py:41
 msgid "Could not open"
 msgstr "No s'ha pogut obrir"
 
-#: ../src/stacks/paneDetailView.py:28 ../src/stacks/portrait.py:42
+#: ../src/stacks/paneDetailView.py:27 ../src/stacks/portrait.py:42
 msgid "Error opening"
 msgstr "Error carregant"
 
-#: ../src/stacks/paneDetailView.py:29 ../src/stacks/portrait.py:43
+#: ../src/stacks/paneDetailView.py:28 ../src/stacks/portrait.py:43
 msgid "There's another action in progress"
 msgstr "S'està executant una altra acció"
 
-#: ../src/stacks/paneDetailView.py:30 ../src/stacks/portrait.py:45
+#: ../src/stacks/paneDetailView.py:29 ../src/stacks/portrait.py:45
 msgid "System apps can't be removed"
 msgstr "Aplicació de base. No es desinstal·larà"
 
-#: ../src/stacks/paneDetailView.py:31 ../src/stacks/portrait.py:46
+#: ../src/stacks/paneDetailView.py:30 ../src/stacks/portrait.py:46
 msgid "Unknown error"
 msgstr "Error desconegut"
 
-#: ../src/stacks/paneDetailView.py:32
+#: ../src/stacks/paneDetailView.py:31
 msgid "App unauthorized"
 msgstr "App no autoritzada"
 
-#: ../src/stacks/paneDetailView.py:33
+#: ../src/stacks/paneDetailView.py:32
 msgid "For more info go to"
 msgstr "Per a més informació anar a"
 
-#: ../src/stacks/paneDetailView.py:35
+#: ../src/stacks/paneDetailView.py:34
 msgid "More apps"
 msgstr "Més apps"
 
-#: ../src/stacks/paneDetailView.py:36 ../src/stacks/portrait.py:55
+#: ../src/stacks/paneDetailView.py:35 ../src/stacks/portrait.py:55
 msgid "Z·Install"
 msgstr "Instal·la"
 
-#: ../src/stacks/paneDetailView.py:37
+#: ../src/stacks/paneDetailView.py:36
 msgid "Opening"
 msgstr "Obrint"
 
-#: ../src/stacks/paneDetailView.py:38
+#: ../src/stacks/paneDetailView.py:37
 msgid "Release"
 msgstr "Versió"
 
-#: ../src/stacks/paneDetailView.py:40
+#: ../src/stacks/paneDetailView.py:39
 msgid "Open"
 msgstr "Obri"
 
-#: ../src/stacks/paneDetailView.py:41
+#: ../src/stacks/paneDetailView.py:40
 msgid "See at Appsedu"
 msgstr "Mostrar en Appsedu"
 
-#: ../src/stacks/paneDetailView.py:42
+#: ../src/stacks/paneDetailView.py:41
 msgid "Website"
 msgstr "Lloc web"
 
@@ -258,8 +258,8 @@ msgid "Upgradables"
 msgstr "Actualitzables"
 
 #: ../src/stacks/portrait.py:62
-msgid "There're upgrades available"
-msgstr "Hi han actualitzacions pendents"
+msgid "Updates available"
+msgstr "Actualitzacions disponibles"
 
 #: ../src/stacks/prgBar.py:15
 msgid "Downloading information, wait a moment..."
@@ -645,6 +645,9 @@ msgstr "Editors de text"
 
 msgid "Authentication is required to manage software"
 msgstr "Cal autenticar-se per a gestionar l'aplicació"
+
+#~ msgid "There're upgrades available"
+#~ msgstr "Hi han actualitzacions pendents"
 
 #~ msgid "ALL"
 #~ msgstr "Tot"
