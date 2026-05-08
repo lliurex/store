@@ -149,6 +149,10 @@ class storeHelper(QThread):
 				search=self.rc.searchApp(extra)
 				jsearch=json.loads(search)
 				for app in jsearch:
+					if app.get("forbidden",False) == True:
+						continue
+					if app.get("hidden",False) == True:
+						continue
 					if app.get("name") not in seen:
 						seen.append(app.get("name"))
 						apps.append(app)
@@ -161,6 +165,8 @@ class storeHelper(QThread):
 					search=self.rc.searchApp(extra)
 					jsearch=json.loads(search)
 					for app in jsearch:
+						if app.get("forbidden",False) == True:
+							continue
 						if app.get("hidden",False) == True:
 							continue
 						if app.get("name") not in seen:
@@ -170,6 +176,10 @@ class storeHelper(QThread):
 			for suggest in suggests:
 				app=json.loads(self.rc.showApp(suggest))
 				if len(app)>0:
+					if app[0].get("hidden",False) == True:
+						continue
+					if app.get("forbidden",False) == True:
+						continue
 					apps.insert(0,app[0])
 			apps=apps[0:min(limit,len(apps))]
 		self.lsgEnded.emit(apps)
