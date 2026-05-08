@@ -691,7 +691,8 @@ class portrait(QStackedWindowItem):
 		masterCategories.sort()
 		lowercats=[]
 		font=self.lstCategories.font()
-		font.setPointSize(font.pointSize()+2)
+		if font.pointSize()<14:
+			font.setPointSize(font.pointSize()+(14-font.pointSize()))
 		for cat in masterCategories:
 			if cat.lower() not in lowercats:
 				self.lstCategories.addItem(" · {}".format(cat))

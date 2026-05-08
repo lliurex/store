@@ -5,7 +5,7 @@ from functools import partial
 import json
 import html
 from rebost import store
-from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QScrollArea,QListWidget,QListWidgetItem
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QListWidget,QListWidgetItem
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread,Slot,QUrl
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
@@ -69,6 +69,9 @@ class main(QWidget):
 		self.oldApp={} #Returning point if browsing through related apps
 		self.instBundle=""
 		self._connectThreads()
+		font=self.font()
+		font.setPointSize(font.pointSize()+(12-font.pointSize()))
+		self.setFont(font)
 		self._renderGui()
 	#def __init__
 
@@ -304,6 +307,7 @@ class main(QWidget):
 		wdg=QScrollLabel()
 		wdg.setObjectName("lblDesc")
 		wdg.label.setOpenExternalLinks(True)
+		wdg.label.setFont(self.font())
 		return(wdg)
 	#def _lblDesc
 
@@ -318,14 +322,15 @@ class main(QWidget):
 		lay.addWidget(self.lblIcon,0,1,3,1)
 		self.lblName=QLabel()
 		self.lblName.setObjectName("lblName")
+		self.lblName.setFont(self.font())
 		self.lblSummary=QLabel()
-		self.lblName.setObjectName("lblSummary")
+		self.lblSummary.setObjectName("lblSummary")
 		self.lblSummary.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
 		self.lblSummary.setWordWrap(True)
+		self.lblSummary.setFont(self.font())
 		lay.addWidget(self.lblSummary,0,2,3,1)
 		launchers=QWidget()
 		hlay=QVBoxLayout()
-
 		self.boxBundles=self._defBoxBundles()
 		lay.addWidget(self.boxBundles,0,3,1,1,Qt.AlignTop|Qt.AlignRight)
 		self.lblRelease=QLabel(i18n.get("INSTALL"))
@@ -342,6 +347,7 @@ class main(QWidget):
 		self.cmbBundles.setVisible(False)
 		self.cmbBundles.setMinimumSize(ICON_SIZE*4,ICON_SIZE/2)
 		self.cmbBundles.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+		self.cmbBundles.setFont(self.font())
 		lay.addWidget(self.cmbBundles,1,3,1,1)
 		self.cmbBundles.hide()
 
@@ -621,6 +627,7 @@ class main(QWidget):
 		self._populateLinks()
 		self._populateBoxBundles()
 		self.cmbBundles.setApp(self.app)
+		self.setCursor(self.oldCursor)
 	#def _updateScreen
 
 	def _getLauncherForApp(self):
