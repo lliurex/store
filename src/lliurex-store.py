@@ -43,4 +43,4 @@ if len(sys.argv)>1:
 		sys.argv[1]=sys.argv[1].removesuffix("-lliurex")
 		wdg=mw.getCurrentStack()
 		wdg.setParms(sys.argv[1])
-app.exec_()
+app.exec()
