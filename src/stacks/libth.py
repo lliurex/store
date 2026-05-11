@@ -131,7 +131,7 @@ class storeHelper(QThread):
 	def _getAppSuggests(self,*args):
 		apps=[]
 		if self.args[0]!="":
-			limit=10
+			limit=5
 			if len(self.args)>1:
 				limit=self.args[1]
 			seen=[self.args[0].get("name")]
@@ -149,6 +149,10 @@ class storeHelper(QThread):
 				search=self.rc.searchApp(extra)
 				jsearch=json.loads(search)
 				for app in jsearch:
+					if app.get("forbidden",False) == True:
+						continue
+					if app.get("hidden",False) == True:
+						continue
 					if app.get("name") not in seen:
 						seen.append(app.get("name"))
 						apps.append(app)
@@ -161,6 +165,10 @@ class storeHelper(QThread):
 					search=self.rc.searchApp(extra)
 					jsearch=json.loads(search)
 					for app in jsearch:
+						if app.get("forbidden",False) == True:
+							continue
+						if app.get("hidden",False) == True:
+							continue
 						if app.get("name") not in seen:
 							seen.append(app.get("name"))
 							apps.append(app)
@@ -168,6 +176,10 @@ class storeHelper(QThread):
 			for suggest in suggests:
 				app=json.loads(self.rc.showApp(suggest))
 				if len(app)>0:
+					if app[0].get("hidden",False) == True:
+						continue
+					if app[0].get("forbidden",False) == True:
+						continue
 					apps.insert(0,app[0])
 			apps=apps[0:min(limit,len(apps))]
 		self.lsgEnded.emit(apps)
@@ -233,7 +245,7 @@ class storeHelper(QThread):
 				apps.append(self.rc.showApp(app))
 		self.mtcEnded.emit(apps)
 		return(app)
-	#def _refreshApp
+	#def _matchApps
 
 	def _refreshApp(self,*args):
 		app={}
@@ -303,228 +315,4 @@ class storeHelper(QThread):
 		if len(self.args)>0:
 			self.rc.updatePkgData(self.args[0].get("name"),self.args[0])
 	#def _updatePkgData
-
 #class rebostHelper
-
-#This class loads data from arguments and updates the db
-class updateAppData(QThread):
-	dataLoaded=Signal("PyObject")
-	def __init__(self,*args,**kwargs):
-		QThread.__init__(self, None)
-		self.apps=kwargs.get("apps",{})
-		self.rc=kwargs["rc"]
-		self.dbg=False
-		self.newApps={}
-		self.updates=[]
-		self._stop=False
-		self._pause=False
-		self.cont=0
-	#def __init__
-
-	def _debug(self,msg):
-		if self.dbg==True:
-			print("updateApp: {}".format(msg))
-
-	def setApps(self,*args):
-		self.newApps=args[0]
-	#def setApps
-
-	def addApps(self,*args):
-		self._pause=True
-		apps=list(args[0].items())
-		time.sleep(0.2)
-		random.shuffle(apps)
-		self.apps.update(dict(apps))
-		self._pause=False
-	#def addApp(self,*args)
-
-	def run(self):
-		app={}
-		self._stop=False
-		if len(self.newApps)>0:
-			self.apps=self.newApps.copy()
-			self.newApps={}
-		self._debug("Launching info thread for {} apps".format(len(self.apps)))
-		#apps = dict(reversed(list(self.apps.items())))
-		while self.apps:
-			if self._pause==True:
-				while self._pause==True:
-					time.sleep(0.2)
-			if len(self.newApps)>0:
-				#apps = dict(reversed(list(self.newApps.items())))
-				self.apps=self.newApps.copy()
-				self.newApps={}
-				#self._stop==False
-			if self._stop==True:
-				break
-			while self.cont>4:
-				if self._stop==True:
-					break
-				time.sleep(0.3)
-			key=list(self.apps.keys())[0]
-			data=(key,self.apps.pop(key))
-			name=data[0]
-			app=data[1].app #btnRebost app 
-			self.cont+=1
-			if isinstance(app,dict):
-				self._debug("Update for {}".format(app["name"]))
-				self.rc.updatePkgData(app["name"],app)
-			time.sleep(0.1)
-		#	self._emitDataLoaded(name)
-	#def run
-
-	def stop(self):
-		self._stop=True
-		self.apps={}
-		self.newApps={}
-		self.cont=0
-	#def stop
-
-	def _emitDataLoaded(self,*args):
-		app={}
-		if self._stop==False:
-			if len(args)>0 and isinstance(args[0],str):
-				try:
-					app=json.loads(self.rc.refreshApp(args[0]))
-				except:
-					try:
-						app=json.loads(self.rc.refreshApp(args[0]))
-					except:
-						app={}
-				finally:
-					self.dataLoaded.emit(app)
-		self.cont-=1
-	#def _emitDataLoaded
-#class updateAppData
-
-class getData(QThread):
-	dataLoaded=Signal("PyObject")
-	def __init__(self,*args,**kwargs):
-		QThread.__init__(self, None)
-		self._stop=False
-	#def __init__
-		self.destroyed.connect(getData._onDestroy)
-	#def __init__
-
-	@staticmethod
-	def _onDestroy(*args):
-		pass
-
-	def setApps(self,apps):
-		self.apps=apps
-		self._stop=False
-	#def setApps
-	
-	def run(self):
-		if self._stop==False:
-			self.dataLoaded.emit(self.apps)
-	#def run
-
-	def stop(self,st=True):
-		self._stop=st
-	#def stop
-#class getData
-
-class thShowApp(QThread):
-	showEnded=Signal("PyObject")
-	def __init__(self,*args,**kwargs):
-		QThread.__init__(self, None)
-		self.rc=kwargs["rc"]
-		self.app={}
-		self.mapFile=os.path.join(os.environ.get("HOME"),".cache","rebost","raw","appsedu.map")
-		llxRelease=["lliurex-version","-n"]
-		majorRelease=subprocess.check_output(llxRelease,encoding="utf8",universal_newlines=True)
-		if os.path.exists("/usr/share/rebost-data/lists.d/"):
-			for d in os.scandir("/usr/share/rebost-data/lists.d/"):
-				if d.name=="llx{}".format(majorRelease.split(".")[0]):
-					self.mapFile="/usr/share/rebost-data/lists.d/{}/eduapps.map".format(d.name)
-					break
-		self.mapUrl="https://github.com/lliurex/rebost-data/raw/refs/heads/master/lists.d/{}/eduapps.map".format(d.name)
-		self.helper=libhelper.helper()
-	#def __init__
-
-	def setArgs(self,*args):
-		if isinstance(args[0],str):
-			self.app={}
-			self.app["name"]=args[0]
-		else:
-			self.app=args[0]
-	#def setArgs(self:
-
-	def _readLocalMap(self):
-		vname=""
-		if os.path.exists(self.mapFile):
-			fcontent={}
-			with open(self.mapFile,"r") as f:
-				fcontent=f.read()
-			try:
-				jcontent=json.loads(fcontent)
-			except:
-				jcontent={}
-			vname=jcontent.get("aliases",{}).get(self.app["id"],"")
-		return(vname)
-	#def _readLocalMap
-
-	def _readRemoteMap(self):
-		content=''
-		vname=""
-		req=Request(self.mapUrl, headers={'User-Agent':'Mozilla/5.0'})
-		try:
-			with urllib.request.urlopen(req,timeout=2) as f:
-				content=(f.read().decode('utf-8'))
-		except Exception as e:
-			print("Couldn't fetch {}".format(self.mapUrl))
-			print(e)
-		if len(content)>0:
-			try:
-				jcontent=json.loads(content)
-			except Exception as e:
-				print(e)
-				jcontent={}
-			vname=jcontent["aliases"].get(self.app["id"],"")
-		return(vname)
-	#def _readRemoteMap
-
-	def run(self):
-		if len(self.app.keys())>0:
-			try:
-				app=self.app.copy()
-				apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
-			except Exception as e:
-				print("Error finding {}".format(self.app.get("id","")))
-				print(e)
-				app=self.app.copy()
-			finally:
-				if len(app)<=2:
-					apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
-					if len(apps)==0:
-							vname=self._readLocalMap()
-							if len(vname)>0:
-								self.app["id"]=vname
-							apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
-							if len(apps)==0:
-							#Last chance, load map from inet
-								vname=self._readRemoteMap()
-								if len(vname)>0:
-									self.app["id"]=vname
-								apps=json.loads(self.rc.refreshApp(self.app.get('id','')))
-				if len(apps)>0:
-					app=apps[0]
-				else:
-					app["ERR"]=True
-			if isinstance(app,str):
-				app=json.loads(app)
-			homepage=app.get('homepage','')
-			if isinstance(homepage,str)==False:
-				homepage=""
-			if homepage.startswith("https://portal.edu.gva.es/appsedu")==True and app["description"].count(" ")<3:
-				details=self.helper.getAppseduDetails(homepage)
-				if len(details.get("description",""))>len(app["description"]):
-					app["description"]=details["description"]
-				if len(details.get("icon",""))>0:
-					app["icon"]=details["icon"]
-				if self.app.get("webapp",False)==True:
-					self.app["bundle"].update({"webapp":details.get("url","")})
-			self.showEnded.emit(app)
-	#def run
-#class thShowApp
