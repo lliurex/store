@@ -40,6 +40,7 @@ mw.setMinimumHeight(int(h*0.8))
 mw.show()
 if len(sys.argv)>1:
 	if ("://") in sys.argv[1]:
+		sys.argv[1]=sys.argv[1].removesuffix("-lliurex")
 		wdg=mw.getCurrentStack()
 		wdg.setParms(sys.argv[1])
-app.exec()
+app.exec_()
