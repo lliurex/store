@@ -6,17 +6,13 @@ class epiFile():
 	def __init__(self,*args,**kwargs):
 		pass
 
-	#def epiFromPkg(app,bundle,user='',remote=False,postaction=""):
 	def epiForPkg(self,tmpDir,pkg,bundle,app,postaction=""):
-		#if os.path.isdir("/tmp/rebost")==False:
-		#	os.makedirs("/tmp/rebost")
-		#	os.chmod("/tmp/rebost",0o777)
-		#tmpDir=tempfile.mkdtemp(dir="/tmp/rebost")
-		#os.chmod(tmpDir,0o755)
 		try:
 			epiJson,epiContent=self._jsonForEpi(tmpDir,app,pkg,bundle)
 		except Exception as e:
 			print(e)
+		if bundle=="package" and pkg.startswith("zero-lliurex"):
+			postaction="epic -u -nc install $(dpkg -L {} | grep [.]epi$)".format(pkg)
 		episcript=self._shForEpi(epiJson,app,pkg,bundle,postaction)
 		return(epiJson,episcript)
 	#def epiFromPkg
