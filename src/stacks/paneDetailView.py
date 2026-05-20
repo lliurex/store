@@ -5,7 +5,7 @@ from functools import partial
 import json
 import html
 from rebost import store
-from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QScrollArea,QListWidget,QListWidgetItem
+from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QListWidget,QListWidgetItem
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,Slot,QUrl
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
@@ -15,7 +15,6 @@ from btnInstallers import QPushButtonInstaller
 from lblApp import QLabelRebostApp
 from lblLnk import QLabelLink
 from btnRebost import QPushButtonRebostApp
-from libth import thShowApp
 from constants import *
 import gettext
 _ = gettext.gettext
@@ -70,13 +69,15 @@ class main(QWidget):
 		self.oldApp={} #Returning point if browsing through related apps
 		self.instBundle=""
 		self._connectThreads()
+		font=self.font()
+		font.setPointSize(font.pointSize()+(12-font.pointSize()))
+		self.setFont(font)
 		self._renderGui()
 	#def __init__
 
 	def _connectThreads(self):
-		self.thParmShow=thShowApp(rc=self.rc)
-		self.thParmShow.showEnded.connect(self._endSetParms)
 		self._rebost.lsgEnded.connect(self._endSuggestsLoad)
+		self._rebost.rfrEnded.connect(self._endSetParms)
 	#def _connectThreads
 
 	def _debug(self,msg):
@@ -87,9 +88,6 @@ class main(QWidget):
 	@staticmethod
 	def _onDestroy(*args):
 		selfDict=args[0]
-		selfDict["thParmShow"].blockSignals(True)
-		selfDict["thParmShow"].quit()
-		selfDict["thParmShow"].wait()
 	#def _onDestroy
 
 	def hide(self,*args):
@@ -102,9 +100,9 @@ class main(QWidget):
 		self.app={}
 		if isinstance(args,str):
 			name=""
-			args=args.split("://")[-1]
-			if args.startswith("install?"):
-				ocs=args.split("&")[-1]
+			cmd=args.split("://")[-1]
+			if cmd.startswith("install?"):
+				ocs=cmd.split("&")[-1]
 				idx=1
 				for i in ocs.split("=")[-1]:
 					if i.isalnum():
@@ -113,29 +111,25 @@ class main(QWidget):
 						break
 				name=ocs.split("=")[-1][:idx-1]
 			else:
-				name=args.replace(".desktop","").replace(".flatpakref","")
-				name=name.split(".")[-1]
+				name=cmd.replace(".desktop","").replace(".flatpakref","")
+				if name.count(".")>1:
+					if len(name.split(".")[0])==3:
+						name=name.split(".")[-1]
 		return(name)
 	#def _processStreams
 
 	def setParms(self,*args,**kwargs):
-		#self.hideMsg()
-		self.thParmShow.blockSignals(True)
-		self.thParmShow.quit()
-		self.thParmShow.wait()
 		pxm=""
 		self.referrerBtn=kwargs.get("btn",None)
 		if len(args)>0:
-			self.thParmShow.blockSignals(False)
-			name=args[-1]
-			self._resetScreen(name,"")
 			if isinstance(args[0],dict):
-				self.thParmShow.setArgs(args[0])
-				self.thParmShow.start()
-			elif isinstance(name,str):
+				name=args[0]["id"]
+			else:
+				name=args[-1]
 				name=self._processStreams(name)
-				self.thParmShow.setArgs({'id':name})
-				self.thParmShow.start()
+			self._resetScreen(name,"")
+			self._rebost.setAction("refreshApp",name)
+			self._rebost.start()
 	#def setParms
 
 	def _endSetParms(self,*args):
@@ -145,16 +139,38 @@ class main(QWidget):
 				self.app=app
 			else:
 				try:
-					self.app=json.loads(app)
+					app=json.loads(app)
 				except Exception as e:
 					pass
+				if isinstance(app,list):
+					if len(app)>0:
+						app=app[0]
+						if isinstance(app,str):
+							try:
+								app=json.loads(app)
+							except Exception as e:
+								pass
+						self.app=app
+					else:
+						self.app["ERR"]=True
 		swErr=False
 		if len(self.app)>0:
+			homepage=self.app.get('homepage','')
+			if isinstance(homepage,str)==False:
+				homepage=""
+			if homepage.startswith("https://portal.edu.gva.es/appsedu")==True and self.app["description"].count(" ")<3:
+				details=self.helper.getAppseduDetails(homepage)
+				if len(details.get("description",""))>len(self.app["description"]):
+					self.app["description"]=details["description"]
+				if len(details.get("icon",""))>0:
+					self.app["icon"]=details["icon"]
+				if self.app.get("webapp",False)==True:
+					self.app["bundle"].update({"webapp":details.get("url","")})
 			for bundle,name in (self.app.get('bundle',{}).items()):
 				if bundle=='package':
 					continue
 		self.setCursor(self.oldCursor)
-		if "ERR" in app.keys():
+		if "ERR" in self.app.keys():
 			self._onError()
 		self.updateScreen()
 	#def _endSetParms
@@ -291,6 +307,7 @@ class main(QWidget):
 		wdg=QScrollLabel()
 		wdg.setObjectName("lblDesc")
 		wdg.label.setOpenExternalLinks(True)
+		wdg.label.setFont(self.font())
 		return(wdg)
 	#def _lblDesc
 
@@ -305,14 +322,15 @@ class main(QWidget):
 		lay.addWidget(self.lblIcon,0,1,3,1)
 		self.lblName=QLabel()
 		self.lblName.setObjectName("lblName")
+		self.lblName.setFont(self.font())
 		self.lblSummary=QLabel()
-		self.lblName.setObjectName("lblSummary")
+		self.lblSummary.setObjectName("lblSummary")
 		self.lblSummary.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
 		self.lblSummary.setWordWrap(True)
+		self.lblSummary.setFont(self.font())
 		lay.addWidget(self.lblSummary,0,2,3,1)
 		launchers=QWidget()
 		hlay=QVBoxLayout()
-
 		self.boxBundles=self._defBoxBundles()
 		lay.addWidget(self.boxBundles,0,3,1,1,Qt.AlignTop|Qt.AlignRight)
 		self.lblRelease=QLabel(i18n.get("INSTALL"))
@@ -329,6 +347,7 @@ class main(QWidget):
 		self.cmbBundles.setVisible(False)
 		self.cmbBundles.setMinimumSize(ICON_SIZE*4,ICON_SIZE/2)
 		self.cmbBundles.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+		self.cmbBundles.setFont(self.font())
 		lay.addWidget(self.cmbBundles,1,3,1,1)
 		self.cmbBundles.hide()
 
@@ -370,7 +389,7 @@ class main(QWidget):
 
 	def _populateSuggestsList(self):
 		self.suggests.clean()
-		self._rebost.setAction("getAppSuggests",self.app,6) #Load 6 apps
+		self._rebost.setAction("getAppSuggests",self.app,4) #Load 4 apps
 		self._rebost.start()
 	#def _defSuggestsLoad
 
@@ -608,6 +627,7 @@ class main(QWidget):
 		self._populateLinks()
 		self._populateBoxBundles()
 		self.cmbBundles.setApp(self.app)
+		self.setCursor(self.oldCursor)
 	#def _updateScreen
 
 	def _getLauncherForApp(self):
@@ -703,7 +723,6 @@ class main(QWidget):
 		#self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
 		self.app["summary"]=i18n.get("APPUNKNOWN").split(".")[0]
 		self.app["pkgname"]="rebost"
-		self.app["name"]=self.app["id"]
 		self.app["description"]="{0}".format(i18n.get("APPUNKNOWN_SAI"))
 		self.app["bundle"]={}
 		#self.lblHomepage.setVisible(False)

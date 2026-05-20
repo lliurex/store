@@ -7,7 +7,7 @@ import json
 import dbus
 import dbus.mainloop.glib
 from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
-							QListWidgetItem,QSizePolicy
+							QCheckBox,QListWidgetItem,QSizePolicy
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
 from QtExtraWidgets import QStackedWindowItem
@@ -59,7 +59,7 @@ i18n={
 	"SORTDSC":_("Sort alphabetically"),
 	"TOOLTIP":_("Portrait"),
 	"UPGRADABLE":_("Upgradables"),
-	"UPGRADES":_("There're upgrades available"),
+	"UPGRADES":_("Updates available"),
 	"CHK_NETWORK":_("Store was unable to get information from internet"),
 	"OPN_NETWORK":_("Open network settings")
 	}
@@ -667,7 +667,7 @@ class portrait(QStackedWindowItem):
 		self.prgCat.hide()
 		self.lstCategories.show()
 		self.lstCategories.clear()
-		self.lstCategories.setSizeAdjustPolicy(self.lstCategories.SizeAdjustPolicy.AdjustToContents)
+		self.lstCategories.setSizeAdjustPolicy(self.lstCategories.SizeAdjustPolicy.AdjustToContentsOnFirstShow)
 		self.i18nCat={}
 		self.catI18n={}
 		self.categoriesTree=cats
@@ -691,7 +691,8 @@ class portrait(QStackedWindowItem):
 		masterCategories.sort()
 		lowercats=[]
 		font=self.lstCategories.font()
-		font.setPointSize(font.pointSize()+2)
+		if font.pointSize()<14:
+			font.setPointSize(font.pointSize()+(14-font.pointSize()))
 		for cat in masterCategories:
 			if cat.lower() not in lowercats:
 				self.lstCategories.addItem(" · {}".format(cat))
@@ -1026,12 +1027,12 @@ class portrait(QStackedWindowItem):
 		appsedu=args[0]
 		self._debug("** Detected parm on init **")
 		if "://" in appsedu:
+			self._beginLoad()
 			self.lstCategories.setEnabled(False)
 			self.progress.lblInfo.show()
 			self.progress.setAttribute(Qt.WA_StyledBackground, True)
 			self.box.addWidget(self.progress,0,0,self.box.rowCount(),self.box.columnCount())
 			self._referrerPane=self._homeView
-			self.loadStart.emit()
 			self._stopThreads(ignoreProgress=True)
 			pkgname=appsedu.split("://")[-1]
 			self._referrerPane=self._detailView

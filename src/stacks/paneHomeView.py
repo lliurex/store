@@ -112,6 +112,7 @@ class main(QWidget):
 	def _setBlogData(self,*args):
 		blogRss=args[0]
 		cont=0
+		imgPreview=min(IMAGE_PREVIEW,int(self.blog.size().width()/6))
 		for btn in self.blog.children():
 			if not isinstance(btn,QPushButtonRebostApp):
 				continue
@@ -124,12 +125,12 @@ class main(QWidget):
 				"icon":img,
 				"pkgname":"",
 				"description":""}
-			btn.iconSize=IMAGE_PREVIEW
-			btn.iconUri.setFixedHeight(IMAGE_PREVIEW*0.5)
-			btn.label.setFixedWidth(IMAGE_PREVIEW-(int(MARGIN)*2))
+			btn.iconSize=imgPreview
+			btn.iconUri.setFixedHeight(imgPreview*0.5)
+			btn.label.setFixedWidth(imgPreview-(int(MARGIN)*2))
 			fSize=btn.label.font().pointSize()
-			btn.label.setMaximumHeight(fSize*5)
-			btn.setMinimumWidth(IMAGE_PREVIEW)
+			btn.label.setMaximumHeight(imgPreview*5)
+			btn.setMinimumWidth(imgPreview)
 			btn.lockTooltip=True
 			btn.setApp(app)
 			btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
@@ -248,7 +249,12 @@ class main(QWidget):
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		pxm=QtGui.QPixmap()
 		for i in range(0,6):
-			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE/2))
+			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE)*0.6)
+			btn._showBtn=False
+			btn.clicked.connect(self._loadApp)
+			btn.setMinimumHeight(128)
+			btn.lblFlyIcon.hide()
+			#btn.setCompactMode(True)
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			btn.setMaximumWidth(IMAGE_PREVIEW/3)
 			btn.autoUpdate=True
@@ -266,9 +272,12 @@ class main(QWidget):
 		lay=self.choiceApps.layout()
 		luckApps=self._rebost.getLuck()
 		choiceApps.extend(luckApps[0:2])
+		if len(choiceApps)<5:
+			choiceApps.extend(luckApps[2:4])
 		shuffle(choiceApps)
+		cont=0
 		if len(choiceApps)>0:
-			for choiceApp in choiceApps[0:min(len(choiceApps)-1,9)]:
+			for choiceApp in choiceApps:
 				app=[choiceApp]
 				if isinstance(choiceApp,str):
 					app=json.loads(choiceApp)
@@ -284,6 +293,9 @@ class main(QWidget):
 					#force button repaint
 					btn.hide()
 					btn.show()
+					cont+=1
+					if cont==5:
+						break
 		lay.addSpacing(int(MARGIN)*8)
 	#def _setChoiceData
 
