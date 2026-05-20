@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from PySide2.QtCore import Signal,QThread
+from PySide6.QtCore import Signal,QThread
 import feedparser
 from bs4 import BeautifulSoup as bs
 import urllib
