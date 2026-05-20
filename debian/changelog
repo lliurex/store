@@ -1,3 +1,10 @@
+lliurex-store (1.7) noble; urgency=medium
+
+  * Remove deprecated code
+  * General improvements
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 20 May 2026 08:38:15 +0200
+
 lliurex-store (1.6.5) noble; urgency=medium
 
   * Portrait: Replace section "Relevant Categories" with Editor's Choice
