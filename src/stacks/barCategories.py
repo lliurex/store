@@ -68,7 +68,7 @@ class QToolBarCategories(QFlowTouchWidget):
 			self.addWidget(wdg)
 			h=wdg.sizeHint().height()
 		if h>0:
-			self.setFixedHeight((h*2)+int(MARGIN))
+			self.setFixedHeight((h*2)+MARGIN)
 	#def populateCategories
 #class categoriesBar
 

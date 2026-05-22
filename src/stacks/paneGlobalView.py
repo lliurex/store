@@ -134,7 +134,7 @@ class paneGlobalView(QWidget):
 	def _loadApps(self,apps):
 		pendingApps={}
 		self.stopAdding=False
-		self.table.setSpacing(int(MARGIN)*5)
+		self.table.setSpacing(MARGIN*5)
 		while apps:
 			if hasattr(self,"stopAdding")==False:
 				return
