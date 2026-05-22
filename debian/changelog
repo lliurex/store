@@ -1,3 +1,10 @@
+lliurex-store (1.7) jammy; urgency=medium
+
+  * More responsive GUI
+  * Minor improvements
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 22 May 2026 09:30:51 +0200
+
 lliurex-store (1.6.5) jammy; urgency=medium
 
   * Portrait: Replace section "Relevant Categories" with Editor's Choice
