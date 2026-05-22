@@ -150,7 +150,7 @@ class QPushButtonRebostApp(QPushButton):
 	def _defFrame(self):
 		wdg=QLabel("")
 		wdg.setVisible(False)
-		wdg.setFixedSize(QSize(self.sizeHint().width(),int(MARGIN)/2))
+		wdg.setFixedSize(QSize(self.sizeHint().width(),MARGIN/2))
 		wdg.setStyleSheet("background: %s"%(COLOR_BACKGROUND_DARK))
 		return(wdg)
 	#def _defFrame
@@ -298,7 +298,7 @@ class QPushButtonRebostApp(QPushButton):
 			else:
 				text="<p>{0}</p>".format(self.app.get('name','').strip().capitalize())
 				self.iconUri.setEnabled(True)
-				self.label.setStyleSheet("padding-top:{0}px;".format(int(MARGIN)))
+				self.label.setStyleSheet("padding-top:{0}px;".format(MARGIN))
 		else:
 			text="<p>{0}</p>".format(self.app.get('summary','').strip())
 			_showBtn=False
@@ -354,6 +354,7 @@ class QPushButtonRebostApp(QPushButton):
 		else:
 			self.btn.blockSignals(False)
 			self.btn.setEnabled(True)
+		#self.btn.setVisible(self._showBtn)
 	#def _applyDecoration
 
 	def load(self,*args):

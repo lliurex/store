@@ -34,7 +34,7 @@ class QPushButtonInstaller(QPushButton):
 		self.app=kwargs.get("app",{})
 		self.dlgInstallers=QWidget()
 		self.menuLayout=QGridLayout()
-		self.menuLayout.setSpacing(int(MARGIN)/2)
+		self.menuLayout.setSpacing(MARGIN/2)
 		self.dlgInstallers.setLayout(self.menuLayout)
 		self.dlgInstallers.setWhatsThis("https://lliurex.net")
 		self.menuInstaller=QMenu()
@@ -81,7 +81,7 @@ class QPushButtonInstaller(QPushButton):
 	#def _openWiki
 
 	def _resizeMenu(self,*args):
-		self.menuInstaller.setFixedWidth((len(self.dlgInstallers.children()))*(ICON_SIZE+int(MARGIN)*2))
+		self.menuInstaller.setFixedWidth((len(self.dlgInstallers.children()))*(ICON_SIZE+MARGIN*2))
 		what=QPushButton()
 		what.setIcon(QIcon.fromTheme("system-help"))
 		what.setIconSize(QSize(16,16))

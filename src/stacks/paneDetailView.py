@@ -280,7 +280,7 @@ class main(QWidget):
 		self.setLayout(self.box)
 		#COLS
 		self.box.setColumnStretch(0,0)
-		self.box.setColumnStretch(1,0)
+		self.box.setColumnStretch(1,1)
 		self.box.setColumnStretch(2,3)
 		self.box.setColumnStretch(3,1)
 		#ROWS
@@ -298,7 +298,7 @@ class main(QWidget):
 		wdg.setObjectName("btnBack")
 		icn=QtGui.QIcon(os.path.join(RSRC,"go-previous32x32.png"))
 		wdg.setIcon(icn)
-		wdg.setIconSize(QSize(int(MARGIN)*8,int(MARGIN)*7))
+		wdg.setIconSize(QSize(MARGIN*8,MARGIN*7))
 		wdg.clicked.connect(self._clickedBack)
 		return(wdg)
 	#def _defBtnBack
@@ -315,10 +315,10 @@ class main(QWidget):
 		wdg=QWidget()
 		wdg.setObjectName("frame")
 		lay=QGridLayout()
-		lay.setSpacing(int(MARGIN)*2)
+		lay.setSpacing(MARGIN*2)
 		self.lblIcon=QLabelRebostApp()
 		self.lblIcon.setObjectName("lblIcon")
-		self.lblIcon.setMaximumWidth(ICON_SIZE*2+int(MARGIN)*2)
+		self.lblIcon.setMaximumWidth(ICON_SIZE*2+MARGIN*2)
 		lay.addWidget(self.lblIcon,0,1,3,1)
 		self.lblName=QLabel()
 		self.lblName.setObjectName("lblName")
@@ -369,7 +369,7 @@ class main(QWidget):
 
 	def _endSuggestsLoad(self,*args):
 		suggests=args[0]
-		self.suggests.setSpacing(int(MARGIN)*3)
+		self.suggests.setSpacing(MARGIN*3)
 		for app in suggests:
 			btn=QPushButtonRebostApp("{}",iconSize=64)
 			btn.autoUpdate=True
@@ -378,7 +378,7 @@ class main(QWidget):
 			btn.setApp(app)
 			self.suggests.addWidget(btn)
 		if self.suggests.count()>0:
-			self.suggests.setMinimumHeight(btn.sizeHint().height()+int(MARGIN)*8)
+			self.suggests.setMinimumHeight(btn.sizeHint().height()+MARGIN*8)
 			self.suggests.show()
 			for chld in self.suggests.children():
 				if isinstance(chld,QPushButtonRebostApp):
@@ -397,7 +397,7 @@ class main(QWidget):
 		wdg=QWidget()
 		lay=QVBoxLayout()
 		wdg.setLayout(lay)
-		lay.setSpacing(int(MARGIN)/2)
+		lay.setSpacing(MARGIN/2)
 		lay.addWidget(QLabel(i18n["LBL_RELATED"]))
 		self.suggests=QFlowTouchWidget(self)
 		self.suggests.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -412,8 +412,8 @@ class main(QWidget):
 		wdg.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		wdg.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
-		wdg.setMinimumWidth(ICON_SIZE*3+(int(MARGIN)*3))
-		wdg.setMaximumWidth(ICON_SIZE*3+(int(MARGIN)*4))
+		wdg.setMinimumWidth(ICON_SIZE*3+(MARGIN*3))
+		wdg.setMaximumWidth(ICON_SIZE*3+(MARGIN*4))
 		return(wdg)
 	#def _defLblTags
 
