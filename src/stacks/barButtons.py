@@ -32,7 +32,7 @@ class QPushButtonBar(QWidget):
 		self.setObjectName("btnToggle")
 		self.setStyleSheet(css.btnToggle())
 		layout=QGridLayout()
-		layout.setSpacing(int(MARGIN)*2)
+		layout.setSpacing(MARGIN*2)
 		layout.setContentsMargins(0,0,0,0)
 		self.setLayout(layout)
 		topRow=self._defTopRow()
@@ -75,7 +75,7 @@ class QPushButtonBar(QWidget):
 	def _defTopRow(self):
 		wdg=QWidget()
 		hlay=QHBoxLayout()
-		hlay.setSpacing(int(MARGIN))
+		hlay.setSpacing(MARGIN)
 		wdg.setLayout(hlay)
 		#HOME
 		self.btnHome=QPushButton()

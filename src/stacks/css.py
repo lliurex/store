@@ -101,7 +101,7 @@ def btnRebost():
 					top: 1px;
 					right: %spx;
 				}
-				"""%(COLOR_BORDER,RADIUS,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,RSRC,int(MARGIN)*2,COLOR_BORDER,MARGIN,int(MARGIN)*2,int(MARGIN)*1.9)
+				"""%(COLOR_BORDER,RADIUS,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,RSRC,MARGIN*2,COLOR_BORDER,MARGIN,MARGIN*2,MARGIN*1.9)
 	css=css+btnInstaller
 
 	return(css)
@@ -123,7 +123,7 @@ def detailPanel():
 					margin:0px;
 					margin-left:%spx;
 					padding:0px;
-				}"""%(COLOR_BORDER_DARKEST,int(MARGIN)*2)
+				}"""%(COLOR_BORDER_DARKEST,MARGIN*2)
 	css=css+frame
 	resources="""QWidget#resources{
 					margin-top:%spx;
@@ -138,23 +138,23 @@ def detailPanel():
 				{
 					border:2px inset %s;
 				}
-				"""%(int(MARGIN)*0,COLOR_BACKGROUND_DARK)
+				"""%(MARGIN*0,COLOR_BACKGROUND_DARK)
 	css=css+btnBack
 
 	lblIcon="""#lblIcon{
 					margin-left:%spx;
 					margin-top:0;
-				}"""%(int(MARGIN)*2)
+				}"""%(MARGIN*2)
 	css=css+lblIcon
 	lblName="""#lblName{
 					margin-right:%spx;
 					margin-top:0
-				}"""%(int(MARGIN)*3)
+				}"""%(MARGIN*3)
 	css=css+lblName
 	lblSummary="""#lblSummary{
 					margin-right:%spx;
 					margin-top:0;
-				}"""%(int(MARGIN)*3)
+				}"""%(MARGIN*3)
 	css=css+lblSummary
 	btnInstall="""QPushButton#btnInstall{
 					color:%s;
@@ -169,7 +169,7 @@ def detailPanel():
 					border:2px inset %s;
 				}
 
-				"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2,COLOR_BACKGROUND_DARK)
+				"""%(COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,MARGIN/2,MARGIN/2,COLOR_BACKGROUND_DARK)
 	css=css+btnInstall
 
 	boxBundles="""#boxBundles{
@@ -206,7 +206,7 @@ def detailPanel():
 					top: 1px;
 					right: %spx;
 				}
-				"""%(MARGIN,COLOR_BORDER,RADIUS,RADIUS,RADIUS,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,RSRC,int(MARGIN)*2,COLOR_BORDER,MARGIN,int(MARGIN)*2,int(MARGIN)*1.9)
+				"""%(MARGIN,COLOR_BORDER,RADIUS,RADIUS,RADIUS,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,RSRC,MARGIN*2,COLOR_BORDER,MARGIN,MARGIN*2,MARGIN*1.9)
 	css=css+cmbBundles
 	screenshot="""#screenshot{
 					margin:0px;
@@ -262,7 +262,7 @@ def detailPanel():
 					margin-bottom:%spx;
 					padding:%spx;
 					border-bottom:0px;
-				}*/"""%(COLOR_BACKGROUND_DARK.replace("#","#A9"),COLOR_BACKGROUND_DARKEST.replace("#","#51"),COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN),COLOR_BACKGROUND_DARKEST.replace("#","#AA"),int(MARGIN)/1,int(MARGIN)/1,int(MARGIN)/1,int(MARGIN))
+				}*/"""%(COLOR_BACKGROUND_DARK.replace("#","#A9"),COLOR_BACKGROUND_DARKEST.replace("#","#51"),COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARK,MARGIN,COLOR_BACKGROUND_DARKEST.replace("#","#AA"),MARGIN,MARGIN,MARGIN,MARGIN)
 
 	css=css+lstLinks
 
@@ -272,7 +272,7 @@ def detailPanel():
 					border-radius:1px;
 					border-left-color:%s;
 				}
-				"""%(int(MARGIN)/2,COLOR_BORDER_DARK)
+				"""%(MARGIN/2,COLOR_BORDER_DARK)
 	css=css+lblDesc
 
 	return(css)
@@ -285,12 +285,12 @@ def homePanel():
 					border:0px;
 					margin:0px;
 					background:%s;
-			}"""%(int(MARGIN)/3,COLOR_BACKGROUND_LIGHT)
+			}"""%(MARGIN/3,COLOR_BACKGROUND_LIGHT)
 	css=css+mp
 	lbl="""#lbl{
 					padding-left:%spx;
 					padding-right:%spx;
-		}"""%(int(MARGIN)*5,int(MARGIN)*5)
+		}"""%(MARGIN*5,MARGIN*5)
 	css=css+lbl
 	btn="""#btn{
 					border:0px;
@@ -318,7 +318,7 @@ def tablePanel():
 				#qFlow::item{
 					padding:%spx;
 				}
-				"""%(COLOR_BACKGROUND_LIGHT,int(MARGIN)*15,int(MARGIN),int(MARGIN)/4)
+				"""%(COLOR_BACKGROUND_LIGHT,MARGIN*15,MARGIN,MARGIN/4)
 	css=css+qflow
 	flyIcon="""#flyIcon{background:transparent;}"""
 	css=css+flyIcon
@@ -326,14 +326,14 @@ def tablePanel():
 					margin-top: %spx;
 					margin-right:%spx;
 					margin-bottom:%spx;
-				}"""%(int(MARGIN)*1.5,int(MARGIN)*1.5,int(MARGIN)*1.5)
+				}"""%(MARGIN*1.5,MARGIN*1.5,MARGIN*1.5)
 	css=css+iconUri
 	iconPrg="""#iconPrg{
 					margin-top: %spx;
 					margin-right:%spx;
 					margin-bottom:%spx;
 					margin-left:%spx;
-				}"""%(int(MARGIN)/2,int(MARGIN)/2,int(MARGIN)/2,int(MARGIN)/2)
+				}"""%(MARGIN/2,MARGIN/2,MARGIN/2,MARGIN/2)
 	css=css+iconPrg
 
 	return(css)
@@ -367,7 +367,7 @@ def portrait():
 				#wdgsearch{
 					border-top:35px solid white;
 					background:%s;
-				}"""%(COLOR_BORDER,COLOR_BACKGROUND_DARK,int(RADIUS)*3,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN)*1.5,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,int(MARGIN),COLOR_BACKGROUND_LIGHT)
+				}"""%(COLOR_BORDER,COLOR_BACKGROUND_DARK,int(RADIUS)*3,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,MARGIN*1.5,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,MARGIN,COLOR_BACKGROUND_LIGHT)
 	css=css+search
 
 	categoriesBar="""#categoriesBar{border:0px;
@@ -392,7 +392,7 @@ def portrait():
 					padding:%spx;
 					border-radius:%spx;
 					}
-					"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,int(MARGIN)/3,RADIUS_HIGH,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARKEST,int(MARGIN)/3,RADIUS_HIGH)
+					"""%(COLOR_BACKGROUND_DARK,COLOR_FONT_LIGHT,MARGIN,RADIUS_HIGH,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARKEST,MARGIN/3,RADIUS_HIGH)
 	css=css+categoryTag
 
 	error="""#errorMsg{
@@ -404,7 +404,7 @@ def portrait():
 					margin-bottom:%spx;
 					/*margin-left:%spx;
 					margin-right:%spx;*/
-			}"""%(int(MARGIN)*3,int(MARGIN)*1,int(MARGIN)*3,int(MARGIN)*3)
+			}"""%(MARGIN*3,MARGIN*1,MARGIN*3,MARGIN*3)
 	css=css+banner
 	lstCategories="""#lstCategories{
 					color:%s;
@@ -424,7 +424,7 @@ def portrait():
 				}
 				#lstCategories::item:hover {
 					background-color: %s;
-				}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,RADIUS,int(MARGIN)*4,int(MARGIN)*4,MARGIN,MARGIN,int(MARGIN)*4,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARKEST)
+				}"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,RADIUS,MARGIN*4,MARGIN*4,MARGIN,MARGIN,MARGIN*4,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARKEST)
 	css=css+lstCategories
 	certified="""#certified{
 					color:%s;
@@ -437,7 +437,7 @@ def portrait():
 					margin:0px;
 					border:0px;
 				}
-				"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARKEST,RADIUS,int(MARGIN)/2)
+				"""%(COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARKEST,RADIUS,MARGIN/2)
 	css=css+certified
 	btnBar="""#btnBar{
 					border-top:%spx solid %s;
@@ -456,7 +456,7 @@ def portrait():
 				{
 					border:2px inset %s;
 				}
-				"""%(int(MARGIN)/2,COLOR_BORDER,int(MARGIN)*1.5,int(MARGIN)*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,int(MARGIN)/2,int(MARGIN)/2,COLOR_BACKGROUND_DARK)
+				"""%(MARGIN/2,COLOR_BORDER,MARGIN*1.5,MARGIN*3,COLOR_BACKGROUND_DARK,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BORDER,RADIUS,MARGIN/2,MARGIN/2,COLOR_BACKGROUND_DARK)
 	css=css+btnBar
 	upgrades="""#upgrades{
 					color:%s;
@@ -470,7 +470,7 @@ def portrait():
 				#upgrades:pressed{
 					border:2px inset %s;
 				}
-				"""%(COLOR_BACKGROUND_DARK,COLOR_BORDER,RADIUS,MARGIN,int(MARGIN)*2,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK)
+				"""%(COLOR_BACKGROUND_DARK,COLOR_BORDER,RADIUS,MARGIN,MARGIN*2,COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARKEST,COLOR_BACKGROUND_DARK)
 	css=css+upgrades
 	working="""#working{
 					color:%s;

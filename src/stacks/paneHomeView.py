@@ -48,6 +48,9 @@ class main(QWidget):
 		self.setLayout(layout)
 		self._stop=False
 		self.oldCursor=self.cursor()
+		self.itemsPerCat=4
+		if QApplication.primaryScreen().size().width()>1300:
+			self.itemsPerCat=5
 		self.__initScreen__()
 	#def __init__
 
@@ -127,7 +130,7 @@ class main(QWidget):
 				"description":""}
 			btn.iconSize=imgPreview
 			btn.iconUri.setFixedHeight(imgPreview*0.5)
-			btn.label.setFixedWidth(imgPreview-(int(MARGIN)*2))
+			btn.label.setFixedWidth(imgPreview-(MARGIN*2))
 			fSize=btn.label.font().pointSize()
 			btn.label.setMaximumHeight(imgPreview*5)
 			btn.setMinimumWidth(imgPreview)
@@ -163,7 +166,7 @@ class main(QWidget):
 		layout=QHBoxLayout(wdg)
 		layout.setSpacing(0)
 		pxm=QtGui.QPixmap()
-		for i in range(0,5):
+		for i in range(0,self.itemsPerCat):
 			btn=QPushButtonRebostApp("{}",iconSize=IMAGE_PREVIEW*0.8)
 			btn.setMaximumWidth(IMAGE_PREVIEW/3)
 			btn.showBtn=False
@@ -245,15 +248,20 @@ class main(QWidget):
 		wdg=QWidget()
 		layout=QHBoxLayout()
 		wdg.setLayout(layout)
-		layout.setSpacing(int(MARGIN)*4)
+		layout.setSpacing(MARGIN*4)
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		pxm=QtGui.QPixmap()
-		for i in range(0,6):
-			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE/2))
+		for i in range(0,self.itemsPerCat):
+			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE)/3)
+			btn._showBtn=False
+			btn.clicked.connect(self._loadApp)
+			btn.setMinimumHeight(128)
+			btn.lblFlyIcon.hide()
+			#btn.setCompactMode(True)
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
 			btn.setMaximumWidth(IMAGE_PREVIEW/3)
 			btn.autoUpdate=True
-			if i<3:
+			if i<self.itemsPerCat-1:
 				#btn.setObjectName("mp")
 				pxm.load(os.path.join(RSRC,"appsedu128x128.png"))
 				btn.loadFullScreen(pxm)
@@ -278,20 +286,20 @@ class main(QWidget):
 					app=json.loads(choiceApp)
 				if len(app)>0:
 					btn=QPushButtonRebostApp(app[0],iconSize=ICON_SIZE)
+					btn.hide()
+					btn.lblFlyIcon.hide()
 					btn._showBtn=False
 					btn.clicked.connect(self._loadApp)
 					btn.setMinimumHeight(128)
-					btn.lblFlyIcon.hide()
 					#btn.clicked.connect(self._loadCategory)
 					btn.updateScreen()
 					lay.addWidget(btn,Qt.AlignTop)
 					#force button repaint
-					btn.hide()
 					btn.show()
 					cont+=1
-					if cont==5:
+					if cont==self.itemsPerCat:
 						break
-		lay.addSpacing(int(MARGIN)*8)
+		lay.addSpacing(MARGIN*8)
 	#def _setChoiceData
 
 	def _getChoiceApps(self):
@@ -306,8 +314,8 @@ class main(QWidget):
 		wdg=QWidget()
 		lay=QHBoxLayout()
 		wdg.setLayout(lay)
-		lay.setSpacing(int(MARGIN)*8)
-		lay.addSpacing(int(MARGIN)*8)
+		lay.setSpacing(MARGIN*8)
+		lay.addSpacing(MARGIN*8)
 		return(wdg)
 	#def _defChoice
 
@@ -352,7 +360,7 @@ class main(QWidget):
 			#btn.setFixedSize(QSize(ICON_SIZE*2,ICON_SIZE*1.5))
 			btn.setCompactMode(True)
 			lay.addWidget(btn,Qt.AlignTop)
-		lay.addSpacing(int(MARGIN)*8)
+		lay.addSpacing(MARGIN*8)
 		self.appsByCat.setCursor(QtGui.QCursor(self.oldCursor))
 		self.loaded.emit()
 	#def _setAppsByCat
@@ -367,8 +375,8 @@ class main(QWidget):
 	def _defAppsByCat(self):
 		wdg=QWidget()
 		lay=QHBoxLayout()
-		lay.setSpacing(int(MARGIN)*8)
-		lay.addSpacing(int(MARGIN)*8)
+		lay.setSpacing(MARGIN*8)
+		lay.addSpacing(MARGIN*8)
 		wdg.setLayout(lay)
 		return(wdg)
 	#def _defAppsByCategory:
