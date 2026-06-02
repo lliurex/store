@@ -1,7 +1,9 @@
-lliurex-store (1.7) jammy; urgency=medium
+lliurex-store (1.7.1) jammy; urgency=medium
 
   * More responsive GUI
   * Minor improvements
+  * Fix in detailPane:
+  *  Exception is labelIcon has not icon 
 
  -- Juanma1980 <juanma1980@gmail.com>  Fri, 22 May 2026 09:30:51 +0200
 
