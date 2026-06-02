@@ -582,11 +582,12 @@ class main(QWidget):
 			self._setUnknownAppInfo()
 			return
 		pxm=self.lblIcon.pixmap()
-		if pxm.isNull()==True:
+		if pxm==None:
 			self.lblIcon.loadImg(self.app)
-		if pxm!=None:
-			if pxm.isNull()==False:
-				self.app["icon"]=self.lblIcon.pixmapPath
+		elif pxm.isNull()==True:
+			self.lblIcon.loadImg(self.app)
+		else:
+			self.app["icon"]=self.lblIcon.pixmapPath
 		#Disabled as requisite (250214-11:52)
 		#self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
 		summary="{}<br>{}".format(self.app["name"].upper(),self.app.get("summary",""))
