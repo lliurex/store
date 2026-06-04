@@ -1,7 +1,8 @@
-lliurex-store (1.7.2) jammy; urgency=medium
+lliurex-store (1.7.2.1) jammy; urgency=medium
 
   * Fix:
   *  No referrer pane if searching apps after loading from link
+  * Improve appimage management in installer
 
  -- Juanma1980 <juanma1980@gmail.com>  Thu, 04 Jun 2026 11:19:18 +0200
 
