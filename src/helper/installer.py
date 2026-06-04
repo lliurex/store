@@ -182,8 +182,8 @@ class epiFile():
 		deskName="{}-appimage.desktop".format(app['pkgname'])
 		installCmdLine.append("chmod +x {}".format(destPath))
 		installCmdLine.append("/usr/share/app2menu/app2menu-helper.py {0} \"{1}\" \"{2}\" \"{3}\" \"{4}\" /usr/share/applications/{6} {4}".format(app['pkgname'],app['icon'],app['summary'],";".join(app['categories']),destPath,user,deskName))
-		removeCmd="rm {0} && rm /home/{1}/.local/share/applications/{2}-appimage.desktop;ERR=$?".format(destPath,user,app['pkgname'])
-		statusTestLine=("TEST=$( ls {}  1>/dev/null 2>&1 && echo 'installed')".format(destPath))
+		removeCmd="echo Removing \"{2}\" && rm -fv {0} && [ -e \"/usr/share/applications/{2}-appimage.desktop\" ] || true && rm -fv \"/usr/share/applications/{2}\";ERR=$?;echo *****".format(destPath,user,deskName)
+		statusTestLine=("TEST=$( ls \"{0}\"  1>/dev/null 2>&1 && echo 'installed')".format(destPath))
 		return(installCmd,installCmdLine,removeCmd,removeCmdLine,statusTestLine)
 	#def _getCommandsForAppimage
 
