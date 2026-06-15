@@ -9,13 +9,13 @@ from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidge
 from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread,Slot,QUrl
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
-import libhelper
-import css
-from btnInstallers import QPushButtonInstaller
-from lblApp import QLabelRebostApp
-from lblLnk import QLabelLink
-from btnRebost import QPushButtonRebostApp
-from constants import *
+import lib.libhelper as libhelper
+import extras.css as css
+from extras.constants import *
+from wdg.btnInstallers import QPushButtonInstaller
+from wdg.lblApp import QLabelRebostApp
+from wdg.lblLnk import QLabelLink
+from wdg.btnRebost import QPushButtonRebostApp
 import gettext
 _ = gettext.gettext
 QString=type("")

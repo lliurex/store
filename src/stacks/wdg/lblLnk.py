@@ -4,7 +4,7 @@ import json
 from PySide2.QtWidgets import QLabel,QWidget,QHBoxLayout
 from PySide2.QtCore import Qt,Signal
 from PySide2 import QtGui
-from constants import *
+from extras.constants import *
 import gettext
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext
