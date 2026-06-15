@@ -6,7 +6,7 @@ from PySide2 import QtGui
 from PySide2.QtCore import Qt,QSize,Signal,QThread,QPropertyAnimation
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel
 import gettext
-import css
+import extras.css as css
 _ = gettext.gettext
 
 i18n={

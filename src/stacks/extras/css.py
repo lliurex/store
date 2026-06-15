@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import os
-from constants import *
+from extras.constants import *
 
 def btnToggle():
 	css=""

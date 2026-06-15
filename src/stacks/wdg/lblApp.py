@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QLabel
 from PySide2.QtCore import Qt,Signal,QSize,QThread
 from PySide2 import QtGui
 import gettext
-from constants import *
+from extras.constants import *
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 
