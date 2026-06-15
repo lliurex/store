@@ -129,11 +129,11 @@ class main(QWidget):
 				"pkgname":"",
 				"description":""}
 			btn.iconSize=imgPreview
-			btn.iconUri.setFixedHeight(imgPreview*0.5)
-			btn.label.setFixedWidth(imgPreview-(MARGIN*2))
+			#btn.iconUri.setFixedHeight(imgPreview*0.5)
+			#btn.label.setFixedWidth(imgPreview-(MARGIN*2))
 			fSize=btn.label.font().pointSize()
 			btn.label.setMaximumHeight(imgPreview*5)
-			btn.setMinimumWidth(imgPreview)
+			#btn.setMinimumWidth(imgPreview)
 			btn.lockTooltip=True
 			btn.setApp(app)
 			btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
@@ -201,6 +201,7 @@ class main(QWidget):
 				btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 				btn.install.connect(self._emitInstallApp)
 				btn.clicked.connect(self._loadApp)
+				btn.lblFlyIcon.setVisible(True)
 				btn.setVisible(True)
 				break
 			if cont>=len(self.appsEdu.children()):
@@ -232,7 +233,7 @@ class main(QWidget):
 				chld.setCursor(QtGui.QCursor(Qt.WaitCursor))
 				chld.setApp({})
 				chld.iconUri.setEnabled(False)
-				chld.lblFlyIcon.hide()
+				#chld.lblFlyIcon.hide()
 				if i<3:
 					#btn.setObjectName("mp")
 					pxm.load(os.path.join(RSRC,"appsedu128x128.png"))
@@ -252,10 +253,11 @@ class main(QWidget):
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		pxm=QtGui.QPixmap()
 		for i in range(0,self.itemsPerCat):
-			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE)/3)
-			btn._showBtn=False
+			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE)/2)
 			btn.clicked.connect(self._loadApp)
-			btn.setMinimumHeight(128)
+			sh=self.screen().size().height()
+				#btn._showBtn=False
+			btn.setMinimumHeight(min(220,int(sh/5)))
 			btn.lblFlyIcon.hide()
 			#btn.setCompactMode(True)
 			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
