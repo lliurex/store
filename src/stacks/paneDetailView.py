@@ -5,17 +5,17 @@ from functools import partial
 import json
 import html
 from rebost import store
-from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QListWidget,QListWidgetItem
-from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread,Slot,QUrl
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidget,QHBoxLayout,QVBoxLayout,QGraphicsBlurEffect,QListWidget,QListWidgetItem
+from PySide2 import QtGui
+from PySide2.QtCore import Qt,QSize,Signal,QThread,Slot,QUrl
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
-import libhelper
-import css
-from btnInstallers import QPushButtonInstaller
-from lblApp import QLabelRebostApp
-from lblLnk import QLabelLink
-from btnRebost import QPushButtonRebostApp
-from constants import *
+import lib.libhelper as libhelper
+import extras.css as css
+from extras.constants import *
+from wdg.btnInstallers import QPushButtonInstaller
+from wdg.lblApp import QLabelRebostApp
+from wdg.lblLnk import QLabelLink
+from wdg.btnRebost import QPushButtonRebostApp
 import gettext
 _ = gettext.gettext
 QString=type("")
@@ -582,11 +582,12 @@ class main(QWidget):
 			self._setUnknownAppInfo()
 			return
 		pxm=self.lblIcon.pixmap()
-		if pxm.isNull()==True:
+		if pxm==None:
 			self.lblIcon.loadImg(self.app)
-		if pxm!=None:
-			if pxm.isNull()==False:
-				self.app["icon"]=self.lblIcon.pixmapPath
+		elif pxm.isNull()==True:
+			self.lblIcon.loadImg(self.app)
+		else:
+			self.app["icon"]=self.lblIcon.pixmapPath
 		#Disabled as requisite (250214-11:52)
 		#self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
 		summary="{}<br>{}".format(self.app["name"].upper(),self.app.get("summary",""))

@@ -2,12 +2,12 @@
 from functools import partial
 import os,time
 import json
-from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout
-from PySide6.QtCore import Qt,Signal,QEvent,QSize
-from PySide6.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
-from lblApp import QLabelRebostApp
-import css
-from constants import *
+from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout
+from PySide2.QtCore import Qt,Signal,QEvent,QSize
+from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
+from wdg.lblApp import QLabelRebostApp
+import extras.css as css
+from extras.constants import *
 import gettext
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext

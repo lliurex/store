@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os
-from PySide6.QtCore import Qt,Signal
+from PySide2.QtCore import Qt,Signal
 from QtExtraWidgets import QCheckableComboBox
-from constants import *
+from extras.constants import *
 import gettext
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext

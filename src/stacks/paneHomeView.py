@@ -4,15 +4,15 @@ import os,json,time
 import subprocess
 from functools import partial
 from random import shuffle
-from PySide6.QtWidgets import QLabel, QWidget,QHBoxLayout,QVBoxLayout,QSizePolicy,QPushButton,QGridLayout,QApplication
-from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal
+from PySide2.QtWidgets import QLabel, QWidget,QHBoxLayout,QVBoxLayout,QSizePolicy,QPushButton,QGridLayout,QApplication
+from PySide2 import QtGui
+from PySide2.QtCore import Qt,QSize,Signal
 from QtExtraWidgets import QScreenShotContainer
 import gettext
-import css
-import rss
-from constants import *
-from btnRebost import QPushButtonRebostApp
+import extras.css as css
+from extras.constants import *
+import lib.rss as rss
+from wdg.btnRebost import QPushButtonRebostApp
 import gettext
 _ = gettext.gettext
 
