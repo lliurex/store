@@ -4,8 +4,8 @@ import json
 from PySide6.QtWidgets import QLabel,QApplication
 from PySide6.QtCore import Qt,Signal
 from QtExtraWidgets import QFlowTouchWidget
-from constants import *
-import css
+from extras.constants import *
+import extras.css as css
 import gettext
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext

@@ -5,8 +5,8 @@ import json
 from PySide6.QtWidgets import QLabel,QWidget,QVBoxLayout,QApplication
 from PySide6.QtCore import Qt,QTimer,QSize
 from PySide6.QtGui import QPixmap,QColor
-import css
-from constants import *
+import extras.css as css
+from extras.constants import *
 import random
 import gettext
 _ = gettext.gettext
@@ -36,7 +36,7 @@ class QProgressImage(QWidget):
 		self.color=QColor(COLOR_BACKGROUND_DARKEST)
 		self.colorEnd=QColor(COLOR_BACKGROUND_LIGHT)
 		self.colorCur=self.colorEnd
-		self.img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","progressBar267x267.png")
+		self.img=os.path.join(RSRC,"progressBar267x267.png")
 		self.pxm=QPixmap(self.img)#.scaled(267,267,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		self.pxmOverlay=QPixmap(self.pxm.size())
 		self.lblPxm=QLabel()

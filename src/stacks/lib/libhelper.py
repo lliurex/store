@@ -3,7 +3,7 @@ import os
 import subprocess
 from urllib.request import Request,urlopen
 from bs4 import BeautifulSoup as bs
-from constants import *
+from extras.constants import *
 
 CACHE=os.path.join(CACHE,"html")
 

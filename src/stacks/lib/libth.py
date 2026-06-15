@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import os,subprocess,time
-import libhelper
+import lib.libhelper as libhelper
 from PySide6.QtCore import Signal,QThread
 import json,time,subprocess,random
 import urllib

@@ -5,9 +5,9 @@ from PySide6.QtWidgets import QApplication,QGridLayout,QWidget,QVBoxLayout,QLabe
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QEvent
 from QtExtraWidgets import QFlowTouchWidget
-from btnRebost import QPushButtonRebostApp
-import css
-from constants import *
+from wdg.btnRebost import QPushButtonRebostApp
+import extras.css as css
+from extras.constants import *
 import gettext
 _ = gettext.gettext
 

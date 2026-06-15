@@ -3,10 +3,10 @@ import os,subprocess,time
 from PySide6.QtWidgets import QLabel, QPushButton,QWidget,QGridLayout,QHBoxLayout
 from PySide6.QtCore import Qt,Signal,QSize,QPoint
 from PySide6.QtGui import QIcon,QPixmap,QPalette
-from btnRebost import QPushButtonRebostApp
-import libhelper
-import css
-from constants import *
+from wdg.btnRebost import QPushButtonRebostApp
+import lib.libhelper as libhelper
+import extras.css as css
+from extras.constants import *
 import gettext
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext

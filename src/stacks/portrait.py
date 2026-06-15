@@ -12,20 +12,20 @@ from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
 from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
-from libth import storeHelper,llxup
-from btnRebost import QPushButtonRebostApp
-from prgBar import QProgressImage
-from barButtons import QPushButtonBar
-from barCategories import QToolBarCategories
-from lblApp import QLabelRebostApp
-import libhelper
-import exehelper
+from wdg.btnRebost import QPushButtonRebostApp
+from wdg.prgBar import QProgressImage 
+from wdg.barButtons import QPushButtonBar
+from wdg.barCategories import QToolBarCategories
+from wdg.lblApp import QLabelRebostApp
+import lib.libhelper as libhelper
+import lib.exehelper as exehelper
+from lib.libth import storeHelper,llxup
+import extras.css as css
+from extras.constants import *
 import paneDetailView
 import paneGlobalView
 import paneHomeView
 import paneErrorView
-import css
-from constants import *
 
 import gettext
 _ = gettext.gettext
@@ -487,7 +487,7 @@ class portrait(QStackedWindowItem):
 		lbl=QLabelRebostApp()
 		lbl.setClickable(True)
 		#lbl.setObjectName("banner")
-		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","banner.svg")
+		img=os.path.join(RSRC,"banner.svg")
 		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		lbl.setPixmap(pxm)
 		lbl.clicked.connect(self._goHome)
@@ -632,7 +632,7 @@ class portrait(QStackedWindowItem):
 	def _defProgress(self):
 		wdg=QProgressImage(self)
 		wdg.inc=-1
-		wdg.setImageFromFile(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","progressBar267x267.png"))
+		wdg.setImageFromFile(os.path.join(RSRC,"progressBar267x267.png"))
 		wdg.animation="bigger"
 		wdg.animation="pulsate"
 		return(wdg)
@@ -922,6 +922,8 @@ class portrait(QStackedWindowItem):
 		self._endUpdate()
 		self.appsRaw=[]
 		appsRaw=json.loads(args[0])
+		if isinstance(appsRaw,dict)==False:
+			appsRaw={}
 		for key,item in appsRaw.items():
 			self.appsRaw.extend(item)
 		self.apps=self.appsRaw.copy()

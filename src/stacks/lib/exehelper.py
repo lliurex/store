@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import subprocess,json
 from PySide6.QtCore import Signal,QThread
-import libhelper
+import lib.libhelper as libhelper
 
 class zmdLauncher(QThread):
 	zmdEnded=Signal("PyObject")
