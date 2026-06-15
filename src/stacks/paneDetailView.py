@@ -276,7 +276,7 @@ class main(QWidget):
 		self.lstLinks.setObjectName("lstLinks")
 		vlay.addWidget(self.lstLinks)
 		self.tblSuggests=self._defSuggests()
-		self.box.addWidget(self.tblSuggests,3,2,2,1)
+		self.box.addWidget(self.tblSuggests,3,1,2,2)
 		self.setLayout(self.box)
 		#COLS
 		self.box.setColumnStretch(0,0)
@@ -298,7 +298,7 @@ class main(QWidget):
 		wdg.setObjectName("btnBack")
 		icn=QtGui.QIcon(os.path.join(RSRC,"go-previous32x32.png"))
 		wdg.setIcon(icn)
-		wdg.setIconSize(QSize(MARGIN*8,MARGIN*7))
+		wdg.setIconSize(QSize(max(MARGIN,3)*8,max(MARGIN,3)*7))
 		wdg.clicked.connect(self._clickedBack)
 		return(wdg)
 	#def _defBtnBack
@@ -369,40 +369,49 @@ class main(QWidget):
 
 	def _endSuggestsLoad(self,*args):
 		suggests=args[0]
-		self.suggests.setSpacing(MARGIN*3)
+		iconSize=ICON_SIZE
+		if self.suggests.rect().width()<600:
+			iconSize=48
+		self.suggests.setMaximumHeight(iconSize*1.4)
+		btn=None
 		for app in suggests:
-			btn=QPushButtonRebostApp("{}",iconSize=64)
+			btn=QPushButtonRebostApp("{}",iconSize=iconSize)
 			btn.autoUpdate=True
 			btn.setCompactMode(True)
 			btn.clicked.connect(self._loadSuggested)
 			btn.setApp(app)
+			if self.suggests.count()*btn.minimumWidth()+btn.minimumWidth()+MARGIN*self.suggests.count()>self.suggests.rect().width():
+				break
 			self.suggests.addWidget(btn)
+		if btn!=None:
+			self.suggests.setMinimumWidth(int(max((self.suggests.count()*btn.minimumWidth()+btn.minimumWidth()+MARGIN*self.suggests.count())/2,self.suggests.sizeHint().width())))
 		if self.suggests.count()>0:
-			self.suggests.setMinimumHeight(btn.sizeHint().height()+MARGIN*8)
+			#self.suggests.setMaximumHeight(btn.minimumHeight()+MARGIN*9)
 			self.suggests.show()
-			for chld in self.suggests.children():
-				if isinstance(chld,QPushButtonRebostApp):
-					chld.updateBtn()
+			#for idx in range(0,self.suggests.count()):
+			#for chld in self.suggests.children():
+			#	chld=self.suggests.itemAt(idx)
+			#	if isinstance(chld,QPushButtonRebostApp):
+			#		chld.update()
 		else:
 			self.suggests.hide()
 	#def _endSuggestLoad(self,args):
 
 	def _populateSuggestsList(self):
 		self.suggests.clean()
-		self._rebost.setAction("getAppSuggests",self.app,4) #Load 4 apps
+		self._rebost.setAction("getAppSuggests",self.app,10) #Load 4 apps
 		self._rebost.start()
-	#def _defSuggestsLoad
+	#def _populateSuggestsList
 
 	def _defSuggests(self):
 		wdg=QWidget()
 		lay=QVBoxLayout()
 		wdg.setLayout(lay)
-		lay.setSpacing(MARGIN/2)
+		lay.setSpacing(MARGIN)
 		lay.addWidget(QLabel(i18n["LBL_RELATED"]))
 		self.suggests=QFlowTouchWidget(self)
 		self.suggests.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		self.suggests.setObjectName("lblTags")
-		self.suggests.setMinimumHeight(ICON_SIZE*1.4)
 		lay.addWidget(self.suggests)
 		return(wdg)
 	#def _defSuggests
@@ -412,7 +421,7 @@ class main(QWidget):
 		wdg.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		wdg.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
-		wdg.setMinimumWidth(ICON_SIZE*3+(MARGIN*3))
+		#wdg.setMinimumWidth(ICON_SIZE*3+(MARGIN))
 		wdg.setMaximumWidth(ICON_SIZE*3+(MARGIN*4))
 		return(wdg)
 	#def _defLblTags
@@ -446,6 +455,7 @@ class main(QWidget):
 			self.lstLinks.show()
 		else:
 			self.lstLinks.hide()
+		self.lstLinks.setMinimumWidth(self.lstLinks.sizeHintForColumn(0))
 	#def _populateLinks
 
 	def _defLstLinks(self):
@@ -454,6 +464,7 @@ class main(QWidget):
 			url=QUrl(lnk.toolTip())
 			QtGui.QDesktopServices.openUrl(url)
 		wdg=QListWidget()
+		wdg.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		wdg.setMouseTracking(True)
 		wdg.itemPressed.connect(_enableLink)
 		return(wdg)
