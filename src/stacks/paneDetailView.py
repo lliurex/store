@@ -298,7 +298,7 @@ class main(QWidget):
 		wdg.setObjectName("btnBack")
 		icn=QtGui.QIcon(os.path.join(RSRC,"go-previous32x32.png"))
 		wdg.setIcon(icn)
-		wdg.setIconSize(QSize(MARGIN*8,MARGIN*7))
+		wdg.setIconSize(QSize(max(MARGIN,3)*8,max(MARGIN,3)*7))
 		wdg.clicked.connect(self._clickedBack)
 		return(wdg)
 	#def _defBtnBack
