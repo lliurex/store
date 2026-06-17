@@ -223,6 +223,15 @@ def detailPanel():
 
 	css=css+lblTags
 
+	lstSuggests="""#lstSuggests{
+					border:0px;
+					margin:0px;
+					margin-bottom:%spx
+					margin-top:%spx;
+				}"""%(MARGIN,MARGIN)
+
+	css=css+lstSuggests
+
 	lstLinks="""QLabel#lblLink{
 					text-decoration:none;
 					color:%s;
