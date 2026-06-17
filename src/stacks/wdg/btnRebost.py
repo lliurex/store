@@ -321,7 +321,7 @@ class QPushButtonRebostApp(QPushButton):
 		elif self.app.get("homepage")!=None:
 			if "appsedu" in self.app["homepage"].lower():
 				self.flyIcon=QPixmap(os.path.join(RSRC,"appsedu128x128.png"))
-		scaleFactor=(self.appIconSize/2)
+		scaleFactor=(max(self.appIconSize,32)/2)
 		if isinstance(self.flyIcon,QPixmap):
 			self.lblFlyIcon.setPixmap(self.flyIcon.scaled(scaleFactor,scaleFactor,Qt.KeepAspectRatioByExpanding,Qt.FastTransformation))
 		if self.btn.isVisible()!=_showBtn:
