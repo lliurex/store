@@ -1,3 +1,16 @@
+lliurex-store (1.7.3) noble; urgency=medium
+
+  * Button bar
+  *  Restore tooltip for action buttons
+  *  Improve layout
+  * Detail Panel:
+  *  Load as many suggested as possible
+  * Home Panel:
+  *  Show install button for appsedu apps
+  * Revisited project tree
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 18 Jun 2026 10:43:08 +0200
+
 lliurex-store (1.7.2.1) noble; urgency=medium
 
   * Fix:
