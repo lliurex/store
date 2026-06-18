@@ -1,4 +1,4 @@
-lliurex-store (1.7.3) noble; urgency=medium
+lliurex-store (1.7.3.1) noble; urgency=medium
 
   * Button bar
   *  Restore tooltip for action buttons
@@ -8,6 +8,8 @@ lliurex-store (1.7.3) noble; urgency=medium
   * Home Panel:
   *  Show install button for appsedu apps
   * Revisited project tree
+  * Portrait:
+  *  Move llx-update button to top
 
  -- Juanma1980 <juanma1980@gmail.com>  Thu, 18 Jun 2026 10:43:08 +0200
 
