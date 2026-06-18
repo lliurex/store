@@ -226,7 +226,7 @@ def detailPanel():
 	lstSuggests="""#lstSuggests{
 					border:0px;
 					margin:0px;
-					margin-bottom:%spx
+					margin-bottom:%spx;
 					margin-top:%spx;
 				}"""%(MARGIN,MARGIN)
 
