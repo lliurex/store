@@ -458,8 +458,6 @@ class portrait(QStackedWindowItem):
 		self.lstCategories.itemActivated.connect(self._loadCategory)
 		self.lstCategories.itemClicked.connect(self._loadCategory)
 		self.lstCategories.hide()
-		self.lblInfo=self._defInfo()
-		vbox.addWidget(self.lblInfo,Qt.Alignment(-1))
 		vbox.setStretch(0,0)
 		vbox.setStretch(1,2)
 		vbox.setStretch(3,1)
@@ -488,7 +486,9 @@ class portrait(QStackedWindowItem):
 		lbl.setClickable(True)
 		#lbl.setObjectName("banner")
 		img=os.path.join(RSRC,"banner.svg")
-		pxm=QtGui.QPixmap(img).scaled(172,64,Qt.KeepAspectRatio,Qt.SmoothTransformation)
+		x=int(QApplication.primaryScreen().size().width()/6)
+		y=int(x*9/16)
+		pxm=QtGui.QPixmap(img).scaled(x,y,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		lbl.setPixmap(pxm)
 		lbl.clicked.connect(self._goHome)
 		return lbl
@@ -503,6 +503,8 @@ class portrait(QStackedWindowItem):
 		self.sortAsc=False
 		banner=self._defBanner()
 		lay.addWidget(banner,0,0,1,1,Qt.AlignCenter|Qt.AlignTop)
+		self.lblInfo=self._defInfo()
+		lay.addWidget(self.lblInfo,0,0,1,1,Qt.AlignBottom)
 		_defBtnBar=self._defBtnBar()
 		#lay.addWidget(_defBtnBar,1,0,1,1,Qt.AlignCenter)
 		navBar=self._defNavigationBar()
