@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os,subprocess,time
-from PySide2.QtWidgets import QLabel, QPushButton,QWidget,QGridLayout,QHBoxLayout
-from PySide2.QtCore import Qt,Signal,QSize,QPoint
-from PySide2.QtGui import QIcon,QPixmap,QPalette
+from PySide6.QtWidgets import QLabel, QPushButton,QWidget,QGridLayout,QHBoxLayout
+from PySide6.QtCore import Qt,Signal,QSize,QPoint
+from PySide6.QtGui import QIcon,QPixmap,QPalette
 from wdg.btnRebost import QPushButtonRebostApp
 import lib.libhelper as libhelper
 import extras.css as css
@@ -32,39 +32,15 @@ class QPushButtonBar(QWidget):
 		self.setObjectName("btnToggle")
 		self.setStyleSheet(css.btnToggle())
 		layout=QGridLayout()
-		layout.setSpacing(MARGIN*2)
+		layout.setSpacing(MARGIN)
 		layout.setContentsMargins(0,0,0,0)
 		self.setLayout(layout)
 		topRow=self._defTopRow()
 		layout.addWidget(topRow,0,0,1,2,Qt.AlignCenter)
-		self.btnAppsedu=QPushButton()
-		self.btnAppsedu.setObjectName("btnOption")
-		self.btnAppsedu.setProperty("origin",True)
-		icn=QIcon(os.path.join(RSRC,"appsedu128x128.png"))
-		self.btnAppsedu.setIcon(icn)
-		self.btnAppsedu.setIconSize(QSize(64,64))
-		self.btnAppsedu.setMaximumSize(QSize(64,64))
-		layout.addWidget(self.btnAppsedu,1,0,1,1,Qt.AlignRight)
-		self.btnLliurex=QPushButton()
-		self.btnLliurex.enterEvent=lambda x:self._switchPalette("enter",self.btnLliurex)
-		self.btnLliurex.leaveEvent=lambda x:self._switchPalette("leave",self.btnLliurex)
-		self.btnLliurex.clicked.connect(self.enableLliurexMode)
-		self.btnLliurex.setObjectName("btnOption")
-		self.btnLliurex.setProperty("origin",False)
-		icn=QIcon.fromTheme("llxstore")
-		self.btnLliurex.setIcon(icn)
-		self.btnLliurex.setIconSize(QSize(64,64))
-		self.btnLliurex.setMaximumSize(QSize(64,64))
-		self.btnLliurex.setCursor(Qt.PointingHandCursor)
-		layout.addWidget(self.btnLliurex,1,1,1,1,Qt.AlignLeft)
-		self.btnLliurex.setDisabled(True)
-		self.lblOrigin=QLabel("{}: appsedu".format(i18n["ORIGIN"]))
-		font=self.lblOrigin.font()
-		font.setPointSize(font.pointSize()+(12-font.pointSize()))
-		self.lblOrigin.setFont(font)
-		layout.addWidget(self.lblOrigin,2,0,1,2,Qt.AlignCenter|Qt.AlignTop)
-		layout.setRowStretch(1,1)
-		layout.setRowStretch(0,0)
+		bottomRow=self._defBottomRow()
+		layout.addWidget(bottomRow,2,0,1,2,Qt.AlignTop|Qt.AlignCenter)
+		layout.setRowStretch(2,1)
+		layout.setRowStretch(0,1)
 	#def __init__
 
 	def _debug(self,msg):
@@ -74,8 +50,7 @@ class QPushButtonBar(QWidget):
 
 	def _defTopRow(self):
 		wdg=QWidget()
-		hlay=QHBoxLayout()
-		hlay.setSpacing(MARGIN)
+		hlay=QGridLayout(wdg)
 		wdg.setLayout(hlay)
 		#HOME
 		self.btnHome=QPushButton()
@@ -87,9 +62,10 @@ class QPushButtonBar(QWidget):
 		self.btnHome.setMaximumSize(QSize(48,48))
 		self.btnHome.setCursor(Qt.PointingHandCursor)
 		self.btnHome.clicked.connect(self.homeClicked.emit)
-		self.btnHome.enterEvent=lambda x:self._switchPalette("enter",self.btnHome)
-		self.btnHome.leaveEvent=lambda x:self._switchPalette("leave",self.btnLliurex)
-		hlay.addWidget(self.btnHome)
+		self.btnHome.setToolTip(i18n["HOME"])
+		#self.btnHome.enterEvent=lambda x:self._switchPalette("enter",self.btnHome)
+		#self.btnHome.leaveEvent=lambda x:self._switchPalette("leave",self.btnLliurex)
+		hlay.addWidget(self.btnHome,0,0,1,1)
 		#INSTALLED
 		self.btnInstalled=QPushButton()
 		self.btnInstalled.setObjectName("btnOption")
@@ -100,9 +76,10 @@ class QPushButtonBar(QWidget):
 		self.btnInstalled.setMaximumSize(QSize(48,48))
 		self.btnInstalled.setCursor(Qt.PointingHandCursor)
 		self.btnInstalled.clicked.connect(self.installedClicked.emit)
-		self.btnInstalled.enterEvent=lambda x:self._switchPalette("enter",self.btnInstalled)
-		self.btnInstalled.leaveEvent=lambda x:self._switchPalette("leave",self.btnLliurex)
-		hlay.addWidget(self.btnInstalled)
+		#self.btnInstalled.enterEvent=lambda x:self._switchPalette("enter",self.btnInstalled)
+		#self.btnInstalled.leaveEvent=lambda x:self._switchPalette("leave",self.btnLliurex)
+		self.btnInstalled.setToolTip(i18n["INSTALLED"])
+		hlay.addWidget(self.btnInstalled,0,1,1,1)
 		#REFRESH
 		self.btnRefresh=QPushButton()
 		self.btnRefresh.setObjectName("btnOption")
@@ -113,23 +90,60 @@ class QPushButtonBar(QWidget):
 		self.btnRefresh.setIconSize(QSize(48,48))
 		self.btnRefresh.setMaximumSize(QSize(48,48))
 		self.btnRefresh.clicked.connect(self.reloadClicked.emit)
-		self.btnRefresh.enterEvent=lambda x:self._switchPalette("enter",self.btnRefresh)
-		self.btnRefresh.leaveEvent=lambda x:self._switchPalette("leave",self.btnLliurex)
-		hlay.addWidget(self.btnRefresh)
+		#self.btnRefresh.enterEvent=lambda x:self._switchPalette("enter",self.btnRefresh)
+		#self.btnRefresh.leaveEvent=lambda x:self._switchPalette("leave",self.btnLliurex)
+		self.btnRefresh.setToolTip(i18n["REFRESH"])
+		hlay.addWidget(self.btnRefresh,0,2,1,1)
+		self.lblCommand=QLabel(" ")#.format(i18n["ORIGIN"]))
+		#hlay.addWidget(self.lblCommand,1,0,1,3,Qt.AlignTop|Qt.AlignCenter)
 		return(wdg)
 	#def _topRow
+
+	def _defBottomRow(self):
+		wdg=QWidget()
+		lay=QGridLayout(wdg)
+		self.btnAppsedu=QPushButton()
+		self.btnAppsedu.setObjectName("btnOption")
+		self.btnAppsedu.setProperty("origin",True)
+		icn=QIcon(os.path.join(RSRC,"appsedu128x128.png"))
+		self.btnAppsedu.setIcon(icn)
+		self.btnAppsedu.setIconSize(QSize(64,64))
+		self.btnAppsedu.setMaximumSize(QSize(64,64))
+		lay.addWidget(self.btnAppsedu,0,0,1,1,Qt.AlignRight)
+		self.btnLliurex=QPushButton()
+		self.btnLliurex.enterEvent=lambda x:self._switchPalette("enter",self.btnLliurex)
+		self.btnLliurex.leaveEvent=lambda x:self._switchPalette("leave",self.btnLliurex)
+		self.btnLliurex.clicked.connect(self.enableLliurexMode)
+		self.btnLliurex.setObjectName("btnOption")
+		self.btnLliurex.setProperty("origin",False)
+		icn=QIcon.fromTheme("llxstore")
+		self.btnLliurex.setIcon(icn)
+		self.btnLliurex.setIconSize(QSize(64,64))
+		self.btnLliurex.setMaximumSize(QSize(64,64))
+		self.btnLliurex.setCursor(Qt.PointingHandCursor)
+		lay.addWidget(self.btnLliurex,0,1,1,1,Qt.AlignLeft)
+		self.btnLliurex.setDisabled(True)
+		self.lblOrigin=QLabel("Appsedu")#.format(i18n["ORIGIN"]))
+		font=self.lblOrigin.font()
+		#font.setPointSize(font.pointSize()+(12-font.pointSize()))
+		font.setPointSize(max(10,font.pointSize()-2))
+		self.lblOrigin.setFont(font)
+		lay.addWidget(self.lblOrigin,1,0,1,2,Qt.AlignCenter|Qt.AlignTop)
+		return(wdg)
+	#def _defBottomRow
 
 	def _switchPalette(self,*args):
 		ev=args[0]
 		source=args[1]
 		if ev=="enter":
 			if source==self.btnHome:
-				self.lblOrigin.setText("{}".format(i18n["HOME"]))
+				self.lblCommand.setText("{}".format(i18n["HOME"]))
 			elif source==self.btnInstalled:
-				self.lblOrigin.setText("{}".format(i18n["INSTALLED"]))
+				self.lblCommand.setText("{}".format(i18n["INSTALLED"]))
 			elif source==self.btnRefresh:
-				self.lblOrigin.setText("{}".format(i18n["REFRESH"]))
+				self.lblCommand.setText("{}".format(i18n["REFRESH"]))
 			else:
+				self.lblCommand.setText("")
 				if source==self.btnLliurex:
 					if source.property("origin")==False:
 						self.lblOrigin.setText("{}".format(i18n["ORIGINSET"]))
@@ -137,6 +151,7 @@ class QPushButtonBar(QWidget):
 						self.lblOrigin.setText("{} Appsedu".format(i18n["ORIGINDEL"]))
 				source.setEnabled(True)
 		else:
+			self.lblCommand.setText("")
 			if source==self.btnLliurex:
 				self.btnLliurex.setEnabled(self.btnLliurex.property("origin"))
 			if self.btnLliurex.isEnabled()==True:
