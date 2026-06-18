@@ -1,3 +1,11 @@
+lliurex-store (1.7.3.1) jammy; urgency=medium
+
+  * Sync with noble 1.7.3
+  * Move llx-upgrade button to top
+  * Banner resizable
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 18 Jun 2026 11:29:10 +0200
+
 lliurex-store (1.7.2.1) jammy; urgency=medium
 
   * Fix:
