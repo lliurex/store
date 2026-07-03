@@ -173,15 +173,26 @@ class QPushButtonRebostApp(QPushButton):
 		return(wdg)
 	#def _defProgress
 
-	def _renderGui(self,*args):
+	def _getInstalledBundle(self):
+		installBundle=""
+		bundles=self.app.get("bundle",{})
 		states=self.app.get("status",{})
 		zmd=states.get("zomando","0")
 		if len(states)>0:
 			for bundle,state in states.items():
-				if int(state)==0:
-					self.btn.setText(i18n.get("REMOVE"))
-					self.instBundle=bundle
+				if int(state)==0 and bundle in bundles: #zmd are of kind unknown, but installs as packagekind
+					installBundle=bundle
 					break
+		if installBundle!="":
+			if bundles[installBundle]==bundles.get("unknown",""):
+				installBundle=""
+		return installBundle
+	#def _getInstalledBundle
+
+	def _renderGui(self,*args):
+		self.instBundle=self._getInstalledBundle()
+		if self.instBundle!="":
+			self.btn.setText(i18n.get("REMOVE"))
 		if self.app.get("forbidden",False)==True:
 			self.btn.setText(i18n.get("UNAUTHORIZED"))
 			self.btn.blockSignals(True)
@@ -255,18 +266,16 @@ class QPushButtonRebostApp(QPushButton):
 				self.btn.setEnabled(False)
 				self.btn.setText(i18n["UNAUTHORIZED"])
 			else: #app seems authorized and available
-				bundles=self.app["bundle"]
-				status=self.app["status"]
-				zmd=bundles.get("unknown","")
+				#bundles=self.app["bundle"]
+				#zmd=bundles.get("unknown","")
 				action="install"
-				if zmd==self.app["name"]==self.app["pkgname"]:
-					action="open"
-				else:
-					for bundle,appstatus in status.items():
-						if int(appstatus)==0:# and zmdInstalled!="0":
-							self.instBundle=bundle
-							action="remove"
-							break
+				#if zmd==self.app["name"]==self.app["pkgname"]:
+				#	action="open"
+				#else:
+				self.instBundle=self._getInstalledBundle()
+				if self.instBundle!="":
+					self.btn.setText(i18n.get("REMOVE"))
+					action="remove"
 				if action=="install":
 					self.btn.setVisible(True)
 					self.btn.setEnabled(True)
