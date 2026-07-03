@@ -308,6 +308,7 @@ class portrait(QStackedWindowItem):
 				bundle=priority[idx[0]].split(" ")[0]
 		if bundle=="epi":
 			bundle="unknown"
+		self._debug("Selected BUNDLE for {}: {}".format(wdg.text(),bundle))
 		pkg=app.get('id')
 		try:
 			if pkg!="":
