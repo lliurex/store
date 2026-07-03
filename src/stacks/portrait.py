@@ -308,6 +308,7 @@ class portrait(QStackedWindowItem):
 				bundle=priority[idx[0]].split(" ")[0]
 		if bundle=="epi":
 			bundle="unknown"
+		self._debug("Selected BUNDLE for {}: {}".format(wdg.text(),bundle))
 		pkg=app.get('id')
 		try:
 			if pkg!="":
@@ -461,7 +462,6 @@ class portrait(QStackedWindowItem):
 		vbox.setStretch(0,0)
 		vbox.setStretch(1,2)
 		vbox.setStretch(3,1)
-		wdg.setMinimumWidth(self.lblInfo.sizeHint().width())
 		return(wdg)
 	#def _defNavigationBar
 
@@ -503,12 +503,16 @@ class portrait(QStackedWindowItem):
 		self.sortAsc=False
 		banner=self._defBanner()
 		lay.addWidget(banner,0,0,1,1,Qt.AlignCenter|Qt.AlignTop)
-		self.lblInfo=self._defInfo()
-		lay.addWidget(self.lblInfo,0,0,1,1,Qt.AlignBottom)
 		_defBtnBar=self._defBtnBar()
 		#lay.addWidget(_defBtnBar,1,0,1,1,Qt.AlignCenter)
 		navBar=self._defNavigationBar()
 		lay.addWidget(navBar,2,0,1,1)
+		self.lblInfo=self._defInfo()
+		if banner.pixmap().height()<90:
+			lay.addWidget(self.lblInfo,0,0,1,1,Qt.AlignBottom)
+		else:
+			lay.addWidget(self.lblInfo,2,0,1,1,Qt.AlignBottom)
+		navBar.setMinimumWidth(self.lblInfo.sizeHint().width())
 		lay.setRowStretch(0,0)
 		lay.setRowStretch(1,0)
 		lay.setRowStretch(2,1)
