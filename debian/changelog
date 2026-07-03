@@ -1,4 +1,4 @@
-lliurex-store (1.7.4.1) jammy; urgency=medium
+lliurex-store (1.7.4.1) noble; urgency=medium
 
   * Fix:
   *  Status of apps from specific zomandos wich are of kind "file" 
