@@ -168,14 +168,18 @@ class QPushButtonInstaller(QPushButton):
 		installBundle=""
 		bundles=self.app.get("bundle",{})
 		states=self.app.get("status",{})
-		zmd=states.get("zomando","0")
+		zmd=False
+		if bundles.get("unknown")!=None and bundles.get("package")==None and len(bundles)==1:
+			#It's an app coming from a specific installer (zmd with only one app)
+			#Fake states
+			states.update({"unknown":states.get("package","1")})
 		if len(states)>0:
 			for bundle,state in states.items():
 				if int(state)==0 and bundle in bundles: #zmd are of kind unknown, but installs as packagekind
 					installBundle=bundle
 					break
 		if installBundle!="":
-			if bundles[installBundle]==bundles.get("unknown",""):
+			if bundles[installBundle]==bundles.get("unknown","") and len(bundles)>1:
 				installBundle=""
 		return installBundle
 	#def _getInstalledBundle
