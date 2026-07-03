@@ -1,3 +1,19 @@
+lliurex-store (1.7.4.1) jammy; urgency=medium
+
+  * Fix:
+  *  Status of apps from specific zomandos wich are of kind "file" 
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 03 Jul 2026 13:38:16 +0200
+
+lliurex-store (1.7.4) noble; urgency=medium
+
+  * Improve installed bundle detection
+  * Discard install info for zomandos
+  * Portrait:
+  *  llx-update button position depends on screen size
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 03 Jul 2026 13:37:52 +0200
+
 lliurex-store (1.7.3.1) jammy; urgency=medium
 
   * Sync with noble 1.7.3
