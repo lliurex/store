@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import os,json,time
 from PySide6.QtCore import Signal,QThread
 import feedparser
 from bs4 import BeautifulSoup as bs
@@ -16,6 +17,13 @@ class rssParser(QThread):
 				"appsedu":"https://portal.edu.gva.es/appsedu/feed/"}
 		self.webpage={"lliurexnet":"https://portal.edu.gva.es/lliurex/va/"}
 		self.feed="blog"
+		self.cache=os.path.join(os.environ["HOME"],".cache","store","feeds")
+		if os.path.exists(self.cache)==False:
+			try:
+				os.makedirs(self.cache)
+			except:
+				self.cache="/tmp/store"
+				os.makedirs(self.cache)
 		self._stop=False
 	#def __init__
 
@@ -92,12 +100,12 @@ class rssParser(QThread):
 					if feed=="blog":
 						idx=len(parsedFeeds)
 						links=item.get("links",[""])[0]
-						parsedFeeds.update({idx:{"type":feed,"title":item.get("title",""),"summary":item.get("summary",""),"link":links.href}})
+						parsedFeeds.update({str(idx):{"type":feed,"title":item.get("title",""),"summary":item.get("summary",""),"link":links.href}})
 					else:
 						lastApps=self._getLastApps(item.get("content"))
 						for app,link in lastApps:
 							idx=len(parsedFeeds)
-							parsedFeeds.update({idx:{"type":feed,"title":app,"link":link}})
+							parsedFeeds.update({str(idx):{"type":feed,"title":app,"link":link}})
 					if self._stop==True:
 						break
 			if len(parsedFeeds)>0:
@@ -111,16 +119,45 @@ class rssParser(QThread):
 				links=item.find("a",href=True)
 				img=item.find("img")
 				title=links["href"].removesuffix("/").split("/")[-1]
-				parsedFeeds.update({idx:{"type":feed,"title":title,"link":links["href"],"img":img["src"]}})
+				parsedFeeds.update({str(idx):{"type":feed,"title":title,"link":links["href"],"img":img["src"]}})
 				idx+=1
-		if feed=="blog":
-			self.blogEnded.emit(self.rss[feed],parsedFeeds)
-		elif feed=="appsedu":
-			self.appsEnded.emit(self.rss[feed],parsedFeeds)
-		elif feed=="lliurexnet":
-			self.choiceEnded.emit(feed,parsedFeeds)
+		self._emitContent(feed,parsedFeeds)
+		self._writeCache(feed,parsedFeeds)
 		self._stop=False
 	#def run
+
+	def _emitContent(self,feed,contents):
+		if feed=="blog":
+			self.blogEnded.emit(self.rss[feed],contents)
+		elif feed=="appsedu":
+			self.appsEnded.emit(self.rss[feed],contents)
+		elif feed=="lliurexnet":
+			self.choiceEnded.emit(feed,contents)
+	#def _emitContent
+
+	def loadCache(self):
+		if os.path.exists(self.cache):
+			if os.path.isdir(self.cache):
+				for feed in os.scandir(self.cache):
+					jcontent={}
+					try:
+						with open(os.path.join(self.cache,feed.path),"r") as f:
+							jcontent=json.loads(f.read())
+					except:
+						print("Reading {}/{} error!!".format(self.cache,feed))
+					if len(jcontent)>0:
+						self._emitContent(feed.name,jcontent)
+						time.sleep(0.1)
+	#def _loadCache
+
+	def _writeCache(self,feed,content):
+		try:
+			with open(os.path.join(self.cache,feed),"w") as f:
+				f.write(json.dumps(content))
+		except Exception as e:
+			print("Writing {}/{} error!!".format(self.cache,feed))
+			print(e)
+	#def _writeCach
 
 	def stop(self):
 		self._stop=True
