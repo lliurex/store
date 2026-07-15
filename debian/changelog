@@ -1,3 +1,10 @@
+lliurex-store (1.7.5) noble; urgency=medium
+
+  * Init threads for appstream as early as possible
+  * Use cache for portrait data
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 15 Jul 2026 11:57:09 +0200
+
 lliurex-store (1.7.4.1) noble; urgency=medium
 
   * Fix:
