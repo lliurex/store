@@ -49,6 +49,7 @@ class main(QWidget):
 		self._stop=False
 		self.oldCursor=self.cursor()
 		self.itemsPerCat=4
+		self.cachedUrls=[]
 		if QApplication.primaryScreen().size().width()>1300:
 			self.itemsPerCat=5
 		self.__initScreen__()
@@ -87,19 +88,22 @@ class main(QWidget):
 		url=args[0]
 		apps=args[1]
 		if len(apps)>0:
-			if apps[0]["type"]=="appsedu":
+			if apps["0"]["type"]=="appsedu":
 				urls=[]
 				for idx in range(0,min(len(apps),10)):
 					if self._stop==True:
 						break
-					url=apps[idx]["link"]
-					urls.append(url)
+					url=apps[str(idx)]["link"]
+					if url not in self.cachedUrls:
+						urls.append(url)
+				#qt often gets breathless
+				time.sleep(0.1)
 				self._rebost.setAction("urlSearch",urls)
 				self._rebost.start()
 				#self._rebost.wait()
-			elif apps[0]["type"]=="blog":
+			elif apps["0"]["type"]=="blog":
 				self._setBlogData(apps)
-			elif apps[0]["type"]=="lliurexnet":
+			elif apps["0"]["type"]=="lliurexnet":
 				choiceApps=[]
 				for app in apps.values():
 					if self._stop==True:
@@ -119,12 +123,12 @@ class main(QWidget):
 		for btn in self.blog.children():
 			if not isinstance(btn,QPushButtonRebostApp):
 				continue
-			img=blogRss[cont].get("img","")
+			img=blogRss.get(str(cont),{}).get("img","")
 			if img=="":
 				continue
 			app={"name":"",
-				"summary":"<a href=\"{0}\">{1}</a><br>".format(blogRss[cont]["link"],blogRss[cont]["title"]),
-				"homepage":"{0}".format(blogRss[cont]["link"]),
+				"summary":"<a href=\"{0}\">{1}</a><br>".format(blogRss[str(cont)]["link"],blogRss[str(cont)]["title"]),
+				"homepage":"{0}".format(blogRss[str(cont)]["link"]),
 				"icon":img,
 				"pkgname":"",
 				"description":""}
@@ -140,7 +144,7 @@ class main(QWidget):
 			btn.iconUri.setEnabled(True)
 			btn.clicked.connect(self._openBlog)
 			btn.updateScreen()
-			btn.setToolTip(blogRss[cont]["summary"].capitalize())
+			btn.setToolTip(blogRss[str(cont)]["summary"].capitalize())
 			cont+=1
 		self.blog.setCursor(self.oldCursor)
 	#def _setBlogData
@@ -186,6 +190,11 @@ class main(QWidget):
 
 	def _setAppseduData(self,*args):
 		app=json.loads(args[0])
+		if len(app)==0:
+			return
+		hp=app[0]["homepage"]
+		if hp not in self.cachedUrls:
+			self.cachedUrls.append(hp)
 		cont=0
 		for btn in self.appsEdu.children():
 			if not isinstance(btn,QPushButtonRebostApp):
@@ -275,6 +284,8 @@ class main(QWidget):
 	
 	def _setChoiceData(self,choiceApps):
 		lay=self.choiceApps.layout()
+		if len(self.choiceApps.children())>3:
+			return
 		luckApps=self._rebost.getLuck()
 		choiceApps.extend(luckApps[0:2])
 		if len(choiceApps)<5:
@@ -428,6 +439,11 @@ class main(QWidget):
 		self.blog.setCursor(QtGui.QCursor(Qt.WaitCursor))
 		self.appsEdu.setCursor(QtGui.QCursor(Qt.WaitCursor))
 		self.appsByCat.setCursor(QtGui.QCursor(Qt.WaitCursor))
+		rssparser=rss.rssParser()
+		rssparser.blogEnded.connect(self._processRss)
+		rssparser.appsEnded.connect(self._processRss)
+		rssparser.choiceEnded.connect(self._processRss)
+		rssparser.loadCache()
 	#	self._getAppsByCat()
 	#	self._getBlog()
 	#	self._getAppsedu()
