@@ -5,9 +5,10 @@ import json
 from PySide2.QtWidgets import QLabel, QPushButton,QGridLayout
 from PySide2.QtCore import Qt,Signal,QEvent,QSize
 from PySide2.QtGui import QIcon,QCursor,QMouseEvent,QPixmap,QImage,QPalette,QColor
-from wdg.lblApp import QLabelRebostApp
 import extras.css as css
 from extras.constants import *
+import lib.libhelper as libhelper
+from wdg.lblApp import QLabelRebostApp
 import gettext
 gettext.textdomain('lliurex-store')
 _ = gettext.gettext
@@ -48,6 +49,7 @@ class QPushButtonRebostApp(QPushButton):
 		self.iconUri.setClickable(True)
 		self.iconUri.clicked.connect(self.activate)
 		self.iconUri.setObjectName("iconUri")
+		self.helper=libhelper.helper()
 		self.focusFrame=self._defFrame()
 		#Btn Layout
 		lay=QGridLayout()
@@ -194,7 +196,8 @@ class QPushButtonRebostApp(QPushButton):
 	#def _getInstalledBundle
 
 	def _renderGui(self,*args):
-		self.instBundle=self._getInstalledBundle()
+		#self.instBundle=self._getInstalledBundle()
+		self.instBundle=self.helper.getInstalledBundle(self.app)#self._getInstalledBundle()
 		if self.instBundle!="":
 			self.btn.setText(i18n.get("REMOVE"))
 		if self.app.get("forbidden",False)==True:
@@ -276,7 +279,7 @@ class QPushButtonRebostApp(QPushButton):
 				#if zmd==self.app["name"]==self.app["pkgname"]:
 				#	action="open"
 				#else:
-				self.instBundle=self._getInstalledBundle()
+				self.instBundle=self.helper.getInstalledBundle(self.app)#self._getInstalledBundle()
 				if self.instBundle!="":
 					self.btn.setText(i18n.get("REMOVE"))
 					action="remove"
@@ -322,7 +325,8 @@ class QPushButtonRebostApp(QPushButton):
 			elif self.lockTooltip==False:
 				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
 				self.setToolTip(text)
-		self._setActionForButton()
+		if self.btn.isVisible():
+			self._setActionForButton()
 		self.iconUri.setVisible(True)
 		self.flyIcon=""
 		if self.app.get("unavailable",False)==True:
