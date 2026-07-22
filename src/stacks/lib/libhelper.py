@@ -95,6 +95,8 @@ class helper():
 				elif "status: installed" in l.lower():
 					installed=True
 					break
+		else:
+			installed=False
 		return(installed)
 	#def runZmd
 

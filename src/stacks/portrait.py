@@ -6,10 +6,10 @@ import subprocess
 import json
 import dbus
 import dbus.mainloop.glib
-from PySide2.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
+from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
 							QCheckBox,QListWidgetItem,QSizePolicy
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
 from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
 from wdg.btnRebost import QPushButtonRebostApp
@@ -323,18 +323,18 @@ class portrait(QStackedWindowItem):
 						if wdg.text()==i18n["REMOVE"]:
 							state=8
 					if bundle=="webapp":
-						self._referrerPane=self._globalView
+						self._referrerPane=self._homeView
 						details=self.helper.getAppseduDetails(app["homepage"])
 						app["bundle"]["webapp"]=details["url"]
 						self.runapp.setUrl(app)
 						self.runapp.start()
 					elif bundle!="unknown":
-						self._referrerPane=self._globalView
+						self._referrerPane=self._homeView
 						self._setInstallingState(app,state)
 						self.runapp.setArgs(app,[installer,pkg,bundle])
 						self.runapp.start()
 					else:
-						self._referrerPane=self._globalView
+						self._referrerPane=self._homeView
 						self.zmd.setApp(app)
 						self.zmd.start()
 		except Exception as e:
@@ -941,12 +941,14 @@ class portrait(QStackedWindowItem):
 
 	def _showPane(self,showPane):
 		#if store was loaded from appstream showPane may be unassigned. Check
+		print("SHOW: {}".format(showPane))
 		if showPane==None:
 			showPane=self._globalView
 		for pane in [self._detailView,self._homeView,self._errorView,self._globalView]:
 			if showPane==self._detailView and pane==self._globalView: #flowlayout goes crazy
 				continue
 			if showPane!=pane:
+				print("HIDE: {} {}".format(pane,showPane))
 				pane.hide()
 		#If categories are not populated load them
 		if self.lstCategories.count()<=0:
