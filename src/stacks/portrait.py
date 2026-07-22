@@ -321,9 +321,10 @@ class portrait(QStackedWindowItem):
 				bundle=priority[idx[0]].split(" ")[0]
 		if bundle=="epi":
 			bundle="unknown"
+		act=""
 		if hasattr(wdg,"btn"):
 			act=wdg.btn.text()
-		else:
+		elif hasattr(wdg,"text"):
 			act=wdg.text()
 		self._debug("Selected BUNDLE for {}: {}".format(act,bundle))
 		pkg=app.get('id')
