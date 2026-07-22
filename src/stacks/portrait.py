@@ -941,14 +941,12 @@ class portrait(QStackedWindowItem):
 
 	def _showPane(self,showPane):
 		#if store was loaded from appstream showPane may be unassigned. Check
-		print("SHOW: {}".format(showPane))
 		if showPane==None:
 			showPane=self._globalView
 		for pane in [self._detailView,self._homeView,self._errorView,self._globalView]:
 			if showPane==self._detailView and pane==self._globalView: #flowlayout goes crazy
 				continue
 			if showPane!=pane:
-				print("HIDE: {} {}".format(pane,showPane))
 				pane.hide()
 		#If categories are not populated load them
 		if self.lstCategories.count()<=0:
