@@ -255,7 +255,20 @@ class portrait(QStackedWindowItem):
 				proc=args[1]
 		else:
 			return
-		if proc!=None:
+		if proc==None:
+			self._rebost.blockSignals(True)
+			self._rebost.setAction("refreshApp",app["id"])
+			app=json.loads(self._rebost._refreshApp())[0]
+			self._rebost.blockSignals(False)
+			if len(app["bundle"])>1:
+				if "unknown" in app["bundle"]:
+					app["bundle"].pop("unknown")
+				self.referrerBtn=self.installingBtn
+				self.installingBtn=None
+				self._installApp(self.referrerBtn,app)
+				return
+					
+		elif proc!=None:
 			if isinstance(proc,int)==False:
 				if proc.returncode>1: #app is installed
 					#pkexec ret values
@@ -308,7 +321,11 @@ class portrait(QStackedWindowItem):
 				bundle=priority[idx[0]].split(" ")[0]
 		if bundle=="epi":
 			bundle="unknown"
-		self._debug("Selected BUNDLE for {}: {}".format(wdg.text(),bundle))
+		if hasattr(wdg,"btn"):
+			act=wdg.btn.text()
+		else:
+			act=wdg.text()
+		self._debug("Selected BUNDLE for {}: {}".format(act,bundle))
 		pkg=app.get('id')
 		try:
 			if pkg!="":
@@ -941,14 +958,12 @@ class portrait(QStackedWindowItem):
 
 	def _showPane(self,showPane):
 		#if store was loaded from appstream showPane may be unassigned. Check
-		print("SHOW: {}".format(showPane))
 		if showPane==None:
 			showPane=self._globalView
 		for pane in [self._detailView,self._homeView,self._errorView,self._globalView]:
 			if showPane==self._detailView and pane==self._globalView: #flowlayout goes crazy
 				continue
 			if showPane!=pane:
-				print("HIDE: {} {}".format(pane,showPane))
 				pane.hide()
 		#If categories are not populated load them
 		if self.lstCategories.count()<=0:
