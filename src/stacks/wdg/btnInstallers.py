@@ -178,6 +178,12 @@ class QPushButtonInstaller(QPushButton):
 				if int(state)==0 and bundle in bundles: #zmd are of kind unknown, but installs as packagekind
 					installBundle=bundle
 					break
+				elif "unknown" in bundles and int(state)==0:
+					if bundles["unknown"]!=self.app["id"]: #if == then seems a zmd, fake it
+						installBundle=bundle
+						if installBundle not in bundles:
+							bundles[installBundle]=self.app["id"]
+						break
 		if installBundle!="":
 			if bundles[installBundle]==bundles.get("unknown","") and len(bundles)>1:
 				installBundle=""
@@ -215,7 +221,7 @@ class QPushButtonInstaller(QPushButton):
 				#if zmd==self.app["name"]==self.app["pkgname"]:
 				#	action="open"
 				#else:
-				self.instBundle=self._getInstalledBundle()
+				self.instBundle=self.helper.getInstalledBundle(self.app)#self._getInstalledBundle()
 				if self.instBundle!="":
 					self.setText(i18n.get("REMOVE"))
 					action="remove"
