@@ -1,3 +1,9 @@
+lliurex-store (1.7.6) noble; urgency=medium
+
+  * Add helper for adding contents from new epis installed from pkgs
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 22 Jul 2026 11:56:51 +0200
+
 lliurex-store (1.7.5) noble; urgency=medium
 
   * Init threads for appstream as early as possible
