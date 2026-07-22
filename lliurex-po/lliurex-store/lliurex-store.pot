@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-08 13:50+0200\n"
+"POT-Creation-Date: 2026-07-22 11:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,72 +16,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ../src/stacks/barButtons.py:15 ../src/stacks/paneGlobalView.py:15
-#: ../src/stacks/portrait.py:35
-msgid "All"
-msgstr ""
-
-#: ../src/stacks/barButtons.py:16
-msgid "Go to portrait"
-msgstr ""
-
-#: ../src/stacks/barButtons.py:17
-msgid "Show installed apps"
-msgstr ""
-
-#: ../src/stacks/barButtons.py:18
-msgid "Origin"
-msgstr ""
-
-#: ../src/stacks/barButtons.py:19
-msgid "Click: Show only from"
-msgstr ""
-
-#: ../src/stacks/barButtons.py:20
-msgid "Click: Show all applications"
-msgstr ""
-
-#: ../src/stacks/barButtons.py:21
-msgid "Reload applications"
-msgstr ""
-
-#: ../src/stacks/btnInstallers.py:15 ../src/stacks/btnRebost.py:16
-msgid "Assisted"
-msgstr ""
-
-#: ../src/stacks/btnInstallers.py:16
-msgid "What's this?"
-msgstr ""
-
-#: ../src/stacks/btnInstallers.py:17 ../src/stacks/btnRebost.py:17
-#: ../src/stacks/cmbBtn.py:10 ../src/stacks/lblApp.py:14
-#: ../src/stacks/paneDetailView.py:33
-msgid "Install"
-msgstr ""
-
-#: ../src/stacks/btnInstallers.py:18 ../src/stacks/btnRebost.py:18
-msgid "Z-Install"
-msgstr ""
-
-#: ../src/stacks/btnInstallers.py:19 ../src/stacks/btnRebost.py:19
-#: ../src/stacks/paneDetailView.py:38 ../src/stacks/portrait.py:57
-msgid "Remove"
-msgstr ""
-
-#: ../src/stacks/btnInstallers.py:20 ../src/stacks/btnRebost.py:20
-#: ../src/stacks/paneDetailView.py:42
-msgid "Blocked"
-msgstr ""
-
-#: ../src/stacks/btnInstallers.py:21 ../src/stacks/btnRebost.py:21
-#: ../src/stacks/paneDetailView.py:43
-msgid "Unavailable"
-msgstr ""
-
-#: ../src/stacks/btnInstallers.py:22 ../src/stacks/btnRebost.py:22
-msgid "Web app"
-msgstr ""
 
 #: ../src/stacks/paneDetailView.py:24
 msgid ""
@@ -123,6 +57,10 @@ msgstr ""
 msgid "For more info go to"
 msgstr ""
 
+#: ../src/stacks/paneDetailView.py:33
+msgid "Install"
+msgstr ""
+
 #: ../src/stacks/paneDetailView.py:34
 msgid "More apps"
 msgstr ""
@@ -139,6 +77,10 @@ msgstr ""
 msgid "Release"
 msgstr ""
 
+#: ../src/stacks/paneDetailView.py:38 ../src/stacks/portrait.py:57
+msgid "Remove"
+msgstr ""
+
 #: ../src/stacks/paneDetailView.py:39
 msgid "Open"
 msgstr ""
@@ -151,6 +93,14 @@ msgstr ""
 msgid "Website"
 msgstr ""
 
+#: ../src/stacks/paneDetailView.py:42
+msgid "Blocked"
+msgstr ""
+
+#: ../src/stacks/paneDetailView.py:43
+msgid "Unavailable"
+msgstr ""
+
 #: ../src/stacks/paneErrorView.py:13 ../src/stacks/portrait.py:63
 msgid "Store was unable to get information from internet"
 msgstr ""
@@ -161,6 +111,10 @@ msgstr ""
 
 #: ../src/stacks/paneErrorView.py:15
 msgid "Go to store anyway"
+msgstr ""
+
+#: ../src/stacks/paneGlobalView.py:15 ../src/stacks/portrait.py:35
+msgid "All"
 msgstr ""
 
 #: ../src/stacks/paneGlobalView.py:16 ../src/stacks/portrait.py:58
@@ -255,16 +209,16 @@ msgstr ""
 msgid "Updates available"
 msgstr ""
 
-#: ../src/stacks/prgBar.py:15
-msgid "Downloading information, wait a moment..."
+#: ../src/helper/addEpi.py:13
+msgid "includes more than one package.<br>What to do?"
 msgstr ""
 
-#: ../src/stacks/prgBar.py:16
-msgid "Upgrading application database"
+#: ../src/helper/addEpi.py:14
+msgid "Install later"
 msgstr ""
 
-#: ../src/stacks/prgBar.py:20
-msgid "Loading available applications"
+#: ../src/helper/addEpi.py:15
+msgid "Install one"
 msgstr ""
 
 

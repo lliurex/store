@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-08 13:50+0200\n"
-"PO-Revision-Date: 2026-05-08 13:50+0200\n"
+"POT-Creation-Date: 2026-07-22 11:59+0200\n"
+"PO-Revision-Date: 2026-07-22 12:04+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -16,73 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
-
-#: ../src/stacks/barButtons.py:15 ../src/stacks/paneGlobalView.py:15
-#: ../src/stacks/portrait.py:35
-msgid "All"
-msgstr "Tot"
-
-#: ../src/stacks/barButtons.py:16
-msgid "Go to portrait"
-msgstr "Portada"
-
-#: ../src/stacks/barButtons.py:17
-msgid "Show installed apps"
-msgstr "Programari instaŀlat"
-
-#: ../src/stacks/barButtons.py:18
-msgid "Origin"
-msgstr "Origen"
-
-#: ../src/stacks/barButtons.py:19
-msgid "Click: Show only from"
-msgstr "Click: Restringir a"
-
-#: ../src/stacks/barButtons.py:20
-msgid "Click: Show all applications"
-msgstr "Click: Mostrar tot"
-
-#: ../src/stacks/barButtons.py:21
-msgid "Reload applications"
-msgstr "Refrescar botiga"
-
-#: ../src/stacks/btnInstallers.py:15 ../src/stacks/btnRebost.py:16
-msgid "Assisted"
-msgstr "Atesa"
-
-#: ../src/stacks/btnInstallers.py:16
-msgid "What's this?"
-msgstr "Què és açò?"
-
-#: ../src/stacks/btnInstallers.py:17 ../src/stacks/btnRebost.py:17
-#: ../src/stacks/cmbBtn.py:10 ../src/stacks/lblApp.py:14
-#: ../src/stacks/paneDetailView.py:33
-msgid "Install"
-msgstr "Instal·la"
-
-#: ../src/stacks/btnInstallers.py:18 ../src/stacks/btnRebost.py:18
-msgid "Z-Install"
-msgstr "Instal·la"
-
-#: ../src/stacks/btnInstallers.py:19 ../src/stacks/btnRebost.py:19
-#: ../src/stacks/paneDetailView.py:38 ../src/stacks/portrait.py:57
-msgid "Remove"
-msgstr "Elimina"
-
-#: ../src/stacks/btnInstallers.py:20 ../src/stacks/btnRebost.py:20
-#: ../src/stacks/paneDetailView.py:42
-msgid "Blocked"
-msgstr "Bloquejada"
-
-#: ../src/stacks/btnInstallers.py:21 ../src/stacks/btnRebost.py:21
-#: ../src/stacks/paneDetailView.py:43
-msgid "Unavailable"
-msgstr "Pendent"
-
-#: ../src/stacks/btnInstallers.py:22 ../src/stacks/btnRebost.py:22
-msgid "Web app"
-msgstr "Web app"
+"X-Generator: Poedit 3.4.2\n"
 
 #: ../src/stacks/paneDetailView.py:24
 msgid ""
@@ -129,6 +63,10 @@ msgstr "App no autoritzada"
 msgid "For more info go to"
 msgstr "Per a més informació anar a"
 
+#: ../src/stacks/paneDetailView.py:33
+msgid "Install"
+msgstr "Instal·la"
+
 #: ../src/stacks/paneDetailView.py:34
 msgid "More apps"
 msgstr "Més apps"
@@ -145,6 +83,10 @@ msgstr "Obrint"
 msgid "Release"
 msgstr "Versió"
 
+#: ../src/stacks/paneDetailView.py:38 ../src/stacks/portrait.py:57
+msgid "Remove"
+msgstr "Elimina"
+
 #: ../src/stacks/paneDetailView.py:39
 msgid "Open"
 msgstr "Obri"
@@ -157,6 +99,14 @@ msgstr "Mostrar en Appsedu"
 msgid "Website"
 msgstr "Lloc web"
 
+#: ../src/stacks/paneDetailView.py:42
+msgid "Blocked"
+msgstr "Bloquejada"
+
+#: ../src/stacks/paneDetailView.py:43
+msgid "Unavailable"
+msgstr "Pendent"
+
 #: ../src/stacks/paneErrorView.py:13 ../src/stacks/portrait.py:63
 msgid "Store was unable to get information from internet"
 msgstr "Sembla que no hi ha connexió a internet"
@@ -168,6 +118,10 @@ msgstr "Configurar accés a la xarxa"
 #: ../src/stacks/paneErrorView.py:15
 msgid "Go to store anyway"
 msgstr "Anar a la botiga"
+
+#: ../src/stacks/paneGlobalView.py:15 ../src/stacks/portrait.py:35
+msgid "All"
+msgstr "Tot"
 
 #: ../src/stacks/paneGlobalView.py:16 ../src/stacks/portrait.py:58
 msgid "Search"
@@ -261,17 +215,17 @@ msgstr "Actualitzables"
 msgid "Updates available"
 msgstr "Actualitzacions disponibles"
 
-#: ../src/stacks/prgBar.py:15
-msgid "Downloading information, wait a moment..."
-msgstr "Descarregant informació, espere un moment..."
+#: ../src/helper/addEpi.py:13
+msgid "includes more than one package.<br>What to do?"
+msgstr "inclou mès d'una aplicació.<br>¿Que fer?"
 
-#: ../src/stacks/prgBar.py:16
-msgid "Upgrading application database"
-msgstr "Actualitzant la base de dades de les aplicacions"
+#: ../src/helper/addEpi.py:14
+msgid "Install later"
+msgstr "Instaŀlar mès tard"
 
-#: ../src/stacks/prgBar.py:20
-msgid "Loading available applications"
-msgstr "Carregant els catàlegs d'aplicacions"
+#: ../src/helper/addEpi.py:15
+msgid "Install one"
+msgstr "Obrir"
 
 msgid "AudioVideo"
 msgstr "Vídeo i so"
@@ -645,6 +599,45 @@ msgstr "Editors de text"
 
 msgid "Authentication is required to manage software"
 msgstr "Cal autenticar-se per a gestionar l'aplicació"
+
+#~ msgid "Go to portrait"
+#~ msgstr "Portada"
+
+#~ msgid "Show installed apps"
+#~ msgstr "Programari instaŀlat"
+
+#~ msgid "Origin"
+#~ msgstr "Origen"
+
+#~ msgid "Click: Show only from"
+#~ msgstr "Click: Restringir a"
+
+#~ msgid "Click: Show all applications"
+#~ msgstr "Click: Mostrar tot"
+
+#~ msgid "Reload applications"
+#~ msgstr "Refrescar botiga"
+
+#~ msgid "Assisted"
+#~ msgstr "Atesa"
+
+#~ msgid "What's this?"
+#~ msgstr "Què és açò?"
+
+#~ msgid "Z-Install"
+#~ msgstr "Instal·la"
+
+#~ msgid "Web app"
+#~ msgstr "Web app"
+
+#~ msgid "Downloading information, wait a moment..."
+#~ msgstr "Descarregant informació, espere un moment..."
+
+#~ msgid "Upgrading application database"
+#~ msgstr "Actualitzant la base de dades de les aplicacions"
+
+#~ msgid "Loading available applications"
+#~ msgstr "Carregant els catàlegs d'aplicacions"
 
 #~ msgid "There're upgrades available"
 #~ msgstr "Hi han actualitzacions pendents"
