@@ -96,7 +96,7 @@ class helper():
 					installed=True
 					break
 		else:
-			installed=False
+			installed=None
 		return(installed)
 	#def runZmd
 
