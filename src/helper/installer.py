@@ -12,10 +12,11 @@ class epiFile():
 		except Exception as e:
 			print(e)
 		if bundle=="package" and pkg.startswith("zero-lliurex"):
-			postaction="epic -u -nc install $(dpkg -L {} | grep [.]epi$)".format(pkg)
+			#postaction="/usr/share/store/helper/epiStep.py {}".format(pkg)
+			postaction="/usr/share/store/helper/addEpi.py $(dpkg -L {} | grep [.]epi$)".format(pkg)
 		episcript=self._shForEpi(epiJson,app,pkg,bundle,postaction)
 		return(epiJson,episcript)
-	#def epiFromPkg
+	#def epiForPkg
 		
 	def _jsonForEpi(self,tmpDir,app,pkg,bundle):
 		epiJson="{}_{}.epi".format(os.path.join(tmpDir.name,app.get("id").replace(".","_")),bundle)
