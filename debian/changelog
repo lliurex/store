@@ -1,6 +1,7 @@
-lliurex-store (1.7.6.1) noble; urgency=medium
+lliurex-store (1.7.6.2) noble; urgency=medium
 
   * Fix install/uninstall mismatched bundle (#1835)
+  * Fix typo in getBundlesPriority
 
  -- Juanma1980 <juanma1980@gmail.com>  Thu, 30 Jul 2026 13:15:56 +0200
 
