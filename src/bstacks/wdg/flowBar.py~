@@ -1,0 +1,121 @@
+#!/usr/bin/python3
+import json
+from PySide6.QtCore import Qt,QSize
+from PySide6.QtWidgets import QScrollArea,QHBoxLayout,QWidget,QGridLayout,QPushButton,QHeaderView,QSizePolicy
+from PySide6.QtGui import QIcon
+from QtExtraWidgets import QTableTouchWidget,QPushInfoButton
+from rebost import store
+from lib import rss
+
+class QFlowBar(QScrollArea):
+	def __init__(self,*args,parent=None,**kwargs):
+		QScrollArea.__init__(self, parent)
+		wdg=QWidget()
+		lay=QGridLayout(wdg)
+		lay.setContentsMargins(0,0,0,0)
+		lay.setSpacing(0)
+		self.setWidgetResizable(True)
+		self.table=QTableTouchWidget()
+		self.table.setColumnCount(0)
+		self.table.setRowCount(0)
+		self.table.setRowCount(1)
+		lay.addWidget(self.table,0,1,1,1)
+		self.btnPrev=QPushButton()
+		self.btnPrev.setIcon(QIcon.fromTheme("go-previous"))
+		self.btnPrev.clicked.connect(self._movePrev)
+		lay.addWidget(self.btnPrev,0,0,1,1,Qt.AlignLeft)
+		self.btnNext=QPushButton()
+		self.btnNext.clicked.connect(self._moveNext)
+		self.btnNext.setIcon(QIcon.fromTheme("go-next"))
+		lay.addWidget(self.btnNext,0,2,1,1,Qt.AlignRight)
+		self.setWidget(wdg)
+		self.table.horizontalHeader().hide()
+		self.table.verticalHeader().hide()
+		self.table.setShowGrid(False)
+		self.rebost=store.client()
+		self.content={}
+		self.rss=rss.rssParser()
+		self.rss.blogEnded.connect(self.updateScreen)
+		self.rss.choiceEnded.connect(self.updateScreen)
+		self.focusChain=[]
+	#def __init__
+
+	def _moveNext(self):
+		tsize=self.table.columnCount()*self.table.columnWidth(0)
+		tpos=self.table.horizontalScrollBar().value()
+		npos=min(tsize,tpos+self.table.columnWidth(0)-self.btnNext.iconSize().width())
+		self.table.horizontalScrollBar().setValue(npos)
+	#def _moveNext
+
+	def _movePrev(self):
+		tpos=self.table.horizontalScrollBar().value()
+		npos=max(0,tpos-self.table.columnWidth(0)+self.btnPrev.iconSize().width())
+		self.table.horizontalScrollBar().setValue(npos)
+	#def _movePrev
+
+	def loadBlog(self):
+		self.rss.feed="blog"
+		self.overlay=True
+		self.btnNext.hide()
+		self.btnPrev.hide()
+		self.rss.loadCache()
+		self.rss.start()
+	#def loadBlog
+
+	def loadChoice(self):
+		self.rss.feed="lliurexnet"
+		self.overlay=False
+		self.table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.rss.loadCache()
+		self.rss.start()
+	#def loadBlog
+
+	def updateScreen(self,*args):
+		if len(args)==2:
+			if args[0]!=self.rss.feed:
+				return
+			bheight=0
+			if isinstance(args[1],dict):
+				for idx,data in args[1].items():
+					if data.get("title","").replace(" ","") in self.content.get(args[0],[]):
+						continue
+
+					if args[0] not in self.content.keys():
+						self.content[args[0]]=[]
+					self.content[args[0]].append(data.get("title","").replace(" ",""))
+					self.table.setColumnCount(self.table.columnCount()+1)
+					wdg=QWidget()
+					lay=QHBoxLayout(wdg)
+					btn=QPushInfoButton(overlay=self.overlay)
+					btn.setText(data.get("title"))
+					wsize=self.width()
+					if self.overlay==False:
+						app=json.loads(self.rebost.showApp(btn.text()))
+						if len(app)>0:
+							data.update({"summary":app[0]["description"]})
+						wsize=int(self.width()/3)
+						btn.defaultSize=64
+						if self.table.columnCount()>1:
+							lay.addSpacing(25)
+					else:
+						btn.label.setAlignment(Qt.AlignLeft)
+					img=data.get("img")
+					btn.loadImg(img)
+					btn.setDescription(data.get("summary"))
+					btn.setFixedWidth(wsize-5)
+					lay.addWidget(btn)
+					self.table.setCellWidget(0,self.table.columnCount()-1,wdg)
+					self.table.setColumnWidth(self.table.columnCount()-1,wsize)
+					if bheight==0:
+						bheight=btn.height()
+			if self.overlay==False and bheight!=0:
+				self.table.setFixedHeight(bheight+20)
+				self.table.setRowHeight(0,bheight+10)
+			else:
+				self.table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
+		self.btnNext.setIconSize(QSize(32,self.table.rowHeight(0)))
+		self.btnPrev.setIconSize(QSize(32,self.table.rowHeight(0)))
+	#def updateScreen
+		
+

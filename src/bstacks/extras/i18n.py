@@ -1,0 +1,37 @@
+#!/usr/bin/python3
+import gettext
+_ = gettext.gettext
+
+i18n={
+	"ALL":_("All"),
+	"AVAILABLE":_("Available"),
+	"CATEGORIESDSC":_("Filter by category"),
+	"CERTIFIED":_("Certified by Appsedu"),
+	"CHOICE":_("LliureX choices"),
+	"CONFIG":_("Portrait"),
+	"DESC":_("Navigate through all applications"),
+	"ERRNOTFOUND":_("Could not open"),
+	"ERRLAUNCH":_("Error opening"),
+	"ERRMORETHANONE":_("There's another action in progress"),
+	"ERRUNAUTHORIZED":_("Authorization is required"),
+	"ERRSYSTEMAPP":_("System apps can't be removed"),
+	"ERRUNKNOWN":_("Unknown error"),
+	"FILTERS":_("Filters"),
+	"FILTERSDSC":_("Filter by formats and states"),
+	"HOME":_("Home"),
+	"HOMEDSC":_("Main page"),
+	"INSTALLED":_("Installed"),
+	"LLXUP":_("Launch LliurexUp"),
+	"MENU":_("Show applications"),
+	"NEWDATA":_("Updating info"),
+	"OPEN":_("Z·Install"),
+	"REFRESH":_("Reload Apps"),
+	"REMOVE":_("Remove"),
+	"SEARCH":_("Search"),
+	"SORTDSC":_("Sort alphabetically"),
+	"TOOLTIP":_("Portrait"),
+	"UPGRADABLE":_("Upgradables"),
+	"UPGRADES":_("Updates available"),
+	"CHK_NETWORK":_("Store was unable to get information from internet"),
+	"OPN_NETWORK":_("Open network settings")
+	}
