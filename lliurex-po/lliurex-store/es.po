@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-08 13:50+0200\n"
-"PO-Revision-Date: 2026-05-08 13:51+0200\n"
+"POT-Creation-Date: 2026-07-22 11:59+0200\n"
+"PO-Revision-Date: 2026-07-22 12:05+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -11,74 +11,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.4.2\n"
 "X-Poedit-Basepath: .\n"
-
-#: ../src/stacks/barButtons.py:15 ../src/stacks/paneGlobalView.py:15
-#: ../src/stacks/portrait.py:35
-msgid "All"
-msgstr "Todo"
-
-#: ../src/stacks/barButtons.py:16
-msgid "Go to portrait"
-msgstr "Portada"
-
-#: ../src/stacks/barButtons.py:17
-msgid "Show installed apps"
-msgstr "Aplicaciones instaladas"
-
-#: ../src/stacks/barButtons.py:18
-msgid "Origin"
-msgstr "Origen"
-
-#: ../src/stacks/barButtons.py:19
-msgid "Click: Show only from"
-msgstr "Click: Restringir a"
-
-#: ../src/stacks/barButtons.py:20
-msgid "Click: Show all applications"
-msgstr "Click: Mostrar todo"
-
-#: ../src/stacks/barButtons.py:21
-msgid "Reload applications"
-msgstr "Refrescar tienda"
-
-#: ../src/stacks/btnInstallers.py:15 ../src/stacks/btnRebost.py:16
-msgid "Assisted"
-msgstr "Asistida"
-
-#: ../src/stacks/btnInstallers.py:16
-msgid "What's this?"
-msgstr "Que es açò?"
-
-#: ../src/stacks/btnInstallers.py:17 ../src/stacks/btnRebost.py:17
-#: ../src/stacks/cmbBtn.py:10 ../src/stacks/lblApp.py:14
-#: ../src/stacks/paneDetailView.py:33
-msgid "Install"
-msgstr "Instala"
-
-#: ../src/stacks/btnInstallers.py:18 ../src/stacks/btnRebost.py:18
-msgid "Z-Install"
-msgstr "Instala"
-
-#: ../src/stacks/btnInstallers.py:19 ../src/stacks/btnRebost.py:19
-#: ../src/stacks/paneDetailView.py:38 ../src/stacks/portrait.py:57
-msgid "Remove"
-msgstr "Elimina"
-
-#: ../src/stacks/btnInstallers.py:20 ../src/stacks/btnRebost.py:20
-#: ../src/stacks/paneDetailView.py:42
-msgid "Blocked"
-msgstr "Bloqueada"
-
-#: ../src/stacks/btnInstallers.py:21 ../src/stacks/btnRebost.py:21
-#: ../src/stacks/paneDetailView.py:43
-msgid "Unavailable"
-msgstr "Pendiente"
-
-#: ../src/stacks/btnInstallers.py:22 ../src/stacks/btnRebost.py:22
-msgid "Web app"
-msgstr "Web app"
 
 #: ../src/stacks/paneDetailView.py:24
 msgid ""
@@ -125,6 +59,10 @@ msgstr "App no autorizada"
 msgid "For more info go to"
 msgstr "Para más información ir a"
 
+#: ../src/stacks/paneDetailView.py:33
+msgid "Install"
+msgstr "Instala"
+
 #: ../src/stacks/paneDetailView.py:34
 msgid "More apps"
 msgstr "Mès apps"
@@ -141,6 +79,10 @@ msgstr "Abriendo"
 msgid "Release"
 msgstr "Versión"
 
+#: ../src/stacks/paneDetailView.py:38 ../src/stacks/portrait.py:57
+msgid "Remove"
+msgstr "Elimina"
+
 #: ../src/stacks/paneDetailView.py:39
 msgid "Open"
 msgstr "Abre"
@@ -153,6 +95,14 @@ msgstr "Mostrar en Appsedu"
 msgid "Website"
 msgstr "Sitio web"
 
+#: ../src/stacks/paneDetailView.py:42
+msgid "Blocked"
+msgstr "Bloqueada"
+
+#: ../src/stacks/paneDetailView.py:43
+msgid "Unavailable"
+msgstr "Pendiente"
+
 #: ../src/stacks/paneErrorView.py:13 ../src/stacks/portrait.py:63
 msgid "Store was unable to get information from internet"
 msgstr "No parece haber conexión a internet"
@@ -164,6 +114,10 @@ msgstr "Configurar acceso a internet"
 #: ../src/stacks/paneErrorView.py:15
 msgid "Go to store anyway"
 msgstr "Ir a la tienda"
+
+#: ../src/stacks/paneGlobalView.py:15 ../src/stacks/portrait.py:35
+msgid "All"
+msgstr "Todo"
 
 #: ../src/stacks/paneGlobalView.py:16 ../src/stacks/portrait.py:58
 msgid "Search"
@@ -257,17 +211,17 @@ msgstr "Actualizables"
 msgid "Updates available"
 msgstr "Actualizaciones disponibles"
 
-#: ../src/stacks/prgBar.py:15
-msgid "Downloading information, wait a moment..."
-msgstr "Descargando información, espere un momento..."
+#: ../src/helper/addEpi.py:13
+msgid "includes more than one package.<br>What to do?"
+msgstr "incluye más de una aplicación.<br>¿Que hacer?"
 
-#: ../src/stacks/prgBar.py:16
-msgid "Upgrading application database"
-msgstr "Actualizando la base de datos de las aplicaciones"
+#: ../src/helper/addEpi.py:14
+msgid "Install later"
+msgstr "Instalar más tarde"
 
-#: ../src/stacks/prgBar.py:20
-msgid "Loading available applications"
-msgstr "Cargando el catálogo de aplicaciones"
+#: ../src/helper/addEpi.py:15
+msgid "Install one"
+msgstr "Abrir"
 
 msgid "AudioVideo"
 msgstr "Sonido y Video"
@@ -641,6 +595,45 @@ msgstr "Editores de texto"
 
 msgid "Authentication is required to manage software"
 msgstr "Es necesario autenticarse para gestionar la aplicación"
+
+#~ msgid "Go to portrait"
+#~ msgstr "Portada"
+
+#~ msgid "Show installed apps"
+#~ msgstr "Aplicaciones instaladas"
+
+#~ msgid "Origin"
+#~ msgstr "Origen"
+
+#~ msgid "Click: Show only from"
+#~ msgstr "Click: Restringir a"
+
+#~ msgid "Click: Show all applications"
+#~ msgstr "Click: Mostrar todo"
+
+#~ msgid "Reload applications"
+#~ msgstr "Refrescar tienda"
+
+#~ msgid "Assisted"
+#~ msgstr "Asistida"
+
+#~ msgid "What's this?"
+#~ msgstr "Que es açò?"
+
+#~ msgid "Z-Install"
+#~ msgstr "Instala"
+
+#~ msgid "Web app"
+#~ msgstr "Web app"
+
+#~ msgid "Downloading information, wait a moment..."
+#~ msgstr "Descargando información, espere un momento..."
+
+#~ msgid "Upgrading application database"
+#~ msgstr "Actualizando la base de datos de las aplicaciones"
+
+#~ msgid "Loading available applications"
+#~ msgstr "Cargando el catálogo de aplicaciones"
 
 #~ msgid "There're upgrades available"
 #~ msgstr "Hay actualizaciones pendientes"
