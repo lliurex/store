@@ -301,6 +301,78 @@ class portrait(QStackedWindowItem):
 		return(app)
 	#def _setInstallingState
 
+	def _getBundlesPriority(self,app):
+		bundles=[]
+		priority=self.helper.getBundlesByPriority(app)
+		idx=list(priority.keys())
+		idx.sort()
+		print(priority)
+		for i in idx:
+			bundles.append(priority[i].split(" ")[0])
+		if len(bundles)==0:
+			bundles=[""]
+		return(bundles)
+	#def _getBundlesPriority
+
+	def _getBundleFromPriority(self,app):
+		bundle=self._getBundlePriority(app)[0]
+		return(bundle)
+	#def _getBundleFromPriority
+
+	def _getCandidateBundle(self,wdg,app):
+		bundle=""
+		if hasattr(wdg,"instBundle"):
+			if len(wdg.instBundle)>0:
+				bundle=wdg.instBundle
+		if len(bundle)==0:
+			bundle=self._getBundleFromPriority(app)
+		return(bundle)
+	#def _getCandidateBundle(self,wdg,app):
+
+	def _checkBundleStatus(self,wdg,bundle,app):
+		act=""
+		if isinstance(wdg,QPushButtonRebostApp):
+			act=wdg.btn.text()
+		elif hasattr(wdg,"text"):
+			act=wdg.text()
+		if act==i18n["REMOVE"]:
+			#If is uninstalled or non existent get a valid one
+			if app["status"].get(bundle,"1")!="0":
+				bundles=self._getBundlesPriority(app)
+				for bun in bundles:
+					if app["status"].get(bun,1)==0:
+						bundle=bun
+						break
+		elif act==i18n["INSTALL"]:
+			#If is installed get a valid one
+			if app["status"].get(bundle,1)!=1: 
+				bundles=self._getBundlesPriority(app)
+				for bun in bundles:
+					if app["status"].get(bun,"1")!="1": 
+						bundle=bun
+						break
+		return(bundle)
+	#def _checkBundleStatus
+
+	def _invokeInstaller(self,app,pkg,bundle,installer,state):
+		if bundle=="webapp":
+			self._referrerPane=self._homeView
+			details=self.helper.getAppseduDetails(app["homepage"])
+			app["bundle"]["webapp"]=details["url"]
+			self.runapp.setUrl(app)
+			self.runapp.start()
+		elif bundle!="unknown":
+			self._referrerPane=self._homeView
+			self._setInstallingState(app,state)
+			self.runapp.setArgs(app,[installer,pkg,bundle])
+			self.runapp.start()
+		else:
+			self._referrerPane=self._homeView
+			self.zmd.setApp(app)
+			self.zmd.start()
+		return
+	#def _invokeInstaller
+
 	def _installApp(self,*args): #(btn,app,[bundle])
 		if self.installingBtn!=None:
 			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.installingBtn.app["name"].capitalize(),timeout=4)
@@ -311,22 +383,11 @@ class portrait(QStackedWindowItem):
 		if len(args)>2:
 			bundle=args[2]
 		else:
-			if hasattr(wdg,"instBundle"):
-				if len(wdg.instBundle)>0:
-					bundle=wdg.instBundle
-			if len(bundle)==0:
-				priority=self.helper.getBundlesByPriority(app)
-				idx=list(priority.keys())
-				idx.sort()
-				bundle=priority[idx[0]].split(" ")[0]
+			bundle=self._getCandidateBundle(wdg,app)
 		if bundle=="epi":
 			bundle="unknown"
-		act=""
-		if hasattr(wdg,"btn"):
-			act=wdg.btn.text()
-		elif hasattr(wdg,"text"):
-			act=wdg.text()
-		self._debug("Selected BUNDLE for {}: {}".format(act,bundle))
+		self._debug("Selected BUNDLE {}".format(bundle))
+		bundle=self._checkBundleStatus(wdg,bundle,app)
 		pkg=app.get('id')
 		try:
 			if pkg!="":
@@ -340,21 +401,7 @@ class portrait(QStackedWindowItem):
 					elif hasattr(wdg,"text"):
 						if wdg.text()==i18n["REMOVE"]:
 							state=8
-					if bundle=="webapp":
-						self._referrerPane=self._homeView
-						details=self.helper.getAppseduDetails(app["homepage"])
-						app["bundle"]["webapp"]=details["url"]
-						self.runapp.setUrl(app)
-						self.runapp.start()
-					elif bundle!="unknown":
-						self._referrerPane=self._homeView
-						self._setInstallingState(app,state)
-						self.runapp.setArgs(app,[installer,pkg,bundle])
-						self.runapp.start()
-					else:
-						self._referrerPane=self._homeView
-						self.zmd.setApp(app)
-						self.zmd.start()
+					self._invokeInstaller(app,pkg,bundle,installer,state)
 		except Exception as e:
 			print(e)
 		return
