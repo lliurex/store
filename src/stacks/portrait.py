@@ -6,10 +6,10 @@ import subprocess
 import json
 import dbus
 import dbus.mainloop.glib
-from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
+from PySide2.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
 							QCheckBox,QListWidgetItem,QSizePolicy
-from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
+from PySide2 import QtGui
+from PySide2.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
 from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
 from wdg.btnRebost import QPushButtonRebostApp
@@ -48,6 +48,7 @@ i18n={
 	"FILTERSDSC":_("Filter by formats and states"),
 	"HOME":_("Home"),
 	"HOMEDSC":_("Main page"),
+	"INSTALL":_("Install"),
 	"INSTALLED":_("Installed"),
 	"LLXUP":_("Launch LliurexUp"),
 	"MENU":_("Show applications"),
@@ -306,7 +307,6 @@ class portrait(QStackedWindowItem):
 		priority=self.helper.getBundlesByPriority(app)
 		idx=list(priority.keys())
 		idx.sort()
-		print(priority)
 		for i in idx:
 			bundles.append(priority[i].split(" ")[0])
 		if len(bundles)==0:
@@ -315,7 +315,7 @@ class portrait(QStackedWindowItem):
 	#def _getBundlesPriority
 
 	def _getBundleFromPriority(self,app):
-		bundle=self._getBundlePriority(app)[0]
+		bundle=self._getBundlesPriority(app)[0]
 		return(bundle)
 	#def _getBundleFromPriority
 

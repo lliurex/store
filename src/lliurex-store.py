@@ -2,9 +2,9 @@
 import sys
 import os
 import json
-from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import Qt
-from PySide6 import QtGui
+from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import Qt
+from PySide2 import QtGui
 from QtExtraWidgets import QStackedWindow
 import gettext
 gettext.textdomain('lliurex-store')
@@ -43,4 +43,4 @@ mw.setStyleSheet("""QWidget#MAIN{background:#002c4f; color:#FFFFFF;margin:0px;pa
 mw.setMinimumWidth(int(w*0.9))
 mw.setMinimumHeight(int(h*0.9))
 mw.show()
-app.exec()
+app.exec_()

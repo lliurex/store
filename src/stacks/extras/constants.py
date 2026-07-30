@@ -1,6 +1,6 @@
 #/usr/bin/python3
 import os
-from PySide6.QtWidgets import QApplication
+from PySide2.QtWidgets import QApplication
 
 MINTIME=0.5
 LAYOUT="appsedu"
