@@ -92,7 +92,8 @@ class QFlowBar(QScrollArea):
 			gradient.setColorAt(1, QColor(lcolor))
 			painter.fillRect(self.rect(), gradient)
 			painter.setPen(Qt.white)
-			painter.drawText(self.rect(), Qt.AlignCenter, self.text())
+			painter.drawText(self.rect(), Qt.AlignCenter|Qt.AlignCenter, self.text())
+			painter.end()
 
 		btn=QPushButton()
 		hcolor=data["img"]
@@ -135,7 +136,7 @@ class QFlowBar(QScrollArea):
 				self.table.setRowHeight(0,bheight+10)
 			elif bheight==0:
 				self.table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
-		self.btnNext.setIconSize(QSize(32,self.table.rowHeight(0)))
+		self.btnNext.setIconSize(QSize(32,self.table.rowHeight(0)/2))
 		self.btnPrev.setIconSize(self.btnNext.iconSize())
 	#def updateScreen
 		

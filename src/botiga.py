@@ -35,7 +35,7 @@ mw.setBanner("/usr/share/botiga/rsrc/bbanner.svg")
 #Get screen size available for us
 (w,h) = app.primaryScreen().size().toTuple()
 mw.setMinimumWidth(int(w*0.5))
-mw.setMinimumHeight(int(h*0.6))
+mw.setMinimumHeight(int(h*0.7))
 mw.lblBanner.setPixmap(mw.lblBanner.pixmap().scaled(w*0.15,h*0.07))
 mw.show()
 app.exec()

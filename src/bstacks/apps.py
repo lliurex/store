@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt
 from QtExtraWidgets import QSearchBox,QFlowTouchWidget,QPushInfoButton
 from extras.i18n import *
 from extras.constants import *
+from wdg import btnApp
 
 class QAppsPane(QWidget):
 	def __init__(self,*args,parent=None,**kwargs):
@@ -51,10 +52,7 @@ class QAppsPane(QWidget):
 		apps=json.loads(self.rebost.searchApp(args[0]))
 		if len(apps)>0:
 			for app in apps:
-				btn=QPushInfoButton(scroll=True)
-				btn.loadImg(app["icon"])
-				btn.setText(app["name"])
-				btn.setDescription(app["summary"])
+				btn=btnApp.QAppButton(app)
 				self.flow.addWidget(btn)
 				btn.setMinimumWidth((self.width()+9*SPACING)/3)
 		self.flow.repaint()

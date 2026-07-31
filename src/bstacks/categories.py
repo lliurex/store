@@ -8,10 +8,10 @@ class catsBar(QFlowBar):
 	def __init__(self,*args,parent=None,**kwargs):
 		QFlowBar.__init__(self, parent)
 		self.rebost=kwargs.get("rebost")
-		self.itemsPerPage=5
+		self.itemsPerPage=4
 		self.overlay=False
 		self.simpleButtons=True
-		self.spacing=25
+		self.spacing=10
 	#def __init__(self,*args):
 
 	def _getRgbColorFromCat(self,cat):
