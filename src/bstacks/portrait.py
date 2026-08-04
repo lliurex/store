@@ -61,6 +61,12 @@ class portrait(QStackedWindowItem):
 		self.paneApps.load(args[0])
 	#def _searchApps(self,*args):
 
+	def _loadCategory(self,*args):
+		self.paneHome.hide()
+		self.paneApps.setVisible(True)
+		self.paneApps.load(args[0],category=True)
+	#def _loadCategory
+
 	def _topBar(self):
 		wdg=QTopBar()
 		for chld in wdg.children():
@@ -81,6 +87,7 @@ class portrait(QStackedWindowItem):
 	def _homePane(self):
 		wdg=QHomePane(rebost=self.rebost)
 		wdg.search.connect(self._searchApps)
+		wdg.loadCategory.connect(self._loadCategory)
 		return(wdg)
 	#def _homePane
 
