@@ -47,20 +47,21 @@ class QAppsPane(QWidget):
 		self.layout().setRowStretch(1,1)
 	#def __initScreen__
 
-	def load(self,*args):
+	def load(self,*args,category=False):
 		self.flow.clean()
-		apps=json.loads(self.rebost.searchApp(args[0]))
+		if category==True:
+			apps=json.loads(self.rebost.getAppsInCategory(args[0]))
+			apps=apps[args[0]]
+		else:
+			apps=json.loads(self.rebost.searchApp(args[0]))
 		if len(apps)>0:
 			for app in apps:
+				if app==None:
+					continue
+				if isinstance(app,str):
+					app=json.loads(app)
 				btn=btnApp.QAppButton(app)
 				self.flow.addWidget(btn)
 				btn.setMinimumWidth((self.width()+9*SPACING)/3)
-		self.flow.repaint()
-		self.repaint()
-		self.show()
-		for btn in self.flow.children():
-			btn.show()
-			btn.repaint()
-			print(btn)
 	#def load
 
