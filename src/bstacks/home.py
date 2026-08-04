@@ -9,6 +9,7 @@ from extras.i18n import *
 
 class QHomePane(QWidget):
 	search=Signal(str)
+	loadCategory=Signal(str)
 	def __init__(self,*args,parent=None,**kwargs):
 		QWidget.__init__(self, parent)
 		self.rebost=kwargs.get("rebost")
@@ -37,8 +38,13 @@ class QHomePane(QWidget):
 		return(wdg)
 	#def _defChoiBar
 
+	def _emitLoadCategory(self,*args):
+		self.loadCategory.emit(args[0].text())
+	#def _emitLoadCategory
+
 	def _defCatsBar(self):
 		wdg=catsBar(rebost=self.rebost)
+		wdg.selected.connect(self._emitLoadCategory)
 		return(wdg)
 	#def _defCatsBar
 
