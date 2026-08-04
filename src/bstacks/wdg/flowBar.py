@@ -1,10 +1,11 @@
 #!/usr/bin/python3
-from PySide6.QtCore import Qt,QSize
+from PySide6.QtCore import Qt,QSize,Signal
 from PySide6.QtWidgets import QScrollArea,QHBoxLayout,QWidget,QGridLayout,QPushButton,QHeaderView
 from PySide6.QtGui import QIcon,QColor,QPainter,QLinearGradient
 from QtExtraWidgets import QTableTouchWidget,QPushInfoButton
 
 class QFlowBar(QScrollArea):
+	selected=Signal("PyObject")
 	def __init__(self,*args,parent=None,**kwargs):
 		QScrollArea.__init__(self, parent)
 		wdg=QWidget()
@@ -32,6 +33,8 @@ class QFlowBar(QScrollArea):
 		self.table.horizontalHeader().hide()
 		self.table.verticalHeader().hide()
 		self.table.setShowGrid(False)
+		self.table.cellClicked.connect(self._emit)
+		self.table.itemActivated.connect(self._emit)
 		self.showScrollBar(False)
 		self.content={}
 	#def __init__
@@ -83,6 +86,8 @@ class QFlowBar(QScrollArea):
 	#def _infoBtn
 
 	def _simpleBtn(self,data):
+		def mousePressEvent(event):
+			event.ignore()
 		def _paintEvent(self,event):
 			painter = QPainter(self)
 			painter.setRenderHint(QPainter.Antialiasing)
@@ -99,6 +104,7 @@ class QFlowBar(QScrollArea):
 		hcolor=data["img"]
 		btn.paintEvent=_paintEvent.__get__(btn,QPushButton)
 		btn.setCursor(Qt.PointingHandCursor)
+		btn.mousePressEvent=mousePressEvent
 		return(btn)
 	#def _simpleBtn
 
@@ -118,14 +124,14 @@ class QFlowBar(QScrollArea):
 						btn=self._infoBtn(data)
 					btn.setProperty("feed",args[0])
 					btn.setText(data.get("title"))
-					wsize=self.width()/self.itemsPerPage
-					btn.setFixedWidth(wsize-5)
+					wsize=(self.width()/self.itemsPerPage)+self.spacing
+					btn.setFixedWidth(wsize-self.spacing*2)
 					spacing=0
 					if self.table.columnCount()>1:
 						spacing=self.spacing
 					wdg=QWidget()
+					#btn.setAttribute(Qt.WA_TransparentForMouseEvents,True)
 					lay=QHBoxLayout(wdg)
-					lay.addSpacing(spacing)
 					lay.addWidget(btn)
 					self.table.setCellWidget(0,self.table.columnCount()-1,wdg)
 					self.table.setColumnWidth(self.table.columnCount()-1,wsize)
@@ -140,4 +146,10 @@ class QFlowBar(QScrollArea):
 		self.btnPrev.setIconSize(self.btnNext.iconSize())
 	#def updateScreen
 		
+	def _emit(self,*args):
+		wdg=self.table.cellWidget(self.table.currentRow(),self.table.currentColumn())
+		for chld in wdg.children():
+			if hasattr(chld,"text"):
+				self.selected.emit(chld)
+				break
 
