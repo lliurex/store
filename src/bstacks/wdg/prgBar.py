@@ -88,7 +88,7 @@ class QProgressImage(QWidget):
 	def setImageFromFile(self,img):
 		self.img=img
 		self.pxm=QPixmap(self.img)
-		img=os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),"rsrc","blog300x300.png")
+	#def setImageFromFile
 
 	def adjustSize(self):
 		self.setFixedSize(QSize(self.pxm.width(),self.pxm.height()*2))

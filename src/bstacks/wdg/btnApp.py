@@ -36,9 +36,16 @@ class QAppButton(QPushInfoButton):
 		self.lblStatus.setPixmap(pxm)
 	#def _setGradientInstalled
 
+	def _setGradientWebApp(self):
+		self.lblDesc.setGradient((224,214,255,50),(170,10,220,250))
+		statusIcon=QIcon().fromTheme("internet-web-browser")
+		pxm=statusIcon.pixmap(32,32)
+		self.lblStatus.setPixmap(pxm)
+	#def _setGradientPending
+
 	def _setGradientPending(self):
-		self.lblDesc.setGradient((136,136,136,100),(140,144,144,250))
-		self.lblDesc.setForeground((150,150,150))
+		self.lblDesc.setGradient((136,136,36,100),(120,150,20,250))
+		self.lblDesc.setForeground((100,100,50))
 		statusIcon=QIcon().fromTheme("clock")
 		pxm=statusIcon.pixmap(32,32)
 		self.lblStatus.setPixmap(pxm)
@@ -46,7 +53,7 @@ class QAppButton(QPushInfoButton):
 
 	def _setGradientForbidden(self):
 		self.lblDesc.setGradient((224,4,5,90),(250,0,0,200))
-		self.lblDesc.setForeground((250,150,150))
+		self.lblDesc.setForeground((250,50,50))
 		statusIcon=QIcon().fromTheme("dialog-cancel")
 		pxm=statusIcon.pixmap(32,32)
 		self.lblStatus.setPixmap(pxm)
@@ -56,6 +63,8 @@ class QAppButton(QPushInfoButton):
 		status=""
 		if self.app.get("forbidden",False)==True:
 			self._setGradientForbidden()
+		elif self.app.get("webapp",False)==True:
+			self._setGradientWebApp()
 		elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
 			self._setGradientPending()
 		else:

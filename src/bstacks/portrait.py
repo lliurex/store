@@ -3,7 +3,7 @@ import os,sys
 from functools import partial
 from PySide6.QtWidgets import QApplication,QGridLayout,QPushButton
 from PySide6 import QtGui
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt,Signal
 from QtExtraWidgets import QStackedWindowItem
 from home import QHomePane
 from apps import QAppsPane
@@ -12,7 +12,11 @@ from wdg.prgBar import QProgressImage
 from extras.i18n import *
 from rebost import store
 
+RSRC="/usr/share/store/rsrc"
+
 class portrait(QStackedWindowItem):
+	beginLoad=Signal()
+	stopLoad=Signal()
 	def __init_stack__(self):
 		self.dbg=True
 		self._debug("portrait load")
@@ -23,6 +27,8 @@ class portrait(QStackedWindowItem):
 			index=1,
 			visible=True)
 		self.rebost=store.client()
+		self.beginLoad.connect(self._showProgress)
+		self.stopLoad.connect(self._stopProgress)
 		self.destroyed.connect(partial(portrait._onDestroy,self.__dict__))
 	#def __init__
 
@@ -55,15 +61,24 @@ class portrait(QStackedWindowItem):
 		return(state)
 	#def _chkNetwork
 
+	def _showProgress(self):
+		return
+		self.prgBar.start()
+	#def _showProgress
+
+	def _stopProgress(self):
+		self.prgBar.stop()
+	#def _stopProgress
+
 	def _searchApps(self,*args):
+		self.beginLoad.emit()
 		self.paneHome.hide()
-		self.paneApps.setVisible(True)
+		self.paneApps.show()
 		self.paneApps.load(args[0])
 	#def _searchApps(self,*args):
 
 	def _loadCategory(self,*args):
-		self.paneHome.hide()
-		self.paneApps.setVisible(True)
+		self.beginLoad.emit()
 		self.paneApps.load(args[0],category=True)
 	#def _loadCategory
 
@@ -91,10 +106,27 @@ class portrait(QStackedWindowItem):
 		return(wdg)
 	#def _homePane
 
+	def _appsLoaded(self):
+		self.paneHome.hide()
+		self.paneApps.show()
+		self.stopLoad.emit()
+	#def _appsLoaded
+
 	def _appsPane(self):
 		wdg=QAppsPane(rebost=self.rebost)
 		return(wdg)
 	#def _appsPane
+
+	def _defProgress(self):
+		wdg=QProgressImage(self)
+		wdg.inc=-1
+		wdg.setImageFromFile(os.path.join(RSRC,"progressBar267x267.png"))
+		wdg.lblInfo.hide()
+		#wdg.setAttribute(Qt.WA_StyledBackground, False)
+		wdg.animation="bigger"
+		wdg.animation="pulsate"
+		return(wdg)
+	#def _defProgress
 
 	def __initScreen__(self):
 		lay=QGridLayout(self)
@@ -104,21 +136,16 @@ class portrait(QStackedWindowItem):
 		self.oldCursor=self.cursor()
 		self.paneHome=self._homePane()
 		self.paneApps=self._appsPane()
+		self.paneApps.ready.connect(self._appsLoaded)
+		self.prgBar=self._defProgress()
 		topBar=self._topBar()
 		lay.addWidget(topBar,0,0,1,self.layout().columnCount(),Qt.AlignTop|Qt.AlignCenter)
 		lay.addWidget(self.paneHome,1,0,1,self.layout().columnCount())
 		lay.addWidget(self.paneApps,1,0,1,self.layout().columnCount())
+		lay.addWidget(self.prgBar,1,0,1,self.layout().columnCount())
+		self.prgBar.hide()
 		self.paneApps.hide()
 	#def __initScreen__
-
-	def _defProgress(self):
-		wdg=QProgressImage(self)
-		wdg.inc=-1
-		wdg.setImageFromFile(os.path.join(RSRC,"progressBar267x267.png"))
-		wdg.animation="bigger"
-		wdg.animation="pulsate"
-		return(wdg)
-	#def _defProgress
 
 	def updateScreen(self,addEnable=None):
 		#self._rebost.wait()
