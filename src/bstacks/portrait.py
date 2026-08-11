@@ -7,6 +7,7 @@ from PySide6.QtCore import Qt,Signal
 from QtExtraWidgets import QStackedWindowItem
 from home import QHomePane
 from apps import QAppsPane
+from details import QDetailsPane
 from wdg.topBar import QTopBar
 from wdg.prgBar import QProgressImage 
 from extras.i18n import *
@@ -98,6 +99,8 @@ class portrait(QStackedWindowItem):
 	def _goHome(self,*args):
 		self.paneHome.show()
 		self.paneApps.hide()
+		self.paneDetails.hide()
+	#def _goHome
 
 	def _homePane(self):
 		wdg=QHomePane(rebost=self.rebost)
@@ -108,14 +111,28 @@ class portrait(QStackedWindowItem):
 
 	def _appsLoaded(self):
 		self.paneHome.hide()
+		self.paneDetails.hide()
 		self.paneApps.show()
 		self.stopLoad.emit()
 	#def _appsLoaded
 
+	def _installApp(self,*args):
+		self.paneHome.hide()
+		self.paneDetails.show()
+		self.paneDetails.load(args[0])
+		self.paneApps.hide()
+	#def _installApp
+
 	def _appsPane(self):
 		wdg=QAppsPane(rebost=self.rebost)
+		wdg.requestInstall.connect(self._installApp)
 		return(wdg)
 	#def _appsPane
+
+	def _detailsPane(self):
+		wdg=QDetailsPane(rebost=self.rebost)
+		return(wdg)
+	#def _detailsPane
 
 	def _defProgress(self):
 		wdg=QProgressImage(self)
@@ -137,14 +154,17 @@ class portrait(QStackedWindowItem):
 		self.paneHome=self._homePane()
 		self.paneApps=self._appsPane()
 		self.paneApps.ready.connect(self._appsLoaded)
+		self.paneDetails=self._detailsPane()
 		self.prgBar=self._defProgress()
 		topBar=self._topBar()
 		lay.addWidget(topBar,0,0,1,self.layout().columnCount(),Qt.AlignTop|Qt.AlignCenter)
 		lay.addWidget(self.paneHome,1,0,1,self.layout().columnCount())
 		lay.addWidget(self.paneApps,1,0,1,self.layout().columnCount())
+		lay.addWidget(self.paneDetails,1,0,1,self.layout().columnCount())
 		lay.addWidget(self.prgBar,1,0,1,self.layout().columnCount())
 		self.prgBar.hide()
 		self.paneApps.hide()
+		self.paneDetails.hide()
 	#def __initScreen__
 
 	def updateScreen(self,addEnable=None):
