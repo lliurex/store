@@ -36,6 +36,7 @@ class QFlowBar(QScrollArea):
 		self.table.cellClicked.connect(self._emit)
 		self.table.itemActivated.connect(self._emit)
 		self.showScrollBar(False)
+		self.overlay=False
 		self.content={}
 	#def __init__
 
