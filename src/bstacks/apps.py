@@ -81,7 +81,7 @@ class QAppsPane(QWidget):
 				btn.setFixedWidth(wSize)
 				if self.__EXIT__==False:
 					self.flow.addWidget(btn)
-					btn.setMinimumWidth((self.width()+9*SPACING)/3)
+					btn.setFixedWidth(372)
 					btn.clicked.connect(self._installApp)
 				else:
 					break
