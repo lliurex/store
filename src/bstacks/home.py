@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel
 from PySide6.QtCore import Qt,Signal
-from blog import blogBar
-from choice import choiBar
-from categories import catsBar
+from wdg.blog import blogBar
+from wdg.choice import choiBar
+from wdg.categories import catsBar
 from QtExtraWidgets import QStackedWindowItem,QSearchBox
 from extras.i18n import *
 
