@@ -6,7 +6,7 @@ from QtExtraWidgets import QSearchBox
 from extras.i18n import *
 
 class QSearch(QWidget):
-	requestSearch=Signal("PyObject")
+	requestSearch=Signal(str)
 	goPrevious=Signal()
 	def __init__(self,*args,parent=None):
 		QWidget.__init__(self, parent)
@@ -18,11 +18,11 @@ class QSearch(QWidget):
 		bck.setIcon(icn)
 		bck.clicked.connect(self._goPrev)
 		lay.addWidget(bck)
-		src=QSearchBox()
-		src.clicked.connect(self._reqSearch)
-		src.returnPressed.connect(self._reqSearch)
-		src.txtSearch.setPlaceholderText(i18n["SEARCH"])
-		lay.addWidget(src)
+		self.src=QSearchBox()
+		self.src.clicked.connect(self._reqSearch)
+		self.src.returnPressed.connect(self._reqSearch)
+		self.src.txtSearch.setPlaceholderText(i18n["SEARCH"])
+		lay.addWidget(self.src)
 	#def __init__
 
 	def _goPrev(self,*args):
@@ -30,5 +30,5 @@ class QSearch(QWidget):
 	#def _goPrev
 
 	def _reqSearch(self,*args):
-		self.requestSearch.emit(args)
+		self.requestSearch.emit(args[0])
 	#def _reqSearch
