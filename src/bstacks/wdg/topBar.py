@@ -1,18 +1,19 @@
 #!/usr/bin/python3
 from PySide6.QtWidgets import QPushButton,QWidget,QHBoxLayout
 from PySide6.QtCore import Signal
+from extras.i18n import *
 
 class QTopBar(QWidget):
-	loadHome=Signal()
-	loadNews=Signal()
-	loadRecs=Signal()
-	loadZmds=Signal()
-	loadCats=Signal()
+	loadHome=Signal(str)
+	loadNews=Signal(str)
+	loadRecs=Signal(str)
+	loadZmds=Signal(str)
+	loadCats=Signal(str)
 	def __init__(self,parent=None,**kwargs):
 		QWidget.__init__(self, parent)
 		lay=QHBoxLayout(self)
-		self._renderGui()
 		self.checked=None
+		self._renderGui()
 	#def __init__(self,parent=None,**kwargs):
 
 	def _emit(self,*args):
@@ -27,26 +28,27 @@ class QTopBar(QWidget):
 				else:
 					chld.blockSignals(False)
 					chld.setChecked(False)
-		if self.checked.property("name")=="HOME":
-			self.loadHome.emit()
-		elif self.checked.property("name")=="NEWS":
-			self.loadNews.emit()
-		elif self.checked.property("name")=="RECEIPTS":
-			self.loadRecs.emit()
-		elif self.checked.property("name")=="ZOMANDOS":
-			self.loadZmds.emit()
-		elif self.checked.property("name")=="CATEGORIES":
-			self.loadCats.emit()
+		if self.checked.property("name")==i18n["NEWS"]:
+			self.loadNews.emit("news")
+		elif self.checked.property("name")==i18n["RECEIPTS"]:
+			self.loadRecs.emit("recs")
+		elif self.checked.property("name")==i18n["ZOMANDOS"]:
+			self.loadZmds.emit("zmds")
+		elif self.checked.property("name")==i18n["CATEGORIES"]:
+			self.loadCats.emit("cats")
 	#def _emit
 
 	def _renderGui(self,*args):
-		actions=["HOME","NEWS","RECEIPTS","ZOMANDOS","CATEGORIES"]
+		actions=[i18n["ZOMANDOS"],i18n["CATEGORIES"],i18n["RECEIPTS"],i18n["NEWS"]]
 		for action in actions:
 			btn=QPushButton()	
 			btn.setCheckable(True)
 			btn.setProperty("name",action)
 			btn.clicked.connect(self._emit)
 			self.layout().addWidget(btn)
+			if self.layout().count()==1:
+				self.checked=btn
+				btn.setChecked(True)
 	#def _renderGui
 
 

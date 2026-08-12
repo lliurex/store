@@ -5,6 +5,7 @@ _ = gettext.gettext
 i18n={
 	"ALL":_("All"),
 	"AVAILABLE":_("Available"),
+	"CATEGORIES":_("Categories"),
 	"CATEGORIESDSC":_("Filter by category"),
 	"CERTIFIED":_("Certified by Appsedu"),
 	"CHOICE":_("LliureX choices"),
@@ -26,7 +27,9 @@ i18n={
 	"LLXUP":_("Launch LliurexUp"),
 	"MENU":_("Show applications"),
 	"NEWDATA":_("Updating info"),
+	"NEWS":_("News"),
 	"OPEN":_("Z·Install"),
+	"RECEIPTS":_("Receipts"),
 	"REFRESH":_("Reload Apps"),
 	"REMOVE":_("Remove"),
 	"SEARCH":_("Search"),
@@ -35,5 +38,6 @@ i18n={
 	"UPGRADABLE":_("Upgradables"),
 	"UPGRADES":_("Updates available"),
 	"CHK_NETWORK":_("Store was unable to get information from internet"),
-	"OPN_NETWORK":_("Open network settings")
+	"OPN_NETWORK":_("Open network settings"),
+	"ZOMANDOS":_("Zomandos")
 	}

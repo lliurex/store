@@ -37,6 +37,7 @@ class QFlowBar(QScrollArea):
 		self.table.itemActivated.connect(self._emit)
 		self.showScrollBar(False)
 		self.overlay=False
+		self.onlyImg=False
 		self.content={}
 	#def __init__
 
@@ -79,10 +80,15 @@ class QFlowBar(QScrollArea):
 		btn=QPushInfoButton(overlay=self.overlay)
 		btn.label.setAlignment(Qt.AlignLeft)
 		img=data.get("img")
-		btn.setDescription(data.get("summary"))
 		if self.defaultSize!=0:
 			btn.defaultSize=self.defaultSize
+		btn.setDescription(data.get("summary"))
+		btn.setText(data.get("title"))
 		btn.loadImg(img)
+		if self.onlyImg==True:
+			btn.label.hide()
+			btn.lblDesc.hide()
+			btn.layout().addWidget(btn.icon,0,0,2,2,Qt.AlignCenter)
 		return(btn)
 	#def _infoBtn
 
@@ -106,6 +112,10 @@ class QFlowBar(QScrollArea):
 		btn.paintEvent=_paintEvent.__get__(btn,QPushButton)
 		btn.setCursor(Qt.PointingHandCursor)
 		btn.mousePressEvent=mousePressEvent
+		if self.defaultSize!=0:
+			btn.setFixedHeight(self.defaultSize)
+		if self.onlyImg==False:
+			btn.setText(data.get("title"))
 		return(btn)
 	#def _simpleBtn
 
@@ -124,7 +134,6 @@ class QFlowBar(QScrollArea):
 					else:
 						btn=self._infoBtn(data)
 					btn.setProperty("feed",args[0])
-					btn.setText(data.get("title"))
 					wsize=(self.width()/self.itemsPerPage)+self.spacing
 					btn.setFixedWidth(wsize-self.spacing*2)
 					spacing=0

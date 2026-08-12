@@ -6,7 +6,7 @@ from PySide6.QtCore import Qt,Signal
 from QtExtraWidgets import QSearchBox,QFlowTouchWidget
 from extras.i18n import *
 from extras.constants import *
-from wdg import btnApp
+from wdg import btnApp,search
 
 
 class QAppsPane(QWidget):
@@ -30,8 +30,7 @@ class QAppsPane(QWidget):
 	#def _onDestroy
 
 	def _defSearch(self):
-		wdg=QSearchBox()
-		wdg.txtSearch.setPlaceholderText(i18n["SEARCH"])
+		wdg=search.QSearch()
 		return(wdg)
 	#def _defSearch
 
@@ -51,7 +50,6 @@ class QAppsPane(QWidget):
 		lay.setContentsMargins(SPACING,0,0,0)
 		lay.setSpacing(SPACING)
 		searchBox=self._defSearch()
-		searchBox.setMinimumWidth(512)
 		self.layout().addWidget(searchBox,0,0,1,self.layout().columnCount(),Qt.AlignTop|Qt.AlignCenter)
 		self.flow=self._defFlow()
 		wdg=QWidget()
@@ -70,7 +68,7 @@ class QAppsPane(QWidget):
 	#def _installApp
 
 	def _loadGrid(self,apps):
-		wSize=(self.sizeHint().width()/2)+SPACING*4
+		btnW=350+SPACING
 		if len(apps)>0:
 			for app in apps:
 				if app==None:
@@ -78,10 +76,9 @@ class QAppsPane(QWidget):
 				if isinstance(app,str):
 					app=json.loads(app)
 				btn=btnApp.QAppButton(app)
-				btn.setFixedWidth(wSize)
+				btn.setFixedWidth(btnW)
 				if self.__EXIT__==False:
 					self.flow.addWidget(btn)
-					btn.setFixedWidth(372)
 					btn.clicked.connect(self._installApp)
 				else:
 					break

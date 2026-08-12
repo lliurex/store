@@ -8,7 +8,6 @@ from QtExtraWidgets import QStackedWindowItem
 from home import QHomePane
 from apps import QAppsPane
 from details import QDetailsPane
-from wdg.topBar import QTopBar
 from wdg.prgBar import QProgressImage 
 from extras.i18n import *
 from rebost import store
@@ -83,19 +82,6 @@ class portrait(QStackedWindowItem):
 		self.paneApps.load(args[0],category=True)
 	#def _loadCategory
 
-	def _topBar(self):
-		wdg=QTopBar()
-		for chld in wdg.children():
-			if isinstance(chld,QPushButton):
-				chld.setText(i18n.get(chld.property("name"),chld.property("name")))
-		wdg.loadHome.connect(self._goHome)
-		wdg.loadNews.connect(print)
-		wdg.loadRecs.connect(print)
-		wdg.loadZmds.connect(print)
-		wdg.loadCats.connect(print)
-		return (wdg)
-	#def _topBar
-
 	def _goHome(self,*args):
 		self.paneHome.show()
 		self.paneApps.hide()
@@ -156,8 +142,6 @@ class portrait(QStackedWindowItem):
 		self.paneApps.ready.connect(self._appsLoaded)
 		self.paneDetails=self._detailsPane()
 		self.prgBar=self._defProgress()
-		topBar=self._topBar()
-		lay.addWidget(topBar,0,0,1,self.layout().columnCount(),Qt.AlignTop|Qt.AlignCenter)
 		lay.addWidget(self.paneHome,1,0,1,self.layout().columnCount())
 		lay.addWidget(self.paneApps,1,0,1,self.layout().columnCount())
 		lay.addWidget(self.paneDetails,1,0,1,self.layout().columnCount())
