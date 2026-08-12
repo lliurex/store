@@ -7,12 +7,13 @@ from PySide6.QtGui import QIcon
 from QtExtraWidgets import QSearchBox,QScrollLabel,QScreenShotContainer,QPushInfoButton,QFlowTouchWidget
 from extras.i18n import *
 from extras.constants import *
-from wdg import btnApp,search
+from wdg import btnApp
 from wdg.flowBar import QFlowBar
 
 class QDetailsPane(QWidget):
 	ready=Signal()
 	appLoaded=Signal()
+	search=Signal(str)
 	def __init__(self,*args,parent=None,**kwargs):
 		self.__EXIT__=False
 		QWidget.__init__(self, parent)
@@ -28,11 +29,6 @@ class QDetailsPane(QWidget):
 		selfDict=args[0]
 		selfDict["__EXIT__"]=True
 	#def _onDestroy
-
-	def _defSearch(self):
-		wdg=search.QSearch()
-		return(wdg)
-	#def _defSearch
 
 	def _defAppHeader(self):
 		def _setIcon(*args):
@@ -142,18 +138,16 @@ class QDetailsPane(QWidget):
 
 	def __initScreen__(self):
 		lay=QGridLayout(self)
-		searchBox=self._defSearch()
-		lay.addWidget(searchBox,0,0,1,3,Qt.AlignTop|Qt.AlignCenter)
 		self.header=self._defAppHeader()
-		lay.addWidget(self.header,1,0,1,1,Qt.AlignLeft)
+		lay.addWidget(self.header,0,0,1,1,Qt.AlignLeft)
 		self.actions=self._defAppActions()
-		lay.addWidget(self.actions,1,1,1,1,Qt.AlignRight)
+		lay.addWidget(self.actions,0,1,1,1,Qt.AlignRight)
 		self.urls=self._defAppUrls()
-		lay.addWidget(self.urls,1,2,1,1,Qt.Alignment(-2))
+		lay.addWidget(self.urls,0,2,1,1,Qt.Alignment(-2))
 		self.screenshots=self._defScreenshots()
-		lay.addWidget(self.screenshots,2,0,1,lay.columnCount(),Qt.AlignTop)
+		lay.addWidget(self.screenshots,1,0,1,lay.columnCount(),Qt.AlignTop)
 		self.description=self._defAppDescription()
-		lay.addWidget(self.description,3,0,1,lay.columnCount())
+		lay.addWidget(self.description,2,0,1,lay.columnCount())
 		self.suggestions=self._defAppSuggestions()
 		#lay.addWidget(self.suggestions,4,0,1,lay.columnCount())
 		lay.setColumnStretch(0,1)
@@ -224,22 +218,6 @@ class QDetailsPane(QWidget):
 			self.screenshots.hide()
 	#def _loadScreenshots
 
-	def _loadSuggests(self):
-		self.suggestions.clear()
-		suggestions={}
-		for suggestApp in self.app["suggests"]:
-			app=json.loads(self.rebost.showApp(suggestApp))
-			if len(app)>0:
-				btn=QPushInfoButton(overlay=False)
-				btn.defaultSize=36
-				btn.setMaximumWidth(256)
-				btn.setText(app[0]["name"])
-				btn.loadImg(app[0]["icon"])
-				btn.setFixedHeight(52)
-				self.suggestions.addWidget(btn)
-				self.suggestions.setFixedHeight(64)
-	#def _loadSuggests
-
 	def _loadUrls(self):
 		self.urls.home.hide()
 		self.urls.info.hide()
@@ -268,7 +246,6 @@ class QDetailsPane(QWidget):
 		self._loadHeaderData()
 		self._loadDescription()
 		self._loadScreenshots()
-		self._loadSuggests()
 		self._loadUrls()
 	 #def _updateScreen(self,*args):
 

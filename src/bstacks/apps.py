@@ -6,13 +6,14 @@ from PySide6.QtCore import Qt,Signal
 from QtExtraWidgets import QSearchBox,QFlowTouchWidget
 from extras.i18n import *
 from extras.constants import *
-from wdg import btnApp,search
+from wdg import btnApp
 
 
 class QAppsPane(QWidget):
 	ready=Signal()
 	beginLoad=Signal("PyObject")
 	requestInstall=Signal("PyObject")
+	search=Signal(str)
 	def __init__(self,*args,parent=None,**kwargs):
 		self.__EXIT__=False
 		QWidget.__init__(self, parent)
@@ -29,11 +30,6 @@ class QAppsPane(QWidget):
 		selfDict["__EXIT__"]=True
 	#def _onDestroy
 
-	def _defSearch(self):
-		wdg=search.QSearch()
-		return(wdg)
-	#def _defSearch
-
 	def _defFlow(self):
 		wdg=QFlowTouchWidget()
 		wdg.setFocusPolicy(Qt.NoFocus)
@@ -49,15 +45,12 @@ class QAppsPane(QWidget):
 		lay=QGridLayout(self)
 		lay.setContentsMargins(SPACING,0,0,0)
 		lay.setSpacing(SPACING)
-		searchBox=self._defSearch()
-		self.layout().addWidget(searchBox,0,0,1,self.layout().columnCount(),Qt.AlignTop|Qt.AlignCenter)
 		self.flow=self._defFlow()
 		wdg=QWidget()
 		hlay=QHBoxLayout(wdg)
 		hlay.addSpacing(SPACING)
 		hlay.addWidget(self.flow)
-		self.layout().addWidget(wdg,1,0,1,self.layout().columnCount())
-		self.layout().setRowStretch(1,1)
+		self.layout().addWidget(wdg,0,0,1,self.layout().columnCount())
 	#def __initScreen__
 
 	def _installApp(self,*args):

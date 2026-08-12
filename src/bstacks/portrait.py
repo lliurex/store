@@ -8,6 +8,7 @@ from QtExtraWidgets import QStackedWindowItem
 from home import QHomePane
 from apps import QAppsPane
 from details import QDetailsPane
+from wdg.search import QSearch
 from wdg.prgBar import QProgressImage 
 from extras.i18n import *
 from rebost import store
@@ -73,17 +74,21 @@ class portrait(QStackedWindowItem):
 	def _searchApps(self,*args):
 		self.beginLoad.emit()
 		self.paneHome.hide()
+		self.paneDetails.hide()
 		self.paneApps.show()
 		self.paneApps.load(args[0])
+		self.search.show()
 	#def _searchApps(self,*args):
 
 	def _loadCategory(self,*args):
 		self.beginLoad.emit()
 		self.paneApps.load(args[0],category=True)
+		self.search.show()
 	#def _loadCategory
 
 	def _goHome(self,*args):
 		self.paneHome.show()
+		self.search.hide()
 		self.paneApps.hide()
 		self.paneDetails.hide()
 	#def _goHome
@@ -104,6 +109,7 @@ class portrait(QStackedWindowItem):
 
 	def _installApp(self,*args):
 		self.paneHome.hide()
+		self.search.show()
 		self.paneDetails.show()
 		self.paneDetails.load(args[0])
 		self.paneApps.hide()
@@ -112,13 +118,21 @@ class portrait(QStackedWindowItem):
 	def _appsPane(self):
 		wdg=QAppsPane(rebost=self.rebost)
 		wdg.requestInstall.connect(self._installApp)
+		wdg.search.connect(self._searchApps)
 		return(wdg)
 	#def _appsPane
 
 	def _detailsPane(self):
 		wdg=QDetailsPane(rebost=self.rebost)
+		wdg.search.connect(self._searchApps)
 		return(wdg)
 	#def _detailsPane
+
+	def _defSearch(self):
+		wdg=QSearch()
+		wdg.requestSearch.connect(self._searchApps)
+		return(wdg)
+	#def _defSearch
 
 	def _defProgress(self):
 		wdg=QProgressImage(self)
@@ -137,18 +151,21 @@ class portrait(QStackedWindowItem):
 		lay.setSpacing(0)
 		self.hideControlButtons()
 		self.oldCursor=self.cursor()
+		self.search=self._defSearch()
+		self.search.hide()
+		lay.addWidget(self.search,0,0,1,self.layout().columnCount(),Qt.AlignCenter)
 		self.paneHome=self._homePane()
+		lay.addWidget(self.paneHome,1,0,1,self.layout().columnCount())
 		self.paneApps=self._appsPane()
 		self.paneApps.ready.connect(self._appsLoaded)
-		self.paneDetails=self._detailsPane()
-		self.prgBar=self._defProgress()
-		lay.addWidget(self.paneHome,1,0,1,self.layout().columnCount())
-		lay.addWidget(self.paneApps,1,0,1,self.layout().columnCount())
-		lay.addWidget(self.paneDetails,1,0,1,self.layout().columnCount())
-		lay.addWidget(self.prgBar,1,0,1,self.layout().columnCount())
-		self.prgBar.hide()
 		self.paneApps.hide()
+		lay.addWidget(self.paneApps,1,0,1,self.layout().columnCount())
+		self.paneDetails=self._detailsPane()
 		self.paneDetails.hide()
+		lay.addWidget(self.paneDetails,1,0,1,self.layout().columnCount())
+		self.prgBar=self._defProgress()
+		self.prgBar.hide()
+		lay.addWidget(self.prgBar,1,0,1,self.layout().columnCount())
 	#def __initScreen__
 
 	def updateScreen(self,addEnable=None):
