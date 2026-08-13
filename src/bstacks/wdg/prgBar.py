@@ -51,7 +51,7 @@ class QProgressImage(QWidget):
 		self.lblPxm.setAlignment(Qt.AlignCenter)
 		self.lblInfo.setAlignment(Qt.AlignCenter)
 		self.inc=-5
-		self.sleepSeconds=1
+		self.sleepSeconds=10
 		self.animation="pulsate"
 		self.running=False
 		self.destroyed.connect(partial(QProgressImage._onDestroy,self.__dict__))
@@ -100,7 +100,6 @@ class QProgressImage(QWidget):
 		self.inc=inc
 
 	def start(self):
-		QApplication.processEvents()
 		self.updateTimer.start(self.sleepSeconds)
 		self.lblPxm.resize(QSize(0,0))
 	#	self.updateTimer.start()
