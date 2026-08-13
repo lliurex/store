@@ -16,7 +16,7 @@ from rebost import store
 RSRC="/usr/share/store/rsrc"
 
 class portrait(QStackedWindowItem):
-	beginLoad=Signal()
+	beginLoad=Signal("PyObject")
 	stopLoad=Signal()
 	def __init_stack__(self):
 		self.dbg=True
@@ -29,6 +29,7 @@ class portrait(QStackedWindowItem):
 			visible=True)
 		self.rebost=store.client()
 		self.previousPane=None
+		self.currentPane=None
 		self.beginLoad.connect(self._showProgress)
 		self.stopLoad.connect(self._stopProgress)
 		self.destroyed.connect(partial(portrait._onDestroy,self.__dict__))
@@ -63,39 +64,35 @@ class portrait(QStackedWindowItem):
 		return(state)
 	#def _chkNetwork
 
-	def _showProgress(self):
-		self.prgBar.start()
+	def _showProgress(self,paneToLoad):
+		self.currentPane=paneToLoad
 		for pane in [self.paneHome,self.paneApps,self.paneDetails]:
 			if pane.isVisible()==True:
 				self.previousPane=pane
 			pane.hide()
-		self.search.hide()
+		if self.currentPane==self.paneApps:
+			self.search.show()
+			self.currentPane.show()
+		else:
+			self.prgBar.start()
+			if self.currentPane==self.paneHome:
+				self.search.hide()
 	#def _showProgress
 
 	def _stopProgress(self):
-		for pane in [self.paneApps,self.paneDetails]:
-			if pane.isVisible()==True:
-				self.search.show()
-				break
+		if self.currentPane!=self.paneHome:
+			self.search.show()
+		if self.currentPane.isVisible()==False:
+			self.currentPane.show()
 		self.prgBar.stop()
 	#def _stopProgress
 
 	def _appsLoaded(self):
-		self.paneHome.hide()
-		self.paneDetails.hide()
-		self.paneApps.show()
 		self.stopLoad.emit()
 	#def _appsLoaded
 
-	def _searchApps(self,*args):
-		if len(args[0])>1:
-			self.beginLoad.emit()
-			self.paneApps.blockSignals(False)
-			self.paneApps.load(args[0])
-	#def _searchApps(self,*args):
-
 	def _loadCategory(self,*args):
-		self.beginLoad.emit()
+		self.beginLoad.emit(self.paneApps)
 		self.paneApps.load(args[0],category=True)
 	#def _loadCategory
 
@@ -106,30 +103,51 @@ class portrait(QStackedWindowItem):
 		self.stopLoad.emit()
 	#def _detailssLoaded
 
-	def _installApp(self,*args):
-		self.beginLoad.emit()
+	def _loadAppDetail(self,*args):
+		self.beginLoad.emit(self.paneDetails)
 		self.paneApps.blockSignals(True)
 		self.paneDetails.load(args[0])
-	#def _installApp
+	#def _loadAppDetail
 
 	def _goHome(self,*args):
-		self.beginLoad.emit()
+		self.beginLoad.emit(self.paneHome)
 		self.paneHome.show()
 		self.search.hide()
 		self.paneApps.hide()
 		self.paneDetails.hide()
 	#def _goHome
 
+	def _searchApps(self,*args):
+		if len(args[0])>1:
+			if args[0]!=self.search.src.txtSearch.text():
+				self.search.src.txtSearch.setText(args[0])
+			self.beginLoad.emit(self.paneApps)
+			self.paneApps.blockSignals(False)
+			self.paneApps.load(args[0])
+	#def _searchApps(self,*args):
+
+	def _goPrevious(self,*args):
+		self.previousPane.show()
+		self.currentPane.hide()
+		self.currentPane=self.previousPane
+		if self.currentPane==self.paneApps:
+			self.paneApps.blockSignals(False)
+			self.previousPane=self.paneHome
+		elif self.currentPane==self.paneHome:
+			self.search.hide()
+	#def _searchApps(self,*args):
+
 	def _homePane(self):
 		wdg=QHomePane(rebost=self.rebost)
 		wdg.search.connect(self._searchApps)
 		wdg.loadCategory.connect(self._loadCategory)
+		wdg.requestInstall.connect(self._loadAppDetail)
 		return(wdg)
 	#def _homePane
 
 	def _appsPane(self):
 		wdg=QAppsPane(rebost=self.rebost)
-		wdg.requestInstall.connect(self._installApp)
+		wdg.requestInstall.connect(self._loadAppDetail)
 		wdg.search.connect(self._searchApps)
 		return(wdg)
 	#def _appsPane
@@ -143,7 +161,7 @@ class portrait(QStackedWindowItem):
 	def _defSearch(self):
 		wdg=QSearch()
 		wdg.requestSearch.connect(self._searchApps)
-		#wdg.goPrevious.connect(self._goPrevious)
+		wdg.goPrevious.connect(self._goPrevious)
 		return(wdg)
 	#def _defSearch
 
