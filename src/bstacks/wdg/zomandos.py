@@ -22,7 +22,22 @@ class zmdsBar(QFlowBar):
 		rndZmds=zmds
 		shuffle(rndZmds)
 		for zmd in rndZmds:
-			data[idx]={"title":zmd["name"].capitalize(),"img":zmd["icon"],"summary":zmd["summary"],"description":zmd["description"]}
+			summ=""
+			if zmd["name"].lower() not in zmd["summary"].lower():
+				summ=zmd["name"]
+			if summ!="":
+				summ+=": {}".format(zmd["summary"].capitalize())
+			else:
+				summ=zmd["summary"]
+			if zmd["description"]!="" and summ==zmd["name"]:
+				summ=zmd["description"].replace("\n","<br>").capitalize()
+				
+			data[idx]={"title":zmd["name"].capitalize(),
+				"img":zmd["icon"],
+				"summary":"<p align=\"left\"><strong>{}</p></strong>".format(summ.capitalize()),
+				"description":"<p><strong>{}</p></strong>".format(zmd["description"]),
+				"metadata":zmd["id"]
+				}
 			idx+=1
 		self.updateScreen("zmds",data)
 	#def loadCategories
