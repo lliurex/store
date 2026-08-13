@@ -31,14 +31,18 @@ class QFlowBar(QScrollArea):
 		self.spacing=0
 		self.defaultSize=0
 		self.table.horizontalHeader().hide()
+		self.table.setAutoScroll(False)
 		self.table.verticalHeader().hide()
 		self.table.setShowGrid(False)
 		self.table.cellClicked.connect(self._emit)
 		self.table.itemActivated.connect(self._emit)
 		self.showScrollBar(False)
 		self.overlay=False
+		self.overlayGradientFrom=(224,214,255,50)
+		self.overlayGradientTo=(220,150,120,110)
 		self.onlyImg=False
 		self.content={}
+		self.wsize=0
 	#def __init__
 
 	def showScrollBar(self,show):
@@ -77,18 +81,26 @@ class QFlowBar(QScrollArea):
 	#def _chkContents
 
 	def _infoBtn(self,data):
+		def mousePressEvent(event):
+			event.ignore()
 		btn=QPushInfoButton(overlay=self.overlay)
+		btn.mousePressEvent=mousePressEvent
 		btn.label.setAlignment(Qt.AlignLeft)
 		img=data.get("img")
 		if self.defaultSize!=0:
 			btn.defaultSize=self.defaultSize
-		btn.setDescription(data.get("summary"))
+		if data.get("summary","")=="":
+			btn.lblDesc.hide()
+		else:
+			btn.setDescription(data.get("summary"))
 		btn.setText(data.get("title"))
 		btn.loadImg(img)
 		if self.onlyImg==True:
 			btn.label.hide()
 			btn.lblDesc.hide()
 			btn.layout().addWidget(btn.icon,0,0,2,2,Qt.AlignCenter)
+		if self.overlay==True:
+			btn.lblDesc.label.setGradient(self.overlayGradientFrom,self.overlayGradientTo)
 		return(btn)
 	#def _infoBtn
 
@@ -122,19 +134,21 @@ class QFlowBar(QScrollArea):
 	def updateScreen(self,*args):
 		if len(args)==2:
 			bheight=0
+			if self.wsize==0:
+				self.wsize=(self.viewport().width()/self.itemsPerPage)+self.spacing
+			wsize=self.wsize
 			if isinstance(args[1],dict):
 				for idx,data in args[1].items():
 					if self._chkContents(args[0],data)==True:
 						bheight=-1
 						continue
-
 					self.table.setColumnCount(self.table.columnCount()+1)
 					if hasattr(self,"simpleButtons"):
 						btn=self._simpleBtn(data)
 					else:
 						btn=self._infoBtn(data)
 					btn.setProperty("feed",args[0])
-					wsize=(self.width()/self.itemsPerPage)+self.spacing
+					btn.setProperty("metadata",data.get("metadata",""))
 					btn.setFixedWidth(wsize-self.spacing*2)
 					spacing=0
 					if self.table.columnCount()>1:
