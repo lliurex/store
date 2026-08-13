@@ -28,6 +28,7 @@ class portrait(QStackedWindowItem):
 			index=1,
 			visible=True)
 		self.rebost=store.client()
+		self.previousPane=None
 		self.beginLoad.connect(self._showProgress)
 		self.stopLoad.connect(self._stopProgress)
 		self.destroyed.connect(partial(portrait._onDestroy,self.__dict__))
@@ -63,30 +64,56 @@ class portrait(QStackedWindowItem):
 	#def _chkNetwork
 
 	def _showProgress(self):
-		return
 		self.prgBar.start()
+		for pane in [self.paneHome,self.paneApps,self.paneDetails]:
+			if pane.isVisible()==True:
+				self.previousPane=pane
+			pane.hide()
+		self.search.hide()
 	#def _showProgress
 
 	def _stopProgress(self):
+		for pane in [self.paneApps,self.paneDetails]:
+			if pane.isVisible()==True:
+				self.search.show()
+				break
 		self.prgBar.stop()
 	#def _stopProgress
 
-	def _searchApps(self,*args):
-		self.beginLoad.emit()
+	def _appsLoaded(self):
 		self.paneHome.hide()
 		self.paneDetails.hide()
 		self.paneApps.show()
-		self.paneApps.load(args[0])
-		self.search.show()
+		self.stopLoad.emit()
+	#def _appsLoaded
+
+	def _searchApps(self,*args):
+		if len(args[0])>1:
+			self.beginLoad.emit()
+			self.paneApps.blockSignals(False)
+			self.paneApps.load(args[0])
 	#def _searchApps(self,*args):
 
 	def _loadCategory(self,*args):
 		self.beginLoad.emit()
 		self.paneApps.load(args[0],category=True)
-		self.search.show()
 	#def _loadCategory
 
+	def _detailsLoaded(self):
+		self.paneHome.hide()
+		self.paneApps.hide()
+		self.paneDetails.show()
+		self.stopLoad.emit()
+	#def _detailssLoaded
+
+	def _installApp(self,*args):
+		self.beginLoad.emit()
+		self.paneApps.blockSignals(True)
+		self.paneDetails.load(args[0])
+	#def _installApp
+
 	def _goHome(self,*args):
+		self.beginLoad.emit()
 		self.paneHome.show()
 		self.search.hide()
 		self.paneApps.hide()
@@ -99,21 +126,6 @@ class portrait(QStackedWindowItem):
 		wdg.loadCategory.connect(self._loadCategory)
 		return(wdg)
 	#def _homePane
-
-	def _appsLoaded(self):
-		self.paneHome.hide()
-		self.paneDetails.hide()
-		self.paneApps.show()
-		self.stopLoad.emit()
-	#def _appsLoaded
-
-	def _installApp(self,*args):
-		self.paneHome.hide()
-		self.search.show()
-		self.paneDetails.show()
-		self.paneDetails.load(args[0])
-		self.paneApps.hide()
-	#def _installApp
 
 	def _appsPane(self):
 		wdg=QAppsPane(rebost=self.rebost)
@@ -131,6 +143,7 @@ class portrait(QStackedWindowItem):
 	def _defSearch(self):
 		wdg=QSearch()
 		wdg.requestSearch.connect(self._searchApps)
+		#wdg.goPrevious.connect(self._goPrevious)
 		return(wdg)
 	#def _defSearch
 
@@ -139,9 +152,8 @@ class portrait(QStackedWindowItem):
 		wdg.inc=-1
 		wdg.setImageFromFile(os.path.join(RSRC,"progressBar267x267.png"))
 		wdg.lblInfo.hide()
-		#wdg.setAttribute(Qt.WA_StyledBackground, False)
+		wdg.setAttribute(Qt.WA_StyledBackground, False)
 		wdg.animation="bigger"
-		wdg.animation="pulsate"
 		return(wdg)
 	#def _defProgress
 
@@ -161,6 +173,7 @@ class portrait(QStackedWindowItem):
 		self.paneApps.hide()
 		lay.addWidget(self.paneApps,1,0,1,self.layout().columnCount())
 		self.paneDetails=self._detailsPane()
+		self.paneDetails.ready.connect(self._detailsLoaded)
 		self.paneDetails.hide()
 		lay.addWidget(self.paneDetails,1,0,1,self.layout().columnCount())
 		self.prgBar=self._defProgress()
