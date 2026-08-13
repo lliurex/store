@@ -2,7 +2,7 @@
 import json
 from functools import partial
 from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QHBoxLayout,QApplication
-from PySide6.QtCore import Qt,Signal
+from PySide6.QtCore import Qt,Signal,QThread
 from PySide6.QtGui import QIcon
 from QtExtraWidgets import QSearchBox,QScrollLabel,QScreenShotContainer,QPushInfoButton,QFlowTouchWidget
 from extras.i18n import *
@@ -10,17 +10,36 @@ from extras.constants import *
 from wdg import btnApp
 from wdg.flowBar import QFlowBar
 
+class refreshApp(QThread):
+	appLoaded=Signal("PyObject")
+	def __init__(self,*args,parent=None,**kwargs):
+		QThread.__init__(self, parent)
+		self.app=kwargs.get("app")
+		self.rebost=kwargs.get("rebost")
+	#def __init__
+
+	def setApp(self,app):
+		self.app=app
+	#def refreshApp
+	
+	def run(self):
+		print(self.app)
+		self.app=json.loads(self.rebost.refreshApp(self.app["id"]))[0]
+		self.appLoaded.emit(self.app)
+	#def run
+#class refreshApp
+
 class QDetailsPane(QWidget):
 	ready=Signal()
-	appLoaded=Signal()
 	search=Signal(str)
 	def __init__(self,*args,parent=None,**kwargs):
 		self.__EXIT__=False
 		QWidget.__init__(self, parent)
 		self.rebost=kwargs.get("rebost")
 		self.__initScreen__()
-		self.appLoaded.connect(self._updateScreen)
 		self.destroyed.connect(partial(QDetailsPane._onDestroy,self.__dict__))
+		self.refreshApp=refreshApp(rebost=self.rebost)
+		self.refreshApp.appLoaded.connect(self._updateScreen)
 		self.app={}
 	#def __init__
 
@@ -68,10 +87,16 @@ class QDetailsPane(QWidget):
 		wdg=QWidget()
 		lay=QGridLayout(wdg)
 		installBtn=QPushButton(i18n["INSTALL"])
+		installIcon=QIcon().fromTheme("install")
+		installBtn.setIcon(installIcon)
 		lay.addWidget(installBtn,0,0,1,1)
 		removeBtn=QPushButton(i18n["REMOVE"])
+		removeIcon=QIcon().fromTheme("uninstall")
+		removeBtn.setIcon(removeIcon)
 		lay.addWidget(removeBtn,0,0,1,1)
 		launchBtn=QPushButton(i18n["LAUNCH"])
+		launchIcon=QIcon().fromTheme("system-run")
+		launchBtn.setIcon(launchIcon)
 		lay.addWidget(launchBtn)
 		wdg._setInstalled=_setInstalled
 		wdg._setZomando=_setZomando
@@ -125,12 +150,12 @@ class QDetailsPane(QWidget):
 		home.setStyleSheet("""text-align:left;padding:3px""")
 		icn=QIcon.fromTheme("go-home")
 		home.setIcon(icn)
-		lay.addWidget(home)
+		lay.addWidget(home,0,0,1,1,Qt.AlignTop)
 		info=QPushButton()
 		icn=QIcon.fromTheme("showinfo")
 		info.setIcon(icn)
 		info.setStyleSheet("""text-align:left;padding:3px""")
-		lay.addWidget(info)
+		lay.addWidget(info,1,0,1,1,Qt.AlignBottom)
 		wdg.home=home
 		wdg.info=info
 		return(wdg)
@@ -143,7 +168,7 @@ class QDetailsPane(QWidget):
 		self.actions=self._defAppActions()
 		lay.addWidget(self.actions,0,1,1,1,Qt.AlignRight)
 		self.urls=self._defAppUrls()
-		lay.addWidget(self.urls,0,2,1,1,Qt.Alignment(-2))
+		lay.addWidget(self.urls,0,2,1,1,Qt.AlignCenter)
 		self.screenshots=self._defScreenshots()
 		lay.addWidget(self.screenshots,1,0,1,lay.columnCount(),Qt.AlignTop)
 		self.description=self._defAppDescription()
@@ -165,8 +190,12 @@ class QDetailsPane(QWidget):
 				self.actions._setAvailable()
 		else:
 			self.actions.hide()
-		self.app=json.loads(self.rebost.refreshApp(self.btn.app["id"]))[0]
-		self.appLoaded.emit()
+		self.app=self.btn.app
+		if self.app["description"]=="":
+			self.refreshApp.setApp(self.app)
+			self.refreshApp.start()
+		else:
+			self._updateScreen()
 	#def load
 
 	def _getTags(self):
@@ -243,9 +272,12 @@ class QDetailsPane(QWidget):
 	#def _loadUrls
 
 	def _updateScreen(self,*args):
+		if len(args)<0:
+			self.app=args[0]
 		self._loadHeaderData()
 		self._loadDescription()
 		self._loadScreenshots()
 		self._loadUrls()
+		self.ready.emit()
 	 #def _updateScreen(self,*args):
 
