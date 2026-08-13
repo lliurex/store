@@ -186,8 +186,15 @@ class QDetailsPane(QWidget):
 	#def __initScreen__
 
 	def loadFromId(self,*args):
-		pass
+		print("^")
+		print(args[0])
+		print("^")
+		appId=args[0].property("metadata")
+		self.btn=args[0]
+		self.refreshApp.setQuery("refresh",appId)
+		self.refreshApp.start()
 	#def loadFromId
+
 	def load(self,*args,category=False):
 		#self.clean()
 		self.btn=args[0]

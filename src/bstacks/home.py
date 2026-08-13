@@ -15,6 +15,7 @@ class QHomePane(QWidget):
 	search=Signal(str)
 	loadCategory=Signal(str)
 	requestInstall=Signal("PyObject")
+	requestInstallFromId=Signal("PyObject")
 	def __init__(self,*args,parent=None,**kwargs):
 		QWidget.__init__(self, parent)
 		self.rebost=kwargs.get("rebost")
@@ -75,11 +76,10 @@ class QHomePane(QWidget):
 		meta=args[0].property("metadata")
 		if meta==None:
 			meta=""
-		print("%{}%".format(meta))
 		if meta=="":
 			self.requestInstall.emit(args[0])
 		else:
-			print("IEIEI")
+			self.requestInstallFromId.emit(args[0])
 	#def _emitLoadApp
 
 	def _defChoiBar(self):

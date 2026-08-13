@@ -109,6 +109,12 @@ class portrait(QStackedWindowItem):
 		self.paneDetails.load(args[0])
 	#def _loadAppDetail
 
+	def _loadAppDetailFromId(self,*args):
+		self.beginLoad.emit(self.paneDetails)
+		self.paneApps.blockSignals(True)
+		self.paneDetails.loadFromId(args[0])
+	#def _loadAppDetail
+
 	def _goHome(self,*args):
 		self.beginLoad.emit(self.paneHome)
 		self.paneHome.show()
@@ -142,6 +148,7 @@ class portrait(QStackedWindowItem):
 		wdg.search.connect(self._searchApps)
 		wdg.loadCategory.connect(self._loadCategory)
 		wdg.requestInstall.connect(self._loadAppDetail)
+		wdg.requestInstallFromId.connect(self._loadAppDetailFromId)
 		return(wdg)
 	#def _homePane
 
