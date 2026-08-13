@@ -9,14 +9,17 @@ from wdg.zomandos import zmdsBar
 from QtExtraWidgets import QStackedWindowItem,QSearchBox
 from extras.i18n import *
 from extras.constants import *
+from lib.threadLib import runner
 
 class QHomePane(QWidget):
 	search=Signal(str)
 	loadCategory=Signal(str)
+	requestInstall=Signal("PyObject")
 	def __init__(self,*args,parent=None,**kwargs):
 		QWidget.__init__(self, parent)
 		self.rebost=kwargs.get("rebost")
 		self.__initScreen__()
+		self.runner=runner()
 	#def __init__
 
 	def _emitSearch(self,*args):
@@ -55,25 +58,45 @@ class QHomePane(QWidget):
 		elif content=="zmds":
 			self.flowZmds.show()
 
+	def _emitLoadUrl(self,*args):
+		txt=args[0].lblDesc.text()
+		href=txt.split("href=\"")[-1].split("\"")[0]
+		self.runner.setAction("xdg-open",href)
+		self.runner.start()
+	#def _emitLoadUrl
+
 	def _defBlogBar(self):
 		wdg=blogBar()
+		wdg.selected.connect(self._emitLoadUrl)
 		return(wdg)
 	#def _defBlogBar
 
+	def _emitLoadApp(self,*args):
+		meta=args[0].property("metadata")
+		if meta==None:
+			meta=""
+		print("%{}%".format(meta))
+		if meta=="":
+			self.requestInstall.emit(args[0])
+		else:
+			print("IEIEI")
+	#def _emitLoadApp
+
 	def _defChoiBar(self):
 		wdg=choiBar(rebost=self.rebost)
+		wdg.selected.connect(self._emitLoadApp)
 		return(wdg)
 	#def _defChoiBar
+
+	def _defZmdsBar(self):
+		wdg=zmdsBar(rebost=self.rebost)
+		wdg.selected.connect(self._emitLoadApp)
+		return(wdg)
+	#def _defZmdsBar
 
 	def _emitLoadCategory(self,*args):
 		self.loadCategory.emit(args[0].text())
 	#def _emitLoadCategory
-
-	def _defZmdsBar(self):
-		wdg=zmdsBar(rebost=self.rebost)
-		#wdg.selected.connect(self._emitLoadZomando)
-		return(wdg)
-	#def _defCatsBar
 
 	def _defCatsBar(self):
 		wdg=catsBar(rebost=self.rebost)
