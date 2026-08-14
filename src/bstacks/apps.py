@@ -4,6 +4,7 @@ from functools import partial
 from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QHBoxLayout,QApplication
 from PySide6.QtCore import Qt,Signal
 from QtExtraWidgets import QSearchBox,QFlowTouchWidget
+from PySide6.QtGui import QIcon,QPixmap
 from extras.i18n import *
 from extras.constants import *
 from wdg import btnApp
@@ -46,16 +47,32 @@ class QAppsPane(QWidget):
 		lay.setContentsMargins(SPACING,0,0,0)
 		lay.setSpacing(SPACING)
 		self.flow=self._defFlow()
-		wdg=QWidget()
-		hlay=QHBoxLayout(wdg)
+		self.container=QWidget()
+		hlay=QHBoxLayout(self.container)
 		hlay.addSpacing(SPACING)
 		hlay.addWidget(self.flow)
-		self.layout().addWidget(wdg,0,0,1,self.layout().columnCount())
+		self.layout().addWidget(self.container,0,0,1,self.layout().columnCount())
+		self.emptyContainer=QWidget()
+		glay=QGridLayout(self.emptyContainer)
+		lblIcn=QLabel()
+		icn=QIcon.fromTheme("align-none")
+		pxm=icn.pixmap(self.width(),self.height(),QIcon.Mode.Disabled)
+		lblIcn.setPixmap(pxm)
+		glay.addWidget(lblIcn,0,0,1,1)
+		lblTxt=QLabel("<p><strong>{}</strong></p>".format(i18n["EMPTY"]))
+		lblTxt.setStyleSheet("""padding:5px;""")
+		fLbl=lblTxt.font()
+		lblTxt.setAutoFillBackground(True)
+		fLbl.setPointSize(fLbl.pointSize()+4)
+		lblTxt.setFont(fLbl)
+		glay.addWidget(lblTxt,0,0,1,1,Qt.AlignCenter|Qt.AlignCenter)
+		self.emptyContainer.hide()
+		self.layout().addWidget(self.emptyContainer,0,0,1,self.layout().columnCount(),Qt.AlignCenter|Qt.AlignCenter)
+		
 	#def __initScreen__
 
 	def _installApp(self,*args):
 		btn=self.flow.currentItem()
-		btn.setDisabled(True)
 		self.requestInstall.emit(btn)
 		self.actionAppBtn.update({btn.app["id"]:btn})
 	#def _installApp
@@ -63,6 +80,8 @@ class QAppsPane(QWidget):
 	def _loadGrid(self,apps):
 		btnW=350+SPACING
 		if len(apps)>0:
+			self.emptyContainer.hide()
+			self.container.show()
 			for app in apps:
 				if app==None:
 					continue
@@ -76,12 +95,15 @@ class QAppsPane(QWidget):
 				else:
 					break
 				QApplication.processEvents()
-			if self.__EXIT__==False:
-				self.ready.emit()
+		else:
+			self.emptyContainer.show()
+		if self.__EXIT__==False:
+			self.ready.emit()
 	#def _loadGrid
 
 	def load(self,*args,category=False):
 		self.flow.clean()
+		self.blockSignals(False)
 		if category==True:
 			apps=json.loads(self.rebost.getAppsInCategory(args[0]))
 			apps=apps[args[0]]
