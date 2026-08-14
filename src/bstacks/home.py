@@ -43,7 +43,6 @@ class QHomePane(QWidget):
 				chld.setText(i18n.get(chld.property("name"),chld.property("name")).upper())
 		#wdg.loadHome.connect(self._goHome)
 		wdg.loadNews.connect(self._loadContent)
-		wdg.loadBlog.connect(self._loadContent)
 		wdg.loadRecs.connect(self._loadContent)
 		wdg.loadZmds.connect(self._loadContent)
 		wdg.loadCats.connect(self._loadContent)
