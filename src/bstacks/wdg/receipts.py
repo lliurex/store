@@ -6,7 +6,7 @@ class recsBar(QFlowBar):
 	def __init__(self,*args,parent=None,**kwargs):
 		QFlowBar.__init__(self, parent)
 		self.itemsPerPage=2
-		self.defaultSize=108
+		self.defaultSize=128
 		self.overlay=False
 		self.onlyImg=True
 		self.overlayTextImg=True
