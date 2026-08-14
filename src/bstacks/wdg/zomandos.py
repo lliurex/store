@@ -10,6 +10,7 @@ class zmdsBar(QFlowBar):
 		self.zmdDir="/usr/share/zero-center/zmds"
 		self.appDir="/usr/share/zero-center/applications"
 		self.itemsPerPage=2
+		self.defaultSize=128
 		self.overlay=True
 		self.onlyImg=True
 		self.spacing=10

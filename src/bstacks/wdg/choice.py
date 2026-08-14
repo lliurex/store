@@ -3,6 +3,7 @@ import json
 from wdg.flowBar import QFlowBar
 from random import shuffle
 from lib import rss
+from extras.constants import *
 
 class choiBar(QFlowBar):
 	def __init__(self,*args,parent=None,**kwargs):
@@ -12,14 +13,13 @@ class choiBar(QFlowBar):
 		self.rss.choiceEnded.connect(self._loadData)
 		self.itemsPerPage=3
 		self.spacing=15
-		self.defaultSize=48
-	#def __init__(self,*args):
+		self.defaultSize=64
+		self.overlay=False
+		self.showScrollBar(True)
+	#def __init__
 
 	def loadChoice(self):
 		self.rss.feed="lliurexnet"
-		self.overlay=False
-		self.showScrollBar(True)
-		self.rss.loadCache()
 		self.rss.start()
 	#def loadChoice
 
@@ -50,5 +50,8 @@ class choiBar(QFlowBar):
 		selectedContent={}
 		for i in keys[0:min(5,len(keys))]:
 			selectedContent[i]=appContent[i]
+		bheight=self.defaultSize*2
+		self.table.setRowHeight(0,bheight-SPACING)
+		self.table.setFixedHeight(bheight+MARGIN)
 		self.updateScreen(feed,selectedContent)
 	#def _loadData

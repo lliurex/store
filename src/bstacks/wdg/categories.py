@@ -11,6 +11,7 @@ class catsBar(QFlowBar):
 		self.itemsPerPage=4
 		self.overlay=False
 		self.simpleButtons=True
+		self.defaultSize=128
 		self.spacing=10
 	#def __init__(self,*args):
 
