@@ -1,6 +1,7 @@
 #!/usr/bin/python3
+import os
 from PySide6.QtCore import Qt,QSize,Signal
-from PySide6.QtWidgets import QScrollArea,QHBoxLayout,QWidget,QGridLayout,QPushButton,QHeaderView
+from PySide6.QtWidgets import QScrollArea,QHBoxLayout,QWidget,QGridLayout,QPushButton,QHeaderView,QSizePolicy
 from PySide6.QtGui import QIcon,QColor,QPainter,QLinearGradient
 from QtExtraWidgets import QTableTouchWidget,QPushInfoButton
 
@@ -8,15 +9,44 @@ class QFlowBar(QScrollArea):
 	selected=Signal("PyObject")
 	def __init__(self,*args,parent=None,**kwargs):
 		QScrollArea.__init__(self, parent)
+		self.cache=os.path.join(os.environ["HOME"],".cache","store","imgs")
+		self._initGui()
+		self.setWidgetResizable(True)
+		self.itemsPerPage=1
+		self.spacing=0
+		self.defaultSize=0
+		self.showScrollBar(False)
+		self.overlay=False
+		self.overlayGradientFrom=(224,214,255,50)
+		self.overlayGradientTo=(220,150,120,110)
+		self.onlyImg=False
+		self.overlayTextImg=False
+		self.content={}
+		self.wsize=0
+	#def __init__
+
+	def wheelEvent(self, event):
+		yDir=event.angleDelta().y()
+		xPos=self.table.horizontalScrollBar().value()-yDir
+		self.table.horizontalScrollBar().setValue(xPos)
+		event.accept()
+	#def wheelEvent
+
+	def _initGui(self):
 		wdg=QWidget()
 		lay=QGridLayout(wdg)
 		lay.setContentsMargins(0,0,0,0)
 		lay.setSpacing(0)
-		self.setWidgetResizable(True)
 		self.table=QTableTouchWidget()
 		self.table.setColumnCount(0)
 		self.table.setRowCount(0)
 		self.table.setRowCount(1)
+		self.table.horizontalHeader().hide()
+		self.table.setAutoScroll(False)
+		self.table.verticalHeader().hide()
+		self.table.setShowGrid(False)
+		self.table.cellClicked.connect(self._emit)
+		self.table.itemActivated.connect(self._emit)
 		lay.addWidget(self.table,0,1,1,1)
 		self.btnPrev=QPushButton()
 		self.btnPrev.setIcon(QIcon.fromTheme("go-previous"))
@@ -27,26 +57,11 @@ class QFlowBar(QScrollArea):
 		self.btnNext.setIcon(QIcon.fromTheme("go-next"))
 		lay.addWidget(self.btnNext,0,2,1,1,Qt.AlignRight)
 		self.setWidget(wdg)
-		self.itemsPerPage=1
-		self.spacing=0
-		self.defaultSize=0
-		self.table.horizontalHeader().hide()
-		self.table.setAutoScroll(False)
-		self.table.verticalHeader().hide()
-		self.table.setShowGrid(False)
-		self.table.cellClicked.connect(self._emit)
-		self.table.itemActivated.connect(self._emit)
-		self.showScrollBar(False)
-		self.overlay=False
-		self.overlayGradientFrom=(224,214,255,50)
-		self.overlayGradientTo=(220,150,120,110)
-		self.onlyImg=False
-		self.content={}
-		self.wsize=0
-	#def __init__
+	#def _initGui_
 
 	def showScrollBar(self,show):
 		self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		if show==False:
 			self.table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 			self.btnNext.show()
@@ -56,6 +71,7 @@ class QFlowBar(QScrollArea):
 			#self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 			self.btnNext.hide()
 			self.btnPrev.hide()
+	#def showScrollBar
 
 	def _moveNext(self):
 		tsize=self.table.columnCount()*self.table.columnWidth(0)
@@ -84,6 +100,7 @@ class QFlowBar(QScrollArea):
 		def mousePressEvent(event):
 			event.ignore()
 		btn=QPushInfoButton(overlay=self.overlay)
+		btn.setCacheDir(self.cache)
 		btn.mousePressEvent=mousePressEvent
 		btn.label.setAlignment(Qt.AlignLeft)
 		img=data.get("img")
@@ -96,11 +113,17 @@ class QFlowBar(QScrollArea):
 		btn.setText(data.get("title"))
 		btn.loadImg(img)
 		if self.onlyImg==True:
-			btn.label.hide()
-			btn.lblDesc.hide()
 			btn.layout().addWidget(btn.icon,0,0,2,2,Qt.AlignCenter)
+			btn.lblDesc.hide()
+			btn.label.setVisible(self.overlayTextImg)
+			if self.overlayTextImg==True:
+				btn.label.setFixedWidth(self.defaultSize)
+				btn.label.setAutoFillBackground(True)
+				btn.label.setAlignment(Qt.AlignCenter)
+				btn.layout().addWidget(btn.label,0,0,1,1,Qt.AlignCenter|Qt.AlignCenter)
 		if self.overlay==True:
 			btn.lblDesc.label.setGradient(self.overlayGradientFrom,self.overlayGradientTo)
+		#btn.setFixedHeight(self.defaultSize)
 		return(btn)
 	#def _infoBtn
 
