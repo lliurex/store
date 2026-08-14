@@ -113,16 +113,17 @@ class QDetailsPane(QWidget):
 
 	def _defAppDescription(self):
 		def _setDescription(*args):
-			desc.setText(args[0])
+			desc=args[0].replace("\n","<br>").capitalize()
+			lblDesc.setText(desc)
 		wdg=QWidget()
 		wdg.setDescription=_setDescription
 		lay=QGridLayout(wdg)
-		desc=QScrollLabel()
-		desc.setGradient((224,214,255,50),(220,150,120,110))
-		desc.label.x1=1.9
-		desc.label.x2=1
-		desc.label.setTextFormat(Qt.RichText)
-		lay.addWidget(desc)
+		lblDesc=QScrollLabel()
+		lblDesc.setGradient((224,214,255,50),(220,150,120,110))
+		lblDesc.label.x1=1.9
+		lblDesc.label.x2=1
+		lblDesc.label.setTextFormat(Qt.RichText)
+		lay.addWidget(lblDesc)
 		wdg.setStyleSheet("""margin-bottom:0px""")
 		return(wdg)
 	#def _defAppDescription
@@ -186,9 +187,6 @@ class QDetailsPane(QWidget):
 	#def __initScreen__
 
 	def loadFromId(self,*args):
-		print("^")
-		print(args[0])
-		print("^")
 		appId=args[0].property("metadata")
 		self.btn=args[0]
 		self.refreshApp.setQuery("refresh",appId)
