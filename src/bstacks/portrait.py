@@ -28,7 +28,7 @@ class portrait(QStackedWindowItem):
 			index=1,
 			visible=True)
 		self.rebost=store.client()
-		self.previousPane=None
+		self.previousPane=[]
 		self.currentPane=None
 		self.beginLoad.connect(self._showProgress)
 		self.stopLoad.connect(self._stopProgress)
@@ -65,10 +65,9 @@ class portrait(QStackedWindowItem):
 	#def _chkNetwork
 
 	def _showProgress(self,paneToLoad):
+		self.previousPane.append(self.currentPane)
 		self.currentPane=paneToLoad
 		for pane in [self.paneHome,self.paneApps,self.paneDetails]:
-			if pane.isVisible()==True:
-				self.previousPane=pane
 			pane.hide()
 		if self.currentPane==self.paneApps:
 			self.search.show()
@@ -113,7 +112,7 @@ class portrait(QStackedWindowItem):
 		self.beginLoad.emit(self.paneDetails)
 		self.paneApps.blockSignals(True)
 		self.paneDetails.loadFromId(args[0])
-	#def _loadAppDetail
+	#def _loadAppDetailFromId
 
 	def _goHome(self,*args):
 		self.beginLoad.emit(self.paneHome)
@@ -133,14 +132,14 @@ class portrait(QStackedWindowItem):
 	#def _searchApps(self,*args):
 
 	def _goPrevious(self,*args):
-		self.previousPane.show()
-		self.currentPane.hide()
-		self.currentPane=self.previousPane
+		if len(self.previousPane)>0:
+			self.currentPane.hide()
+			self.currentPane=self.previousPane.pop()
 		if self.currentPane==self.paneApps:
 			self.paneApps.blockSignals(False)
-			self.previousPane=self.paneHome
 		elif self.currentPane==self.paneHome:
 			self.search.hide()
+		self.currentPane.show()
 	#def _searchApps(self,*args):
 
 	def _homePane(self):
@@ -164,6 +163,13 @@ class portrait(QStackedWindowItem):
 		wdg.search.connect(self._searchApps)
 		return(wdg)
 	#def _detailsPane
+
+	def keyPressEvent(self,*args):
+		if self.search.hasFocus()==False:
+			self.search.src.txtSearch.setFocus()
+			if args[0].text().strip()!="":
+				self.search.src.setText(args[0].text().strip())
+	#def keyPressEvent
 
 	def _defSearch(self):
 		wdg=QSearch()
@@ -192,6 +198,7 @@ class portrait(QStackedWindowItem):
 		self.search.hide()
 		lay.addWidget(self.search,0,0,1,self.layout().columnCount(),Qt.AlignCenter)
 		self.paneHome=self._homePane()
+		self.currentPane=self.paneHome
 		lay.addWidget(self.paneHome,1,0,1,self.layout().columnCount())
 		self.paneApps=self._appsPane()
 		self.paneApps.ready.connect(self._appsLoaded)
