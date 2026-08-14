@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt,QSize,Signal
 from PySide6.QtWidgets import QScrollArea,QHBoxLayout,QWidget,QGridLayout,QPushButton,QHeaderView,QSizePolicy
 from PySide6.QtGui import QIcon,QColor,QPainter,QLinearGradient
 from QtExtraWidgets import QTableTouchWidget,QPushInfoButton
+from extras.constants import *
 
 class QFlowBar(QScrollArea):
 	selected=Signal("PyObject")
@@ -22,6 +23,7 @@ class QFlowBar(QScrollArea):
 		self.onlyImg=False
 		self.overlayTextImg=False
 		self.content={}
+		self.loadImgSync=False
 		self.wsize=0
 	#def __init__
 
@@ -32,6 +34,10 @@ class QFlowBar(QScrollArea):
 		event.accept()
 	#def wheelEvent
 
+	def clean(self):
+		self.table.setColumnCount(0)
+	#def clean
+
 	def _initGui(self):
 		wdg=QWidget()
 		lay=QGridLayout(wdg)
@@ -39,7 +45,6 @@ class QFlowBar(QScrollArea):
 		lay.setSpacing(0)
 		self.table=QTableTouchWidget()
 		self.table.setColumnCount(0)
-		self.table.setRowCount(0)
 		self.table.setRowCount(1)
 		self.table.horizontalHeader().hide()
 		self.table.setAutoScroll(False)
@@ -111,7 +116,10 @@ class QFlowBar(QScrollArea):
 		else:
 			btn.setDescription(data.get("summary"))
 		btn.setText(data.get("title"))
-		btn.loadImg(img)
+		if self.loadImgSync==False:
+			btn.loadImg(img)
+		else:
+			btn.loadImgSync(img)
 		if self.onlyImg==True:
 			btn.layout().addWidget(btn.icon,0,0,2,2,Qt.AlignCenter)
 			btn.lblDesc.hide()
@@ -185,8 +193,8 @@ class QFlowBar(QScrollArea):
 					if bheight==0:
 						bheight=btn.height()
 			if bheight>0:
-				self.table.setFixedHeight(bheight+20)
-				self.table.setRowHeight(0,bheight+10)
+				self.table.setFixedHeight(bheight+MARGIN*2)
+				self.table.setRowHeight(0,bheight+MARGIN)
 			elif bheight==0:
 				self.table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		self.btnNext.setIconSize(QSize(32,self.table.rowHeight(0)/2))
