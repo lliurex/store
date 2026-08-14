@@ -11,7 +11,7 @@ class QAppButton(QPushInfoButton):
 		self.app=args[0]
 		self.lblStatus=QLabel("")
 		self.defaultSize=64
-		self.loadImg(self.app["icon"])
+		self.loadImgSync(self.app["icon"])
 		self.setText(self.app["name"])
 		self.setDescription(self.app["summary"])
 		self.helper=libhelper.helper()
