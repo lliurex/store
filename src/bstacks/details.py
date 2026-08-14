@@ -7,7 +7,6 @@ from PySide6.QtGui import QIcon
 from QtExtraWidgets import QSearchBox,QScrollLabel,QScreenShotContainer,QPushInfoButton,QFlowTouchWidget
 from extras.i18n import *
 from extras.constants import *
-from wdg.lblLink import QLabelImg
 from wdg.flowBar import QFlowBar
 from lib.threadLib import rebostQuery
 from lib.helperLib import appHelper,auxiliary
