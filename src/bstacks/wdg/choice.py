@@ -15,6 +15,7 @@ class choiBar(QFlowBar):
 		self.spacing=15
 		self.defaultSize=64
 		self.overlay=False
+		self.loadImgSync=True
 		self.showScrollBar(True)
 	#def __init__
 
