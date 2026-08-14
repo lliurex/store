@@ -117,7 +117,7 @@ class QProgressImage(QWidget):
 	#def _beginDoProgress
 
 	def _bigger(self,args):
-		if (self.pxm.width()>300) or (self.pxm.width()<64):
+		if (self.pxm.width()>300) or (self.pxm.width()<200):
 			self.inc*=-1 
 		self.pxm=QPixmap(self.img).scaled(self.pxm.size().width()+self.inc,self.pxm.size().height()+self.inc)
 		self.lblPxm.resize(self.pxm.size().width()+self.inc,self.pxm.size().height()+self.inc)
