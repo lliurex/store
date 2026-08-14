@@ -28,6 +28,13 @@ class QHomePane(QWidget):
 		self.search.emit(args[0])
 	#def _emitSearch
 
+	def keyPressEvent(self,*args):
+		if self.searchBox.hasFocus()==False:
+			self.searchBox.txtSearch.setFocus()
+			if args[0].text().strip()!="":
+				self.searchBox.setText(args[0].text().strip())
+	#def keyPressEvent
+
 	def _defSearch(self):
 		wdg=QSearchBox()
 		wdg.clicked.connect(self._emitSearch)
@@ -142,10 +149,10 @@ class QHomePane(QWidget):
 		self.flowBlog.loadBlog()
 		self.flowBlog.hide()
 		lay.addWidget(self.flowBlog,1,0,1,self.layout().columnCount(),Qt.AlignTop)
-		searchBox=self._defSearch()
-		searchBox.setMinimumWidth(512)
+		self.searchBox=self._defSearch()
+		self.searchBox.setMinimumWidth(512)
 		#self.layout().addWidget(QLabel("<hr>"),2,0,1,self.layout().columnCount(),Qt.AlignTop|Qt.AlignCenter)
-		self.layout().addWidget(searchBox,2,0,1,self.layout().columnCount(),Qt.AlignCenter|Qt.AlignCenter)
+		self.layout().addWidget(self.searchBox,2,0,1,self.layout().columnCount(),Qt.AlignCenter|Qt.AlignCenter)
 		self.layout().addWidget(QLabel("{}".format(i18n["CHOICE"])),3,0,1,self.layout().columnCount(),Qt.AlignBottom|Qt.AlignCenter)
 		self.flowChoi=self._defChoiBar()
 		self.flowChoi.loadChoice()
