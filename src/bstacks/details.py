@@ -1,15 +1,16 @@
 #!/usr/bin/python3
 import json
 from functools import partial
-from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QHBoxLayout,QApplication
-from PySide6.QtCore import Qt,Signal
+from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QHBoxLayout,QApplication,QSizePolicy
+from PySide6.QtCore import Qt,Signal,QSize
 from PySide6.QtGui import QIcon
 from QtExtraWidgets import QSearchBox,QScrollLabel,QScreenShotContainer,QPushInfoButton,QFlowTouchWidget
 from extras.i18n import *
 from extras.constants import *
-from wdg import btnApp
+from wdg.lblLink import QLabelImg
 from wdg.flowBar import QFlowBar
 from lib.threadLib import rebostQuery
+from lib.helperLib import appHelper,auxiliary
 
 class QDetailsPane(QWidget):
 	ready=Signal()
@@ -25,6 +26,8 @@ class QDetailsPane(QWidget):
 		self.destroyed.connect(partial(QDetailsPane._onDestroy,self.__dict__))
 		self.refreshApp=rebostQuery(rebost=self.rebost)
 		self.refreshApp.queryCompleted.connect(self._updateScreen)
+		self.helper=appHelper()
+		self.aux=auxiliary()
 		self.requested=""
 		self.app={}
 	#def __init__
@@ -105,6 +108,13 @@ class QDetailsPane(QWidget):
 		launchIcon=QIcon().fromTheme("system-run")
 		launchBtn.setIcon(launchIcon)
 		lay.addWidget(launchBtn)
+		self.infoBtn=QPushButton("Info")
+		icn=QIcon.fromTheme("showinfo")
+		self.infoBtn.setIcon(icn)
+		self.infoBtn.setStyleSheet("""text-align:left;padding:3px""")
+		self.infoBtn.setCheckable(True)
+		self.infoBtn.toggled.connect(self._showAppInfo)
+		lay.addWidget(self.infoBtn,0,1,1,1)
 		wdg._setInstalled=_setInstalled
 		wdg._setZomando=_setZomando
 		wdg._setAvailable=_setAvailable
@@ -151,23 +161,82 @@ class QDetailsPane(QWidget):
 		return(wdg)
 	#def _defAppSuggestions
 
-	def _defAppUrls(self):
+	def _defAppLabels(self):
+		wdg=QWidget()
+		#lay=QGridLayout(wdg)
+		#home=QPushButton()
+		#home.setStyleSheet("""text-align:left;padding:3px""")
+		#icn=QIcon.fromTheme("go-home")
+		#home.setIcon(icn)
+		#lay.addWidget(home,0,0,1,1,Qt.AlignTop)
+		#info=QPushButton()
+		#icn=QIcon.fromTheme("showinfo")
+		#info.setIcon(icn)
+		#info.setStyleSheet("""text-align:left;padding:3px""")
+		#lay.addWidget(info,1,0,1,1,Qt.AlignBottom)
+		#wdg.home=home
+		#wdg.info=info
+		return(wdg)
+	#def _defAppLabels
+
+	def _showAppInfo(self):
+		show=self.infoBtn.isChecked()
+		self.appInfo.setVisible(show)
+		if len(self.app["screenshots"])>0:
+			self.screenshots.setVisible(not show)
+	#def _showAppInfo
+
+	def _defAppCategories(self):
+		cats=QFlowBar()
+		cats.setStyleSheet("QScrollArea {border:0px;margin:0px;padding:0px;background-color:rgba(0,0,0,0);}");
+		cats.setStyleSheet("padding:0px;margin:0px;border:0px;background-color:rgba(0,0,0,0);");
+		cats.itemsPerPage=4
+		cats.overlay=False
+		cats.simpleButtons=True
+		cats.showScrollBar(True)
+		cats.table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		cats.spacing=10
+		cats.defaultSize=24
+		return(cats)
+	#def _defAppCategories
+
+	def _defAppInfo(self):
 		wdg=QWidget()
 		lay=QGridLayout(wdg)
-		home=QPushButton()
-		home.setStyleSheet("""text-align:left;padding:3px""")
+		cats=self._defAppCategories()
+		lay.addWidget(cats,0,0,1,3)
+		lblCandidate=QLabel()
+		lay.addWidget(lblCandidate,1,0,1,1)
+		lblRelease=QLabel()
+		lay.addWidget(lblRelease,2,0,1,1)
+		lblInstalled=QLabel()
+		lay.addWidget(lblInstalled,3,0,1,1)
+		btnHomepage=QPushButton()
+		btnHomepage.setStyleSheet("""text-align:left;""")
 		icn=QIcon.fromTheme("go-home")
-		home.setIcon(icn)
-		lay.addWidget(home,0,0,1,1,Qt.AlignTop)
-		info=QPushButton()
+		btnHomepage.setIcon(icn)
+		btnHomepage.setIconSize(QSize(24,24))
+		btnHomepage.setMaximumHeight(btnHomepage.iconSize().height()+2)
+		lay.addWidget(btnHomepage,1,1,1,1,Qt.AlignLeft)
+		btnInfopage=QPushButton()
+		btnInfopage.setStyleSheet("""text-align:left;""")
 		icn=QIcon.fromTheme("showinfo")
-		info.setIcon(icn)
-		info.setStyleSheet("""text-align:left;padding:3px""")
-		lay.addWidget(info,1,0,1,1,Qt.AlignBottom)
-		wdg.home=home
-		wdg.info=info
+		btnInfopage.setIconSize(QSize(24,24))
+		btnInfopage.setMaximumHeight(btnInfopage.iconSize().height()+2)
+		lay.addWidget(btnInfopage,2,1,1,1,Qt.AlignLeft)
+		btnInfopage.setIcon(icn)
+		tags=QFlowTouchWidget()
+		tags.setMaximumHeight(96)
+		lay.addWidget(tags,0,5,4,1,Qt.Alignment(-1))
+		wdg.cats=cats
+		wdg.tags=tags
+		wdg.candidate=lblCandidate
+		wdg.release=lblRelease
+		wdg.installed=lblInstalled
+		wdg.homepage=btnHomepage
+		wdg.infopage=btnInfopage
 		return(wdg)
-	#def _defAppUrls
+	#def _defAppInfo
 
 	def __initScreen__(self):
 		lay=QGridLayout(self)
@@ -175,10 +244,13 @@ class QDetailsPane(QWidget):
 		lay.addWidget(self.header,0,0,1,1,Qt.AlignLeft)
 		self.actions=self._defAppActions()
 		lay.addWidget(self.actions,0,1,1,1,Qt.AlignRight)
-		self.urls=self._defAppUrls()
-		lay.addWidget(self.urls,0,2,1,1,Qt.AlignCenter)
+		self.lbls=self._defAppLabels()
+		lay.addWidget(self.lbls,0,2,1,1,Qt.AlignCenter)
 		self.screenshots=self._defScreenshots()
 		lay.addWidget(self.screenshots,1,0,1,lay.columnCount(),Qt.AlignTop)
+		self.appInfo=self._defAppInfo()
+		lay.addWidget(self.appInfo,1,0,1,lay.columnCount(),Qt.AlignTop)
+		self.appInfo.hide()
 		self.description=self._defAppDescription()
 		lay.addWidget(self.description,2,0,1,lay.columnCount())
 		self.suggestions=self._defAppSuggestions()
@@ -243,13 +315,13 @@ class QDetailsPane(QWidget):
 	#def _loadHeaderData
 
 	def _loadDescription(self):
+		self.description.setDescription("")
 		desc="<p>{}</p>".format(self.app["description"])
 		tags=self._getTags()
 		if len(tags)>0:
 			desc+="<hr>"
 			for tag in tags:
 				desc+="{} ".format(tag)
-
 		self.description.setDescription(desc)
 	#def _loadDescription
 
@@ -263,6 +335,7 @@ class QDetailsPane(QWidget):
 	#def _loadScreenshots
 
 	def _loadUrls(self):
+		return
 		self.urls.home.hide()
 		self.urls.info.hide()
 		if len(self.app["infopage"])>0:
@@ -286,7 +359,38 @@ class QDetailsPane(QWidget):
 			self.urls.info.show()
 	#def _loadUrls
 
+	def _loadAppInfo(self):
+		data={}
+		self.appInfo.cats.clean()
+		for cat in self.app["categories"]:
+			hcolor=self.aux.getRgbColorFromTxt(cat)
+			data[len(data)]={"title":cat.capitalize(),"img":hcolor,"summary":"","description":""}
+		self.appInfo.cats.updateScreen("cats",data)
+		self.appInfo.cats.setFixedHeight(self.appInfo.cats.defaultSize+MARGIN)
+		self.appInfo.tags.clean()
+		for tag in self._getTags():
+			self.appInfo.tags.addWidget(QLabel(tag))
+		candidates=self.helper.getBundlesByPriority(self.app)
+		for candidate in candidates.values():
+			bundle,release=candidate.split(" ")
+			if bundle=="unknown":
+				bundle="zomando"
+			self.appInfo.candidate.setText("Bundle: {}".format(bundle))
+			self.appInfo.release.setText("Ver: {}".format(release))
+			break
+		installed=self.helper.getInstalledBundle(self.app)
+		self.appInfo.installed.setText("{0}: {1}".format(i18n["INSTALLED"],installed))
+		ttt=self.app["homepage"]
+		self.appInfo.homepage.setText("Homepage")
+		self.appInfo.homepage.setToolTip(ttt)
+		ttt=self.app["infopage"]
+		self.appInfo.infopage.setText("Info")
+		self.appInfo.infopage.setToolTip(ttt)
+		self.appInfo.infopage.setFixedWidth(self.appInfo.homepage.sizeHint().width())
+	#def _loadAppInfo
+
 	def _updateScreen(self,*args):
+		self.infoBtn.setChecked(False)
 		if len(args)>0:
 			self.app=args[0]
 		if self.requested!="":
@@ -301,6 +405,8 @@ class QDetailsPane(QWidget):
 			self._loadHeaderData()
 			self._loadDescription()
 			self._loadScreenshots()
+			self._loadAppInfo()
+			self.appInfo.setMinimumSize(self.screenshots.width(),self.screenshots.sizeHint().height())
 			self._loadUrls()
 			self.ready.emit()
 	 #def _updateScreen(self,*args):
