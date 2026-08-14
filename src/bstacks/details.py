@@ -380,7 +380,13 @@ class QDetailsPane(QWidget):
 		installed=self.helper.getInstalledBundle(self.app)
 		self.appInfo.installed.setText("{0}: {1}".format(i18n["INSTALLED"],installed))
 		ttt=self.app["homepage"]
-		self.appInfo.homepage.setText("Homepage")
+		if "appsedu" in ttt:
+			self.appInfo.homepage.setText("Appsedu")
+			icn=QIcon("/usr/share/store/rsrc/appsedu128x128.png")
+		else:
+			self.appInfo.homepage.setText("Homepage")
+			icn=QIcon.fromTheme("go-home")
+		self.appInfo.homepage.setIcon(icn)
 		self.appInfo.homepage.setToolTip(ttt)
 		ttt=self.app["infopage"]
 		self.appInfo.infopage.setText("Info")
