@@ -19,13 +19,14 @@ class catsBar(QFlowBar):
 		self.aux=auxiliary()
 	#def __init__(self,*args):
 
-	def loadCategories(self):
-		cats=self.rebost.getFreedesktopCategories()
+	def loadCategories(self,cats=None):
+		if cats==None:
+			catsDict=self.rebost.getFreedesktopCategories()
+			cats=list(catsDict.keys())
+		shuffle(cats)
 		data={}
 		idx=0
-		rndCats=list(cats.keys())
-		shuffle(rndCats)
-		for cat in rndCats:
+		for cat in cats:
 			hcolor=self.aux.getRgbColorFromTxt(cat)
 			data[idx]={"title":_(cat).capitalize(),"img":hcolor,"summary":"","description":"","metadata":cat}
 			idx+=1
