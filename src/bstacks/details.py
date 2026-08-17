@@ -381,22 +381,27 @@ class QDetailsPane(QWidget):
 		return
 		self.urls.home.hide()
 		self.urls.info.hide()
-		if len(self.app["infopage"])>0:
+		if len(self.app["homepage"])>0:
 			ttt=self.app["homepage"]
 			if "appsedu" in self.app["homepage"]:
 				lbl="Appsedu"
 				icn=QIcon.fromTheme("applications-education")
-				self.urls.home.setIcon(icn)
 			else:
 				lbl="Homepage"
 				icn=QIcon.fromTheme("go-home")
-				self.urls.home.setIcon(icn)
+			self.urls.home.setIcon(icn)
 			self.urls.home.setText(lbl)
 			self.urls.home.setToolTip(ttt)
 			self.urls.home.show()
 		if len(self.app["infopage"])>0:
 			ttt=self.app["infopage"]
-			lbl="Info"
+			if self.urls.home.text()=="Appsedu":
+				lbl="Homepagge"
+				icn=QIcon.fromTheme("go-home")
+			else:
+				lbl="Info"
+				icn=QIcon.fromTheme("showinfo")
+			self.urls.info.setIcon(icn)
 			self.urls.info.setText(lbl)
 			self.urls.info.setToolTip(ttt)
 			self.urls.info.show()
@@ -424,17 +429,33 @@ class QDetailsPane(QWidget):
 		self.appInfo.installed.setText("{0}: {1}".format(i18n["INSTALLED"],installed))
 		ttt=self.app["homepage"]
 		if "appsedu" in ttt:
-			self.appInfo.homepage.setText("Appsedu")
+			lbl="Appsedu"
 			icn=QIcon("/usr/share/store/rsrc/appsedu128x128.png")
+		elif "github.com/lliurex" in ttt:
+			lbl="Info"
+			icn=QIcon.fromTheme("showinfo")
 		else:
-			self.appInfo.homepage.setText("Homepage")
+			lbl="Homepage"
 			icn=QIcon.fromTheme("go-home")
+		self.appInfo.homepage.setText(lbl)
 		self.appInfo.homepage.setIcon(icn)
 		self.appInfo.homepage.setToolTip(ttt)
-		ttt=self.app["infopage"]
-		self.appInfo.infopage.setText("Info")
-		self.appInfo.infopage.setToolTip(ttt)
-		self.appInfo.infopage.setFixedWidth(self.appInfo.homepage.sizeHint().width())
+		if len(self.app["infopage"])>0 and "github.com/lliurex" not in ttt:
+			ttt=self.app["infopage"]
+			self.appInfo.infopage.show()
+			if self.appInfo.homepage.text()=="Appsedu":
+				lbl="Homepage"
+				icn=QIcon.fromTheme("go-home")
+			else:
+				lbl="Info"
+				icn=QIcon.fromTheme("showinfo")
+			self.appInfo.infopage.setText(lbl)
+			self.appInfo.infopage.setIcon(icn)
+			self.appInfo.infopage.setToolTip(ttt)
+			self.appInfo.infopage.setFixedWidth(self.appInfo.homepage.sizeHint().width()+MARGIN)
+			self.appInfo.homepage.setFixedWidth(self.appInfo.infopage.width())
+		else:
+			self.appInfo.infopage.hide()
 	#def _loadAppInfo
 
 	def _updateScreen(self,*args):
