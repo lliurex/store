@@ -43,6 +43,24 @@ class QAppsPane(QWidget):
 		return(wdg)
 	#def _defFlow
 
+	def _defEmptyContainer(self):
+		wdg=QWidget()
+		glay=QGridLayout(wdg)
+		lblIcn=QLabel()
+		icn=QIcon.fromTheme("align-none")
+		pxm=icn.pixmap(self.width(),self.height(),QIcon.Mode.Disabled)
+		lblIcn.setPixmap(pxm)
+		glay.addWidget(lblIcn,0,0,1,1)
+		lblTxt=QLabel("<p><strong>{}</strong></p>".format(i18n["ERREMPTY"]))
+		lblTxt.setStyleSheet("""padding:5px;""")
+		fLbl=lblTxt.font()
+		lblTxt.setAutoFillBackground(True)
+		fLbl.setPointSize(fLbl.pointSize()+4)
+		lblTxt.setFont(fLbl)
+		glay.addWidget(lblTxt,0,0,1,1,Qt.AlignCenter|Qt.AlignCenter)
+		return(wdg)
+	#def _defEmptyContainer
+
 	def __initScreen__(self):
 		lay=QGridLayout(self)
 		lay.setContentsMargins(SPACING,0,0,0)
@@ -53,22 +71,9 @@ class QAppsPane(QWidget):
 		hlay.addSpacing(SPACING)
 		hlay.addWidget(self.flow)
 		self.layout().addWidget(self.container,0,0,1,self.layout().columnCount())
-		self.emptyContainer=QWidget()
-		glay=QGridLayout(self.emptyContainer)
-		lblIcn=QLabel()
-		icn=QIcon.fromTheme("align-none")
-		pxm=icn.pixmap(self.width(),self.height(),QIcon.Mode.Disabled)
-		lblIcn.setPixmap(pxm)
-		glay.addWidget(lblIcn,0,0,1,1)
-		lblTxt=QLabel("<p><strong>{}</strong></p>".format(i18n["EMPTY"]))
-		lblTxt.setStyleSheet("""padding:5px;""")
-		fLbl=lblTxt.font()
-		lblTxt.setAutoFillBackground(True)
-		fLbl.setPointSize(fLbl.pointSize()+4)
-		lblTxt.setFont(fLbl)
-		glay.addWidget(lblTxt,0,0,1,1,Qt.AlignCenter|Qt.AlignCenter)
-		self.emptyContainer.hide()
+		self.emptyContainer=self._defEmptyContainer()
 		self.layout().addWidget(self.emptyContainer,0,0,1,self.layout().columnCount(),Qt.AlignCenter|Qt.AlignCenter)
+		self.emptyContainer.hide()
 		
 	#def __initScreen__
 

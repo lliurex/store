@@ -8,6 +8,7 @@ from QtExtraWidgets import QSearchBox,QScrollLabel,QScreenShotContainer,QPushInf
 from extras.i18n import *
 from extras.constants import *
 from wdg.categories import catsBar
+from wdg import btnApp
 from lib.threadLib import rebostQuery
 from lib.helperLib import appHelper,auxiliary
 _ = gettext.gettext
@@ -23,6 +24,7 @@ class QDetailsPane(QWidget):
 		self.__EXIT__=False
 		QWidget.__init__(self, parent)
 		self.rebost=kwargs.get("rebost")
+		self.app={"id":None}
 		self.__initScreen__()
 		self.destroyed.connect(partial(QDetailsPane._onDestroy,self.__dict__))
 		self.rebostQuery=rebostQuery(rebost=self.rebost)
@@ -30,7 +32,6 @@ class QDetailsPane(QWidget):
 		self.helper=appHelper()
 		self.aux=auxiliary()
 		self.requested=""
-		self.app={}
 	#def __init__
 
 	@staticmethod
@@ -249,30 +250,59 @@ class QDetailsPane(QWidget):
 		return(wdg)
 	#def _defAppInfo
 
+	def _defEmptyContainer(self):
+		wdg=QWidget()
+		glay=QGridLayout(wdg)
+		lblIcn=QLabel()
+		icn=QIcon.fromTheme("align-none")
+		pxm=icn.pixmap(self.width(),self.height(),QIcon.Mode.Disabled)
+		lblIcn.setPixmap(pxm)
+		glay.addWidget(lblIcn,0,0,1,1,Qt.AlignCenter|Qt.AlignCenter)
+		lblTxt=QLabel()
+		lblTxt.setOpenExternalLinks(True)
+		lblTxt.setStyleSheet("""padding:5px;""")
+		fLbl=lblTxt.font()
+		lblTxt.setAutoFillBackground(True)
+		fLbl.setPointSize(fLbl.pointSize()+4)
+		lblTxt.setFont(fLbl)
+		wdg.setText=lblTxt.setText
+		glay.addWidget(lblTxt,0,0,1,1,Qt.AlignCenter|Qt.AlignCenter)
+		return(wdg)
+	#def _defEmptyContainer
+
 	def __initScreen__(self):
 		lay=QGridLayout(self)
+		self.container=QWidget()
+		clay=QGridLayout(self.container)
 		self.header=self._defAppHeader()
-		lay.addWidget(self.header,0,0,1,1,Qt.AlignLeft)
+		clay.addWidget(self.header,0,0,1,1,Qt.AlignLeft)
 		self.actions=self._defAppActions()
-		lay.addWidget(self.actions,0,1,1,1,Qt.AlignRight)
+		clay.addWidget(self.actions,0,1,1,1,Qt.AlignRight)
 		self.lbls=self._defAppLabels()
-		lay.addWidget(self.lbls,0,2,1,1,Qt.AlignCenter)
+		clay.addWidget(self.lbls,0,2,1,1,Qt.AlignCenter)
 		self.screenshots=self._defScreenshots()
-		lay.addWidget(self.screenshots,1,0,1,lay.columnCount(),Qt.AlignTop)
+		clay.addWidget(self.screenshots,1,0,1,clay.columnCount(),Qt.AlignTop)
 		self.appInfo=self._defAppInfo()
-		lay.addWidget(self.appInfo,1,0,1,lay.columnCount(),Qt.AlignTop)
+		clay.addWidget(self.appInfo,1,0,1,clay.columnCount(),Qt.AlignTop)
 		self.appInfo.hide()
 		self.description=self._defAppDescription()
-		lay.addWidget(self.description,2,0,1,lay.columnCount())
+		clay.addWidget(self.description,2,0,1,clay.columnCount())
 		self.suggestions=self._defAppSuggestions()
 		#lay.addWidget(self.suggestions,4,0,1,lay.columnCount())
-		lay.setColumnStretch(0,1)
+		clay.setColumnStretch(0,1)
+		self.emptyContainer=self._defEmptyContainer()
+		lay.addWidget(self.container,0,0,lay.rowCount(),lay.columnCount())
+		lay.addWidget(self.emptyContainer,0,0,lay.rowCount(),lay.columnCount())
+		self.emptyContainer.hide()
 	#def __initScreen__
 
 	def loadFromId(self,*args):
-		appId=args[0].property("metadata")
-		self.btn=args[0]
-		self.rebostQuery.setQuery("refresh",appId)
+		if isinstance(args[0],str):
+			self.app["id"]=args[0]
+		else:
+			self.btn=args[0]
+			self.app["id"]=args[0].property("metadata")
+		self.rebostQuery.setQuery("refresh",self.app["id"])
 		self.rebostQuery.start()
 	#def loadFromId
 
@@ -375,7 +405,7 @@ class QDetailsPane(QWidget):
 	def _loadAppInfo(self):
 		data={}
 		self.appInfo.cats.clean()
-		self.appInfo.cats.loadCategories()
+		self.appInfo.cats.loadCategories(self.app["categories"])
 		self.appInfo.cats.setFixedHeight(self.appInfo.cats.defaultSize+MARGIN)
 		self.appInfo.tags.clean()
 		for tag in self._getTags():
@@ -410,22 +440,32 @@ class QDetailsPane(QWidget):
 	def _updateScreen(self,*args):
 		self.infoBtn.setChecked(False)
 		if len(args)>0:
-			self.app=args[0]
-		if self.requested!="":
-			if self.requested=="install":
-				self.requestInstall.emit(self.app["id"])
-			elif self.requested=="install":
-				self.requestRemove.emit(self.app["id"])
-			if self.requested=="launch":
-				self.requestLaunch.emit(self.app["id"])
+			if len(args[0])>0:
+				self.app=args[0]
+		if "name" in self.app.keys():
+			self.emptyContainer.hide()
+			self.container.show()
+			if hasattr(self,"btn")==False:
+				self.btn=btnApp.QAppButton(self.app)
+			if self.requested!="":
+				if self.requested=="install":
+					self.requestInstall.emit(self.app["id"])
+				elif self.requested=="install":
+					self.requestRemove.emit(self.app["id"])
+				if self.requested=="launch":
+					self.requestLaunch.emit(self.app["id"])
+			else:
+				self.requested=""
+				self._loadHeaderData()
+				self._loadDescription()
+				self._loadScreenshots()
+				self._loadAppInfo()
+				self.appInfo.setMinimumSize(self.screenshots.width(),self.screenshots.sizeHint().height())
+				self._loadUrls()
 		else:
-			self.requested=""
-			self._loadHeaderData()
-			self._loadDescription()
-			self._loadScreenshots()
-			self._loadAppInfo()
-			self.appInfo.setMinimumSize(self.screenshots.width(),self.screenshots.sizeHint().height())
-			self._loadUrls()
-			self.ready.emit()
+			self.emptyContainer.setText("<p><strong>App {0} {1}</strong></p>".format(self.app["id"],i18n["ERRNOTFOUND"]))
+			self.emptyContainer.show()
+			self.container.hide()
+		self.ready.emit()
 	 #def _updateScreen(self,*args):
 
