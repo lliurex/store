@@ -66,6 +66,7 @@ class portrait(QStackedWindowItem):
 
 	def _showProgress(self,paneToLoad):
 		self.previousPane.append(self.currentPane)
+		self.previousPane=list(set(self.previousPane))
 		self.currentPane=paneToLoad
 		for pane in [self.paneHome,self.paneApps,self.paneDetails]:
 			pane.hide()
