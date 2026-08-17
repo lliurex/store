@@ -4,6 +4,8 @@ from random import shuffle
 from wdg.flowBar import QFlowBar
 from lib import rss
 from lib.helperLib import auxiliary
+import gettext
+_ = gettext.gettext
 
 class catsBar(QFlowBar):
 	def __init__(self,*args,parent=None,**kwargs):
@@ -25,7 +27,7 @@ class catsBar(QFlowBar):
 		shuffle(rndCats)
 		for cat in rndCats:
 			hcolor=self.aux.getRgbColorFromTxt(cat)
-			data[idx]={"title":cat.capitalize(),"img":hcolor,"summary":"","description":""}
+			data[idx]={"title":_(cat).capitalize(),"img":hcolor,"summary":"","description":"","metadata":cat}
 			idx+=1
 		self.updateScreen("cats",data)
 	#def loadCategories
