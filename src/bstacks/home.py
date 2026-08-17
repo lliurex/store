@@ -62,10 +62,14 @@ class QHomePane(QWidget):
 		self.flowCats.hide()
 		self.flowZmds.hide()
 		if content=="news":
+			if self.flowBlog.count()==0:
+				self.flowBlog.loadBlog()
 			self.flowBlog.show()
 		elif content=="cats":
 			self.flowCats.show()
 		elif content=="recs":
+			if self.flowRecs.count()==0:
+				self.flowRecs.loadRecs()
 			self.flowRecs.show()
 		elif content=="zmds":
 			self.flowZmds.show()
@@ -119,7 +123,8 @@ class QHomePane(QWidget):
 	#def _defZmdsBar
 
 	def _emitLoadCategory(self,*args):
-		self.loadCategory.emit(args[0].text())
+		cat=args[0].property("metadata")
+		self.loadCategory.emit(cat)
 	#def _emitLoadCategory
 
 	def _defCatsBar(self):
@@ -142,11 +147,9 @@ class QHomePane(QWidget):
 		self.flowCats.hide()
 		lay.addWidget(self.flowCats,1,0,1,self.layout().columnCount(),Qt.AlignTop)
 		self.flowRecs=self._defRecsBar()
-		self.flowRecs.loadRecs()
 		self.flowRecs.hide()
 		lay.addWidget(self.flowRecs,1,0,1,self.layout().columnCount(),Qt.AlignTop)
 		self.flowBlog=self._defBlogBar()
-		self.flowBlog.loadBlog()
 		self.flowBlog.hide()
 		lay.addWidget(self.flowBlog,1,0,1,self.layout().columnCount(),Qt.AlignTop)
 		self.searchBox=self._defSearch()
