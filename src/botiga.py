@@ -22,11 +22,6 @@ else:
 app=QApplication(["Botiga"])
 mw=QStackedWindow()
 mw.addStacksFromFolder(os.path.join(abspath,"bstacks"))
-if len(sys.argv)>1:
-	if ("://") in sys.argv[1]:
-		sys.argv[1]=sys.argv[1].removesuffix("-lliurex")
-		wdg=mw.getCurrentStack()
-		wdg.setParms(sys.argv[1])
 mw.closeEvent=closeEvent
 icn=QtGui.QIcon.fromTheme("llxstore")
 mw.disableNavBar(True)
@@ -38,5 +33,11 @@ mw.setMinimumWidth(int(w*0.5))
 mw.setMinimumHeight(int(h*0.7))
 mw.lblBanner.setPixmap(mw.lblBanner.pixmap().scaled(w*0.15,h*0.07))
 mw.lblBanner.setStyleSheet("""padding:6px""")
+requestedApp=""
+if len(sys.argv)>1:
+	if ("://") in sys.argv[1]:
+		sys.argv[1]=sys.argv[1].removesuffix("-lliurex")
+		requestedApp=sys.argv[1].split("://")[-1]
+		mw.stkPan.currentWidget()._loadAppDetailFromId(requestedApp)
 mw.show()
 app.exec()
