@@ -7,9 +7,10 @@ from PySide6.QtGui import QIcon
 from QtExtraWidgets import QSearchBox,QScrollLabel,QScreenShotContainer,QPushInfoButton,QFlowTouchWidget
 from extras.i18n import *
 from extras.constants import *
-from wdg.flowBar import QFlowBar
+from wdg.categories import catsBar
 from lib.threadLib import rebostQuery
 from lib.helperLib import appHelper,auxiliary
+_ = gettext.gettext
 
 class QDetailsPane(QWidget):
 	ready=Signal()
@@ -24,8 +25,8 @@ class QDetailsPane(QWidget):
 		self.rebost=kwargs.get("rebost")
 		self.__initScreen__()
 		self.destroyed.connect(partial(QDetailsPane._onDestroy,self.__dict__))
-		self.refreshApp=rebostQuery(rebost=self.rebost)
-		self.refreshApp.queryCompleted.connect(self._updateScreen)
+		self.rebostQuery=rebostQuery(rebost=self.rebost)
+		self.rebostQuery.queryCompleted.connect(self._updateScreen)
 		self.helper=appHelper()
 		self.aux=auxiliary()
 		self.requested=""
@@ -45,7 +46,8 @@ class QDetailsPane(QWidget):
 		elif isinstance(token,tuple):
 			self.search.emit(token[0])
 		else:
-			self.loadCategory.emit(token.text())
+			cat=token.property("metadata")
+			self.loadCategory.emit(cat)
 		pass
 	#def _search
 
@@ -72,20 +74,20 @@ class QDetailsPane(QWidget):
 	#def _defAppHeader(self):
 
 	def _installApp(self):
-		self.refreshApp.setQuery("refresh",self.app["id"])
-		self.refreshApp.start()
+		self.rebostQuery.setQuery("refresh",self.app["id"])
+		self.rebostQuery.start()
 		self.requested="install"
 	#def _installApp
 		
 	def _removeApp(self):
-		self.refreshApp.setQuery("refresh",self.app["id"])
-		self.refreshApp.start()
+		self.rebostQuery.setQuery("refresh",self.app["id"])
+		self.rebostQuery.start()
 		self.requested="remove"
 	#def _removeApp
 
 	def _launchApp(self):
-		self.refreshApp.setQuery("refresh",self.app["id"])
-		self.refreshApp.start()
+		self.rebostQuery.setQuery("refresh",self.app["id"])
+		self.rebostQuery.start()
 		self.requested="launch"
 	#def _launchApp
 
@@ -199,16 +201,12 @@ class QDetailsPane(QWidget):
 	#def _showAppInfo
 
 	def _defAppCategories(self):
-		cats=QFlowBar()
+		cats=catsBar(rebost=self.rebost)
 		cats.selected.connect(self._search)
 		cats.setStyleSheet("QScrollArea {border:0px;margin:0px;padding:0px;background-color:rgba(0,0,0,0);}");
 		cats.setStyleSheet("padding:0px;margin:0px;border:0px;background-color:rgba(0,0,0,0);");
-		cats.itemsPerPage=4
-		cats.overlay=False
-		cats.simpleButtons=True
 		cats.showScrollBar(True)
 		cats.table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		cats.spacing=10
 		cats.defaultSize=24
 		return(cats)
 	#def _defAppCategories
@@ -274,8 +272,8 @@ class QDetailsPane(QWidget):
 	def loadFromId(self,*args):
 		appId=args[0].property("metadata")
 		self.btn=args[0]
-		self.refreshApp.setQuery("refresh",appId)
-		self.refreshApp.start()
+		self.rebostQuery.setQuery("refresh",appId)
+		self.rebostQuery.start()
 	#def loadFromId
 
 	def load(self,*args,category=False):
@@ -288,18 +286,20 @@ class QDetailsPane(QWidget):
 				self.actions._setInstalled()
 			else:
 				self.actions._setAvailable()
-		else:
+		elif self.app.get("unavailable",False)==True:
 			self.actions.hide()
+		else:
+			self.actions._setAvailable()
 		self.app=self.btn.app
 		if self.app["description"]=="":
-			self.refreshApp.setQuery("refresh",self.app["id"])
-			self.refreshApp.start()
+			self.rebostQuery.setQuery("refresh",self.app["id"])
+			self.rebostQuery.start()
 		else:
 			self._updateScreen()
 	#def load
 
 	def _getTags(self):
-		tags=self.app["categories"]+self.app["keywords"]
+		tags=self.app["keywords"]
 		common=["gtk",
 			"qt",
 			"kde",
@@ -316,7 +316,7 @@ class QDetailsPane(QWidget):
 			"gplv2-later",
 			"appimage",
 			"release-stable"]
-		tags=["<a href={0}>{0}</a>".format(t.replace(" ","")) for t in tags if len(t)>0 and t.lower() not in common]
+		tags=["<a href={0}>{0}</a>".format(t.replace(" ","")) for t in tags if len(t.strip())>1 and t.lower() not in common]
 		tags=list(set(tags))
 		return(tags)
 	#def _getTags(self):
@@ -375,10 +375,7 @@ class QDetailsPane(QWidget):
 	def _loadAppInfo(self):
 		data={}
 		self.appInfo.cats.clean()
-		for cat in self.app["categories"]:
-			hcolor=self.aux.getRgbColorFromTxt(cat)
-			data[len(data)]={"title":cat.capitalize(),"img":hcolor,"summary":"","description":""}
-		self.appInfo.cats.updateScreen("cats",data)
+		self.appInfo.cats.loadCategories()
 		self.appInfo.cats.setFixedHeight(self.appInfo.cats.defaultSize+MARGIN)
 		self.appInfo.tags.clean()
 		for tag in self._getTags():
