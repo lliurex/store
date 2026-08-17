@@ -38,6 +38,10 @@ class QFlowBar(QScrollArea):
 		self.table.setColumnCount(0)
 	#def clean
 
+	def count(self):
+		return(self.table.columnCount())
+	#def count
+
 	def _initGui(self):
 		wdg=QWidget()
 		lay=QGridLayout(wdg)
