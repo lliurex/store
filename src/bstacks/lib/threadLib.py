@@ -19,14 +19,17 @@ class rebostQuery(QThread):
 	#def setQuery
 	
 	def run(self):
-		if self.query=="refresh":
-			resultSet=json.loads(self.rebost.refreshVerifiedApp(self.queryData))[0]
-		elif self.query=="search":
-			resultSet=json.loads(self.rebost.searchApp(self.queryData))
-		elif self.query=="loadCategory":
-			apps=json.loads(self.rebost.getAppsInCategory(self.queryData))
-			apps=apps[self.queryData]
-			resultSet=sorted(apps, key=lambda x: x["name"].lower())
+		try:
+			if self.query=="refresh":
+					resultSet=json.loads(self.rebost.refreshVerifiedApp(self.queryData))[0]
+			elif self.query=="search":
+				resultSet=json.loads(self.rebost.searchApp(self.queryData))
+			elif self.query=="loadCategory":
+				apps=json.loads(self.rebost.getAppsInCategory(self.queryData))
+				apps=apps[self.queryData]
+				resultSet=sorted(apps, key=lambda x: x["name"].lower())
+		except:
+			resultSet={}
 		self.queryCompleted.emit(resultSet)
 	#def run
 #class rebostQuery
