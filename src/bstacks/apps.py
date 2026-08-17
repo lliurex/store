@@ -8,7 +8,7 @@ from PySide6.QtGui import QIcon,QPixmap
 from extras.i18n import *
 from extras.constants import *
 from wdg import btnApp
-
+from lib.threadLib import rebostQuery
 
 class QAppsPane(QWidget):
 	ready=Signal()
@@ -21,8 +21,9 @@ class QAppsPane(QWidget):
 		self.rebost=kwargs.get("rebost")
 		self.actionAppBtn={}
 		self.__initScreen__()
-		self.beginLoad.connect(self._loadGrid)
 		self.destroyed.connect(partial(QAppsPane._onDestroy,self.__dict__))
+		self.rebostQuery=rebostQuery(rebost=self.rebost)
+		self.rebostQuery.queryCompleted.connect(self._loadGrid)
 	#def __init__
 
 	@staticmethod
@@ -82,7 +83,10 @@ class QAppsPane(QWidget):
 		if len(apps)>0:
 			self.emptyContainer.hide()
 			self.container.show()
-			for app in apps:
+			apps.reverse()
+			QApplication.processEvents()
+			while apps:
+				app=apps.pop()
 				if app==None:
 					continue
 				if isinstance(app,str):
@@ -94,7 +98,8 @@ class QAppsPane(QWidget):
 					btn.clicked.connect(self._installApp)
 				else:
 					break
-				QApplication.processEvents()
+				if len(apps)%5==0:
+					QApplication.processEvents()
 		else:
 			self.emptyContainer.show()
 		if self.__EXIT__==False:
@@ -105,11 +110,9 @@ class QAppsPane(QWidget):
 		self.flow.clean()
 		self.blockSignals(False)
 		if category==True:
-			apps=json.loads(self.rebost.getAppsInCategory(args[0]))
-			apps=apps[args[0]]
-			apps=sorted(apps, key=lambda x: x["name"].lower())
+			self.rebostQuery.setQuery("loadCategory",args[0])
 		else:
-			apps=json.loads(self.rebost.searchApp(args[0]))
-		self.beginLoad.emit(apps)
+			self.rebostQuery.setQuery("search",args[0])
+		self.rebostQuery.start()
 	#def load
 
