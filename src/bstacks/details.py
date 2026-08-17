@@ -14,6 +14,7 @@ from lib.helperLib import appHelper,auxiliary
 class QDetailsPane(QWidget):
 	ready=Signal()
 	search=Signal(str)
+	loadCategory=Signal(str)
 	requestInstall=Signal(str)
 	requestRemove=Signal(str)
 	requestLaunch=Signal(str)
@@ -36,6 +37,17 @@ class QDetailsPane(QWidget):
 		selfDict=args[0]
 		selfDict["__EXIT__"]=True
 	#def _onDestroy
+
+	def _search(self,*args):
+		token=args[0]
+		if isinstance(token,str):
+			self.search.emit(token)
+		elif isinstance(token,tuple):
+			self.search.emit(token[0])
+		else:
+			self.loadCategory.emit(token.text())
+		pass
+	#def _search
 
 	def _defAppHeader(self):
 		def _setIcon(*args):
@@ -132,6 +144,7 @@ class QDetailsPane(QWidget):
 		lblDesc.label.x1=1.9
 		lblDesc.label.x2=1
 		lblDesc.label.setTextFormat(Qt.RichText)
+		lblDesc.linkActivated.connect(self._search)
 		lay.addWidget(lblDesc)
 		wdg.setStyleSheet("""margin-bottom:0px""")
 		return(wdg)
@@ -187,6 +200,7 @@ class QDetailsPane(QWidget):
 
 	def _defAppCategories(self):
 		cats=QFlowBar()
+		cats.selected.connect(self._search)
 		cats.setStyleSheet("QScrollArea {border:0px;margin:0px;padding:0px;background-color:rgba(0,0,0,0);}");
 		cats.setStyleSheet("padding:0px;margin:0px;border:0px;background-color:rgba(0,0,0,0);");
 		cats.itemsPerPage=4
@@ -302,7 +316,7 @@ class QDetailsPane(QWidget):
 			"gplv2-later",
 			"appimage",
 			"release-stable"]
-		tags=["<a href=#{0}>#{0}</a>".format(t) for t in tags if len(t)>0 and t.lower() not in common]
+		tags=["<a href={0}>{0}</a>".format(t.replace(" ","")) for t in tags if len(t)>0 and t.lower() not in common]
 		tags=list(set(tags))
 		return(tags)
 	#def _getTags(self):
@@ -368,7 +382,9 @@ class QDetailsPane(QWidget):
 		self.appInfo.cats.setFixedHeight(self.appInfo.cats.defaultSize+MARGIN)
 		self.appInfo.tags.clean()
 		for tag in self._getTags():
-			self.appInfo.tags.addWidget(QLabel(tag))
+			lbl=QLabel(tag)
+			lbl.linkActivated.connect(self._search)
+			self.appInfo.tags.addWidget(lbl)
 		candidates=self.helper.getBundlesByPriority(self.app)
 		for candidate in candidates.values():
 			bundle,release=candidate.split(" ")

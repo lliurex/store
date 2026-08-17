@@ -128,7 +128,7 @@ class portrait(QStackedWindowItem):
 				self.search.src.txtSearch.setText(args[0])
 			self.beginLoad.emit(self.paneApps)
 			self.paneApps.blockSignals(False)
-			self.paneApps.load(args[0])
+			self.paneApps.load(args[0].replace("#",""))
 	#def _searchApps(self,*args):
 
 	def _goPrevious(self,*args):
@@ -161,6 +161,7 @@ class portrait(QStackedWindowItem):
 	def _detailsPane(self):
 		wdg=QDetailsPane(rebost=self.rebost)
 		wdg.search.connect(self._searchApps)
+		wdg.loadCategory.connect(self._loadCategory)
 		return(wdg)
 	#def _detailsPane
 
