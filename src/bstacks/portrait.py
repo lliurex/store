@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os,sys
 from functools import partial
-from PySide6.QtWidgets import QApplication,QGridLayout,QPushButton
+from PySide6.QtWidgets import QApplication,QGridLayout,QPushButton,QMessageBox
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,Signal
 from QtExtraWidgets import QStackedWindowItem
@@ -10,6 +10,7 @@ from apps import QAppsPane
 from details import QDetailsPane
 from wdg.search import QSearch
 from wdg.prgBar import QProgressImage 
+from lib.helperLib import appHelper
 from extras.i18n import *
 from rebost import store
 
@@ -28,6 +29,7 @@ class portrait(QStackedWindowItem):
 			index=1,
 			visible=True)
 		self.rebost=store.client()
+		self.appHelper=appHelper()
 		self.previousPane=[]
 		self.currentPane=None
 		self.beginLoad.connect(self._showProgress)
@@ -65,8 +67,9 @@ class portrait(QStackedWindowItem):
 	#def _chkNetwork
 
 	def _showProgress(self,paneToLoad):
-		self.previousPane.append(self.currentPane)
-		self.previousPane=list(set(self.previousPane))
+		if self.currentPane!=None:
+			if self.currentPane not in self.previousPane:
+				self.previousPane.append(self.currentPane)
 		self.currentPane=paneToLoad
 		for pane in [self.paneHome,self.paneApps,self.paneDetails]:
 			pane.hide()
@@ -88,10 +91,12 @@ class portrait(QStackedWindowItem):
 	#def _stopProgress
 
 	def _homeLoaded(self):
-		self.currentPane=self.paneHome
 		self.paneHome.flowZmds.loadZomandos()
 		self.stopLoad.emit()
-		self.paneHome.show()
+		if self.paneDetails.isVisible()==True:
+			self.currentPane=self.paneDetails
+		else:
+			self.currentPane=self.paneHome
 	#def _homeLoaded
 
 	def _appsLoaded(self):
@@ -130,6 +135,15 @@ class portrait(QStackedWindowItem):
 		self.paneDetails.hide()
 	#def _goHome
 
+	def _launchEpi(self,*args):
+		print(args)
+		#self.appHelper.runApp(args[0],args[1],pxm=args[2])
+	#def _launchEpi
+
+	def _launchApp(self,*args):
+		self.appHelper.runApp(args[0],args[1],pxm=args[2])
+	#def _launchApp
+
 	def _searchApps(self,*args):
 		if len(args[0])>1:
 			if args[0]!=self.search.src.txtSearch.text():
@@ -150,7 +164,7 @@ class portrait(QStackedWindowItem):
 		if self.currentPane==None:
 			self.currentPane=self.paneHome
 		self.currentPane.show()
-	#def _searchApps(self,*args):
+	#def _goPrevious
 
 	def _homePane(self):
 		wdg=QHomePane(rebost=self.rebost)
@@ -170,6 +184,9 @@ class portrait(QStackedWindowItem):
 
 	def _detailsPane(self):
 		wdg=QDetailsPane(rebost=self.rebost)
+		wdg.requestLaunch.connect(self._launchApp)
+		wdg.requestInstall.connect(self._launchEpi)
+		wdg.requestRemove.connect(self._launchEpi)
 		wdg.search.connect(self._searchApps)
 		wdg.loadCategory.connect(self._loadCategory)
 		return(wdg)
@@ -199,6 +216,16 @@ class portrait(QStackedWindowItem):
 		return(wdg)
 	#def _defProgress
 
+	def _rebostException(self,*args):
+		self.prgBar.updateTimer.stop()
+		dlg=QMessageBox()
+		dlg.setIcon(QMessageBox.Critical)
+		dlg.setText(i18n["ERRDBUS"])
+		dlg.setWindowTitle("Botiga")
+		dlg.exec_()
+		sys.exit(1)
+	#def _rebostException
+
 	def __initScreen__(self):
 		lay=QGridLayout(self)
 		lay.setContentsMargins(0,0,0,0)
@@ -212,8 +239,9 @@ class portrait(QStackedWindowItem):
 		lay.addWidget(self.prgBar,1,0,1,self.layout().columnCount())
 		self.paneHome=self._homePane()
 		self.paneHome.ready.connect(self._homeLoaded)
+		self.paneHome.exception.connect(self._rebostException)
 		lay.addWidget(self.paneHome,1,0,1,self.layout().columnCount())
-		self.paneHome.hide()
+		#self.paneHome.hide()
 		self.paneApps=self._appsPane()
 		self.paneApps.ready.connect(self._appsLoaded)
 		self.paneApps.hide()
