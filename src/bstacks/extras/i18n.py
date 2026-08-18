@@ -11,6 +11,7 @@ i18n={
 	"CHOICE":_("LliureX choices"),
 	"CONFIG":_("Portrait"),
 	"DESC":_("Navigate through all applications"),
+	"ERRDBUS":_("D-Bus error. Store will not load"),
 	"ERREMPTY":_("Nothing to show"),
 	"ERRNOTFOUND":_("not found. Check at <a href=\"{0}\">{0}</a>".format("https://portal.edu.gva.es/appsedu")),
 	"ERRLAUNCH":_("Error opening"),
