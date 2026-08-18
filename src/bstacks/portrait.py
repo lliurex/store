@@ -223,13 +223,12 @@ class portrait(QStackedWindowItem):
 		self.paneDetails.hide()
 		lay.addWidget(self.paneDetails,1,0,1,self.layout().columnCount())
 		self._showProgress(self.paneHome)
-		self.paneHome.blockSignals(False)
 	#def __initScreen__
 
 	def updateScreen(self,addEnable=None):
-		self.paneHome.blockSignals(False)
+		self.paneHome.blockSignals(False) #Is blocked by stacked events, unblock or die
 		self.paneHome.load()
-		self.paneHome.blockSignals(False)
+		self.paneHome.blockSignals(False) #Is blocked by stacked events, unblock or die
 		#self._rebost.wait()
 		return
 	#def _updateScreen
