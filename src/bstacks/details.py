@@ -19,7 +19,7 @@ class QDetailsPane(QWidget):
 	loadCategory=Signal(str)
 	requestInstall=Signal(str)
 	requestRemove=Signal(str)
-	requestLaunch=Signal(str)
+	requestLaunch=Signal(dict,str,"PyObject")
 	def __init__(self,*args,parent=None,**kwargs):
 		self.__EXIT__=False
 		QWidget.__init__(self, parent)
@@ -87,9 +87,8 @@ class QDetailsPane(QWidget):
 	#def _removeApp
 
 	def _launchApp(self):
-		self.rebostQuery.setQuery("refresh",self.app["id"])
-		self.rebostQuery.start()
 		self.requested="launch"
+		self._updateScreen()
 	#def _launchApp
 
 	def _defAppActions(self):
@@ -295,8 +294,14 @@ class QDetailsPane(QWidget):
 		lay.addWidget(self.emptyContainer,0,0,lay.rowCount(),lay.columnCount())
 		self.emptyContainer.hide()
 	#def __initScreen__
+	
+	def _clearScreen(self):
+		self.app={}
+		self.requested=""
+	#def _clearScreen
 
 	def loadFromId(self,*args):
+		self._clearScreen()
 		if isinstance(args[0],str):
 			self.app["id"]=args[0]
 		else:
@@ -307,7 +312,7 @@ class QDetailsPane(QWidget):
 	#def loadFromId
 
 	def load(self,*args,category=False):
-		#self.clean()
+		self._clearScreen()
 		self.btn=args[0]
 		if hasattr(self.btn,"instBundle"):
 			if self.btn.instBundle=="zomando":
@@ -471,10 +476,10 @@ class QDetailsPane(QWidget):
 			if self.requested!="":
 				if self.requested=="install":
 					self.requestInstall.emit(self.app["id"])
-				elif self.requested=="install":
+				elif self.requested=="remove":
 					self.requestRemove.emit(self.app["id"])
 				if self.requested=="launch":
-					self.requestLaunch.emit(self.app["id"])
+					self.requestLaunch.emit(self.app,self.btn.property("instBundle"),self.btn.icon.pixmap())
 			else:
 				self.requested=""
 				self._loadHeaderData()
