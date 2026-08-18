@@ -1,15 +1,151 @@
 #!/usr/bin/python3
 import os
 import subprocess
+from PySide6.QtWidgets import QMainWindow,QLabel
+from PySide6.QtCore import Qt,Signal,QThread
+from PySide6.QtGui import QIcon
 from urllib.request import Request,urlopen
 from bs4 import BeautifulSoup as bs
 from extras.constants import *
 
 CACHE=os.path.join(CACHE,"html")
 
+class _epiLauncher(QThread):
+	def __init__(self,*args,parent=None):
+		QThread.__init__(self, parent)
+		self.wdg=QMainWindow()
+		self.wdg.setAttribute(Qt.WA_TranslucentBackground,True)
+		self.wdg.setWindowFlags(Qt.FramelessWindowHint)
+		icn=QIcon.fromTheme("xterm")
+		self.lbl=QLabel()
+		self.wdg.setMinimumSize(256,256)
+		self.wdg.setCentralWidget(self.lbl)
+		self.wdg.setWindowIcon(icn)
+		self.finished.connect(self.wdg.close)
+	#def __init__
+
+	def setData(self,app,bundle,launcher,pxm):
+		self.app=app
+		self.bundle=bundle
+		self.launcher=launcher
+		if pxm!="":
+			self.lbl.setPixmap(pxm.scaled(256,256))
+		self.wdg.show()
+	#def setData
+
+class _launcher(QThread):
+	def __init__(self,*args,parent=None):
+		QThread.__init__(self, parent)
+		self.wdg=QMainWindow()
+		self.wdg.setAttribute(Qt.WA_TranslucentBackground,True)
+		self.wdg.setWindowFlags(Qt.FramelessWindowHint)
+		icn=QIcon.fromTheme("xterm")
+		self.lbl=QLabel()
+		self.wdg.setMinimumSize(256,256)
+		self.wdg.setCentralWidget(self.lbl)
+		self.wdg.setWindowIcon(icn)
+		self.finished.connect(self.wdg.close)
+	#def __init__
+
+	def setData(self,app,bundle,launcher,pxm):
+		self.app=app
+		self.bundle=bundle
+		self.launcher=launcher
+		if pxm!="":
+			self.lbl.setPixmap(pxm.scaled(256,256))
+		self.wdg.show()
+	#def setData
+
+	def getLauncherForBundle(self):
+		launchers={"flatpak":["gtk-launch"],"snap":["snap","run"]}
+		cmd=[]
+		if self.bundle in launchers.keys():
+			cmd=launchers[self.bundle]
+			appName=self.app["bundle"].get(self.bundle,"")
+			if self.bundle=="flatpak":
+				for name in appName.split("/"):
+					if name.count(".")>=2:
+						appName=name
+						break
+			cmd.append(appName)
+		return(cmd)
+	#def getLauncherForBundle
+
+	def getDesktopForCommand(self,command):
+		cmd=[]
+		dPaths=["/usr/share/applications",os.path.join(os.environ["HOME"],".local/share/applications")]
+		dFile=""
+		for path in dPaths:
+			if os.path.isdir(path):
+				for f in os.scandir(path):
+					if "{}.desktop".format(command.lower()) in f.name.lower():
+						if f.name.endswith(".desktop"):
+							dFile=f.name
+							break
+			if dFile!="":
+				break
+		if dFile=="":
+			#Deeper search
+			for path in dPaths:
+				if os.path.isdir(path):
+					for f in os.scandir(path):
+						if f.is_file()==False:
+							continue
+						if f.name.endswith(".desktop"):
+							with open(f.path,"r") as fcontent:
+								try:
+									if command in "\n".join(fcontent.readlines()):
+										dFile=f.name
+										break
+								except:
+									continue
+				if dFile!="":
+					break
+		if dFile!="":
+			cmd=["gtk-launch",dFile]
+		return(cmd)
+	#def getDesktopForLauncher
+
+	def getCmdForLauncher(self):
+		cmd=[]
+		appname=""
+		if len(self.launcher)>0:
+			if os.path.exists(self.launcher)==True:
+				cmd=["gtk-launch",os.path.basename(self.launcher)]
+		if len(cmd)<=0:
+			if self.bundle!="":
+				appname=self.app["bundle"].get(self.bundle,"")
+				if len(appname)>0:
+					cmd=self.getLauncherForBundle()
+		if len(cmd)<=0:
+			if appname=="":
+				appname=self.app["pkgname"]
+			cmd=self.getDesktopForCommand(appname)
+			if len(cmd)==0:
+				for char in (".","-","_"):
+					name=appname.split("char")[-1]
+					cmd=self.getDesktopForCommand(name)
+					if len(cmd)>0:
+						break
+		return(cmd)
+	#def getCmdForLauncher
+
+	def run(self,*args):
+		cmd=self.getCmdForLauncher()
+		try:
+			proc=subprocess.run(cmd)
+		except:
+			proc=None
+		else:
+			if proc.returncode!=0:
+				cmd=["gtk-launch",self.app.get("name",'')]
+				proc=subprocess.run(cmd)
+#class _launcher
+
 class appHelper():
 	def __init__(self):
 		self.dbg=False
+		self.launcher=_launcher()
 	#def __init__
 
 	def _debug(self,msg):
@@ -99,78 +235,11 @@ class appHelper():
 		return(installed)
 	#def runZmd
 
-	def getLauncherForBundle(self,app,bundle):
-		launchers={"flatpak":["flatpak","run"],"snap":["snap","run"]}
-		cmd=[]
-		if bundle in launchers.keys():
-			cmd=launchers[bundle]
-			cmd.append(app["bundle"].get(bundle,""))
-		return(cmd)
-	#def getLauncherForBundle
-
-	def getDesktopForCommand(self,command):
-		cmd=[]
-		dPaths=["/usr/share/applications",os.path.join(os.environ["HOME"],".local/share/applications")]
-		dFile=""
-		for path in dPaths:
-			if os.path.isdir(path):
-				for f in os.scandir(path):
-					if "{}.desktop".format(command.lower()) in f.name.lower():
-						if f.name.endswith(".desktop"):
-							dFile=f.name
-							break
-			if dFile!="":
-				break
-		if dFile=="":
-			#Deeper search
-			for path in dPaths:
-				if os.path.isdir(path):
-					for f in os.scandir(path):
-						if f.is_file()==False:
-							continue
-						if f.name.endswith(".desktop"):
-							with open(f.path,"r") as fcontent:
-								if command in "\n".join(fcontent.readlines()):
-									dFile=f.name
-									break
-				if dFile!="":
-					break
-		if dFile!="":
-			cmd=["gtk-launch",dFile]
-		return(cmd)
-	#def getDesktopForLauncher
-
-	def getCmdForLauncher(self,app,bundle="",launcher=""):
-		cmd=[]
-		appname=""
-		if len(launcher)>0:
-			if os.path.exists(launcher)==True:
-				cmd=["gtk-launch",os.path.basename(launcher)]
-		if len(cmd)<=0:
-			if bundle!="":
-				appname=app["bundle"].get(bundle,"")
-				if len(appname)>0:
-					cmd=self.getLauncherForBundle(app,bundle)
-		if len(cmd)<=0:
-			if appname=="":
-				appname=app["pkgname"]
-			cmd=self.getDesktopForCommand(appname)
-			if len(cmd)==0:
-				for char in (".","-","_"):
-					name=appname.split("char")[-1]
-					cmd=self.getDesktopForCommand(name)
-					if len(cmd)>0:
-						break
-		return(cmd)
-	#def getCmdForLauncher
-
-	def runApp(self,app,bundle,launcher=""): #TODO: QTHREAD
-		cmd=self.getCmdForLauncher(app,bundle,launcher)
-		proc=subprocess.run(cmd)
-		if proc.returncode!=0:
-			cmd=["gtk-launch",app.get("name",'')]
-			proc=subprocess.run(cmd)
-		return(proc)
+	def runApp(self,app,bundle,launcher="",pxm=""): #TODO: QTHREAD
+		if bundle=="":
+			bundle=self.getInstalledBundle(app)
+		self.launcher.setData(app,bundle,launcher,pxm)
+		self.launcher.start()
 	#def runApp(self,app,bundle)
 
 	def getBundlesByPriority(self,app):
@@ -201,41 +270,6 @@ class appHelper():
 		return(priorityIdx)
 	#def getBundlesByPriority
 
-	def getAppseduDetails(self,url):
-		details={"icon":"","description":"","summary":""}
-		page=os.path.basename(url.removesuffix("/"))
-		content=""
-		if os.path.exists(os.path.join(CACHE,page)):
-			with open(os.path.join(CACHE,page),"r") as f:
-				content=f.read()
-		else:
-			req=Request(url, headers={'User-Agent':'Mozilla/5.0'})
-			try:
-				with urlopen(req,timeout=2) as f:
-					content=f.read().decode('utf-8')
-				if os.path.exists(os.path.join(CACHE))==False:
-					os.makedirs(os.path.join(CACHE))
-				with open(os.path.join(CACHE,page),"w") as f:
-					f.write(content)
-			except Exception as e:
-				self._debug("Couldn't fetch {}".format(url))
-				self._debug(e)
-		if len(content)>0:
-			bscontent=bs(content,"html.parser")
-			appDesc=bscontent.find("div",["acf-view__descripcio-field"])
-			if appDesc!=None:
-				details["description"]=appDesc.text
-			appIcon=bscontent.find("img",class_="acf-view__image")
-			if appIcon!=None:
-				details["icon"]=appIcon.get("src","")
-			urlEditor=bscontent.find("a",["acf-view__url_editor-link acf-view__link"],href=True)
-			if urlEditor!=None:
-				details["url"]=urlEditor.get("href","")
-			else:
-				details["url"]=""
-		return(details)
-	#def getAppseduDetails
-		
 	def getInstalledBundle(self,app):
 		installBundle=""
 		bundles=app.get("bundle",{})
@@ -281,4 +315,3 @@ class auxiliary():
 			b=min(255,b*0.8)
 		return "#{:02X}{:02X}{:02X}".format(int(r),int(g),int(b))
 	#def _getRgbColorFromTxt
-
