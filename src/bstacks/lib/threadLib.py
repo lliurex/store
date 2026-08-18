@@ -24,11 +24,19 @@ class rebostQuery(QThread):
 					resultSet=json.loads(self.rebost.refreshVerifiedApp(self.queryData))[0]
 			elif self.query=="search":
 				resultSet=json.loads(self.rebost.searchApp(self.queryData))
-			elif self.query=="loadCategory":
+			elif self.query.lower()=="loadcategory":
 				apps=json.loads(self.rebost.getAppsInCategory(self.queryData))
 				apps=apps[self.queryData]
 				resultSet=sorted(apps, key=lambda x: x["name"].lower())
-		except:
+			elif self.query.lower()=="getfreedesktopcategories":
+				resultSet=self.rebost.getFreedesktopCategories()
+			elif self.query.lower()=="showapps":
+				resultSet={}
+				for appId in self.queryData:
+					app=json.loads(self.rebost.showApp(appId))
+					resultSet.update({len(resultSet):app})
+		except Exception as e:
+			print(e)
 			resultSet={}
 		self.queryCompleted.emit(resultSet)
 	#def run
