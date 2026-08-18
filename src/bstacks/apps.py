@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import json
+import json,time
 from functools import partial
 from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QHBoxLayout,QApplication
 from PySide6.QtCore import Qt,Signal
@@ -89,7 +89,6 @@ class QAppsPane(QWidget):
 			self.emptyContainer.hide()
 			self.container.show()
 			apps.reverse()
-			QApplication.processEvents()
 			while apps:
 				app=apps.pop()
 				if app==None:
@@ -103,7 +102,12 @@ class QAppsPane(QWidget):
 					btn.clicked.connect(self._installApp)
 				else:
 					break
-				if len(apps)%5==0:
+				if len(apps)>50:
+					if len(apps)%50==0:
+						time.sleep(0.1)
+					if len(apps)%3==0:
+						QApplication.processEvents()
+				else:
 					QApplication.processEvents()
 		else:
 			self.emptyContainer.show()
