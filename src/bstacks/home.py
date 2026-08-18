@@ -19,6 +19,7 @@ class QHomePane(QWidget):
 	requestInstall=Signal("PyObject")
 	requestInstallFromId=Signal("PyObject")
 	ready=Signal()
+	exception=Signal(str)
 	def __init__(self,*args,parent=None,**kwargs):
 		QWidget.__init__(self, parent)
 		self.rebost=kwargs.get("rebost")
@@ -117,9 +118,15 @@ class QHomePane(QWidget):
 			self.requestInstallFromId.emit(args[0])
 	#def _emitLoadApp
 
+	def _exception(self,*args):
+		self.exception.emit(*args)
+	#def _exception
+		
+
 	def _defChoiBar(self):
 		wdg=choiBar(rebost=self.rebost)
 		wdg.selected.connect(self._emitLoadApp)
+		wdg.exception.connect(self._exception)
 		return(wdg)
 	#def _defChoiBar
 
@@ -174,4 +181,7 @@ class QHomePane(QWidget):
 	#def __initScreen__
 
 	def load(self):
-		self.flowChoi.loadChoice()
+		try:
+			self.flowChoi.loadChoice()
+		except Exception as e:
+			print(e)
