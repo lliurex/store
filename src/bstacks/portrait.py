@@ -87,6 +87,13 @@ class portrait(QStackedWindowItem):
 		self.prgBar.stop()
 	#def _stopProgress
 
+	def _homeLoaded(self):
+		self.currentPane=self.paneHome
+		self.paneHome.flowZmds.loadZomandos()
+		self.stopLoad.emit()
+		self.paneHome.show()
+	#def _homeLoaded
+
 	def _appsLoaded(self):
 		self.stopLoad.emit()
 	#def _appsLoaded
@@ -140,6 +147,8 @@ class portrait(QStackedWindowItem):
 			self.paneApps.blockSignals(False)
 		elif self.currentPane==self.paneHome:
 			self.search.hide()
+		if self.currentPane==None:
+			self.currentPane=self.paneHome
 		self.currentPane.show()
 	#def _searchApps(self,*args):
 
@@ -199,9 +208,12 @@ class portrait(QStackedWindowItem):
 		self.search=self._defSearch()
 		self.search.hide()
 		lay.addWidget(self.search,0,0,1,self.layout().columnCount(),Qt.AlignCenter)
+		self.prgBar=self._defProgress()
+		lay.addWidget(self.prgBar,1,0,1,self.layout().columnCount())
 		self.paneHome=self._homePane()
-		self.currentPane=self.paneHome
+		self.paneHome.ready.connect(self._homeLoaded)
 		lay.addWidget(self.paneHome,1,0,1,self.layout().columnCount())
+		self.paneHome.hide()
 		self.paneApps=self._appsPane()
 		self.paneApps.ready.connect(self._appsLoaded)
 		self.paneApps.hide()
@@ -210,12 +222,14 @@ class portrait(QStackedWindowItem):
 		self.paneDetails.ready.connect(self._detailsLoaded)
 		self.paneDetails.hide()
 		lay.addWidget(self.paneDetails,1,0,1,self.layout().columnCount())
-		self.prgBar=self._defProgress()
-		self.prgBar.hide()
-		lay.addWidget(self.prgBar,1,0,1,self.layout().columnCount())
+		self._showProgress(self.paneHome)
+		self.paneHome.blockSignals(False)
 	#def __initScreen__
 
 	def updateScreen(self,addEnable=None):
+		self.paneHome.blockSignals(False)
+		self.paneHome.load()
+		self.paneHome.blockSignals(False)
 		#self._rebost.wait()
 		return
 	#def _updateScreen

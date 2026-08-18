@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import time
 from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel
 from PySide6.QtCore import Qt,Signal
 from wdg.topBar import QTopBar
@@ -17,6 +18,7 @@ class QHomePane(QWidget):
 	loadCategory=Signal(str)
 	requestInstall=Signal("PyObject")
 	requestInstallFromId=Signal("PyObject")
+	ready=Signal()
 	def __init__(self,*args,parent=None,**kwargs):
 		QWidget.__init__(self, parent)
 		self.rebost=kwargs.get("rebost")
@@ -66,13 +68,18 @@ class QHomePane(QWidget):
 				self.flowBlog.loadBlog()
 			self.flowBlog.show()
 		elif content=="cats":
+			if self.flowCats.count()==0:
+				self.flowCats.loadCategories()
 			self.flowCats.show()
 		elif content=="recs":
 			if self.flowRecs.count()==0:
 				self.flowRecs.loadRecs()
 			self.flowRecs.show()
 		elif content=="zmds":
+			if self.flowZmds.count()==0:
+				self.flowZmds.loadZomandos()
 			self.flowZmds.show()
+	#def _loadContent
 
 	def _emitLoadRec(self,*args):
 		txt=args[0].property("metadata")
@@ -140,10 +147,8 @@ class QHomePane(QWidget):
 		topBar=self._topBar()
 		lay.addWidget(topBar,0,0,1,self.layout().columnCount(),Qt.AlignTop|Qt.AlignCenter)
 		self.flowZmds=self._defZmdsBar()
-		self.flowZmds.loadZomandos()
 		lay.addWidget(self.flowZmds,1,0,1,self.layout().columnCount(),Qt.AlignTop)
 		self.flowCats=self._defCatsBar()
-		self.flowCats.loadCategories()
 		self.flowCats.hide()
 		lay.addWidget(self.flowCats,1,0,1,self.layout().columnCount(),Qt.AlignTop)
 		self.flowRecs=self._defRecsBar()
@@ -158,7 +163,7 @@ class QHomePane(QWidget):
 		self.layout().addWidget(self.searchBox,2,0,1,self.layout().columnCount(),Qt.AlignCenter|Qt.AlignCenter)
 		self.layout().addWidget(QLabel("{}".format(i18n["CHOICE"])),3,0,1,self.layout().columnCount(),Qt.AlignBottom|Qt.AlignCenter)
 		self.flowChoi=self._defChoiBar()
-		self.flowChoi.loadChoice()
+		self.flowChoi.ready.connect(self.ready.emit)
 		lay.addWidget(self.flowChoi,4,0,1,self.layout().columnCount(),Qt.AlignTop)
 		self.layout().addWidget(QLabel("<hr>".format(i18n["CHOICE"])),5,0,1,self.layout().columnCount(),Qt.AlignTop|Qt.AlignCenter)
 		lay.setRowStretch(0,0)
@@ -168,3 +173,5 @@ class QHomePane(QWidget):
 		lay.setRowStretch(4,1)
 	#def __initScreen__
 
+	def load(self):
+		self.flowChoi.loadChoice()
