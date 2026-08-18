@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt,Signal,QThread
 
 class rebostQuery(QThread):
 	queryCompleted=Signal("PyObject")
+	exception=Signal(str)
 	def __init__(self,*args,parent=None,**kwargs):
 		QThread.__init__(self, parent)
 		self.rebost=kwargs.get("rebost")
@@ -19,6 +20,7 @@ class rebostQuery(QThread):
 	#def setQuery
 	
 	def run(self):
+		resultSet={}
 		try:
 			if self.query=="refresh":
 					resultSet=json.loads(self.rebost.refreshVerifiedApp(self.queryData))[0]
@@ -36,8 +38,8 @@ class rebostQuery(QThread):
 					app=json.loads(self.rebost.showApp(appId))
 					resultSet.update({len(resultSet):app})
 		except Exception as e:
-			print(e)
-			resultSet={}
+			self.exception.emit(e)
+			return(False)
 		self.queryCompleted.emit(resultSet)
 	#def run
 #class rebostQuery
