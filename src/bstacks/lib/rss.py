@@ -93,59 +93,70 @@ class rssParser(QThread):
 		return parsedFeeds
 	#def _getImgsForFeeds
 
+	def _parseFeed(self,feed):
+		parsedFeeds={}
+		try:
+			fparse=feedparser.parse(self.rss[feed])
+		except Exception as e:
+			print("Error parsing {}: {}".format(feed,e))
+			fparse={}
+		if len(fparse)>0:
+			for item in fparse["items"]:
+				if feed=="blog":
+					idx=len(parsedFeeds)
+					links=item.get("links",[""])[0]
+					parsedFeeds.update({str(idx):{"type":feed,"title":item.get("title",""),"summary":item.get("summary",""),"link":links.href}})
+				elif feed=="wiki":
+					idx=len(parsedFeeds)
+					links=item.get("links",[""])[0]
+					parsedFeeds.update({str(idx):{"type":feed,"title":item.get("title",""),"summary":"","img":(0,0,0),"link":links.href}})
+				else:
+					lastApps=self._getLastApps(item.get("content"))
+					for app,link in lastApps:
+						idx=len(parsedFeeds)
+						parsedFeeds.update({str(idx):{"type":feed,"title":app,"link":link}})
+				if self._stop==True:
+					break
+		if len(parsedFeeds)>0 and feed!="wiki":
+			parsedFeeds=self._getImgsForFeeds(parsedFeeds)
+		return(parsedFeeds)
+	#def _parseFeed
+
+	def _parseUrl(self,feed):
+		parsedFeeds={}
+		url=self.webpage[feed]
+		rawcontent=self._fetchArticle(url)
+		bsContent=bs(rawcontent,"html.parser")
+		if self.feed=="lliurexnet":
+			carousel=bsContent.find_all("li",class_="glide__slide")
+			idx=0
+			for item in carousel:
+				links=item.find("a",href=True)
+				img=item.find("img")
+				title=links["href"].removesuffix("/").split("/")[-1]
+				parsedFeeds.update({str(idx):{"type":feed,"title":title,"link":links["href"],"img":img["src"]}})
+				idx+=1
+		else:
+			entries=bsContent.find("ul",{"id":"drilldownmenu0"})
+			idx=0
+			for entry in entries:
+				for li in entry.find_all("li",class_="menuLevel2"):
+					if "dropdown" in li["class"]:
+						continue
+					links=entry.find_all("a",href=True)
+					for link in links:
+						print(link)
+				links=entry.find("a",href=True)
+		return(parsedFeeds)
+	#def _parseUrl
+
 	def run(self):
 		feed=self.feed
 		self.loadCache()
-		parsedFeeds={}
 		if feed in self.rss.keys():
-			try:
-				fparse=feedparser.parse(self.rss[feed])
-			except Exception as e:
-				print("Error parsing {}: {}".format(feed,e))
-				fparse={}
-			if len(fparse)>0:
-				for item in fparse["items"]:
-					if feed=="blog":
-						idx=len(parsedFeeds)
-						links=item.get("links",[""])[0]
-						parsedFeeds.update({str(idx):{"type":feed,"title":item.get("title",""),"summary":item.get("summary",""),"link":links.href}})
-					elif feed=="wiki":
-						idx=len(parsedFeeds)
-						links=item.get("links",[""])[0]
-						parsedFeeds.update({str(idx):{"type":feed,"title":item.get("title",""),"summary":"","img":(0,0,0),"link":links.href}})
-					else:
-						lastApps=self._getLastApps(item.get("content"))
-						for app,link in lastApps:
-							idx=len(parsedFeeds)
-							parsedFeeds.update({str(idx):{"type":feed,"title":app,"link":link}})
-					if self._stop==True:
-						break
-			if len(parsedFeeds)>0 and feed!="wiki":
-				parsedFeeds=self._getImgsForFeeds(parsedFeeds)
+			parsedFeeds=self._parseFeed(feed)
 		elif self.feed in self.webpage.keys():
-			rawcontent=self._fetchArticle(self.webpage[feed])
-			bsContent=bs(rawcontent,"html.parser")
-			if self.feed=="lliurexnet":
-				carousel=bsContent.find_all("li",class_="glide__slide")
-				idx=0
-				for item in carousel:
-					links=item.find("a",href=True)
-					img=item.find("img")
-					title=links["href"].removesuffix("/").split("/")[-1]
-					parsedFeeds.update({str(idx):{"type":feed,"title":title,"link":links["href"],"img":img["src"]}})
-					idx+=1
-			else:
-				entries=bsContent.find("ul",{"id":"drilldownmenu0"})
-				idx=0
-				for entry in entries:
-					for li in entry.find_all("li",class_="menuLevel2"):
-						if "dropdown" in li["class"]:
-							continue
-						links=entry.find_all("a",href=True)
-						for link in links:
-							print(link)
-					links=entry.find("a",href=True)
-					print("-----------------------------------------------------")
+			parsedFeeds=self._parseUrl(feed)
 		self._emitContent(feed,parsedFeeds)
 		self._writeCache(feed,parsedFeeds)
 		self._stop=False
