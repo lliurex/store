@@ -100,14 +100,8 @@ class QAppsPane(QWidget):
 				if self.__EXIT__==False:
 					self.flow.addWidget(btn)
 					btn.clicked.connect(self._installApp)
-				else:
-					break
-				if len(apps)>50:
-					if len(apps)%50==0:
-						time.sleep(0.1)
-					if len(apps)%3==0:
-						QApplication.processEvents()
-				else:
+					if len(apps)%10==0:
+						time.sleep(0.01)
 					QApplication.processEvents()
 		else:
 			self.emptyContainer.show()
