@@ -196,7 +196,7 @@ class QDetailsPane(QWidget):
 	def _showAppInfo(self):
 		show=self.infoBtn.isChecked()
 		self.appInfo.setVisible(show)
-		if len(self.app["screenshots"])>0:
+		if len(self.app.get("screenshots",[]))>0:
 			self.screenshots.setVisible(not show)
 	#def _showAppInfo
 
@@ -307,7 +307,7 @@ class QDetailsPane(QWidget):
 		else:
 			self.btn=args[0]
 			self.app["id"]=args[0].property("metadata")
-		self.rebostQuery.setQuery("refresh",self.app["id"])
+		self.rebostQuery.setQuery("show",self.app["id"])
 		self.rebostQuery.start()
 	#def loadFromId
 
@@ -433,6 +433,8 @@ class QDetailsPane(QWidget):
 		installed=self.helper.getInstalledBundle(self.app)
 		self.appInfo.installed.setText("{0}: {1}".format(i18n["INSTALLED"],installed))
 		ttt=self.app["homepage"]
+		if isinstance(ttt,str)==False:
+			ttt=""
 		if "appsedu" in ttt:
 			lbl="Appsedu"
 			icn=QIcon("/usr/share/store/rsrc/appsedu128x128.png")
