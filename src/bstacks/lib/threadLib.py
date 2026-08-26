@@ -23,7 +23,9 @@ class rebostQuery(QThread):
 		resultSet={}
 		try:
 			if self.query=="refresh":
-					resultSet=json.loads(self.rebost.refreshVerifiedApp(self.queryData))[0]
+				resultSet=json.loads(self.rebost.refreshVerifiedApp(self.queryData))[0]
+			elif self.query=="show":
+				resultSet=json.loads(self.rebost.showApp(self.queryData))[0]
 			elif self.query=="search":
 				resultSet=json.loads(self.rebost.searchApp(self.queryData))
 			elif self.query.lower()=="loadcategory":
