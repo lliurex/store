@@ -17,8 +17,8 @@ class QDetailsPane(QWidget):
 	ready=Signal()
 	search=Signal(str)
 	loadCategory=Signal(str)
-	requestInstall=Signal(str)
-	requestRemove=Signal(str)
+	requestInstall=Signal(dict,str,"PyObject")
+	requestRemove=Signal(dict,"PyObject")
 	requestLaunch=Signal(dict,str,"PyObject")
 	def __init__(self,*args,parent=None,**kwargs):
 		self.__EXIT__=False
@@ -97,9 +97,11 @@ class QDetailsPane(QWidget):
 			launchBtn.show()
 			removeBtn.show()
 		def _setZomando(*args):
-			installBtn.hide()
+			installBtn.show()
+			installBtn.setText(i18n["LAUNCH"])
+			installBtn.setIcon(launchIcon)
 			removeBtn.hide()
-			launchBtn.show()
+			launchBtn.hide()
 		def _setAvailable(*args):
 			installBtn.show()
 			removeBtn.hide()
@@ -111,16 +113,16 @@ class QDetailsPane(QWidget):
 		installBtn.setIcon(installIcon)
 		installBtn.clicked.connect(self._installApp)
 		lay.addWidget(installBtn,0,0,1,1)
-		removeBtn=QPushButton(i18n["REMOVE"])
-		removeIcon=QIcon().fromTheme("uninstall")
-		removeBtn.setIcon(removeIcon)
-		removeBtn.clicked.connect(self._removeApp)
-		lay.addWidget(removeBtn,0,0,1,1)
 		launchBtn=QPushButton(i18n["LAUNCH"])
 		launchBtn.clicked.connect(self._launchApp)
 		launchIcon=QIcon().fromTheme("system-run")
 		launchBtn.setIcon(launchIcon)
-		lay.addWidget(launchBtn)
+		lay.addWidget(launchBtn,0,0,1,1)
+		removeBtn=QPushButton(i18n["REMOVE"])
+		removeIcon=QIcon().fromTheme("uninstall")
+		removeBtn.setIcon(removeIcon)
+		removeBtn.clicked.connect(self._removeApp)
+		lay.addWidget(removeBtn)
 		self.infoBtn=QPushButton("Info")
 		icn=QIcon.fromTheme("showinfo")
 		self.infoBtn.setIcon(icn)
@@ -174,24 +176,6 @@ class QDetailsPane(QWidget):
 		wdg.setFixedHeight(48)
 		return(wdg)
 	#def _defAppSuggestions
-
-	def _defAppLabels(self):
-		wdg=QWidget()
-		#lay=QGridLayout(wdg)
-		#home=QPushButton()
-		#home.setStyleSheet("""text-align:left;padding:3px""")
-		#icn=QIcon.fromTheme("go-home")
-		#home.setIcon(icn)
-		#lay.addWidget(home,0,0,1,1,Qt.AlignTop)
-		#info=QPushButton()
-		#icn=QIcon.fromTheme("showinfo")
-		#info.setIcon(icn)
-		#info.setStyleSheet("""text-align:left;padding:3px""")
-		#lay.addWidget(info,1,0,1,1,Qt.AlignBottom)
-		#wdg.home=home
-		#wdg.info=info
-		return(wdg)
-	#def _defAppLabels
 
 	def _showAppInfo(self):
 		show=self.infoBtn.isChecked()
@@ -277,8 +261,6 @@ class QDetailsPane(QWidget):
 		clay.addWidget(self.header,0,0,1,1,Qt.AlignLeft)
 		self.actions=self._defAppActions()
 		clay.addWidget(self.actions,0,1,1,1,Qt.AlignRight)
-		self.lbls=self._defAppLabels()
-		clay.addWidget(self.lbls,0,2,1,1,Qt.AlignCenter)
 		self.screenshots=self._defScreenshots()
 		clay.addWidget(self.screenshots,1,0,1,clay.columnCount(),Qt.AlignTop)
 		self.appInfo=self._defAppInfo()
@@ -307,20 +289,29 @@ class QDetailsPane(QWidget):
 		else:
 			self.btn=args[0]
 			self.app["id"]=args[0].property("metadata")
-		self.rebostQuery.setQuery("show",self.app["id"])
+		self.rebostQuery.setQuery("refresh",self.app["id"])
 		self.rebostQuery.start()
 	#def loadFromId
+
+	def _showActions(self,installed):
+		if installed=="zomando" or "unknown" in self.app.get("bundle",{}):
+			if self.app["name"]==self.app.get("bundle",{}).get("unknown",""):
+				self.actions._setZomando()
+			elif installed!="":
+				self.actions._setInstalled()
+			else:
+				self.actions._setAvailable()
+		elif installed!="":
+			self.actions._setInstalled()
+		else:
+			self.actions._setAvailable()
+	#def _showActions
 
 	def load(self,*args,category=False):
 		self._clearScreen()
 		self.btn=args[0]
 		if hasattr(self.btn,"instBundle"):
-			if self.btn.instBundle=="zomando":
-				self.actions._setZomando()
-			elif self.btn.instBundle!="":
-				self.actions._setInstalled()
-			else:
-				self.actions._setAvailable()
+			self._showActions(self.btn.instBundle)
 		elif self.app.get("unavailable",False)==True:
 			self.actions.hide()
 		else:
@@ -432,7 +423,8 @@ class QDetailsPane(QWidget):
 			break
 		installed=self.helper.getInstalledBundle(self.app)
 		self.appInfo.installed.setText("{0}: {1}".format(i18n["INSTALLED"],installed))
-		ttt=self.app["homepage"]
+		self._showActions(installed)
+		ttt=self.app.get("homepage","")
 		if isinstance(ttt,str)==False:
 			ttt=""
 		if "appsedu" in ttt:
@@ -477,9 +469,9 @@ class QDetailsPane(QWidget):
 				self.btn=btnApp.QAppButton(self.app)
 			if self.requested!="":
 				if self.requested=="install":
-					self.requestInstall.emit(self.app["id"])
+					self.requestInstall.emit(self.app,"",self.btn.icon.pixmap())
 				elif self.requested=="remove":
-					self.requestRemove.emit(self.app["id"])
+					self.requestRemove.emit(self.app,"",self.btn.icon.pixmap())
 				if self.requested=="launch":
 					self.requestLaunch.emit(self.app,self.btn.property("instBundle"),self.btn.icon.pixmap())
 			else:
