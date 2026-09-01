@@ -136,8 +136,7 @@ class portrait(QStackedWindowItem):
 	#def _goHome
 
 	def _launchEpi(self,*args):
-		print(args)
-		#self.appHelper.runApp(args[0],args[1],pxm=args[2])
+		self.appHelper.runZmd(args[0],args[1],pxm=args[2])
 	#def _launchEpi
 
 	def _launchApp(self,*args):
