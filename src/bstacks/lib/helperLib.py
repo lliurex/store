@@ -25,13 +25,23 @@ class _epiLauncher(QThread):
 	#def __init__
 
 	def setData(self,app,bundle,launcher,pxm):
+		self.wdg.show()
 		self.app=app
 		self.bundle=bundle
 		self.launcher=launcher
 		if pxm!="":
 			self.lbl.setPixmap(pxm.scaled(256,256))
-		self.wdg.show()
+		self.epiCmd=self.app.get('bundle',{}).get('unknown','')
 	#def setData
+
+	def run(self,*args):
+		cmd=["epi-gtk",self.epiCmd.removesuffix(".epi")]
+		#cmd=self.getCmdForLauncher()
+		try:
+			proc=subprocess.run(cmd)
+		except:
+			proc=None
+#class _epiLauncher
 
 class _launcher(QThread):
 	def __init__(self,*args,parent=None):
@@ -146,6 +156,7 @@ class appHelper():
 	def __init__(self):
 		self.dbg=False
 		self.launcher=_launcher()
+		self.epiLauncher=_epiLauncher()
 	#def __init__
 
 	def _debug(self,msg):
@@ -170,10 +181,17 @@ class appHelper():
 		return(cmd)
 	#def _getCmdFromZmd
 
-	def runZmd(self,app):
+	def runZmd(self,app,bundle,launcher="",pxm=""): #TODO: QTHREAD
+		if bundle=="":
+			bundle=self.getInstalledBundle(app)
+		self.epiLauncher.setData(app,bundle,launcher,pxm)
+		self.epiLauncher.start()
+		return
 		ret=-1
 		cmd=[]
 		epiCmd=app.get('bundle',{}).get('unknown','')
+		print(epiCmd)
+		return
 		appName=app.get("pkgname","")
 		if appName=="":
 			appName=zmdCmd
