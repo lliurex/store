@@ -81,6 +81,16 @@ class _launcher(QThread):
 		return(cmd)
 	#def getLauncherForBundle
 
+	def _validateDesktop(self,command,fname):
+		validate=False
+		content=""
+		with open(fname,"r") as f:	
+			content=f.read()
+		if "Exec={}".format(command) in content:
+			validate=True
+		return(validate)
+	#def _validateDesktop
+
 	def getDesktopForCommand(self,command):
 		cmd=[]
 		dPaths=["/usr/share/applications",os.path.join(os.environ["HOME"],".local/share/applications")]
@@ -90,8 +100,9 @@ class _launcher(QThread):
 				for f in os.scandir(path):
 					if "{}.desktop".format(command.lower()) in f.name.lower():
 						if f.name.endswith(".desktop"):
-							dFile=f.name
-							break
+							if self._validateDesktop(command,f.path)==True:
+								dFile=f.name
+								break
 			if dFile!="":
 				break
 		if dFile=="":
@@ -101,7 +112,7 @@ class _launcher(QThread):
 					for f in os.scandir(path):
 						if f.is_file()==False:
 							continue
-						if f.name.endswith(".desktop"):
+						if f.name.lower().endswith(".desktop"):
 							with open(f.path,"r") as fcontent:
 								try:
 									if command in "\n".join(fcontent.readlines()):
@@ -129,7 +140,7 @@ class _launcher(QThread):
 					cmd=self.getLauncherForBundle()
 		if len(cmd)<=0:
 			if appname=="":
-				appname=self.app["pkgname"]
+				appname=self.app["id"]
 			cmd=self.getDesktopForCommand(appname)
 			if len(cmd)==0:
 				for char in (".","-","_"):
