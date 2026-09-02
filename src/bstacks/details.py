@@ -18,7 +18,7 @@ class QDetailsPane(QWidget):
 	search=Signal(str)
 	loadCategory=Signal(str)
 	requestInstall=Signal(dict,str,"PyObject")
-	requestRemove=Signal(dict,"PyObject")
+	requestRemove=Signal(dict,str,"PyObject")
 	requestLaunch=Signal(dict,str,"PyObject")
 	def __init__(self,*args,parent=None,**kwargs):
 		self.__EXIT__=False
