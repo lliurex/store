@@ -227,7 +227,8 @@ class portrait(QStackedWindowItem):
 	def _defProgress(self):
 		wdg=QProgressImage(self)
 		wdg.inc=-1
-		wdg.setImageFromFile(os.path.join(RSRC,"progressBar267x267.png"))
+		img=os.path.join(RSRC,"progressBar267x267.png")
+		wdg.setImageFromFile(img)
 		wdg.lblInfo.hide()
 		wdg.setAttribute(Qt.WA_StyledBackground, False)
 		wdg.animation="bigger"
