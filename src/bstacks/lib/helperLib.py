@@ -267,7 +267,6 @@ class appHelper(QObject):
 		ret=-1
 		cmd=[]
 		epiCmd=app.get('bundle',{}).get('unknown','')
-		print(epiCmd)
 		return
 		appName=app.get("pkgname","")
 		if appName=="":
