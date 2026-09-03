@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-22 11:59+0200\n"
-"PO-Revision-Date: 2026-07-22 12:04+0200\n"
+"POT-Creation-Date: 2026-09-03 11:52+0200\n"
+"PO-Revision-Date: 2026-09-03 11:59+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -597,6 +597,71 @@ msgstr "Rellotge"
 msgid "TextEditor"
 msgstr "Editors de text"
 
+msgid "Documentation"
+msgstr "Documentació"
+
+msgid "GTK"
+msgstr "Gtk"
+
+msgid "LliureX-Infantil"
+msgstr "Lliurex-Infantil"
+
+msgid "GNOME"
+msgstr "Gnome"
+
+msgid "QT"
+msgstr "Qt"
+
+msgid "ODE"
+msgstr "ODE"
+
+msgid "zomando"
+msgstr "Zomandament"
+
+msgid "Java"
+msgstr "Java"
+
+msgid "Llengua"
+msgstr "Idiomes"
+
+msgid "Browser"
+msgstr "Fullejadors web"
+
+#
+msgid "E-Learning"
+msgstr "E-Learning"
+
+#
+msgid "Idiomes"
+msgstr "Idiomes"
+
+msgid "Utilities"
+msgstr "Utilitat"
+
+msgid "X-Lliurex"
+msgstr "LliureX"
+
+msgid "Creation"
+msgstr "Creació"
+
+msgid "Engineering"
+msgstr "Enginyeria"
+
+msgid "Qt"
+msgstr "Qt"
+
+msgid "X-Utilities"
+msgstr "Utilitat"
+
+msgid "KDE"
+msgstr "Kde"
+
+msgid "Electronics"
+msgstr "Electrónica"
+
+msgid "Informática"
+msgstr "Informàtica"
+
 msgid "Authentication is required to manage software"
 msgstr "Cal autenticar-se per a gestionar l'aplicació"
 
@@ -670,26 +735,11 @@ msgstr "Cal autenticar-se per a gestionar l'aplicació"
 #~ msgid ": "
 #~ msgstr ": "
 
-#~ msgid "Documentation"
-#~ msgstr "Documentació"
-
-#~ msgid "Electronics"
-#~ msgstr "Electrónica"
-
-#~ msgid "Engineering"
-#~ msgstr "Enginyeria"
-
 #~ msgid "Forbidden"
 #~ msgstr "Bloquejades"
 
 #~ msgid "LliureX"
 #~ msgstr "LliureX"
-
-#~ msgid "LliureX-Infantil"
-#~ msgstr "Lliurex-Infantil"
-
-#~ msgid "Zomando"
-#~ msgstr "Zomandament"
 
 #~ msgid "admin-tools"
 #~ msgstr "eines d'administració"
@@ -723,9 +773,6 @@ msgstr "Cal autenticar-se per a gestionar l'aplicació"
 
 #~ msgid "desktop-kde"
 #~ msgstr "escriptori kde"
-
-#~ msgid "education"
-#~ msgstr "educació"
 
 #~ msgid "electronics"
 #~ msgstr "electrónica"
@@ -789,9 +836,6 @@ msgstr "Cal autenticar-se per a gestionar l'aplicació"
 
 #~ msgid "Geografia"
 #~ msgstr "Geografía"
-
-#~ msgid "Inform\\u00e0tica"
-#~ msgstr "Informàtica"
 
 #~ msgid "Intel\\u00b7lig\\u00e8ncia Artificial"
 #~ msgstr "Intel·ligència Artificial"
@@ -903,12 +947,6 @@ msgstr "Cal autenticar-se per a gestionar l'aplicació"
 #~ msgid "Services"
 #~ msgstr "Serveis"
 
-#~ msgid "X-Lliurex"
-#~ msgstr "LliureX"
-
-#~ msgid "X-Utilities"
-#~ msgstr "Utilitats"
-
 #~ msgid "communication"
 #~ msgstr "comunicacions"
 
@@ -972,23 +1010,11 @@ msgstr "Cal autenticar-se per a gestionar l'aplicació"
 #~ msgid "Feeds"
 #~ msgstr "Orígens"
 
-#~ msgid "GNOME"
-#~ msgstr "Gnome"
-
-#~ msgid "GTK"
-#~ msgstr "Gtk"
-
 #~ msgid "Games"
 #~ msgstr "Jocs"
 
 #~ msgid "HardwareSettings"
 #~ msgstr "Maquinari"
-
-#~ msgid "Java"
-#~ msgstr "Java"
-
-#~ msgid "KDE"
-#~ msgstr "Kde"
 
 #~ msgid "MMORPG"
 #~ msgstr "MMORPG"
@@ -1004,12 +1030,6 @@ msgstr "Cal autenticar-se per a gestionar l'aplicació"
 
 #~ msgid "Printing"
 #~ msgstr "Impressió"
-
-#~ msgid "QT"
-#~ msgstr "Qt"
-
-#~ msgid "Qt"
-#~ msgstr "Qt"
 
 #~ msgid "Role Playing"
 #~ msgstr "Jocs de rol"

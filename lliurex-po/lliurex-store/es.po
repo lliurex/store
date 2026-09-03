@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-22 11:59+0200\n"
-"PO-Revision-Date: 2026-07-22 12:05+0200\n"
+"POT-Creation-Date: 2026-09-03 11:52+0200\n"
+"PO-Revision-Date: 2026-09-03 11:59+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -593,6 +593,71 @@ msgstr "Reloj"
 msgid "TextEditor"
 msgstr "Editores de texto"
 
+msgid "Documentation"
+msgstr "Documentación"
+
+msgid "GTK"
+msgstr "Gtk"
+
+msgid "LliureX-Infantil"
+msgstr "LliureX-Infantil"
+
+msgid "GNOME"
+msgstr "Gnome"
+
+msgid "QT"
+msgstr "Qt"
+
+msgid "ODE"
+msgstr "ODE"
+
+msgid "zomando"
+msgstr "Zomando"
+
+msgid "Java"
+msgstr "Java"
+
+msgid "Llengua"
+msgstr "Idiomas"
+
+msgid "Browser"
+msgstr "Navegadores"
+
+#
+msgid "E-Learning"
+msgstr "E-Learning"
+
+#
+msgid "Idiomes"
+msgstr "Idiomas"
+
+msgid "Utilities"
+msgstr "Utilidad"
+
+msgid "X-Lliurex"
+msgstr "LliureX"
+
+msgid "Creation"
+msgstr "Creación"
+
+msgid "Engineering"
+msgstr "Ingeniería"
+
+msgid "Qt"
+msgstr "Qt"
+
+msgid "X-Utilities"
+msgstr "Utilidad"
+
+msgid "KDE"
+msgstr "Kde"
+
+msgid "Electronics"
+msgstr "Electrónica"
+
+msgid "Informática"
+msgstr "Informática"
+
 msgid "Authentication is required to manage software"
 msgstr "Es necesario autenticarse para gestionar la aplicación"
 
@@ -662,26 +727,11 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 #~ msgid "Zommand not found. Open Zero-Center?"
 #~ msgstr "No encontrado. ¿Abrir el Zero-Center?"
 
-#~ msgid "Documentation"
-#~ msgstr "Documentación"
-
-#~ msgid "Electronics"
-#~ msgstr "Electrónica"
-
-#~ msgid "Engineering"
-#~ msgstr "Ingeniería"
-
 #~ msgid "Forbidden"
 #~ msgstr "Bloqueadas"
 
 #~ msgid "LliureX"
 #~ msgstr "LliureX"
-
-#~ msgid "LliureX-Infantil"
-#~ msgstr "LliureX-Infantil"
-
-#~ msgid "Zomando"
-#~ msgstr "Zomando"
 
 #~ msgid "admin-tools"
 #~ msgstr "herramientas administrativas"
@@ -715,9 +765,6 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 
 #~ msgid "desktop-kde"
 #~ msgstr "escritorio kde"
-
-#~ msgid "education"
-#~ msgstr "educación"
 
 #~ msgid "electronics"
 #~ msgstr "electrónica"
@@ -781,9 +828,6 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 
 #~ msgid "Geografia"
 #~ msgstr "Geografía"
-
-#~ msgid "Inform\\u00e0tica"
-#~ msgstr "Informática"
 
 #~ msgid "Intel\\u00b7lig\\u00e8ncia Artificial"
 #~ msgstr "Inteligencia Artifical"
@@ -895,12 +939,6 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 #~ msgid "Services"
 #~ msgstr "Servicios"
 
-#~ msgid "X-Lliurex"
-#~ msgstr "LliureX"
-
-#~ msgid "X-Utilities"
-#~ msgstr "Utilidades"
-
 #~ msgid "communication"
 #~ msgstr "comunicación"
 
@@ -964,23 +1002,11 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 #~ msgid "Feeds"
 #~ msgstr "Orígenes"
 
-#~ msgid "GNOME"
-#~ msgstr "Gnome"
-
-#~ msgid "GTK"
-#~ msgstr "Gtk"
-
 #~ msgid "Games"
 #~ msgstr "Juegos"
 
 #~ msgid "HardwareSettings"
 #~ msgstr "Hardware"
-
-#~ msgid "Java"
-#~ msgstr "Java"
-
-#~ msgid "KDE"
-#~ msgstr "Kde"
 
 #~ msgid "MMORPG"
 #~ msgstr "MMORPG"
@@ -996,12 +1022,6 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 
 #~ msgid "Printing"
 #~ msgstr "Impresión"
-
-#~ msgid "QT"
-#~ msgstr "Qt"
-
-#~ msgid "Qt"
-#~ msgstr "Qt"
 
 #~ msgid "Role Playing"
 #~ msgstr "Juegos de rol"
