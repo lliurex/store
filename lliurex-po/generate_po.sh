@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GUI_FILES="../src/*.py ../src/stacks/*.py ../src/helper/*py"
+GUI_FILES="../src/*.py ../src/bstacks/*/*.py ../src/bstacks/*.py ../src/helper/*py"
 
 mkdir -p lliurex-store
 

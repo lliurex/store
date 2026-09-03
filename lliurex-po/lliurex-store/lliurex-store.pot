@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 11:52+0200\n"
+"POT-Creation-Date: 2026-09-03 13:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,196 +17,185 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/stacks/paneDetailView.py:24
-msgid ""
-"The app could not be loaded. Until included in LliureX catalogue it can't be "
-"installed"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:25
-msgid ""
-"For any question the SAI can be contacted at <a href='https://portal.edu.gva."
-"es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:26 ../src/stacks/portrait.py:41
-msgid "Could not open"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:27 ../src/stacks/portrait.py:42
-msgid "Error opening"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:28 ../src/stacks/portrait.py:43
-msgid "There's another action in progress"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:29 ../src/stacks/portrait.py:45
-msgid "System apps can't be removed"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:30 ../src/stacks/portrait.py:46
-msgid "Unknown error"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:31
-msgid "App unauthorized"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:32
-msgid "For more info go to"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:33
-msgid "Install"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:34
-msgid "More apps"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:35 ../src/stacks/portrait.py:55
-msgid "Z·Install"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:36
-msgid "Opening"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:37
-msgid "Release"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:38 ../src/stacks/portrait.py:57
-msgid "Remove"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:39
-msgid "Open"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:40
-msgid "See at Appsedu"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:41
-msgid "Website"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:42
-msgid "Blocked"
-msgstr ""
-
-#: ../src/stacks/paneDetailView.py:43
-msgid "Unavailable"
-msgstr ""
-
-#: ../src/stacks/paneErrorView.py:13 ../src/stacks/portrait.py:63
-msgid "Store was unable to get information from internet"
-msgstr ""
-
-#: ../src/stacks/paneErrorView.py:14 ../src/stacks/portrait.py:64
-msgid "Open network settings"
-msgstr ""
-
-#: ../src/stacks/paneErrorView.py:15
-msgid "Go to store anyway"
-msgstr ""
-
-#: ../src/stacks/paneGlobalView.py:15 ../src/stacks/portrait.py:35
+#: ../src/bstacks/extras/i18n.py:6
 msgid "All"
 msgstr ""
 
-#: ../src/stacks/paneGlobalView.py:16 ../src/stacks/portrait.py:58
-msgid "Search"
-msgstr ""
-
-#: ../src/stacks/paneHomeView.py:19
-msgid "Blog entries"
-msgstr ""
-
-#: ../src/stacks/paneHomeView.py:20
-msgid "Latest apps in appsedu"
-msgstr ""
-
-#: ../src/stacks/paneHomeView.py:21
-msgid "Relevant categories"
-msgstr ""
-
-#: ../src/stacks/paneHomeView.py:22
-msgid "Editor's choice"
-msgstr ""
-
-#: ../src/stacks/portrait.py:36
+#: ../src/bstacks/extras/i18n.py:7
 msgid "Available"
 msgstr ""
 
-#: ../src/stacks/portrait.py:37
+#: ../src/bstacks/extras/i18n.py:8
+msgid "Categories"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:9
 msgid "Filter by category"
 msgstr ""
 
-#: ../src/stacks/portrait.py:38
+#: ../src/bstacks/extras/i18n.py:10
 msgid "Certified by Appsedu"
 msgstr ""
 
-#: ../src/stacks/portrait.py:39 ../src/stacks/portrait.py:60
+#: ../src/bstacks/extras/i18n.py:11
+msgid "LliureX choices"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:12 ../src/bstacks/extras/i18n.py:43
 msgid "Portrait"
 msgstr ""
 
-#: ../src/stacks/portrait.py:40
+#: ../src/bstacks/extras/i18n.py:13
 msgid "Navigate through all applications"
 msgstr ""
 
-#: ../src/stacks/portrait.py:44
+#: ../src/bstacks/extras/i18n.py:14
+msgid "D-Bus error. Store will not load"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:15
+msgid "Nothing to show"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:16
+#, python-brace-format
+msgid "not found. Check at <a href=\"{0}\">{0}</a>"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:17
+msgid "Error opening"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:18
+msgid "There's another action in progress"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:19
 msgid "Authorization is required"
 msgstr ""
 
-#: ../src/stacks/portrait.py:47
+#: ../src/bstacks/extras/i18n.py:20
+msgid "System apps can't be removed"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:21
+msgid "Unknown error"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:22
 msgid "Filters"
 msgstr ""
 
-#: ../src/stacks/portrait.py:48
+#: ../src/bstacks/extras/i18n.py:23
 msgid "Filter by formats and states"
 msgstr ""
 
-#: ../src/stacks/portrait.py:49
+#: ../src/bstacks/extras/i18n.py:24
 msgid "Home"
 msgstr ""
 
-#: ../src/stacks/portrait.py:50
+#: ../src/bstacks/extras/i18n.py:25
 msgid "Main page"
 msgstr ""
 
-#: ../src/stacks/portrait.py:51
+#: ../src/bstacks/extras/i18n.py:26
+msgid "Install"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:27
 msgid "Installed"
 msgstr ""
 
-#: ../src/stacks/portrait.py:52
+#: ../src/bstacks/extras/i18n.py:28
+msgid "Launch"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:29
 msgid "Launch LliurexUp"
 msgstr ""
 
-#: ../src/stacks/portrait.py:53
+#: ../src/bstacks/extras/i18n.py:30
 msgid "Show applications"
 msgstr ""
 
-#: ../src/stacks/portrait.py:54
+#: ../src/bstacks/extras/i18n.py:31
 msgid "Updating info"
 msgstr ""
 
-#: ../src/stacks/portrait.py:56
+#: ../src/bstacks/extras/i18n.py:32
+msgid "News"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:33
+msgid "Z·Install"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:34
+msgid "Receipts"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:35
+msgid "Miscelaneous"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:36
+msgid "For Lliurex21"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:37
+msgid "For Lliurex23"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:38
+msgid "For Lliurex25"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:39
 msgid "Reload Apps"
 msgstr ""
 
-#: ../src/stacks/portrait.py:59
+#: ../src/bstacks/extras/i18n.py:40
+msgid "Remove"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:41
+msgid "Search"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:42
 msgid "Sort alphabetically"
 msgstr ""
 
-#: ../src/stacks/portrait.py:61
+#: ../src/bstacks/extras/i18n.py:44
 msgid "Upgradables"
 msgstr ""
 
-#: ../src/stacks/portrait.py:62
+#: ../src/bstacks/extras/i18n.py:45
 msgid "Updates available"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:46
+msgid "Store was unable to get information from internet"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:47
+msgid "Open network settings"
+msgstr ""
+
+#: ../src/bstacks/extras/i18n.py:48
+msgid "Zomandos"
+msgstr ""
+
+#: ../src/bstacks/wdg/prgBar.py:15
+msgid "Downloading information, wait a moment..."
+msgstr ""
+
+#: ../src/bstacks/wdg/prgBar.py:16
+msgid "Upgrading application database"
+msgstr ""
+
+#: ../src/bstacks/wdg/prgBar.py:20
+msgid "Loading available applications"
 msgstr ""
 
 #: ../src/helper/addEpi.py:13
@@ -571,10 +560,6 @@ msgid "HamRadio"
 msgstr ""
 
 #
-msgid "News"
-msgstr ""
-
-#
 msgid "P2P"
 msgstr ""
 
@@ -712,19 +697,15 @@ msgstr ""
 
 
 #
-msgid "Documentation"
+msgid "Browser"
 msgstr ""
 
 #
-msgid "GTK"
+msgid "Utilities"
 msgstr ""
 
 #
-msgid "LliureX-Infantil"
-msgstr ""
-
-#
-msgid "GNOME"
+msgid "Engineering"
 msgstr ""
 
 #
@@ -736,6 +717,34 @@ msgid "ODE"
 msgstr ""
 
 #
+msgid "Documentation"
+msgstr ""
+
+#
+msgid "Informática"
+msgstr ""
+
+#
+msgid "Creation"
+msgstr ""
+
+#
+msgid "Qt"
+msgstr ""
+
+#
+msgid "KDE"
+msgstr ""
+
+#
+msgid "Idiomes"
+msgstr ""
+
+#
+msgid "Electronics"
+msgstr ""
+
+#
 msgid "zomando"
 msgstr ""
 
@@ -744,39 +753,11 @@ msgid "Java"
 msgstr ""
 
 #
-msgid "Llengua"
-msgstr ""
-
-#
-msgid "Browser"
-msgstr ""
-
-#
-msgid "E-Learning"
-msgstr ""
-
-#
-msgid "Idiomes"
-msgstr ""
-
-#
-msgid "Utilities"
-msgstr ""
-
-#
 msgid "X-Lliurex"
 msgstr ""
 
 #
-msgid "Creation"
-msgstr ""
-
-#
-msgid "Engineering"
-msgstr ""
-
-#
-msgid "Qt"
+msgid "GNOME"
 msgstr ""
 
 #
@@ -784,15 +765,19 @@ msgid "X-Utilities"
 msgstr ""
 
 #
-msgid "KDE"
+msgid "Llengua"
 msgstr ""
 
 #
-msgid "Electronics"
+msgid "E-Learning"
 msgstr ""
 
 #
-msgid "Informática"
+msgid "GTK"
+msgstr ""
+
+#
+msgid "LliureX-Infantil"
 msgstr ""
 
 msgid "Authentication is required to manage software"
