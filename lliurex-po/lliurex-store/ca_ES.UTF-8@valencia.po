@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 13:35+0200\n"
-"PO-Revision-Date: 2026-09-03 13:39+0200\n"
+"POT-Creation-Date: 2026-09-03 13:44+0200\n"
+"PO-Revision-Date: 2026-09-03 13:54+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -582,8 +582,18 @@ msgstr "Editors de text"
 msgid "Browser"
 msgstr "Fullejadors web"
 
+#
+msgid "Webcam & Monitoring"
+msgstr "Video"
+
+msgid "Screenshot Tools"
+msgstr "Gràfics"
+
 msgid "Utilities"
 msgstr "Utilitat"
+
+msgid "Video Apps"
+msgstr "Video"
 
 msgid "Engineering"
 msgstr "Enginyeria"
@@ -591,8 +601,17 @@ msgstr "Enginyeria"
 msgid "QT"
 msgstr "Qt"
 
+msgid "Video Editors"
+msgstr "Edició de video i so"
+
+msgid "Audio Apps"
+msgstr "So"
+
 msgid "ODE"
 msgstr "ODE"
+
+msgid "Education Apps"
+msgstr "Educació"
 
 msgid "Documentation"
 msgstr "Documentació"
@@ -609,9 +628,16 @@ msgstr "Qt"
 msgid "KDE"
 msgstr "Kde"
 
+msgid "Inteligencia Artificial"
+msgstr "Intel·ligència Artificial"
+
 #
 msgid "Idiomes"
 msgstr "Idiomes"
+
+#
+msgid "System Tools (NOT OS or ROMS)"
+msgstr "Sistema"
 
 msgid "Electronics"
 msgstr "Electrónica"
@@ -619,24 +645,56 @@ msgstr "Electrónica"
 msgid "zomando"
 msgstr "Zomandament"
 
+msgid "Graphic Apps"
+msgstr "Gràfics"
+
 msgid "Java"
 msgstr "Java"
 
 msgid "X-Lliurex"
 msgstr "LliureX"
 
+#
+msgid "Various Games"
+msgstr "Jocs"
+
+msgid "File Management"
+msgstr "Gestió de fitxers"
+
 msgid "GNOME"
 msgstr "Gnome"
+
+#
+msgid "Music Production"
+msgstr "Mùsica"
 
 msgid "X-Utilities"
 msgstr "Utilitat"
 
+msgid "3D Graphics"
+msgstr "Gràfics 3D"
+
+msgid "Chat & Messenging"
+msgstr "Missatgeria instantània"
+
 msgid "Llengua"
 msgstr "Idiomes"
+
+msgid "Developers Apps"
+msgstr "Eines de desenvolupament"
+
+msgid "Video Converters"
+msgstr "Videoconferència"
+
+msgid "Text Editors"
+msgstr "Editors de text"
 
 #
 msgid "E-Learning"
 msgstr "E-Learning"
+
+msgid "Ebook Software"
+msgstr "E-Reader"
 
 msgid "GTK"
 msgstr "Gtk"
@@ -780,9 +838,6 @@ msgstr "Cal autenticar-se per a gestionar l'aplicació"
 #~ msgid "Resources"
 #~ msgstr "Recursos"
 
-#~ msgid "Software"
-#~ msgstr "Programari"
-
 #~ msgid "Utilitats"
 #~ msgstr "Utilitats"
 
@@ -857,9 +912,6 @@ msgstr "Cal autenticar-se per a gestionar l'aplicació"
 
 #~ msgid "Geografia"
 #~ msgstr "Geografía"
-
-#~ msgid "Intel\\u00b7lig\\u00e8ncia Artificial"
-#~ msgstr "Intel·ligència Artificial"
 
 #~ msgid "Internet"
 #~ msgstr "Internet"
@@ -978,9 +1030,6 @@ msgstr "Cal autenticar-se per a gestionar l'aplicació"
 #~ msgid "Animation"
 #~ msgstr "Animació"
 
-#~ msgid "HexEditor"
-#~ msgstr "Editor hexadecimal"
-
 #~ msgid "Jukebox"
 #~ msgstr "Reproductors de música"
 
@@ -1010,9 +1059,6 @@ msgstr "Cal autenticar-se per a gestionar l'aplicació"
 
 #~ msgid "DesktopSettings"
 #~ msgstr "Configuració de l'escriptori"
-
-#~ msgid "Developer Tools"
-#~ msgstr "Eines de desenvolupament"
 
 #~ msgid "Emulation"
 #~ msgstr "Emulació"

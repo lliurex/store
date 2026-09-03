@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 13:35+0200\n"
+"POT-Creation-Date: 2026-09-03 13:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -701,7 +701,19 @@ msgid "Browser"
 msgstr ""
 
 #
+msgid "Webcam & Monitoring"
+msgstr ""
+
+#
+msgid "Screenshot Tools"
+msgstr ""
+
+#
 msgid "Utilities"
+msgstr ""
+
+#
+msgid "Video Apps"
 msgstr ""
 
 #
@@ -713,7 +725,19 @@ msgid "QT"
 msgstr ""
 
 #
+msgid "Video Editors"
+msgstr ""
+
+#
+msgid "Audio Apps"
+msgstr ""
+
+#
 msgid "ODE"
+msgstr ""
+
+#
+msgid "Education Apps"
 msgstr ""
 
 #
@@ -737,7 +761,15 @@ msgid "KDE"
 msgstr ""
 
 #
+msgid "Inteligencia Artificial"
+msgstr ""
+
+#
 msgid "Idiomes"
+msgstr ""
+
+#
+msgid "System Tools (NOT OS or ROMS)"
 msgstr ""
 
 #
@@ -749,6 +781,10 @@ msgid "zomando"
 msgstr ""
 
 #
+msgid "Graphic Apps"
+msgstr ""
+
+#
 msgid "Java"
 msgstr ""
 
@@ -757,7 +793,19 @@ msgid "X-Lliurex"
 msgstr ""
 
 #
+msgid "Various Games"
+msgstr ""
+
+#
+msgid "File Management"
+msgstr ""
+
+#
 msgid "GNOME"
+msgstr ""
+
+#
+msgid "Music Production"
 msgstr ""
 
 #
@@ -765,11 +813,35 @@ msgid "X-Utilities"
 msgstr ""
 
 #
+msgid "3D Graphics"
+msgstr ""
+
+#
+msgid "Chat & Messenging"
+msgstr ""
+
+#
 msgid "Llengua"
 msgstr ""
 
 #
+msgid "Developers Apps"
+msgstr ""
+
+#
+msgid "Video Converters"
+msgstr ""
+
+#
+msgid "Text Editors"
+msgstr ""
+
+#
 msgid "E-Learning"
+msgstr ""
+
+#
+msgid "Ebook Software"
 msgstr ""
 
 #

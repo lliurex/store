@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 13:35+0200\n"
-"PO-Revision-Date: 2026-09-03 13:37+0200\n"
+"POT-Creation-Date: 2026-09-03 13:44+0200\n"
+"PO-Revision-Date: 2026-09-03 13:51+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -578,8 +578,18 @@ msgstr "Editores de texto"
 msgid "Browser"
 msgstr "Navegadores"
 
+#
+msgid "Webcam & Monitoring"
+msgstr "Video"
+
+msgid "Screenshot Tools"
+msgstr "Utilidad"
+
 msgid "Utilities"
 msgstr "Utilidad"
+
+msgid "Video Apps"
+msgstr "Video"
 
 msgid "Engineering"
 msgstr "Ingeniería"
@@ -587,8 +597,17 @@ msgstr "Ingeniería"
 msgid "QT"
 msgstr "Qt"
 
+msgid "Video Editors"
+msgstr "Edición de video y sonido"
+
+msgid "Audio Apps"
+msgstr "Sonido"
+
 msgid "ODE"
 msgstr "ODE"
+
+msgid "Education Apps"
+msgstr "Educación"
 
 msgid "Documentation"
 msgstr "Documentación"
@@ -605,9 +624,16 @@ msgstr "Qt"
 msgid "KDE"
 msgstr "Kde"
 
+msgid "Inteligencia Artificial"
+msgstr "Inteligencia Artifical"
+
 #
 msgid "Idiomes"
 msgstr "Idiomas"
+
+#
+msgid "System Tools (NOT OS or ROMS)"
+msgstr "Sistema"
 
 msgid "Electronics"
 msgstr "Electrónica"
@@ -615,24 +641,56 @@ msgstr "Electrónica"
 msgid "zomando"
 msgstr "Zomando"
 
+msgid "Graphic Apps"
+msgstr "Imagen"
+
 msgid "Java"
 msgstr "Java"
 
 msgid "X-Lliurex"
 msgstr "LliureX"
 
+#
+msgid "Various Games"
+msgstr "Juegos"
+
+msgid "File Management"
+msgstr "Gestión de ficheros"
+
 msgid "GNOME"
 msgstr "Gnome"
+
+#
+msgid "Music Production"
+msgstr "Música"
 
 msgid "X-Utilities"
 msgstr "Utilidad"
 
+msgid "3D Graphics"
+msgstr "Gráficos 3D"
+
+msgid "Chat & Messenging"
+msgstr "Mensajería instantánea"
+
 msgid "Llengua"
 msgstr "Idiomas"
+
+msgid "Developers Apps"
+msgstr "Herramientas de desarrollo"
+
+msgid "Video Converters"
+msgstr "Conversor de video"
+
+msgid "Text Editors"
+msgstr "Editores de texto"
 
 #
 msgid "E-Learning"
 msgstr "E-Learning"
+
+msgid "Ebook Software"
+msgstr "E-Reader"
 
 msgid "GTK"
 msgstr "Gtk"
@@ -772,9 +830,6 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 #~ msgid "Resources"
 #~ msgstr "Recursos"
 
-#~ msgid "Software"
-#~ msgstr "Programas"
-
 #~ msgid "Utilitats"
 #~ msgstr "Utilidades"
 
@@ -849,9 +904,6 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 
 #~ msgid "Geografia"
 #~ msgstr "Geografía"
-
-#~ msgid "Intel\\u00b7lig\\u00e8ncia Artificial"
-#~ msgstr "Inteligencia Artifical"
 
 #~ msgid "Internet"
 #~ msgstr "Internet"
@@ -970,9 +1022,6 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 #~ msgid "Animation"
 #~ msgstr "Animación"
 
-#~ msgid "HexEditor"
-#~ msgstr "Editores hexadecimales"
-
 #~ msgid "Jukebox"
 #~ msgstr "Reproductores de música"
 
@@ -1002,9 +1051,6 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 
 #~ msgid "DesktopSettings"
 #~ msgstr "Ajustes de escritorio"
-
-#~ msgid "Developer Tools"
-#~ msgstr "Herramientas de desarrollo"
 
 #~ msgid "Emulation"
 #~ msgstr "Simulación"
