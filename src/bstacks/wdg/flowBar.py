@@ -35,6 +35,7 @@ class QFlowBar(QScrollArea):
 	#def wheelEvent
 
 	def clean(self):
+		self.content={}
 		self.table.setColumnCount(0)
 	#def clean
 

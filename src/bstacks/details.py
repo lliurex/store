@@ -199,7 +199,7 @@ class QDetailsPane(QWidget):
 		wdg=QWidget()
 		lay=QGridLayout(wdg)
 		cats=self._defAppCategories()
-		lay.addWidget(cats,0,0,1,3)
+		lay.addWidget(cats,0,0,1,5)
 		lblCandidate=QLabel()
 		lay.addWidget(lblCandidate,1,0,1,1)
 		lblRelease=QLabel()
@@ -222,7 +222,7 @@ class QDetailsPane(QWidget):
 		btnInfopage.setIcon(icn)
 		tags=QFlowTouchWidget()
 		tags.setMaximumHeight(96)
-		lay.addWidget(tags,0,5,4,1,Qt.Alignment(-1))
+		lay.addWidget(tags,1,4,4,1,Qt.Alignment(-1))
 		wdg.cats=cats
 		wdg.tags=tags
 		wdg.candidate=lblCandidate
