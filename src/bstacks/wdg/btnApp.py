@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import os
+import os,json
 from PySide6.QtWidgets import QLabel
 from PySide6.QtGui import QIcon,QPixmap
 from QtExtraWidgets import QPushInfoButton
@@ -76,3 +76,12 @@ class QAppButton(QPushInfoButton):
 		return(status)
 	#def _getAppStatus
 
+	def refreshApp(self,app):
+		if isinstance(app,str):
+			self.app=json.loads(app)
+			if isinstance(self.app,list):
+				self.app=self.app[0]
+		else:
+			self.app=app
+		self._getAppStatus()
+	#def refreshApp

@@ -461,7 +461,7 @@ class QDetailsPane(QWidget):
 		self.infoBtn.setChecked(False)
 		if len(args)>0:
 			if len(args[0])>0:
-				self.app=args[0]
+					self.app=args[0]
 		if "name" in self.app.keys():
 			self.emptyContainer.hide()
 			self.container.show()
@@ -489,3 +489,15 @@ class QDetailsPane(QWidget):
 		self.ready.emit()
 	 #def _updateScreen(self,*args):
 
+	def refreshApp(self,app):
+		if isinstance(app,str):
+			self.app=json.loads(app)
+			if isinstance(self.app,list):
+				self.app=self.app[0]
+		else:
+			self.app=app
+		self.requested=""
+		installed=self.helper.getInstalledBundle(self.app)
+		self.appInfo.installed.setText("{0}: {1}".format(i18n["INSTALLED"],installed))
+		self._showActions(installed)
+	#def refreshApp
