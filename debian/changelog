@@ -1,0 +1,299 @@
+lliurex-store (2.0) devel; urgency=medium
+
+  * Fix install/uninstall mismatched bundle (#1835)
+  * Fix typo in getBundlesPriority
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 30 Jul 2026 13:15:56 +0200
+
+lliurex-store (1.7.6) noble; urgency=medium
+
+  * Add helper for adding contents from new epis installed from pkgs
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 22 Jul 2026 11:56:51 +0200
+
+lliurex-store (1.7.5) noble; urgency=medium
+
+  * Init threads for appstream as early as possible
+  * Use cache for portrait data
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 15 Jul 2026 11:57:09 +0200
+
+lliurex-store (1.7.4.1) noble; urgency=medium
+
+  * Fix:
+  *  Status of apps from specific zomandos wich are of kind "file" 
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 03 Jul 2026 13:56:11 +0200
+
+lliurex-store (1.7.4) noble; urgency=medium
+
+  * Improve installed bundle detection
+  * Discard install info for zomandos
+  * Portrait:
+  *  llx-update button position depends on screen size
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 03 Jul 2026 11:45:19 +0200
+
+lliurex-store (1.7.3.1) noble; urgency=medium
+
+  * Button bar
+  *  Restore tooltip for action buttons
+  *  Improve layout
+  * Detail Panel:
+  *  Load as many suggested as possible
+  * Home Panel:
+  *  Show install button for appsedu apps
+  * Revisited project tree
+  * Portrait:
+  *  Move llx-update button to top
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 18 Jun 2026 10:43:08 +0200
+
+lliurex-store (1.7.2.1) noble; urgency=medium
+
+  * Fix:
+  *  No referrer pane if searching apps after loading from link
+  * Improve appimage management in installer
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 03 Jun 2026 12:00:45 +0200
+
+lliurex-store (1.7.1) noble; urgency=medium
+
+  * Remove deprecated code
+  * General improvements
+  * WIP on responsive GUI
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 20 May 2026 08:38:15 +0200
+
+lliurex-store (1.6.5) noble; urgency=medium
+
+  * Portrait: Replace section "Relevant Categories" with Editor's Choice
+  * Fix click in app icon not working
+  * Rebost bridge (libth):
+  *  Add getLuck method 
+  *  Add matchApps method 
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 04 May 2026 07:54:54 +0200
+
+lliurex-store (1.6.4.2) noble; urgency=medium
+
+  * Show busy animation fullwindow when loading app from args
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 28 Apr 2026 11:17:47 +0200
+
+lliurex-store (1.6.4) noble; urgency=medium
+
+  * If alias not found load file from remote
+  * Fix error tab for unknowed apps not loading properly
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 27 Apr 2026 11:51:22 +0200
+
+lliurex-store (1.6.3) noble; urgency=medium
+
+  * Support for hidden apps
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 16 Mar 2026 17:56:05 +0100
+
+lliurex-store (1.6.1+0lliurex25) noble; urgency=medium
+
+  * Fix exception if appsedu rss is malformed
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 10 Mar 2026 11:27:32 +0100
+
+lliurex-store (1.6.0+1lliurex25) noble; urgency=medium
+
+  * Ensure app states are coherent
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 04 Feb 2026 09:46:18 +0100
+
+lliurex-store (1.5.7+0lliurex25) noble; urgency=medium
+
+  * Installer returns 0 on exit, 1 on failure
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 30 Jan 2026 09:20:45 +0100
+
+lliurex-store (1.5.6+0lliurex25) noble; urgency=medium
+
+  * Improve: Change cursor shape on hover for open blog/appsedu buttons
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 27 Jan 2026 11:40:50 +0100
+
+lliurex-store (1.5.5+0lliurex25) noble; urgency=medium
+
+  * Launch appsedu webapps with browser
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 26 Dec 2025 09:20:27 +0100
+
+lliurex-store (1.5.4+1lliurex25) noble; urgency=medium
+
+  * Replace toggleButton with bar
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 23 Dec 2025 17:25:40 +0100
+
+lliurex-store (1.5.3+1lliurex25) noble; urgency=medium
+
+  * Add button for invoke reload info from rebost
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 19 Dec 2025 19:28:33 +0100
+
+lliurex-store (1.5.2+0lliurex25) noble; urgency=medium
+
+  * Use rebost system daemon
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 25 Nov 2025 11:27:58 +0100
+
+lliurex-store (1.5.1+0lliurex25) noble; urgency=medium
+
+  * Improve appsedu pending apps label
+  * Fix erratic transitions
+  * Reduce memory footprint
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 19 Nov 2025 07:45:10 +0100
+
+lliurex-store (1.5.0+2lliurex25) noble; urgency=medium
+
+  * Stable release
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 29 Oct 2025 11:16:14 +0100
+
+lliurex-store (1.4.99.0+0lliurex25) noble-testing; urgency=medium
+
+  * RC2
+  * All features implemented
+  * Bugfix
+  * Dbus-Store for epi-gtk
+  * Icons for unavailable and forbidden apps
+  * Layout corrections
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 23 Oct 2025 14:45:36 +0200
+
+lliurex-store (1.4.9.99+8lliurex25) noble-testing; urgency=medium
+
+  * RC1
+  * Fix krunner integration
+  * More modular code
+  * Improved thread management
+  * New home screen
+  * Look&Feel improvements
+  * Detail view:
+  *  - Add suggested apps
+  *  - Show bundle icons for app
+  *  - Changes in layout
+  *  - Add tags 
+  * Global View:
+  *  - Use of fastmode for flowtbable
+  *  - Remove listing of all applications
+  *  - Remove search functionalty
+  *  - Add full table management
+  * Home View:
+  *  - Show last blog entries
+  *  - Show appsedu new apps
+  *  - List top categories
+  * Main portrait:
+  *  - Centralize GUI actions
+  *  - Manage install/remove applications
+  *  - Restored links for categories
+  * ToDo (1.5)
+  *  - Update appsedu data on demand
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 08 Sep 2025 12:22:41 +0200
+
+lliurex-store (1.4.9+11lliurex25) noble; urgency=medium
+
+  * Noble release
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 10 Apr 2025 12:16:30 +0200
+
+lliurex-store (1.4.9+7lliurex23) jammy-testing; urgency=medium
+
+  * Rebranded as LliureX Store
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 31 Mar 2025 09:10:27 +0200
+
+appsedu (1.4.0.2+13lliurex23) jammy-testing; urgency=medium
+
+  * Appsedu aesthetics
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 07 Jan 2025 14:55:02 +0100
+
+appsedu (1.3.2+0lliurex23) jammy; urgency=medium
+
+  * Add appsedu banner
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 15 Oct 2024 10:08:20 +0200
+
+appsedu (1.3.1+0lliurex23) jammy; urgency=medium
+
+  * Use map file as last chance for package match
+  * Gui improvements 
+  * Manage signals for install/uninstall
+  * Fixes:
+  *   Only commit changes if there're changes at all
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 11 Sep 2024 17:27:12 +0200
+
+appsedu (1.2.6+0lliurex23) jammy; urgency=medium
+
+  * Fixes: 
+  *   filter selection if all disabled and none enabled
+  *   icon empty and path used as icon in details
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 03 Sep 2024 09:29:31 +0200
+
+appsedu (1.2.5+1lliurex23) jammy; urgency=medium
+
+  * Improve app launch
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 29 Aug 2024 14:25:06 +0200
+
+appsedu (1.2.4+0lliurex23) jammy; urgency=medium
+
+  * App startup more thread friendly
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 20 Aug 2024 13:23:53 +0200
+
+appsedu (1.2.3+0lliurex23) jammy; urgency=medium
+
+  * Improve memory footprint
+  * Cursor fixes
+  * Threaded app
+  * Integration with rebost D-Bus
+  * Add generic icon for unknowed icons
+  * Improved zmd management
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 24 Jul 2024 13:56:13 +0200
+
+appsedu (1.1.3.1+0lliurex23) jammy; urgency=medium
+
+  * FIX referrer not defined
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 18 Jul 2024 12:16:20 +0200
+
+appsedu (1.1.3) jammy; urgency=medium
+
+  * Better app filtering
+  * Optimized link navigation 
+  * Improve load time for filters
+  * Minor look&feel changes
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 05 Jul 2024 11:04:44 +0200
+
+appsedu (1.1.1) jammy; urgency=medium
+
+  * Enable appsedu stuff
+  * Improve launcher
+
+ -- Juanma1980 <juanma1980@gmail.com>  Thu, 04 Jul 2024 09:17:38 +0200
+
+appsedu (1.0.2) jammy; urgency=medium
+
+  * Packages must have a valid release id
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 25 Jun 2024 17:07:12 +0200
+
+appsedu (1.0) jammy; urgency=medium
+
+  * GUI splitted from rebost
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 25 Jun 2024 08:34:08 +0200
+
