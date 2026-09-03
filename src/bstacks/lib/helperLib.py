@@ -1,69 +1,116 @@
 #!/usr/bin/python3
 import os
-import subprocess
+import subprocess,time,json
 from PySide6.QtWidgets import QMainWindow,QLabel
-from PySide6.QtCore import Qt,Signal,QThread
+from PySide6.QtCore import Qt,Signal,QThread,QObject
 from PySide6.QtGui import QIcon
 from urllib.request import Request,urlopen
 from bs4 import BeautifulSoup as bs
 from extras.constants import *
+from wdg.splashScreen import QSplashWidget
 
 CACHE=os.path.join(CACHE,"html")
 
 class _epiLauncher(QThread):
+	epiLaunched=Signal(str)
 	def __init__(self,*args,parent=None):
 		QThread.__init__(self, parent)
-		self.wdg=QMainWindow()
-		self.wdg.setAttribute(Qt.WA_TranslucentBackground,True)
-		self.wdg.setWindowFlags(Qt.FramelessWindowHint)
-		icn=QIcon.fromTheme("xterm")
-		self.lbl=QLabel()
-		self.wdg.setMinimumSize(256,256)
-		self.wdg.setCentralWidget(self.lbl)
-		self.wdg.setWindowIcon(icn)
-		self.finished.connect(self.wdg.close)
+		icn=QIcon.fromTheme("lliurex-store")
+		self.wdg=QSplashWidget(icn)
+		self.finished.connect(self._close)
+		self.zmdPath=""
+		self.appId=""
 	#def __init__
 
+	def _close(self,*args):
+		self.epiLaunched.emit("zmd")
+	#def _close
+
+	def _getZmdPath(self,epiCmd):
+		zmdCmd=epiCmd.replace(".epi",".zmd")
+		#Patch for zero-lliurex-adobereader
+		if epiCmd=="acroread.epi":
+			zmdCmd="zero-lliurex-adobereader.zmd"
+		zmdPath=os.path.join("/usr/share/zero-center/zmds",zmdCmd)
+		if zmdPath.endswith(".zmd")==False:
+			zmdPath+=".zmd"
+		if os.path.exists(zmdPath)==False:
+			alternatives=["zero-lliurex-{}".format(zmdCmd),"zero-installer-{}".format(zmdCmd),"zero-fp-{}".format(zmdCmd)]
+			for f in os.scandir(os.path.dirname(zmdPath)):
+				if f.name in alternatives:
+					zmdPath=f.path
+					break
+		return(zmdPath)
+	#def _getZmdPath
+
 	def setData(self,app,bundle,launcher,pxm):
-		self.wdg.show()
+		self.wdg.load()
 		self.app=app
 		self.bundle=bundle
 		self.launcher=launcher
+		self.appId=self.app["id"]
 		if pxm!="":
-			self.lbl.setPixmap(pxm.scaled(256,256))
-		self.epiCmd=self.app.get('bundle',{}).get('unknown','')
+			self.wdg.setIcon(pxm)
+		epiCmd=self.app.get('bundle',{}).get('unknown','')
+		if len(epiCmd)>0:
+			self.zmdPath=self._getZmdPath(epiCmd)
 	#def setData
 
+	def _getCmdFromZmd(self):
+		#Look if pkexec is needed
+		appPath=self.zmdPath.replace(".zmd",".app")
+		appPath=appPath.replace("zmds/","applications/")
+		if appPath.endswith(".app")==False:
+			appPath="{}.app".format(appPath)
+		cmd=[self.zmdPath]
+		if os.path.isfile(appPath):
+			with open (appPath,'r') as f:
+				flines=f.readlines()
+			for l in flines:
+				if "pkexec" in l:
+					cmd.insert(0,"pkexec")
+					break
+		return(cmd)
+	#def _getCmdFromZmd
+
 	def run(self,*args):
-		cmd=["epi-gtk",self.epiCmd.removesuffix(".epi")]
-		#cmd=self.getCmdForLauncher()
-		try:
+		if len(self.zmdPath)>0:
+			if os.path.exists(self.zmdPath):
+				cmd=self._getCmdFromZmd()
+				#subprocess.run(["pkexec",zmdPath])
+				try:
+					cmd.append(self.appId)
+					proc=subprocess.run(cmd)
+					ret=proc.returncode
+				except Exception as e:
+					print(e)
+					ret=-1
+		else:
+			helper="/usr/share/store/helper/installer.py"	
+			cmd=["pkexec",helper,self.app["bundle"][self.bundle],self.bundle,json.dumps(self.app)]
 			proc=subprocess.run(cmd)
-		except:
-			proc=None
 #class _epiLauncher
 
 class _launcher(QThread):
+	appLaunched=Signal(str)
 	def __init__(self,*args,parent=None):
 		QThread.__init__(self, parent)
-		self.wdg=QMainWindow()
-		self.wdg.setAttribute(Qt.WA_TranslucentBackground,True)
-		self.wdg.setWindowFlags(Qt.FramelessWindowHint)
-		icn=QIcon.fromTheme("xterm")
-		self.lbl=QLabel()
-		self.wdg.setMinimumSize(256,256)
-		self.wdg.setCentralWidget(self.lbl)
-		self.wdg.setWindowIcon(icn)
-		self.finished.connect(self.wdg.close)
+		icn=QIcon.fromTheme("lliurex-store")
+		self.wdg=QSplashWidget(icn)
+		self.finished.connect(self._close)
 	#def __init__
 
+	def _close(self,*args):
+		self.appLaunched.emit("")
+	#def _close
+
 	def setData(self,app,bundle,launcher,pxm):
+		self.wdg.load()
 		self.app=app
 		self.bundle=bundle
 		self.launcher=launcher
 		if pxm!="":
-			self.lbl.setPixmap(pxm.scaled(256,256))
-		self.wdg.show()
+			self.wdg.setIcon(pxm)
 	#def setData
 
 	def getLauncherForBundle(self):
@@ -161,19 +208,32 @@ class _launcher(QThread):
 			if proc.returncode!=0:
 				cmd=["gtk-launch",self.app.get("name",'')]
 				proc=subprocess.run(cmd)
+
 #class _launcher
 
-class appHelper():
+class appHelper(QObject):
+	procEnded=Signal(dict)
 	def __init__(self):
+		super().__init__()
 		self.dbg=False
 		self.launcher=_launcher()
+		self.launcher.appLaunched.connect(self._endProc)
 		self.epiLauncher=_epiLauncher()
+		self.epiLauncher.epiLaunched.connect(self._endProc)
 	#def __init__
 
 	def _debug(self,msg):
 		if self.dbg==True:
 			print("DBG: {}".format(msg))
 	#def _debug
+
+	def _endProc(self,*args):
+		if args[0]=="zmd":
+			self.procEnded.emit(self.epiLauncher.app)
+		else:
+			self.procEnded.emit(self.launcher.app)
+		return
+	#def _endProc
 
 	def _getCmdFromZmd(self,zmdPath):
 		#Look if pkexec is needed
@@ -195,6 +255,12 @@ class appHelper():
 	def runZmd(self,app,bundle,launcher="",pxm=""): #TODO: QTHREAD
 		if bundle=="":
 			bundle=self.getInstalledBundle(app)
+		epiCmd=app.get('bundle',{}).get('unknown','')
+		if epiCmd=="" and bundle=="":
+			bundles=self.getBundlesByPriority(app)
+			for b in bundles.values():
+				bundle=b.split(" ")[0]
+				break
 		self.epiLauncher.setData(app,bundle,launcher,pxm)
 		self.epiLauncher.start()
 		return
