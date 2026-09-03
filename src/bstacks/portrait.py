@@ -30,11 +30,13 @@ class portrait(QStackedWindowItem):
 			visible=True)
 		self.rebost=store.client()
 		self.appHelper=appHelper()
+		self.appHelper.procEnded.connect(self._procEnded)
 		self.previousPane=[]
 		self.currentPane=None
 		self.beginLoad.connect(self._showProgress)
 		self.stopLoad.connect(self._stopProgress)
 		self.destroyed.connect(partial(portrait._onDestroy,self.__dict__))
+		self.actionBtns=[]
 	#def __init__
 
 	@staticmethod
@@ -135,7 +137,24 @@ class portrait(QStackedWindowItem):
 		self.paneDetails.hide()
 	#def _goHome
 
+	def _procEnded(self,*args):
+		app=args[0]["id"]
+		detailApp=self.paneDetails.app["id"]
+		rapp=self.rebost.refreshApp(app)
+		if app==detailApp:
+			self.paneDetails.refreshApp(rapp)
+		currentBtns=[]
+		for btn in self.actionBtns:
+			if hasattr(btn,"app"):
+				if btn.app["id"]==app:
+					btn.refreshApp(rapp)
+					continue
+			currentBtns.append(btn)
+		self.actionsBtns=currentBtns
+	#def _procEnded
+
 	def _launchEpi(self,*args):
+		self.actionBtns.append(self.paneDetails.btn)
 		self.appHelper.runZmd(args[0],args[1],pxm=args[2])
 	#def _launchEpi
 
