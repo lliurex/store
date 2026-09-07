@@ -304,7 +304,7 @@ class main(QWidget):
 	#def _defBtnBack
 
 	def _defLblDesc(self):
-		wdg=QScrollLabel()
+		wdg=QScrollLabel(styled=False)
 		wdg.setObjectName("lblDesc")
 		wdg.label.setOpenExternalLinks(True)
 		wdg.label.setFont(self.font())
@@ -417,7 +417,7 @@ class main(QWidget):
 	#def _defSuggests
 
 	def _defLblTags(self):
-		wdg=QScrollLabel()
+		wdg=QScrollLabel(styled=False)
 		wdg.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		wdg.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
