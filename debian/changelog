@@ -1,3 +1,9 @@
+lliurex-store (1.7.6.3) noble; urgency=medium
+
+  * Prevent against malformed appsedu app data (summary none)
+
+ -- Juanma1980 <juanma1980@gmail.com>  Mon, 07 Sep 2026 09:08:31 +0200
+
 lliurex-store (1.7.6.2) noble; urgency=medium
 
   * Fix install/uninstall mismatched bundle (#1835)
