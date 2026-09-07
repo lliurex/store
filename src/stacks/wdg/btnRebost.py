@@ -306,8 +306,11 @@ class QPushButtonRebostApp(QPushButton):
 		if self.progress.isVisible()==True:
 			self.progress.hide()
 			self.lblFlyIcon.show()
+		summary=self.app.get("summary")
+		if isinstance(summary,str)==False:
+			summary=""
 		if self.app.get("name","").strip()!="":
-			if self.app.get("summary","")!="" and self._compactMode==False:
+			if summary!="" and self._compactMode==False:
 				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
 			elif self._compactMode==False:
 				text="<p>{0}</p>".format(self.app.get('name','').strip()).upper()
@@ -316,14 +319,14 @@ class QPushButtonRebostApp(QPushButton):
 				self.iconUri.setEnabled(True)
 				self.label.setStyleSheet("padding-top:{0}px;".format(MARGIN))
 		else:
-			text="<p>{0}</p>".format(self.app.get('summary','').strip())
+			text="<p>{0}</p>".format(summary.strip())
 			_showBtn=False
 		if self.label.text()!=text and len(text)>0:
 			self.label.setText(text)
 			if self._compactMode==False:
 				self.setToolTip(text)
 			elif self.lockTooltip==False:
-				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),self.app.get('summary','').strip(),'')
+				text="<p>{0}<br>{1}</p>".format(self.app.get('name','').strip().upper(),summary.strip(),'')
 				self.setToolTip(text)
 		if self.btn.isVisible():
 			self._setActionForButton()
@@ -411,5 +414,10 @@ class QPushButtonRebostApp(QPushButton):
 			self.updateScreen()
 		if updateIcon==True:
 			self.iconUri.loadImg(self.app)
+		#Sanitize values
+		valuesToSanitize=["description","summary"]
+		for sanitize in valuesToSanitize:
+			if self.app.get(sanitize)==None:
+				self.app[sanitize]=""
 	#def setApp
 #class QPushButtonRebostApp
