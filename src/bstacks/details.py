@@ -65,7 +65,7 @@ class QDetailsPane(QWidget):
 		wdg.setSummary=_setSummary
 		lay=QGridLayout(wdg)
 		icn=QLabel()
-		icn.setMaximumHeight(64)
+		icn.setMaximumHeight(ICON_SIZE-8)
 		lay.addWidget(icn,0,0,2,1,Qt.AlignCenter|Qt.AlignRight)
 		name=QLabel()
 		lay.addWidget(name,0,1,1,1,Qt.AlignLeft)
@@ -106,6 +106,12 @@ class QDetailsPane(QWidget):
 			installBtn.show()
 			removeBtn.hide()
 			launchBtn.hide()
+		def _setWebapp(*args):
+			installBtn.show()
+			installBtn.setText(i18n["LAUNCH"])
+			installBtn.setIcon(launchIcon)
+			removeBtn.hide()
+			launchBtn.hide()
 		wdg=QWidget()
 		lay=QGridLayout(wdg)
 		installBtn=QPushButton(i18n["INSTALL"])
@@ -133,6 +139,7 @@ class QDetailsPane(QWidget):
 		wdg._setInstalled=_setInstalled
 		wdg._setZomando=_setZomando
 		wdg._setAvailable=_setAvailable
+		wdg._setWebapp=_setWebapp
 		return(wdg)
 	#def _defAppActions
 
@@ -294,7 +301,9 @@ class QDetailsPane(QWidget):
 	#def loadFromId
 
 	def _showActions(self,installed):
-		if installed=="zomando" or "unknown" in self.app.get("bundle",{}):
+		if self.app.get("webapp",False):
+				self.actions._setWebapp()
+		elif installed=="zomando" or "unknown" in self.app.get("bundle",{}):
 			if self.app["name"]==self.app.get("bundle",{}).get("unknown",""):
 				self.actions._setZomando()
 			elif installed!="":
@@ -349,8 +358,8 @@ class QDetailsPane(QWidget):
 
 	def _loadHeaderData(self):
 		pxm=self.btn.icon.pixmap()
-		if pxm.height()!=64:
-			pxm=pxm.scaledToHeight(64,Qt.SmoothTransformation)
+		if pxm.height()!=ICON_SIZE-8:
+			pxm=pxm.scaledToHeight(ICON_SIZE-8,Qt.SmoothTransformation)
 		self.header.setIcon(pxm)
 		self.header.setName(self.app["name"])
 		self.header.setSummary(self.app["summary"])

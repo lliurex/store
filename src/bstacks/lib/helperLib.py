@@ -86,8 +86,11 @@ class _epiLauncher(QThread):
 					print(e)
 					ret=-1
 		else:
-			helper="/usr/share/store/helper/installer.py"	
-			cmd=["pkexec",helper,self.app["bundle"][self.bundle],self.bundle,json.dumps(self.app)]
+			if self.app.get("webapp",False)==True:
+				cmd=["xdg-open",self.app["infopage"]]
+			else:
+				helper="/usr/share/store/helper/installer.py"	
+				cmd=["pkexec",helper,self.app["bundle"][self.bundle],self.bundle,json.dumps(self.app)]
 			proc=subprocess.run(cmd)
 #class _epiLauncher
 
