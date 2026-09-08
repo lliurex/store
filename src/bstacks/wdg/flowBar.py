@@ -108,6 +108,8 @@ class QFlowBar(QScrollArea):
 
 	def _infoBtn(self,data):
 		def mousePressEvent(event):
+			self.table.setCurrentCell(0,btn.property("col"))
+			self._emit()
 			event.ignore()
 		btn=QPushInfoButton(overlay=self.overlay)
 		btn.setCacheDir(self.cache)
@@ -185,6 +187,7 @@ class QFlowBar(QScrollArea):
 						btn=self._infoBtn(data)
 					btn.setProperty("feed",args[0])
 					btn.setProperty("metadata",data.get("metadata",""))
+					btn.setProperty("col",self.table.columnCount()-1)
 					btn.setFixedWidth(wsize-self.spacing*2)
 					spacing=0
 					if self.table.columnCount()>1:
