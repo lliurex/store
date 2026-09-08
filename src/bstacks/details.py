@@ -219,13 +219,13 @@ class QDetailsPane(QWidget):
 		btnHomepage.setIcon(icn)
 		btnHomepage.setIconSize(QSize(24,24))
 		btnHomepage.setMaximumHeight(btnHomepage.iconSize().height()+2)
-		lay.addWidget(btnHomepage,1,1,1,1,Qt.AlignLeft)
+		lay.addWidget(btnHomepage,2,1,1,1,Qt.AlignLeft)
 		btnInfopage=QPushButton()
 		btnInfopage.setStyleSheet("""text-align:left;""")
 		icn=QIcon.fromTheme("showinfo")
 		btnInfopage.setIconSize(QSize(24,24))
 		btnInfopage.setMaximumHeight(btnInfopage.iconSize().height()+2)
-		lay.addWidget(btnInfopage,2,1,1,1,Qt.AlignLeft)
+		lay.addWidget(btnInfopage,3,1,1,1,Qt.AlignLeft)
 		btnInfopage.setIcon(icn)
 		tags=QFlowTouchWidget()
 		tags.setMaximumHeight(96)
@@ -445,6 +445,8 @@ class QDetailsPane(QWidget):
 		elif "github.com/lliurex" in ttt:
 			lbl="Info"
 			icn=QIcon.fromTheme("showinfo")
+			if icn.isNull():
+				icn=QIcon.fromTheme("documentinfo")
 		else:
 			lbl="Homepage"
 			icn=QIcon.fromTheme("go-home")
@@ -460,6 +462,8 @@ class QDetailsPane(QWidget):
 			else:
 				lbl="Info"
 				icn=QIcon.fromTheme("showinfo")
+				if icn.isNull():
+					icn=QIcon.fromTheme("documentinfo")
 			self.appInfo.infopage.setText(lbl)
 			self.appInfo.infopage.setIcon(icn)
 			self.appInfo.infopage.setToolTip(ttt)
