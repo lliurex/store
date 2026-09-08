@@ -65,7 +65,7 @@ class QDetailsPane(QWidget):
 		wdg.setSummary=_setSummary
 		lay=QGridLayout(wdg)
 		icn=QLabel()
-		icn.setMaximumHeight(128)
+		icn.setMaximumHeight(64)
 		lay.addWidget(icn,0,0,2,1,Qt.AlignCenter|Qt.AlignRight)
 		name=QLabel()
 		lay.addWidget(name,0,1,1,1,Qt.AlignLeft)
@@ -348,7 +348,10 @@ class QDetailsPane(QWidget):
 	#def _getTags(self):
 
 	def _loadHeaderData(self):
-		self.header.setIcon(self.btn.icon.pixmap())
+		pxm=self.btn.icon.pixmap()
+		if pxm.height()!=64:
+			pxm=pxm.scaledToHeight(64,Qt.SmoothTransformation)
+		self.header.setIcon(pxm)
 		self.header.setName(self.app["name"])
 		self.header.setSummary(self.app["summary"])
 	#def _loadHeaderData
