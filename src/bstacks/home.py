@@ -43,6 +43,8 @@ class QHomePane(QWidget):
 		wdg.clicked.connect(self._emitSearch)
 		wdg.returnPressed.connect(self._emitSearch)
 		wdg.txtSearch.setPlaceholderText(i18n["SEARCH"])
+		wdg.layout().setStretch(1,-1)
+		wdg.layout().setStretch(0,1)
 		return(wdg)
 	#def _defSearch
 

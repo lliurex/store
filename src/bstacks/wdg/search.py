@@ -22,6 +22,8 @@ class QSearch(QWidget):
 		self.src.clicked.connect(self._reqSearch)
 		self.src.returnPressed.connect(self._reqSearch)
 		self.src.txtSearch.setPlaceholderText(i18n["SEARCH"])
+		self.src.layout().setStretch(1,-1)
+		self.src.layout().setStretch(0,1)
 		lay.addWidget(self.src)
 	#def __init__
 
