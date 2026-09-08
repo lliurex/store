@@ -36,7 +36,7 @@ class QProgressImage(QWidget):
 		self.color=QColor(COLOR_BACKGROUND_DARKEST)
 		self.colorEnd=QColor(COLOR_BACKGROUND_LIGHT)
 		self.colorCur=self.colorEnd
-		self.img=os.path.join(RSRC,"progressBar267x267.png")
+		self.img=os.path.join(RSRC,"progressBar-blue267x267.png")
 		self.pxm=QPixmap(self.img)#.scaled(267,267,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		self.pxmOverlay=QPixmap(self.pxm.size())
 		self.lblPxm=QLabel()
