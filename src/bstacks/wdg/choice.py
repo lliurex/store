@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import json
-from PySide6.QtCore import Signal
+from PySide2.QtCore import Signal
 from wdg.flowBar import QFlowBar
 from random import shuffle
 from lib import rss

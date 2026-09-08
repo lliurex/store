@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import time
-from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel
-from PySide6.QtCore import Qt,Signal
+from PySide2.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel
+from PySide2.QtCore import Qt,Signal
 from wdg.topBar import QTopBar
 from wdg.blog import blogBar
 from wdg.receipts import recsBar

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-from PySide6.QtWidgets import QPushButton,QWidget,QHBoxLayout
-from PySide6.QtCore import Signal
+from PySide2.QtWidgets import QPushButton,QWidget,QHBoxLayout
+from PySide2.QtCore import Signal
 from extras.i18n import *
 
 class QTopBar(QWidget):

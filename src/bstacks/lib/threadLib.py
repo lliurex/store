@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os,subprocess
 import json
-from PySide6.QtCore import Qt,Signal,QThread
+from PySide2.QtCore import Qt,Signal,QThread
 
 class rebostQuery(QThread):
 	queryCompleted=Signal("PyObject")

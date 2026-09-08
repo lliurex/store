@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import json
 from functools import partial
-from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QHBoxLayout,QApplication,QSizePolicy
-from PySide6.QtCore import Qt,Signal,QSize
-from PySide6.QtGui import QIcon
+from PySide2.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QHBoxLayout,QApplication,QSizePolicy
+from PySide2.QtCore import Qt,Signal,QSize
+from PySide2.QtGui import QIcon
 from QtExtraWidgets import QSearchBox,QScrollLabel,QScreenShotContainer,QPushInfoButton,QFlowTouchWidget
 from extras.i18n import *
 from extras.constants import *

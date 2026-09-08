@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import sys
 import os
-from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import Qt
-from PySide6 import QtGui
+from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import Qt
+from PySide2 import QtGui
 from QtExtraWidgets import QStackedWindow
 import gettext
 gettext.textdomain('lliurex-store')
@@ -26,7 +26,8 @@ mw.closeEvent=closeEvent
 icn=QtGui.QIcon.fromTheme("llxstore")
 mw.disableNavBar(True)
 mw.setIcon(icn)
-mw.setBanner("/usr/share/botiga/rsrc/bbanner.svg")
+banner=os.path.join(abspath,"rsrc/","bbanner.svg")
+mw.setBanner(banner)
 #Get screen size available for us
 (w,h) = app.primaryScreen().size().toTuple()
 mw.setMinimumWidth(int(w*0.5))
@@ -40,4 +41,4 @@ if len(sys.argv)>1:
 		requestedApp=sys.argv[1].split("://")[-1]
 		mw.stkPan.currentWidget()._loadAppDetailFromId(requestedApp)
 mw.show()
-app.exec()
+app.exec_()
