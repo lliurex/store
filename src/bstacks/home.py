@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import time
-from PySide2.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel
+from PySide2.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QSizePolicy
 from PySide2.QtCore import Qt,Signal
 from wdg.topBar import QTopBar
 from wdg.blog import blogBar
@@ -173,8 +173,7 @@ class QHomePane(QWidget):
 		self.layout().addWidget(QLabel("{}".format(i18n["CHOICE"])),3,0,1,self.layout().columnCount(),Qt.AlignBottom|Qt.AlignCenter)
 		self.flowChoi=self._defChoiBar()
 		self.flowChoi.ready.connect(self.ready.emit)
-		lay.addWidget(self.flowChoi,4,0,1,self.layout().columnCount(),Qt.AlignTop)
-		self.layout().addWidget(QLabel("<hr>".format(i18n["CHOICE"])),5,0,1,self.layout().columnCount(),Qt.AlignTop|Qt.AlignCenter)
+		lay.addWidget(self.flowChoi,4,0,1,self.layout().columnCount())
 		lay.setRowStretch(0,0)
 		lay.setRowStretch(1,1)
 		lay.setRowStretch(2,1)

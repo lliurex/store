@@ -70,9 +70,9 @@ class choiBar(QFlowBar):
 		for i in keys[0:min(10,len(keys))]:
 			selectedContent[i]=self.content[i]
 		bheight=self.defaultSize*2
-		self.table.setRowHeight(0,bheight-SPACING)
-		self.table.setFixedHeight(bheight+MARGIN)
 		self.updateScreen(self.feed,selectedContent)
+		self.table.setRowHeight(0,bheight-SPACING*2)
+		self.table.setFixedHeight(bheight+MARGIN*2)
 		self.ready.emit()
 	#def _endLoadData
 

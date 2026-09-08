@@ -45,10 +45,12 @@ class QFlowBar(QScrollArea):
 
 	def _initGui(self):
 		wdg=QWidget()
+		self.setStyleSheet("""#container{border:0px}""")
 		lay=QGridLayout(wdg)
 		lay.setContentsMargins(0,0,0,0)
 		lay.setSpacing(0)
 		self.table=QTableTouchWidget()
+		self.table.setObjectName("container")
 		self.table.setColumnCount(0)
 		self.table.setRowCount(1)
 		self.table.horizontalHeader().hide()
