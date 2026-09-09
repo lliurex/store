@@ -146,6 +146,8 @@ class QFlowBar(QScrollArea):
 
 	def _simpleBtn(self,data):
 		def mousePressEvent(event):
+			self.table.setCurrentCell(0,btn.property("col"))
+			self._emit()
 			event.ignore()
 		def _paintEvent(self,event):
 			painter = QPainter(self)
@@ -212,6 +214,8 @@ class QFlowBar(QScrollArea):
 	#def updateScreen
 		
 	def _emit(self,*args):
+		if len(args)>0:
+			return
 		wdg=self.table.cellWidget(self.table.currentRow(),self.table.currentColumn())
 		for chld in wdg.children():
 			if hasattr(chld,"text"):
