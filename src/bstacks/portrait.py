@@ -8,6 +8,7 @@ from QtExtraWidgets import QStackedWindowItem
 from home import QHomePane
 from apps import QAppsPane
 from details import QDetailsPane
+from settings import QSettingsPane
 from wdg.search import QSearch
 from wdg.prgBar import QProgressImage 
 from lib.helperLib import appHelper
@@ -105,6 +106,20 @@ class portrait(QStackedWindowItem):
 		self.stopLoad.emit()
 	#def _appsLoaded
 
+	def _settingsLoaded(self):
+		self.paneHome.hide()
+		self.paneApps.hide()
+		self.paneDetails.hide()
+		self.paneSettings.show()
+		self.search.hide()
+		self.stopLoad.emit()
+	#def _detailssLoaded
+
+	def _loadSettings(self):
+		self.beginLoad.emit(self.paneSettings)
+		self.paneSettings.load()
+	#def _loadSettings
+
 	def _loadCategory(self,*args):
 		self.beginLoad.emit(self.paneApps)
 		self.paneApps.load(args[0],category=True)
@@ -113,6 +128,7 @@ class portrait(QStackedWindowItem):
 	def _detailsLoaded(self):
 		self.paneHome.hide()
 		self.paneApps.hide()
+		self.paneSettings.hide()
 		self.paneDetails.show()
 		self.stopLoad.emit()
 	#def _detailssLoaded
@@ -129,11 +145,16 @@ class portrait(QStackedWindowItem):
 		self.paneDetails.loadFromId(args[0])
 	#def _loadAppDetailFromId
 
+	def _loadHomeFromSettings(self,content):
+		self._goHome()
+		self.paneHome._loadContent(content)
+
 	def _goHome(self,*args):
 		self.beginLoad.emit(self.paneHome)
 		self.paneHome.show()
 		self.search.hide()
 		self.paneApps.hide()
+		self.paneSettings.hide()
 		self.paneDetails.hide()
 	#def _goHome
 
@@ -190,6 +211,7 @@ class portrait(QStackedWindowItem):
 		wdg.loadCategory.connect(self._loadCategory)
 		wdg.requestInstall.connect(self._loadAppDetail)
 		wdg.requestInstallFromId.connect(self._loadAppDetailFromId)
+		wdg.loadSettings.connect(self._loadSettings)
 		return(wdg)
 	#def _homePane
 
@@ -209,6 +231,12 @@ class portrait(QStackedWindowItem):
 		wdg.loadCategory.connect(self._loadCategory)
 		return(wdg)
 	#def _detailsPane
+
+	def _settingsPane(self):
+		wdg=QSettingsPane(rebost=self.rebost)
+		wdg.loadContent.connect(self._loadHomeFromSettings)
+		return(wdg)
+	#def _settingsPane
 
 	def keyPressEvent(self,*args):
 		if self.search.hasFocus()==False:
@@ -269,6 +297,10 @@ class portrait(QStackedWindowItem):
 		self.paneDetails.ready.connect(self._detailsLoaded)
 		self.paneDetails.hide()
 		lay.addWidget(self.paneDetails,1,0,1,self.layout().columnCount())
+		self.paneSettings=self._settingsPane()
+		self.paneSettings.ready.connect(self._settingsLoaded)
+		self.paneSettings.hide()
+		lay.addWidget(self.paneSettings,1,0,1,self.layout().columnCount())
 		self._showProgress(self.paneHome)
 	#def __initScreen__
 

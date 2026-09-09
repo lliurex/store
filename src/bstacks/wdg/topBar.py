@@ -9,6 +9,7 @@ class QTopBar(QWidget):
 	loadRecs=Signal(str)
 	loadZmds=Signal(str)
 	loadCats=Signal(str)
+	loadSettings=Signal()
 	def __init__(self,parent=None,**kwargs):
 		QWidget.__init__(self, parent)
 		lay=QHBoxLayout(self)
@@ -36,10 +37,12 @@ class QTopBar(QWidget):
 			self.loadZmds.emit("zmds")
 		elif self.checked.property("name")==i18n["CATEGORIES"]:
 			self.loadCats.emit("cats")
+		elif self.checked.property("name")==i18n["CONFIG"]:
+			self.loadSettings.emit()
 	#def _emit
 
 	def _renderGui(self,*args):
-		actions=[i18n["ZOMANDOS"],i18n["CATEGORIES"],i18n["RECEIPTS"],i18n["NEWS"]]
+		actions=[i18n["ZOMANDOS"],i18n["CATEGORIES"],i18n["RECEIPTS"],i18n["NEWS"],i18n["CONFIG"]]
 		for action in actions:
 			btn=QPushButton()	
 			btn.setCheckable(True)

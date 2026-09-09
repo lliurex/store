@@ -16,6 +16,7 @@ from lib.threadLib import runner
 class QHomePane(QWidget):
 	search=Signal(str)
 	loadCategory=Signal(str)
+	loadSettings=Signal()
 	requestInstall=Signal("PyObject")
 	requestInstallFromId=Signal("PyObject")
 	ready=Signal()
@@ -48,19 +49,6 @@ class QHomePane(QWidget):
 		return(wdg)
 	#def _defSearch
 
-	def _topBar(self):
-		wdg=QTopBar()
-		for chld in wdg.children():
-			if isinstance(chld,QPushButton):
-				chld.setText(i18n.get(chld.property("name"),chld.property("name")).upper())
-		#wdg.loadHome.connect(self._goHome)
-		wdg.loadNews.connect(self._loadContent)
-		wdg.loadRecs.connect(self._loadContent)
-		wdg.loadZmds.connect(self._loadContent)
-		wdg.loadCats.connect(self._loadContent)
-		return (wdg)
-	#def _topBar
-
 	def _loadContent(self,content):
 		self.flowBlog.hide()
 		self.flowRecs.hide()
@@ -83,6 +71,24 @@ class QHomePane(QWidget):
 				self.flowZmds.loadZomandos()
 			self.flowZmds.show()
 	#def _loadContent
+
+	def _emitLoadSettings(self):
+		self.loadSettings.emit()
+	#def _emitLoadSettings
+
+	def _topBar(self):
+		wdg=QTopBar()
+		for chld in wdg.children():
+			if isinstance(chld,QPushButton):
+				chld.setText(i18n.get(chld.property("name"),chld.property("name")).upper())
+		#wdg.loadHome.connect(self._goHome)
+		wdg.loadNews.connect(self._loadContent)
+		wdg.loadRecs.connect(self._loadContent)
+		wdg.loadZmds.connect(self._loadContent)
+		wdg.loadCats.connect(self._loadContent)
+		wdg.loadSettings.connect(self._emitLoadSettings)
+		return (wdg)
+	#def _topBar
 
 	def _emitLoadRec(self,*args):
 		txt=args[0].property("metadata")
