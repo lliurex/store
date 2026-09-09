@@ -104,6 +104,8 @@ class QDetailsPane(QWidget):
 			launchBtn.hide()
 		def _setAvailable(*args):
 			installBtn.show()
+			installBtn.setText(i18n["INSTALL"])
+			installBtn.setIcon(installIcon)
 			removeBtn.hide()
 			launchBtn.hide()
 		def _setWebapp(*args):
