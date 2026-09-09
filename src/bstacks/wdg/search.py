@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-from PySide6.QtWidgets import QWidget,QPushButton,QHBoxLayout
-from PySide6.QtGui import QIcon
-from PySide6.QtCore import Signal
+from PySide2.QtWidgets import QWidget,QPushButton,QHBoxLayout
+from PySide2.QtGui import QIcon
+from PySide2.QtCore import Signal
 from QtExtraWidgets import QSearchBox
 from extras.i18n import *
 
@@ -22,6 +22,8 @@ class QSearch(QWidget):
 		self.src.clicked.connect(self._reqSearch)
 		self.src.returnPressed.connect(self._reqSearch)
 		self.src.txtSearch.setPlaceholderText(i18n["SEARCH"])
+		self.src.layout().setStretch(1,-1)
+		self.src.layout().setStretch(0,1)
 		lay.addWidget(self.src)
 	#def __init__
 

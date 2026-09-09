@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 import json,time
 from functools import partial
-from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QHBoxLayout,QApplication
-from PySide6.QtCore import Qt,Signal
+from PySide2.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QHBoxLayout,QApplication
+from PySide2.QtCore import Qt,Signal
 from QtExtraWidgets import QSearchBox,QFlowTouchWidget
-from PySide6.QtGui import QIcon,QPixmap
+from PySide2.QtGui import QIcon,QPixmap
 from extras.i18n import *
 from extras.constants import *
 from wdg import btnApp

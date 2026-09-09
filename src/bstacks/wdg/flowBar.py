@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os
-from PySide6.QtCore import Qt,QSize,Signal
-from PySide6.QtWidgets import QScrollArea,QHBoxLayout,QWidget,QGridLayout,QPushButton,QHeaderView,QSizePolicy
-from PySide6.QtGui import QIcon,QColor,QPainter,QLinearGradient
+from PySide2.QtCore import Qt,QSize,Signal
+from PySide2.QtWidgets import QScrollArea,QHBoxLayout,QWidget,QGridLayout,QPushButton,QHeaderView,QSizePolicy
+from PySide2.QtGui import QIcon,QColor,QPainter,QLinearGradient
 from QtExtraWidgets import QTableTouchWidget,QPushInfoButton
 from extras.constants import *
 
@@ -45,10 +45,12 @@ class QFlowBar(QScrollArea):
 
 	def _initGui(self):
 		wdg=QWidget()
+		self.setStyleSheet("""#container{border:0px}""")
 		lay=QGridLayout(wdg)
 		lay.setContentsMargins(0,0,0,0)
 		lay.setSpacing(0)
 		self.table=QTableTouchWidget()
+		self.table.setObjectName("container")
 		self.table.setColumnCount(0)
 		self.table.setRowCount(1)
 		self.table.horizontalHeader().hide()
@@ -108,6 +110,8 @@ class QFlowBar(QScrollArea):
 
 	def _infoBtn(self,data):
 		def mousePressEvent(event):
+			self.table.setCurrentCell(0,btn.property("col"))
+			self._emit()
 			event.ignore()
 		btn=QPushInfoButton(overlay=self.overlay)
 		btn.setCacheDir(self.cache)
@@ -142,6 +146,8 @@ class QFlowBar(QScrollArea):
 
 	def _simpleBtn(self,data):
 		def mousePressEvent(event):
+			self.table.setCurrentCell(0,btn.property("col"))
+			self._emit()
 			event.ignore()
 		def _paintEvent(self,event):
 			painter = QPainter(self)
@@ -185,6 +191,7 @@ class QFlowBar(QScrollArea):
 						btn=self._infoBtn(data)
 					btn.setProperty("feed",args[0])
 					btn.setProperty("metadata",data.get("metadata",""))
+					btn.setProperty("col",self.table.columnCount()-1)
 					btn.setFixedWidth(wsize-self.spacing*2)
 					spacing=0
 					if self.table.columnCount()>1:
@@ -207,6 +214,8 @@ class QFlowBar(QScrollArea):
 	#def updateScreen
 		
 	def _emit(self,*args):
+		if len(args)>0:
+			return
 		wdg=self.table.cellWidget(self.table.currentRow(),self.table.currentColumn())
 		for chld in wdg.children():
 			if hasattr(chld,"text"):

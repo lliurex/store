@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import json
 from functools import partial
-from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QHBoxLayout,QApplication,QSizePolicy
-from PySide6.QtCore import Qt,Signal,QSize
-from PySide6.QtGui import QIcon
+from PySide2.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QHBoxLayout,QApplication,QSizePolicy
+from PySide2.QtCore import Qt,Signal,QSize
+from PySide2.QtGui import QIcon
 from QtExtraWidgets import QSearchBox,QScrollLabel,QScreenShotContainer,QPushInfoButton,QFlowTouchWidget
 from extras.i18n import *
 from extras.constants import *
@@ -65,7 +65,7 @@ class QDetailsPane(QWidget):
 		wdg.setSummary=_setSummary
 		lay=QGridLayout(wdg)
 		icn=QLabel()
-		icn.setMaximumHeight(128)
+		icn.setMaximumHeight(ICON_SIZE-8)
 		lay.addWidget(icn,0,0,2,1,Qt.AlignCenter|Qt.AlignRight)
 		name=QLabel()
 		lay.addWidget(name,0,1,1,1,Qt.AlignLeft)
@@ -104,6 +104,14 @@ class QDetailsPane(QWidget):
 			launchBtn.hide()
 		def _setAvailable(*args):
 			installBtn.show()
+			installBtn.setText(i18n["INSTALL"])
+			installBtn.setIcon(installIcon)
+			removeBtn.hide()
+			launchBtn.hide()
+		def _setWebapp(*args):
+			installBtn.show()
+			installBtn.setText(i18n["LAUNCH"])
+			installBtn.setIcon(launchIcon)
 			removeBtn.hide()
 			launchBtn.hide()
 		wdg=QWidget()
@@ -133,6 +141,7 @@ class QDetailsPane(QWidget):
 		wdg._setInstalled=_setInstalled
 		wdg._setZomando=_setZomando
 		wdg._setAvailable=_setAvailable
+		wdg._setWebapp=_setWebapp
 		return(wdg)
 	#def _defAppActions
 
@@ -212,13 +221,13 @@ class QDetailsPane(QWidget):
 		btnHomepage.setIcon(icn)
 		btnHomepage.setIconSize(QSize(24,24))
 		btnHomepage.setMaximumHeight(btnHomepage.iconSize().height()+2)
-		lay.addWidget(btnHomepage,1,1,1,1,Qt.AlignLeft)
+		lay.addWidget(btnHomepage,2,1,1,1,Qt.AlignLeft)
 		btnInfopage=QPushButton()
 		btnInfopage.setStyleSheet("""text-align:left;""")
 		icn=QIcon.fromTheme("showinfo")
 		btnInfopage.setIconSize(QSize(24,24))
 		btnInfopage.setMaximumHeight(btnInfopage.iconSize().height()+2)
-		lay.addWidget(btnInfopage,2,1,1,1,Qt.AlignLeft)
+		lay.addWidget(btnInfopage,3,1,1,1,Qt.AlignLeft)
 		btnInfopage.setIcon(icn)
 		tags=QFlowTouchWidget()
 		tags.setMaximumHeight(96)
@@ -294,7 +303,9 @@ class QDetailsPane(QWidget):
 	#def loadFromId
 
 	def _showActions(self,installed):
-		if installed=="zomando" or "unknown" in self.app.get("bundle",{}):
+		if self.app.get("webapp",False):
+				self.actions._setWebapp()
+		elif installed=="zomando" or "unknown" in self.app.get("bundle",{}):
 			if self.app["name"]==self.app.get("bundle",{}).get("unknown",""):
 				self.actions._setZomando()
 			elif installed!="":
@@ -348,7 +359,10 @@ class QDetailsPane(QWidget):
 	#def _getTags(self):
 
 	def _loadHeaderData(self):
-		self.header.setIcon(self.btn.icon.pixmap())
+		pxm=self.btn.icon.pixmap()
+		if pxm.height()!=ICON_SIZE-8:
+			pxm=pxm.scaledToHeight(ICON_SIZE-8,Qt.SmoothTransformation)
+		self.header.setIcon(pxm)
 		self.header.setName(self.app["name"])
 		self.header.setSummary(self.app["summary"])
 	#def _loadHeaderData
@@ -433,6 +447,8 @@ class QDetailsPane(QWidget):
 		elif "github.com/lliurex" in ttt:
 			lbl="Info"
 			icn=QIcon.fromTheme("showinfo")
+			if icn.isNull():
+				icn=QIcon.fromTheme("documentinfo")
 		else:
 			lbl="Homepage"
 			icn=QIcon.fromTheme("go-home")
@@ -448,6 +464,8 @@ class QDetailsPane(QWidget):
 			else:
 				lbl="Info"
 				icn=QIcon.fromTheme("showinfo")
+				if icn.isNull():
+					icn=QIcon.fromTheme("documentinfo")
 			self.appInfo.infopage.setText(lbl)
 			self.appInfo.infopage.setIcon(icn)
 			self.appInfo.infopage.setToolTip(ttt)

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import time
-from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel
-from PySide6.QtCore import Qt,Signal
+from PySide2.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QSizePolicy
+from PySide2.QtCore import Qt,Signal
 from wdg.topBar import QTopBar
 from wdg.blog import blogBar
 from wdg.receipts import recsBar
@@ -16,6 +16,7 @@ from lib.threadLib import runner
 class QHomePane(QWidget):
 	search=Signal(str)
 	loadCategory=Signal(str)
+	loadSettings=Signal()
 	requestInstall=Signal("PyObject")
 	requestInstallFromId=Signal("PyObject")
 	ready=Signal()
@@ -43,21 +44,10 @@ class QHomePane(QWidget):
 		wdg.clicked.connect(self._emitSearch)
 		wdg.returnPressed.connect(self._emitSearch)
 		wdg.txtSearch.setPlaceholderText(i18n["SEARCH"])
+		wdg.layout().setStretch(1,-1)
+		wdg.layout().setStretch(0,1)
 		return(wdg)
 	#def _defSearch
-
-	def _topBar(self):
-		wdg=QTopBar()
-		for chld in wdg.children():
-			if isinstance(chld,QPushButton):
-				chld.setText(i18n.get(chld.property("name"),chld.property("name")).upper())
-		#wdg.loadHome.connect(self._goHome)
-		wdg.loadNews.connect(self._loadContent)
-		wdg.loadRecs.connect(self._loadContent)
-		wdg.loadZmds.connect(self._loadContent)
-		wdg.loadCats.connect(self._loadContent)
-		return (wdg)
-	#def _topBar
 
 	def _loadContent(self,content):
 		self.flowBlog.hide()
@@ -81,6 +71,24 @@ class QHomePane(QWidget):
 				self.flowZmds.loadZomandos()
 			self.flowZmds.show()
 	#def _loadContent
+
+	def _emitLoadSettings(self):
+		self.loadSettings.emit()
+	#def _emitLoadSettings
+
+	def _topBar(self):
+		wdg=QTopBar()
+		for chld in wdg.children():
+			if isinstance(chld,QPushButton):
+				chld.setText(i18n.get(chld.property("name"),chld.property("name")).upper())
+		#wdg.loadHome.connect(self._goHome)
+		wdg.loadNews.connect(self._loadContent)
+		wdg.loadRecs.connect(self._loadContent)
+		wdg.loadZmds.connect(self._loadContent)
+		wdg.loadCats.connect(self._loadContent)
+		wdg.loadSettings.connect(self._emitLoadSettings)
+		return (wdg)
+	#def _topBar
 
 	def _emitLoadRec(self,*args):
 		txt=args[0].property("metadata")
@@ -171,8 +179,7 @@ class QHomePane(QWidget):
 		self.layout().addWidget(QLabel("{}".format(i18n["CHOICE"])),3,0,1,self.layout().columnCount(),Qt.AlignBottom|Qt.AlignCenter)
 		self.flowChoi=self._defChoiBar()
 		self.flowChoi.ready.connect(self.ready.emit)
-		lay.addWidget(self.flowChoi,4,0,1,self.layout().columnCount(),Qt.AlignTop)
-		self.layout().addWidget(QLabel("<hr>".format(i18n["CHOICE"])),5,0,1,self.layout().columnCount(),Qt.AlignTop|Qt.AlignCenter)
+		lay.addWidget(self.flowChoi,4,0,1,self.layout().columnCount())
 		lay.setRowStretch(0,0)
 		lay.setRowStretch(1,1)
 		lay.setRowStretch(2,1)

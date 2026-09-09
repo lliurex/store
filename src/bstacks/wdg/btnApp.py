@@ -1,16 +1,17 @@
 #!/usr/bin/python3
 import os,json
-from PySide6.QtWidgets import QLabel
-from PySide6.QtGui import QIcon,QPixmap
+from PySide2.QtWidgets import QLabel
+from PySide2.QtGui import QIcon,QPixmap
 from QtExtraWidgets import QPushInfoButton
 import lib.libhelper as libhelper
+from extras.constants import *
 
 class QAppButton(QPushInfoButton):
 	def __init__(self,*args,parent=None):
 		QPushInfoButton.__init__(self, parent,scroll=True)
 		self.app=args[0]
 		self.lblStatus=QLabel("")
-		self.defaultSize=64
+		self.defaultSize=ICON_SIZE-8
 		self.loadImgSync(self.app["icon"])
 		self.setText(self.app["name"])
 		self.setDescription(self.app["summary"])

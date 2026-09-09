@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import os
 import subprocess,time,json
-from PySide6.QtWidgets import QMainWindow,QLabel
-from PySide6.QtCore import Qt,Signal,QThread,QObject
-from PySide6.QtGui import QIcon
+from PySide2.QtWidgets import QMainWindow,QLabel
+from PySide2.QtCore import Qt,Signal,QThread,QObject
+from PySide2.QtGui import QIcon
 from urllib.request import Request,urlopen
 from bs4 import BeautifulSoup as bs
 from extras.constants import *
@@ -86,8 +86,11 @@ class _epiLauncher(QThread):
 					print(e)
 					ret=-1
 		else:
-			helper="/usr/share/store/helper/installer.py"	
-			cmd=["pkexec",helper,self.app["bundle"][self.bundle],self.bundle,json.dumps(self.app)]
+			if self.app.get("webapp",False)==True:
+				cmd=["xdg-open",self.app["infopage"]]
+			else:
+				helper="/usr/share/store/helper/installer.py"	
+				cmd=["pkexec",helper,self.app["bundle"][self.bundle],self.bundle,json.dumps(self.app)]
 			proc=subprocess.run(cmd)
 #class _epiLauncher
 
