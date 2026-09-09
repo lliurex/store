@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-from PySide2.QtWidgets import QWidget,QPushButton,QHBoxLayout
-from PySide2.QtGui import QIcon
-from PySide2.QtCore import Signal
+from PySide6.QtWidgets import QWidget,QPushButton,QHBoxLayout
+from PySide6.QtGui import QIcon
+from PySide6.QtCore import Signal
 from QtExtraWidgets import QSearchBox
 from extras.i18n import *
 

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os,json
-from PySide2.QtWidgets import QLabel
-from PySide2.QtGui import QIcon,QPixmap
+from PySide6.QtWidgets import QLabel
+from PySide6.QtGui import QIcon,QPixmap
 from QtExtraWidgets import QPushInfoButton
 import lib.libhelper as libhelper
 from extras.constants import *

@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import os
 import subprocess,time,json
-from PySide2.QtWidgets import QMainWindow,QLabel
-from PySide2.QtCore import Qt,Signal,QThread,QObject
-from PySide2.QtGui import QIcon
+from PySide6.QtWidgets import QMainWindow,QLabel
+from PySide6.QtCore import Qt,Signal,QThread,QObject
+from PySide6.QtGui import QIcon
 from urllib.request import Request,urlopen
 from bs4 import BeautifulSoup as bs
 from extras.constants import *

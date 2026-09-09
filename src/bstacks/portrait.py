@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import os,sys
 from functools import partial
-from PySide2.QtWidgets import QApplication,QGridLayout,QPushButton,QMessageBox
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,Signal
+from PySide6.QtWidgets import QApplication,QGridLayout,QPushButton,QMessageBox
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,Signal
 from QtExtraWidgets import QStackedWindowItem
 from home import QHomePane
 from apps import QAppsPane

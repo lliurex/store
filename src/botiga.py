@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import sys
 import os
-from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import Qt
-from PySide2 import QtGui
+from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import Qt
+from PySide6 import QtGui
 from QtExtraWidgets import QStackedWindow
 import gettext
 gettext.textdomain('lliurex-store')
@@ -41,4 +41,4 @@ if len(sys.argv)>1:
 		requestedApp=sys.argv[1].split("://")[-1]
 		mw.stkPan.currentWidget()._loadAppDetailFromId(requestedApp)
 mw.show()
-app.exec_()
+app.exec()

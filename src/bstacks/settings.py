@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import time
-from PySide2.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QSizePolicy,QCheckBox
-from PySide2.QtCore import Qt,Signal
+from PySide6.QtWidgets import QWidget,QGridLayout,QPushButton,QLabel,QSizePolicy,QCheckBox
+from PySide6.QtCore import Qt,Signal
 from wdg.topBar import QTopBar
 from QtExtraWidgets import QStackedWindowItem
 from extras.i18n import *
