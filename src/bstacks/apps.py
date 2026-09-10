@@ -84,7 +84,9 @@ class QAppsPane(QWidget):
 	#def _installApp
 
 	def _loadGrid(self,apps):
-		btnW=350+SPACING
+		btnMaxW=350+SPACING
+		btnSizeW=(self.width()-SPACING*8)/2
+		btnW=min(btnSizeW,btnMaxW)
 		if len(apps)>0:
 			self.emptyContainer.hide()
 			self.container.show()
