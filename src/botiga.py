@@ -30,7 +30,7 @@ banner=os.path.join(abspath,"rsrc/","bbanner.svg")
 mw.setBanner(banner)
 #Get screen size available for us
 (w,h) = app.primaryScreen().size().toTuple()
-mw.setMinimumWidth(max(int(w*0.5),820))
+mw.setMinimumWidth(max(int(w*0.5),860))
 mw.setMinimumHeight(int(h*0.7))
 mw.lblBanner.setPixmap(mw.lblBanner.pixmap().scaled(w*0.15,h*0.07,Qt.IgnoreAspectRatio,Qt.SmoothTransformation))
 mw.lblBanner.setStyleSheet("""padding:6px""")
