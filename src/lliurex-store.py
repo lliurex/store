@@ -43,4 +43,4 @@ mw.setStyleSheet("""QWidget#MAIN{background:#002c4f; color:#FFFFFF;margin:0px;pa
 mw.setMinimumWidth(int(w*0.9))
 mw.setMinimumHeight(int(h*0.9))
 mw.show()
-app.exec()
+app.exec_()
