@@ -45,6 +45,8 @@ pluginHelp=pluginlib
 
 
 pluginEpic.mapFixes=rebost.getMaps()
+if len(sys.argv)<1:
+	sys.exit(0)
 epiFile=sys.argv[1]
 if os.path.exists(epiFile):
 	epiInfo={}
