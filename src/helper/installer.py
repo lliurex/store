@@ -31,7 +31,7 @@ class epiFile():
 			icon=os.path.basename(icon)
 		epiContent={}
 		epiContent["type"]="file"
-		epiContent["pkg_list"]=[{"name":name,"key_store":name,'url_download':'','custom_icon':icon,'version':{'all':pkgname}}]
+		epiContent["pkg_list"]=[{"name":pkgname,"custom_name":name,"key_store":name,'url_download':'','custom_icon':icon,'version':{'all':pkgname}}]
 		epiContent["script"]={"name":epiScript,'download':True,'remove':True,'getStatus':True,'getInfo':True}
 		epiContent["custom_icon_path"]=iconFolder
 		epiContent["required_root"]=True
