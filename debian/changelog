@@ -1,4 +1,4 @@
-lliurex-store (1.7.6.4) jammy; urgency=medium
+lliurex-store (1.7.6.4-1) jammy; urgency=medium
 
   * installer.py:
   *   Use appsedu names as custom_name in epi files 
