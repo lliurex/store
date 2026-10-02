@@ -11,9 +11,11 @@ class epiFile():
 			epiJson,epiContent=self._jsonForEpi(tmpDir,app,pkg,bundle)
 		except Exception as e:
 			print(e)
-		if bundle=="package" and pkg.startswith("zero-lliurex"):
-			#postaction="/usr/share/store/helper/epiStep.py {}".format(pkg)
-			postaction="/usr/share/store/helper/addEpi.py $(dpkg -L {} | grep [.]epi$)".format(pkg)
+		#Check if the requested package is a zmd
+		if len(epiContent.get("pkg_list",[]))>0:
+			pkgName=epiContent["pkg_list"][0].get("name","")
+			if bundle=="package" and pkgName.startswith("zero-lliurex"):
+				postaction="/usr/share/store/helper/addEpi.py $(dpkg -L {} | grep [.]epi$)".format(pkgName)
 		episcript=self._shForEpi(epiJson,app,pkg,bundle,postaction)
 		return(epiJson,episcript)
 	#def epiForPkg
@@ -24,6 +26,10 @@ class epiFile():
 		#if not os.path.isfile(epiJson):
 		name=app.get('name').strip()
 		pkgname=app.get('bundle',{}).get(bundle)
+		if pkgname==None:
+			if bundle!="unknown":
+				pkgname=app.get('bundle',{}).get("unknown",name)
+
 		icon=app.get('icon','')
 		iconFolder=''
 		if icon:
