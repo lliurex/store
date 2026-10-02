@@ -3,7 +3,7 @@
 '''Add widget
 '''
 
-from PySide6.QtWidgets import QWidget,QStackedLayout,QListWidget
+from PySide2.QtWidgets import QWidget,QStackedLayout,QListWidget
 
 class QStackedMenu(QStackedLayout):
 	def __init__(self,parent=None):
