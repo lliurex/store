@@ -1,9 +1,10 @@
 #!/usr/bin/python3
-import os
+import os,grp
 import subprocess
 from urllib.request import Request,urlopen
 from bs4 import BeautifulSoup as bs
 from extras.constants import *
+import dbus
 
 CACHE=os.path.join(CACHE,"html")
 print("CACHE: {}".format(CACHE))
@@ -262,3 +263,31 @@ class helper():
 				installBundle=""
 		return installBundle
 	#def getInstalledBundle
+
+	def chkNetwork(self):
+		state=False
+		bus=dbus.SystemBus()
+		try:
+			objbus=bus.get_object("org.freedesktop.NetworkManager","/org/freedesktop/NetworkManager")
+			proxbus=dbus.Interface(objbus,"org.freedesktop.NetworkManager")
+			status=proxbus.state()
+		except Exception as e:
+			self._debug("Chk network: {}".format(e))
+			state=True
+		else:
+			if status==70:
+				state=True
+		return(state)
+	#def chkNetwork
+
+	def chkUserGroup(self):
+		lockedUser=False
+		grpData=grp.getgrnam("sudo")
+		if grpData.gr_gid not in os.getgroups():
+			userlocked=True
+		return(lockedUser)
+	#def chkUserGroup
+
+	def launchLlxUpSync(self):
+		subprocess.run(["pkexec","lliurex-up"])
+	#def launchLlxUpSync
