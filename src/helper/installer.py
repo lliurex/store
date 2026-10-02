@@ -16,6 +16,8 @@ class epiFile():
 			pkgName=epiContent["pkg_list"][0].get("name","")
 			if bundle=="package" and pkgName.startswith("zero-lliurex"):
 				postaction="/usr/share/store/helper/addEpi.py $(dpkg -L {} | grep [.]epi$)".format(pkgName)
+			if pkgName.endswith(".epi"):
+				bundle="zomando"
 		episcript=self._shForEpi(epiJson,app,pkg,bundle,postaction)
 		return(epiJson,episcript)
 	#def epiForPkg
