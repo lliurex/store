@@ -41,7 +41,6 @@ class appLauncher(QThread):
 		bundle=kwargs.get("bundle","")
 		if bundle in self.app["bundle"].keys()==False:
 			bundle="unknown"
-		print("BUNDLE: {}".format(bundle))
 		if len(bundle)>0:
 			self.app["bundle"]={bundle:self.app["bundle"][bundle]}
 		self.args=kwargs.get("args",[])
@@ -54,7 +53,6 @@ class appLauncher(QThread):
 
 	def run(self):
 		if len(self.cmd)>0:
-			print("RUNNING")
 			cmd=["pkexec",self.cmd,json.dumps(self.app)]
 			cmd.extend(self.args)
 			try:
