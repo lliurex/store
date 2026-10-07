@@ -7,7 +7,6 @@ from extras.constants import *
 import dbus
 
 CACHE=os.path.join(CACHE,"html")
-print("CACHE: {}".format(CACHE))
 
 class helper():
 	def __init__(self):

@@ -147,6 +147,7 @@ class portrait(QStackedWindowItem):
 	#def _initThreads(self):
 
 	def _initGUI(self):
+		self.currentPane=None
 		self.hideControlButtons()
 		self.installingBtn=None
 		self.oldCursor=self.cursor()
@@ -227,11 +228,11 @@ class portrait(QStackedWindowItem):
 				proc=args[1]
 		else:
 			return
-		if proc==None:
-			if self._refreshBeforeInstall(app)==True:
-				return
-		elif proc!=None:
-			self._installError(proc,app)
+	#	if proc==None:
+	#		if self._refreshBeforeInstall(app)==True:
+	#			return
+	#	elif proc!=None:
+	#		self._installError(proc,app)
 		self._rebost.setAction("refreshApp",app["id"])
 		app=json.loads(self._rebost._refreshApp())[0]
 		self._rebost.setAction("setAppState",app["id"],0)
@@ -278,7 +279,7 @@ class portrait(QStackedWindowItem):
 		if hasattr(wdg,"instBundle"):
 			if len(wdg.instBundle)>0:
 				bundle=wdg.instBundle
-		if len(bundle)==0:
+		if len(bundle)==0 or bundle not in app["bundle"]:
 			bundle=self._getBundleFromPriority(app)
 		return(bundle)
 	#def _getCandidateBundle(self,wdg,app):
@@ -308,7 +309,22 @@ class portrait(QStackedWindowItem):
 		return(bundle)
 	#def _checkBundleStatus
 
-	def _invokeInstaller(self,app,pkg,bundle,installer,state):
+	#def _invokeInstaller(self,app,pkg,bundle,installer,state):
+	def _invokeInstaller(self,installer,app,bundle,*args):
+		print("<-- INVOKING INSTALLER -->")
+		print("Installer: {}".format(installer))
+		#print("Pkgname: {}".format(pkg))
+		print("Bundle: {}".format(bundle))
+		#print("State: {}".format(state))
+		print("Raw:\n{}".format(app))
+		print("<-- INVOKING INSTALLER --/>")
+		if bundle not in app["bundle"]:
+			if "unknown" in app["bundle"]:
+				bundle="unknown"
+				print("Bundle As: {}".format(bundle))
+		self.runapp.setArgs(installer,app=app,bundle=bundle)
+		self.runapp.start()
+		return
 		if bundle=="webapp":
 			self._referrerPane=self._homeView
 			details=self.helper.getAppseduDetails(app["homepage"])
@@ -340,8 +356,13 @@ class portrait(QStackedWindowItem):
 			bundle=self._getCandidateBundle(wdg,app)
 		if bundle=="epi":
 			bundle="unknown"
+		print(app)
 		self._debug("Selected BUNDLE {}".format(bundle))
+		print("Selected BUNDLE {}".format(bundle))
 		bundle=self._checkBundleStatus(wdg,bundle,app)
+		print(app)
+		print(".")
+		print(".")
 		pkg=app.get('id')
 		try:
 			if pkg!="":
@@ -355,7 +376,7 @@ class portrait(QStackedWindowItem):
 					elif hasattr(wdg,"text"):
 						if wdg.text()==i18n["REMOVE"]:
 							state=8
-					self._invokeInstaller(app,pkg,bundle,installer,state)
+					self._invokeInstaller(installer,app,bundle)#,pkg,bundle,installer,state)
 		except Exception as e:
 			print(e)
 		return
@@ -951,9 +972,10 @@ class portrait(QStackedWindowItem):
 			self._rebost.setAction("getCategories")
 			self._rebost.start()
 			#self._rebost.wait()
-		showPane.show()
-		showPane.setCursor(self.oldCursor)
-		showPane.setFocus()
+		self.currentPane=showPane
+		self.currentPane.show()
+		self.currentPane.setCursor(self.oldCursor)
+		self.currentPane.setFocus()
 		self.lstCategories.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		self.lstCategories.setEnabled(True)
 		if self._detailView.isVisible()==True:
