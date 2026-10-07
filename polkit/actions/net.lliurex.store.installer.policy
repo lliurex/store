@@ -11,7 +11,7 @@
       <allow_inactive>no</allow_inactive>
       <allow_active>no</allow_active>
     </defaults>
-	<annotate key="org.freedesktop.policykit.exec.path">/usr/share/store/helper/installer.py</annotate>
+	<annotate key="org.freedesktop.policykit.exec.path">/usr/share/store/helper/storeInstaller.py</annotate>
     <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
   </action>
 </policyconfig>
