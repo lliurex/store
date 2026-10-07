@@ -311,17 +311,9 @@ class portrait(QStackedWindowItem):
 
 	#def _invokeInstaller(self,app,pkg,bundle,installer,state):
 	def _invokeInstaller(self,installer,app,bundle,*args):
-		print("<-- INVOKING INSTALLER -->")
-		print("Installer: {}".format(installer))
-		#print("Pkgname: {}".format(pkg))
-		print("Bundle: {}".format(bundle))
-		#print("State: {}".format(state))
-		print("Raw:\n{}".format(app))
-		print("<-- INVOKING INSTALLER --/>")
 		if bundle not in app["bundle"]:
 			if "unknown" in app["bundle"]:
 				bundle="unknown"
-				print("Bundle As: {}".format(bundle))
 		self.runapp.setArgs(installer,app=app,bundle=bundle)
 		self.runapp.start()
 		return
@@ -356,13 +348,8 @@ class portrait(QStackedWindowItem):
 			bundle=self._getCandidateBundle(wdg,app)
 		if bundle=="epi":
 			bundle="unknown"
-		print(app)
 		self._debug("Selected BUNDLE {}".format(bundle))
-		print("Selected BUNDLE {}".format(bundle))
 		bundle=self._checkBundleStatus(wdg,bundle,app)
-		print(app)
-		print(".")
-		print(".")
 		pkg=app.get('id')
 		try:
 			if pkg!="":
