@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 import json
 from random import shuffle
-from wdg.flowBar import QFlowBar
+from wdg.flowTable import QFlowTable
 
-class zmdsBar(QFlowBar):
+class zmdsBar(QFlowTable):
 	def __init__(self,*args,parent=None,**kwargs):
-		QFlowBar.__init__(self, parent)
+		QFlowTable.__init__(self, parent)
 		self.rebost=kwargs.get("rebost")
 		self.zmdDir="/usr/share/zero-center/zmds"
 		self.appDir="/usr/share/zero-center/applications"
@@ -41,5 +41,10 @@ class zmdsBar(QFlowBar):
 				}
 			idx+=1
 		self.updateScreen("zmds",data)
+		if cats==None:
+			self.rebostQuery.setQuery("getFreedesktopCategories")
+			self.rebostQuery.start()
+		else:
+			self._endLoad(cats)
 	#def loadCategories
 

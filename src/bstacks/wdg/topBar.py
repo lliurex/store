@@ -9,7 +9,7 @@ class QTopBar(QWidget):
 	loadRecs=Signal(str)
 	loadZmds=Signal(str)
 	loadCats=Signal(str)
-	loadSettings=Signal()
+	loadConf=Signal(str)
 	def __init__(self,parent=None,**kwargs):
 		QWidget.__init__(self, parent)
 		lay=QHBoxLayout(self)
@@ -38,7 +38,7 @@ class QTopBar(QWidget):
 		elif self.checked.property("name")==i18n["CATEGORIES"]:
 			self.loadCats.emit("cats")
 		elif self.checked.property("name")==i18n["CONFIG"]:
-			self.loadSettings.emit()
+			self.loadConf.emit("conf")
 	#def _emit
 
 	def _renderGui(self,*args):

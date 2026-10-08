@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import subprocess,json
-from PySide6.QtCore import Signal,QThread
+from PySide2.QtCore import Signal,QThread
 import lib.libhelper as libhelper
 
 class zmdLauncher(QThread):
