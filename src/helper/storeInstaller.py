@@ -2,9 +2,9 @@
 import sys,os
 import json,tempfile
 import subprocess
-import bundles
+import lib.bundles as bundles
 
-DEBUG_F="/tmp/storeInstaller.log"
+DEBUG_F="/var/logs/storeInstaller.log"
 DEBUG=True
 
 def _debug(*args):
@@ -18,9 +18,12 @@ def _replaceEpiTemplate(epi,appname,appid,script,descname,iconpath):
 	epi=epi.replace("{@APPNAME}",appname)
 	epi=epi.replace("{@APPID}",appid)
 	epi=epi.replace("{@DESCNAME}",descname)
-	#epi=epi.replace("{@SCRIPT}",script)
+	print(" -- ICON -- ")
 	icon=os.path.basename(iconpath)
 	iconpath=os.path.dirname(iconpath)
+	print(iconpath)
+	print(icon)
+	print(" -- ICON --/ ")
 	epi=epi.replace("{@ICONPATH}",iconpath)
 	epi=epi.replace("{@ICON}",icon)
 	return(epi)
