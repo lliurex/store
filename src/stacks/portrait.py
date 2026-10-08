@@ -1,22 +1,20 @@
 #!/usr/bin/python3
-import sys,time,signal,time
+import sys,time
 from functools import partial
-import os,grp
-import subprocess
+import os
 import json
-import dbus
-import dbus.mainloop.glib
-from PySide2.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
-							QCheckBox,QListWidgetItem,QSizePolicy
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal,QThread,QEvent#,QTimer
-from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
+from PySide2.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
+							QListWidgetItem,QSizePolicy
+from PySide2 import QtGui
+from PySide2.QtCore import Qt,QSize,Signal
+from QtExtraWidgets import QStackedWindowItem
 from wdg.btnRebost import QPushButtonRebostApp
 from wdg.prgBar import QProgressImage 
 from wdg.barButtons import QPushButtonBar
 from wdg.barCategories import QToolBarCategories
 from wdg.lblApp import QLabelRebostApp
+from wdg.navBar import QStackedMenu
 import lib.libhelper as libhelper
 import lib.exehelper as exehelper
 from lib.libth import storeHelper,llxup
@@ -72,10 +70,8 @@ class portrait(QStackedWindowItem):
 	rebostToggled=Signal()
 	def __init_stack__(self):
 		self.init=False
-		self.minTime=1
 		self.oldTime=0
 		self.dbg=True
-		self.enabled=True
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self._debug("portrait load")
 		self.setProps(shortDesc=i18n.get("DESC"),
@@ -85,11 +81,8 @@ class portrait(QStackedWindowItem):
 			index=1,
 			visible=True)
 		self.destroyed.connect(partial(portrait._onDestroy,self.__dict__))
-		self.pendingApps={}
 		self.apps=[]
 		self.helper=libhelper.helper()
-		#self.updateTimer=QTimer()
-		#self.updateTimer.timeout.connect(QApplication.processEvents)
 		self.rc=store.client()
 		self._referrerPane=None
 		self._rebost=storeHelper(rc=self.rc)
@@ -101,13 +94,6 @@ class portrait(QStackedWindowItem):
 		self._initThreads()
 		self._initRegisters()
 		self._initGUI()
-		#DBUS loop
-		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-		#DBUS connections
-		bus=dbus.SystemBus()
-		objbus=bus.get_object("net.lliurex.rebost","/net/lliurex/rebost")
-	#	objbus.connect_to_signal("beginUpdateSignal",self._beginUpdate,dbus_interface="net.lliurex.rebost")
-	#	(self.locked,self.userLocked)=self._rebost.isLocked()
 	#def __init__
 
 	def _debug(self,msg):
@@ -136,18 +122,11 @@ class portrait(QStackedWindowItem):
 		self.catI18n={}
 		self.apps={}
 		self.appsToLoad=-1
-		self.appsLoaded=0
-		self.appsSeen=[]
 		self.appsRaw=[]
 		self.locked=True
 		self._rebost.setAction("config")
 		self._rebost.start()
-		#self._rebost.wait()
-		self.stopAdding=False
-		self.filters={"installed":False}
-		self.loading=False
 		self.categoriesTree={}
-		self.chkUpdates=False
 		self.noChkNetwork=False
 		self.isConnected=self._chkNetwork()
 		self.referrerBtn=None
@@ -161,60 +140,36 @@ class portrait(QStackedWindowItem):
 		self._rebost.lstEnded.connect(self._endLoadCategory)
 		self._rebost.linEnded.connect(self._endLoadInstalled)
 		self._rebost.srcEnded.connect(self._endSearchApps)
-		#self._rebost.lckEnded.connect(self._endLock)
 		self._rebost.rstEnded.connect(self._endReloadApps)
-		#self._rebost.staEnded.connect(self._endGetLockStatus)
 		self._rebost.cnfEnded.connect(self._endGetLockStatus)
 		self._rebost.catEnded.connect(self._populateCategories)
 		self._rebost.shwEnded.connect(self._loadFromArgs)
 	#def _initThreads(self):
 
 	def _initGUI(self):
+		self.currentPane=None
 		self.hideControlButtons()
-		self.referersHistory={}
-		self.referersShowed={}
 		self.installingBtn=None
-		self.refererApp=None
 		self.oldCursor=self.cursor()
-		self.refresh=True
-		self.released=True
-		self.maxCol=5
 		self.setStyleSheet(css.portrait())
 	#def _initGUI
 
 	def _chkNetwork(self):
-		state=False
-		if self.noChkNetwork==True:
-			state=True
-		else:
-			bus=dbus.SystemBus()
-			try:
-				objbus=bus.get_object("org.freedesktop.NetworkManager","/org/freedesktop/NetworkManager")
-				proxbus=dbus.Interface(objbus,"org.freedesktop.NetworkManager")
-				status=proxbus.state()
-			except Exception as e:
-				self._debug("Chk network: {}".format(e))
-				state=True
-			else:
-				if status==70:
-					state=True
+		state=self.noChkNetwork
+		if state==False:
+			state=self.helper.chkNetwork()
 		return(state)
 	#def _chkNetwork
 
 	def _chkUserGroup(self):
-		lockedUser=False
-		grpData=grp.getgrnam("sudo")
-		if grpData.gr_gid not in os.getgroups():
-			userlocked=True
-		return(lockedUser)
-	#def _chkUserGroup(self):
+		return(self.helper.chkUserGroup())
+	#def _chkUserGroup
 
 	def _chkCategories(self,*args):
 		if self.lstCategories.count()<=0:
 			self._rebost.blockSignals(False)
 			self._rebost.setAction("getCategories")
 			self._rebost.start()
-			#self._rebost.wait()
 	#def _chkCategories
 
 	def _endGetLockStatus(self,*args):
@@ -236,15 +191,32 @@ class portrait(QStackedWindowItem):
 		self.prgCat.hide()
 	#def _endGetLockStatus
 
-	def _endLock(self,*args):
-		pass
-		#self._endRestart()
-	#def _endLock
+	def _refreshBeforeInstall(self,app):
+		install=False
+		self._rebost.blockSignals(True)
+		self._rebost.setAction("refreshApp",app["id"])
+		app=json.loads(self._rebost._refreshApp())[0]
+		self._rebost.blockSignals(False)
+		if len(app["bundle"])>1:
+			if "unknown" in app["bundle"]:
+				app["bundle"].pop("unknown")
+			install=True
+			self.referrerBtn=self.installingBtn
+			self.installingBtn=None
+			self._installApp(self.referrerBtn,app)
+		return(install)
+	#def _refreshBeforeInstall
 
-	def _endRestart(self,*args):
-		self.loadStop.emit()
-		self._goHome()
-	#def _endRestart
+	def _installError(self,proc,app):
+		if isinstance(proc,int)==False:
+			if proc.returncode>1: #app is installed
+				#pkexec ret values
+				#127 -> Not authorized
+				if proc.returncode==127:
+					self.showMsg(title="LliureX Store",summary=app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=app["icon"],timeout=5000)
+				else:
+					self.showMsg(title="LliureX Store",summary=app["name"],text=i18n.get("ERRUNKNOWN"),icon=app["icon"],timeout=5000)
+	#def _installError
 
 	def _endRunApp(self,*args):
 		self.setCursor(self.oldCursor)
@@ -256,28 +228,11 @@ class portrait(QStackedWindowItem):
 				proc=args[1]
 		else:
 			return
-		if proc==None:
-			self._rebost.blockSignals(True)
-			self._rebost.setAction("refreshApp",app["id"])
-			app=json.loads(self._rebost._refreshApp())[0]
-			self._rebost.blockSignals(False)
-			if len(app["bundle"])>1:
-				if "unknown" in app["bundle"]:
-					app["bundle"].pop("unknown")
-				self.referrerBtn=self.installingBtn
-				self.installingBtn=None
-				self._installApp(self.referrerBtn,app)
-				return
-					
-		elif proc!=None:
-			if isinstance(proc,int)==False:
-				if proc.returncode>1: #app is installed
-					#pkexec ret values
-					#127 -> Not authorized
-					if proc.returncode==127:
-						self.showMsg(title="LliureX Store",summary=app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=app["icon"],timeout=5000)
-					else:
-						self.showMsg(title="LliureX Store",summary=app["name"],text=i18n.get("ERRUNKNOWN"),icon=app["icon"],timeout=5000)
+	#	if proc==None:
+	#		if self._refreshBeforeInstall(app)==True:
+	#			return
+	#	elif proc!=None:
+	#		self._installError(proc,app)
 		self._rebost.setAction("refreshApp",app["id"])
 		app=json.loads(self._rebost._refreshApp())[0]
 		self._rebost.setAction("setAppState",app["id"],0)
@@ -324,7 +279,7 @@ class portrait(QStackedWindowItem):
 		if hasattr(wdg,"instBundle"):
 			if len(wdg.instBundle)>0:
 				bundle=wdg.instBundle
-		if len(bundle)==0:
+		if len(bundle)==0 or bundle not in app["bundle"]:
 			bundle=self._getBundleFromPriority(app)
 		return(bundle)
 	#def _getCandidateBundle(self,wdg,app):
@@ -354,7 +309,14 @@ class portrait(QStackedWindowItem):
 		return(bundle)
 	#def _checkBundleStatus
 
-	def _invokeInstaller(self,app,pkg,bundle,installer,state):
+	#def _invokeInstaller(self,app,pkg,bundle,installer,state):
+	def _invokeInstaller(self,installer,app,bundle,*args):
+		if bundle not in app["bundle"]:
+			if "unknown" in app["bundle"]:
+				bundle="unknown"
+		self.runapp.setArgs(installer,app=app,bundle=bundle)
+		self.runapp.start()
+		return
 		if bundle=="webapp":
 			self._referrerPane=self._homeView
 			details=self.helper.getAppseduDetails(app["homepage"])
@@ -401,22 +363,18 @@ class portrait(QStackedWindowItem):
 					elif hasattr(wdg,"text"):
 						if wdg.text()==i18n["REMOVE"]:
 							state=8
-					self._invokeInstaller(app,pkg,bundle,installer,state)
+					self._invokeInstaller(installer,app,bundle)#,pkg,bundle,installer,state)
 		except Exception as e:
 			print(e)
 		return
 	#def _installApp
 
 	def _progressShow(self):
-	#	self.updateTimer.start(1)
 		self.progress.start()
 	#def _progressShow
 
 	def _progressHide(self):
 		self.progress.stop()
-		#self.prgCat.stop()
-		#self.prgCat.hide()
-		#self.updateTimer.stop()
 	#def _progressHide
 
 	def _stopThreads(self,ignoreProgress=False):
@@ -620,8 +578,7 @@ class portrait(QStackedWindowItem):
 
 	def _launchLlxUp(self):
 		self.parent.hide()
-		#QApplication.processEvents()
-		subprocess.run(["pkexec","lliurex-up"])
+		self.helper.launchLlxUpSync()
 		self.parent.show()
 	#def _launchLlxUp
 
@@ -796,18 +753,6 @@ class portrait(QStackedWindowItem):
 		#self._llxup.wait()
 	#def _getUpgradables
 
-	def _beginUpdate(self):
-		cursor=QtGui.QCursor(Qt.WaitCursor)
-		self.setCursor(cursor)
-		self.btnSettings.hide()
-		if self.init==False:
-			self.loadStart.emit()
-		else:
-			self._progressShow()
-		self.stopAdding=True
-		self._homeView.hide()
-	#def _beginUpdate
-
 	def _endUpdate(self):
 		self._return()
 	#def _endUpdate
@@ -830,7 +775,6 @@ class portrait(QStackedWindowItem):
 	#def _reloadApps
 
 	def _endReloadApps(self,*args):
-		self.loading=False
 		self._debug("End reloading apps")
 		self.loadStop.emit()
 		self.setEnabled(True)
@@ -867,7 +811,6 @@ class portrait(QStackedWindowItem):
 					continue
 			self.apps.append(app)
 		#self.apps=self.appsRaw.copy()
-		self.loading=False
 		self._debug("End loading installed apps")
 		self._showPane(self._globalView)
 		self._endUpdate()
@@ -948,7 +891,6 @@ class portrait(QStackedWindowItem):
 	#def _getRawCategory
 
 	def _loadTag(self,*args):
-		self.appsLoaded=0
 		if len(args)>0:
 			tag=args[0]
 			self._beginLoad()
@@ -956,7 +898,6 @@ class portrait(QStackedWindowItem):
 	#def _loadTag
 
 	def _loadCategory(self,*args):
-		self.appsLoaded=0
 		cat=None
 		flag=""
 		if len(args)==0:
@@ -1018,9 +959,10 @@ class portrait(QStackedWindowItem):
 			self._rebost.setAction("getCategories")
 			self._rebost.start()
 			#self._rebost.wait()
-		showPane.show()
-		showPane.setCursor(self.oldCursor)
-		showPane.setFocus()
+		self.currentPane=showPane
+		self.currentPane.show()
+		self.currentPane.setCursor(self.oldCursor)
+		self.currentPane.setFocus()
 		self.lstCategories.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		self.lstCategories.setEnabled(True)
 		if self._detailView.isVisible()==True:
@@ -1031,8 +973,6 @@ class portrait(QStackedWindowItem):
 			if item!=None:
 				cat=item.text()
 				cat=self._getRawCategory(cat)
-				#if cat in self.categoriesTree.keys():
-				#	self.barCategories.populateCategories(self.categoriesTree[cat],cat)
 				self.barCategories.show()
 			else:
 				if self.searchBox.text!="":
@@ -1158,7 +1098,6 @@ class portrait(QStackedWindowItem):
 	def _return(self,*args,**kwargs):
 		self.setCursor(self.oldCursor)
 		self.parent.setWindowTitle("{}".format(APPNAME))
-		self.loading=False
 		self.loadStop.emit()
 		#self._progressHide()
 	#def _return
@@ -1169,10 +1108,6 @@ class portrait(QStackedWindowItem):
 
 	def resetScreen(self):
 		self._stopThreads(ignoreProgress=True)
-		self.appsLoaded=0
-		self.pendingApps={}
-		self.refererApp=None
-		self.appsSeen=[]
 		self._globalView.loadAppsStop()
 		self._globalView.table.clean()
 	#def resetScreen

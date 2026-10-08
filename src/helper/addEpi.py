@@ -15,6 +15,7 @@ i18n={"ASK":_("includes more than one package.<br>What to do?"),
 	"BTN_YES":_("Install one")
 	}
 
+
 #pkg=sys.argv[1]
 #epiFileCmd=["dpkg","-L",pkg]
 #try:
@@ -75,6 +76,8 @@ if os.path.exists(epiFile):
 				continue
 			if bundle.get_id().endswith(".epi")==False:
 				bundle.set_id(os.path.basename(epiFile))
+			if bundle.get_kind()==rebost.appstream.BundleKind.LIMBA:
+				bundle.set_kind(rebost.appstream.BundleKind.UNKNOWN)
 		#app.add_pkgname(os.path.basename(epiFile))
 		a=app.to_xml()
 		fxml="/tmp/{}.xml".format(app.get_id())
@@ -83,9 +86,9 @@ if os.path.exists(epiFile):
 		if os.path.exists(fxml):
 			fyml=fxml.replace(".xml",".yml")
 			subprocess.run(["appstreamcli","convert",fxml,fyml])
-			res=rebost.showApp(app.get_id())
-			if len(res)==0:
-				rebost.addAppFromYml(fyml,"unkown",os.path.basename(epiFile))
+			#res=rebost.showApp(app.get_id())
+			#if len(res)==0:
+			rebost.addAppFromYml(fyml,"unkown",os.path.basename(epiFile))
 
 	epicCmd=["epic","-u","-nc","install",epiFile]
 	epicProc=subprocess.Popen(epicCmd,encoding="utf8",universal_newlines=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -102,5 +105,5 @@ if os.path.exists(epiFile):
 				epiCmd=["epi-gtk","-nc","install",epiFile]
 				subprocess.run(epiCmd)
 			except:
-				print("SHOIN")
+				print("unknown error")
 
