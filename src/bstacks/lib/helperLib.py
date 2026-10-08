@@ -267,69 +267,6 @@ class appHelper(QObject):
 		self.epiLauncher.setData(app,bundle,launcher,pxm)
 		self.epiLauncher.start()
 		return
-		ret=-1
-		cmd=[]
-		epiCmd=app.get('bundle',{}).get('unknown','')
-		return
-		appName=app.get("pkgname","")
-		if appName=="":
-			appName=zmdCmd
-		if epiCmd.endswith(".epi")==False:
-			epiCmd+=".epi"
-		zmdCmd=epiCmd.replace(".epi",".zmd")
-		#Patch for zero-lliurex-adobereader
-		if epiCmd=="acroread.epi":
-			zmdCmd="zero-lliurex-adobereader.zmd"
-		zmdPath=os.path.join("/usr/share/zero-center/zmds",zmdCmd)
-		if os.path.exists(zmdPath)==False:
-			alternatives=["zero-lliurex-{}".format(zmdCmd),"zero-installer-{}".format(zmdCmd),"zero-fp-{}".format(zmdCmd)]
-			for f in os.scandir(os.path.dirname(zmdPath)):
-				if f.name in alternatives:
-					zmdPath=f.path
-					break
-		if os.path.exists(zmdPath):
-			cmd=self._getCmdFromZmd(zmdPath)
-			#subprocess.run(["pkexec",zmdPath])
-			try:
-				cmd.append(appName)
-				proc=subprocess.run(cmd)
-				ret=proc.returncode
-			except Exception as e:
-				print(e)
-				ret=-1
-			if ret>0:
-				#Zmd could depend on a zmd-installer so let's search
-				zmdFolder=os.path.dirname(zmdPath)
-				searchZmd=".".join(zmdPath.split(".")[:-1])
-				newPath=zmdPath
-				for f in os.scandir(zmdFolder):
-					if searchZmd in f.path and f.path!=zmdPath:
-						newPath=f.path
-						break
-				if zmdPath!=newPath:
-					cmd=self._getCmdFromZmd(newPath)
-					#subprocess.run(["pkexec",zmdPath])
-			cmd=["epic","showinfo",os.path.basename(epiCmd)]
-			try:
-				status=subprocess.check_output(cmd,encoding="utf8",universal_newlines=True)
-			except:
-				cmd=["epic","showinfo",os.path.basename(epiCmd.replace("zero-lliurex-",""))]
-				try:
-					status=subprocess.check_output(cmd,encoding="utf8",universal_newlines=True)
-				except:
-					status=""
-			installed=False
-			for l in status.split("\n"):
-				if app["id"] in l:
-					if "already installed" in l.lower():
-						installed=True
-						break
-				elif "status: installed" in l.lower():
-					installed=True
-					break
-		else:
-			installed=None
-		return(installed)
 	#def runZmd
 
 	def runApp(self,app,bundle,launcher="",pxm=""): #TODO: QTHREAD

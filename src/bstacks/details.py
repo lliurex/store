@@ -133,6 +133,8 @@ class QDetailsPane(QWidget):
 		lay.addWidget(removeBtn)
 		self.infoBtn=QPushButton("Info")
 		icn=QIcon.fromTheme("showinfo")
+		if icn.isNull():
+			icn=QIcon.fromTheme("documentinfo")
 		self.infoBtn.setIcon(icn)
 		self.infoBtn.setStyleSheet("""text-align:left;padding:3px""")
 		self.infoBtn.setCheckable(True)
@@ -204,6 +206,13 @@ class QDetailsPane(QWidget):
 		return(cats)
 	#def _defAppCategories
 
+	def _loadUrl(self,page):
+		if page=="homepage":
+			url=self.app["homepage"]
+		else:
+			url=self.app["infopage"]
+		
+
 	def _defAppInfo(self):
 		wdg=QWidget()
 		lay=QGridLayout(wdg)
@@ -221,10 +230,14 @@ class QDetailsPane(QWidget):
 		btnHomepage.setIcon(icn)
 		btnHomepage.setIconSize(QSize(24,24))
 		btnHomepage.setMaximumHeight(btnHomepage.iconSize().height()+2)
+		btnHomepage.clicked.connect(lambda x:self._loadUrl("homepage"))
 		lay.addWidget(btnHomepage,2,1,1,1,Qt.AlignLeft)
 		btnInfopage=QPushButton()
 		btnInfopage.setStyleSheet("""text-align:left;""")
+		btnInfopage.clicked.connect(lambda x:self._loadUrl("infopage"))
 		icn=QIcon.fromTheme("showinfo")
+		if icn.isNull():
+			icn=QIcon.fromTheme("documentinfo")
 		btnInfopage.setIconSize(QSize(24,24))
 		btnInfopage.setMaximumHeight(btnInfopage.iconSize().height()+2)
 		lay.addWidget(btnInfopage,3,1,1,1,Qt.AlignLeft)
@@ -387,36 +400,6 @@ class QDetailsPane(QWidget):
 			self.screenshots.hide()
 	#def _loadScreenshots
 
-	def _loadUrls(self):
-		return
-		self.urls.home.hide()
-		self.urls.info.hide()
-		if len(self.app["homepage"])>0:
-			ttt=self.app["homepage"]
-			if "appsedu" in self.app["homepage"]:
-				lbl="Appsedu"
-				icn=QIcon.fromTheme("applications-education")
-			else:
-				lbl="Homepage"
-				icn=QIcon.fromTheme("go-home")
-			self.urls.home.setIcon(icn)
-			self.urls.home.setText(lbl)
-			self.urls.home.setToolTip(ttt)
-			self.urls.home.show()
-		if len(self.app["infopage"])>0:
-			ttt=self.app["infopage"]
-			if self.urls.home.text()=="Appsedu":
-				lbl="Homepagge"
-				icn=QIcon.fromTheme("go-home")
-			else:
-				lbl="Info"
-				icn=QIcon.fromTheme("showinfo")
-			self.urls.info.setIcon(icn)
-			self.urls.info.setText(lbl)
-			self.urls.info.setToolTip(ttt)
-			self.urls.info.show()
-	#def _loadUrls
-
 	def _loadAppInfo(self):
 		data={}
 		self.appInfo.cats.clean()
@@ -445,8 +428,8 @@ class QDetailsPane(QWidget):
 			lbl="Appsedu"
 			icn=QIcon("/usr/share/store/rsrc/appsedu128x128.png")
 		elif "github.com/lliurex" in ttt:
-			lbl="Info"
-			icn=QIcon.fromTheme("showinfo")
+			lbl="Lliurex Git"
+			icn=QIcon.fromTheme("git-gui")
 			if icn.isNull():
 				icn=QIcon.fromTheme("documentinfo")
 		else:
@@ -499,7 +482,6 @@ class QDetailsPane(QWidget):
 				self._loadScreenshots()
 				self._loadAppInfo()
 				self.appInfo.setMinimumSize(self.screenshots.width(),self.screenshots.sizeHint().height())
-				self._loadUrls()
 		else:
 			self.emptyContainer.setText("<p><strong>App {0} {1}</strong></p>".format(self.app["id"],i18n["ERRNOTFOUND"]))
 			self.emptyContainer.show()
@@ -518,4 +500,4 @@ class QDetailsPane(QWidget):
 		installed=self.helper.getInstalledBundle(self.app)
 		self.appInfo.installed.setText("{0}: {1}".format(i18n["INSTALLED"],installed))
 		self._showActions(installed)
-	#def refreshApp
+	#def RefreshApp
