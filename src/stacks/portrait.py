@@ -4,10 +4,10 @@ from functools import partial
 import os
 import json
 from rebost import store 
-from PySide2.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
+from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
 							QListWidgetItem,QSizePolicy
-from PySide2 import QtGui
-from PySide2.QtCore import Qt,QSize,Signal
+from PySide6 import QtGui
+from PySide6.QtCore import Qt,QSize,Signal
 from QtExtraWidgets import QStackedWindowItem
 from wdg.btnRebost import QPushButtonRebostApp
 from wdg.prgBar import QProgressImage 
