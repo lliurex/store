@@ -1,0 +1,99 @@
+#!/usr/bin/python3
+import json
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QFrame
+from wdg.flowBar import QFlowBar
+from random import shuffle
+from lib import rss
+from lib.threadLib import rebostQuery
+from extras.constants import *
+
+class appseduBar(QFlowBar):
+	ready=Signal()
+	exception=Signal(str)
+	def __init__(self,*args,parent=None,**kwargs):
+		QFlowBar.__init__(self, parent)
+		self.setFrameShape(QFrame.NoFrame)
+		self.rebost=kwargs.get("rebost")
+		self.rebostQuery=rebostQuery(rebost=self.rebost)
+		self.rebostQuery.queryCompleted.connect(self._processQueryResult)
+		self.rebostQuery.exception.connect(self._thException)
+		self.rss=rss.rssParser()
+		self.rss.appsEnded.connect(self._beginLoadData)
+		self.itemsPerPage=5
+		self.spacing=10
+		self.defaultSize=84
+		self.overlay=False
+		self.loadImgSync=True
+		self.showScrollBar(True)
+	#def __init__
+
+	def _thException(self,*args):
+		self.exception.emit(*args)
+	#def _thException
+
+	def loadApps(self):
+		self.rss.feed="appsedu"
+		self.rss.start()
+	#def loadApps
+
+	def _loadAppData(self,*args):
+		self.content={}
+		for idx,app in args[0].items():
+			if len(app)==0:
+				continue
+			t=app[0]["name"].strip()
+			self.content[len(self.content)]={"summary":"","metadata":app[0]["id"],"img":app[0]["icon"],"title":t}
+		self.rebostQuery.setQuery("search","appsedu")
+		self.rebostQuery.start()
+	#def _loadAppData
+
+	def _endLoadData(self,*args):
+		apps=args[0]
+		shuffle(apps)
+		if apps==None or isinstance(apps,list)==False:
+			return
+		apps=apps[0:min(10,len(apps))]
+		newApps={}
+		while len(apps)>0:
+			app=apps.pop()
+			t=app["name"].strip()
+			if app.get("forbidden",False)==True or app.get("unavailable",False)==True:
+				continue
+			if app["name"].startswith("zero-lliurex"):
+				continue
+			if len(app["name"])>20:
+				continue
+			newApps[len(newApps)+len(self.content)]={"summary":"","metadata":app["id"],"img":app["icon"],"title":t}
+		self.content.update(newApps)
+		keys=list(self.content.keys())
+		shuffle(keys)
+		selectedContent={}
+		for i in keys[0:min(10,len(keys))]:
+			selectedContent[i]=self.content[i]
+		bheight=self.defaultSize*2
+		self.updateScreen(self.feed,selectedContent)
+		self.table.setRowHeight(0,bheight-MARGIN*2)
+		self.table.setFixedHeight(bheight+MARGIN)
+		self.ready.emit()
+	#def _endLoadData
+
+	def _processQueryResult(self,*args):
+		if self.rebostQuery.query=="showApps":
+			self._loadAppData(*args)
+		elif self.rebostQuery.query=="search":
+			self._endLoadData(*args)
+	#def _processQueryData
+
+	def _beginLoadData(self,*args):
+		#don't reload
+		if self.rebostQuery.query=="search":
+			return
+		self.feed,self.content=args
+		showApps=[]
+		showApps=[title.get("title") for title in self.content.values()]
+		self.rebostQuery.setQuery("showApps",showApps)
+		self.rebostQuery.start()
+		self.rebostQuery.wait()
+	#def _beginLoadData
+
