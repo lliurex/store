@@ -25,7 +25,7 @@ class choiBar(QFlowBar):
 		self.defaultSize=64
 		self.overlay=False
 		self.loadImgSync=True
-		self.showScrollBar(True)
+		self.showScrollBar(False)
 	#def __init__
 
 	def _thException(self,*args):
@@ -74,7 +74,7 @@ class choiBar(QFlowBar):
 		bheight=self.defaultSize*2
 		self.updateScreen(self.feed,selectedContent)
 		self.table.setRowHeight(0,bheight-MARGIN*2)
-		self.table.setFixedHeight(bheight+MARGIN*2)
+		self.table.setFixedHeight(bheight-MARGIN)
 		self.ready.emit()
 	#def _endLoadData
 
