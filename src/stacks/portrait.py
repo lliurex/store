@@ -554,7 +554,6 @@ class portrait(QStackedWindowItem):
 		hvp.clickedApp.connect(self._loadHomeDetails)
 		hvp.clickedCategory.connect(self._loadCategory)
 		hvp.requestInstallApp.connect(self._launchEpi)
-		self.rebostToggled.connect(hvp.reloadAppsedu)
 		return(hvp)
 	#def _getHomeViewPane
 
