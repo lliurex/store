@@ -8,13 +8,7 @@ from QtExtraWidgets import QFlowTouchWidget
 from wdg.btnRebost import QPushButtonRebostApp
 import extras.css as css
 from extras.constants import *
-import gettext
-_ = gettext.gettext
-
-i18n={
-	"ALL":_("All"),
-	"SEARCH":_("Search"),
-	}
+from extras.i18n import *
 
 class paneGlobalView(QWidget):
 	requestLoadApps=Signal("PyObject")
