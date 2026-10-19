@@ -47,7 +47,7 @@ i18n={
 class main(QWidget):
 	clickedBack=Signal("PyObject","PyObject")
 	loaded=Signal("PyObject")
-	requestInstallApp=Signal("PyObject","PyObject",str)
+	requestInstallApp=Signal("PyObject",dict,"PyObject")
 	requestLoadCategories=Signal(str)
 	requestLoadTag=Signal(str)
 	def __init__(self,*args,**kwargs):
@@ -215,12 +215,17 @@ class main(QWidget):
 	@Slot("PyObejct,","PyObject")
 	def _genericEpiInstall(self,*args):
 		self._setInstallingState()
-		bondle=""
+		app=self.app
 		if len(args)>0:
 			bundle=args[0].lower()
 			if bundle=="epi":
 				bundle="unknown"
-		self.requestInstallApp.emit(self.cmbBundles,self.app,bundle)
+			if bundle not in self.app["bundle"].keys():
+				if "unknown" in self.app["bundle"].keys():
+					bundle="unknown"
+			app["bundle"]={bundle:self.app["bundle"].get(bundle,"")}
+		icon=self.lblIcon.pixmap()
+		self.requestInstallApp.emit(self.referrerBtn,app,icon)
 	#def _genericEpiInstall
 
 	def _tagLinkClicked(self,*args):

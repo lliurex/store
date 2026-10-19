@@ -19,7 +19,7 @@ i18n={
 class paneGlobalView(QWidget):
 	requestLoadApps=Signal("PyObject")
 	requestLoadDetails=Signal("PyObject","PyObject","PyObject")
-	requestInstallApp=Signal("PyObject","PyObject")
+	requestInstallApp=Signal("PyObject",dict,"PyObject")
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		if len(args)<1:
@@ -128,7 +128,10 @@ class paneGlobalView(QWidget):
 	#def _emitLoadDetails
 
 	def _emitInstallApp(self,*args):
-		self.requestInstallApp.emit(args[0],args[1])
+		btn=args[0]
+		icon=btn.iconUri.pixmap()
+		app=args[1]
+		self.requestInstallApp.emit(btn,app,icon)
 	#def _emitInstallApp
 
 	def _loadApps(self,apps):

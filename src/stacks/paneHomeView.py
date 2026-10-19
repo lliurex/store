@@ -11,23 +11,16 @@ from QtExtraWidgets import QScreenShotContainer
 import gettext
 import extras.css as css
 from extras.constants import *
+from extras.i18n import *
 import lib.rss as rss
 from wdg.btnRebost import QPushButtonRebostApp
-import gettext
-_ = gettext.gettext
-
-i18n={"LBL_BLOG":_("Blog entries"),
-	"LBL_APPSEDU":_("Latest apps in appsedu"),
-	"LBL_CATEGORIES":_("Relevant categories"),
-	"LBL_CHOICE":_("Editor's choice")}
+from wdg.blog import blogBar
 
 class main(QWidget):
 	clickedCategory=Signal("PyObject")
-	clickedBlog=Signal("PyObject")
 	clickedApp=Signal("PyObject","PyObject","PyObject")
-	requestInstallApp=Signal("PyObject","PyObject")
+	requestInstallApp=Signal("PyObject",dict,"PyObject")
 	loaded=Signal()
-	rebostToggled=Signal()
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		self.dbg=True
@@ -78,11 +71,17 @@ class main(QWidget):
 			self._getChoiceApps()
 		if len(self.appsByCat.children())<=1:
 			self._getAppsByCat()
-		if len(self.blog.children()[-1].app)==0:
-			self._getBlog()
+		if self.blog.count()==0:
+			self.blog.loadBlog()
 		if len(self.appsEduApps)<=6: #6 because, well, why not?
 			self._getAppsedu()
 	#def showEvent
+
+	def _defBlogBar(self):
+		wdg=blogBar()
+		#wdg.selected.connect(self._emitLoadUrl)
+		return(wdg)
+	#def _defBlogBar
 
 	def _processRss(self,*args,**kwargs):
 		url=args[0]
@@ -185,7 +184,11 @@ class main(QWidget):
 	#def _defBlog
 
 	def _emitInstallApp(self,*args):
-		self.requestInstallApp.emit(args[0],args[1])
+		btn=args[0]
+		icon=btn.iconUri.pixmap()
+		app=args[1]
+		print(icon)
+		self.requestInstallApp.emit(btn,app,icon)
 	#def _emitInstallApp
 
 	def _setAppseduData(self,*args):
@@ -366,7 +369,7 @@ class main(QWidget):
 					break
 			if "applications" not in icn:
 				icn="applications-other"
-			app={"name":_(apps[idx]),"icon":icn,"pkgname":apps[idx]}
+			app={"name":apps[idx],"icon":icn,"pkgname":apps[idx]}
 			btn=QPushButtonRebostApp(app,iconSize=64)
 			btn.autoUpdate=True
 			btn.clicked.connect(self._loadCategory)
@@ -396,7 +399,7 @@ class main(QWidget):
 
 	def __initScreen__(self):
 		#Blog
-		lblBlog=QLabel("{}<hr>".format(i18n["LBL_BLOG"]))
+		lblBlog=QLabel("{}<hr>".format(i18n["HOME_LBL_BLOG"]))
 		lblBlog.setObjectName("lbl")
 		self.layout().addWidget(lblBlog,0,0)
 		btnBlog=QPushButton()
@@ -407,16 +410,18 @@ class main(QWidget):
 		dataBlog={"homepage":"https://portal.edu.gva.es/blogs/s1/lliurex/"}
 		btnBlog.clicked.connect(lambda x: self._openBlog("",dataBlog))
 		self.layout().addWidget(btnBlog,0,0,Qt.AlignRight)
-		self.blog=self._defBlog()
+		#self.blog=self._defBlog()
+		self.blog=self._defBlogBar()
+		self.blog.loadBlog()
 		self.layout().addWidget(self.blog,1,0)
 		#Editor's choice
-		lblChoi=QLabel("{}<hr>".format(i18n["LBL_CHOICE"]))
+		lblChoi=QLabel("{}<hr>".format(i18n["HOME_LBL_CHOICE"]))
 		self.layout().addWidget(lblChoi,2,0,Qt.AlignTop)
 		lblChoi.setObjectName("lbl")
 		self.choiceApps=self._defChoice()
 		self.layout().addWidget(self.choiceApps,3,0)
 		#Appsedu
-		lblAppsedu=QLabel("{}<hr>".format(i18n["LBL_APPSEDU"]))
+		lblAppsedu=QLabel("{}<hr>".format(i18n["HOME_LBL_APPSEDU"]))
 		lblAppsedu.setObjectName("lbl")
 		self.layout().addWidget(lblAppsedu,4,0)
 		btnApps=QPushButton()
@@ -428,7 +433,7 @@ class main(QWidget):
 		self.layout().addWidget(btnApps,4,0,Qt.AlignRight)
 		self.appsEdu=self._defAppsedu()
 		self.layout().addWidget(self.appsEdu,5,0)
-		lblCats=QLabel("<br>{}<hr>".format(i18n["LBL_CATEGORIES"]))
+		lblCats=QLabel("<br>{}<hr>".format(i18n["HOME_LBL_CATEGORIES"]))
 		lblCats.setObjectName("lbl")
 		#self.layout().addWidget(lblCats,6,0)
 		self.appsByCat=self._defAppsByCat()
