@@ -35,8 +35,9 @@ class QNavCategories(QTreeWidget):
 
 	def _expandBranch(self,*args):
 		if args[0].childCount()>0:
+			expand=not(args[0].isExpanded())
 			self.collapseAll()
-			args[0].setExpanded(not(args[0].isExpanded()))
+			args[0].setExpanded(expand)
 	#def _expandBranch
 
 	def _emitSelected(self,*args):
