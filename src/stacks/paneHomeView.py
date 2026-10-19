@@ -15,6 +15,7 @@ from extras.i18n import *
 import lib.rss as rss
 from wdg.btnRebost import QPushButtonRebostApp
 from wdg.blog import blogBar
+from wdg.choice import choiBar
 
 class main(QWidget):
 	clickedCategory=Signal("PyObject")
@@ -33,7 +34,6 @@ class main(QWidget):
 		self._rebost=args[0]
 		self._rebost.urlEnded.connect(self._setAppseduData)
 		self._rebost.gacEnded.connect(self._setAppsByCat)
-		self._rebost.mtcEnded.connect(self._setChoiceData)
 		self.appsEduApps=[]
 		self.btns={}
 		layout=QGridLayout()
@@ -67,8 +67,8 @@ class main(QWidget):
 
 	def showEvent(self,*args,**kwargs):
 		#Ensure that there's info after all
-		if len(self.choiceApps.children())<=1:
-			self._getChoiceApps()
+		if self.choiceApps.count()==1:
+			self.choiceApps.loadChoice()
 		if len(self.appsByCat.children())<=1:
 			self._getAppsByCat()
 		if self.blog.count()==0:
@@ -76,12 +76,6 @@ class main(QWidget):
 		if len(self.appsEduApps)<=6: #6 because, well, why not?
 			self._getAppsedu()
 	#def showEvent
-
-	def _defBlogBar(self):
-		wdg=blogBar()
-		#wdg.selected.connect(self._emitLoadUrl)
-		return(wdg)
-	#def _defBlogBar
 
 	def _processRss(self,*args,**kwargs):
 		url=args[0]
@@ -100,53 +94,7 @@ class main(QWidget):
 				self._rebost.setAction("urlSearch",urls)
 				self._rebost.start()
 				#self._rebost.wait()
-			elif apps["0"]["type"]=="blog":
-				self._setBlogData(apps)
-			elif apps["0"]["type"]=="lliurexnet":
-				choiceApps=[]
-				for app in apps.values():
-					if self._stop==True:
-						break
-					#Aliases
-					if app["title"]=="scratch":
-						app["title"]="zero-lliurex-scratch3"
-					choiceApps.append(app["title"])
-				self._rebost.setAction("matchApps",choiceApps)
-				self._rebost.start()
 	#def _processRss(self,*args,**kwargs):
-
-	def _setBlogData(self,*args):
-		blogRss=args[0]
-		cont=0
-		imgPreview=min(IMAGE_PREVIEW,int(self.blog.size().width()/6))
-		for btn in self.blog.children():
-			if not isinstance(btn,QPushButtonRebostApp):
-				continue
-			img=blogRss.get(str(cont),{}).get("img","")
-			if img=="":
-				continue
-			app={"name":"",
-				"summary":"<a href=\"{0}\">{1}</a><br>".format(blogRss[str(cont)]["link"],blogRss[str(cont)]["title"]),
-				"homepage":"{0}".format(blogRss[str(cont)]["link"]),
-				"icon":img,
-				"pkgname":"",
-				"description":""}
-			btn.iconSize=imgPreview
-			#btn.iconUri.setFixedHeight(imgPreview*0.5)
-			#btn.label.setFixedWidth(imgPreview-(MARGIN*2))
-			fSize=btn.label.font().pointSize()
-			btn.label.setMaximumHeight(imgPreview*5)
-			#btn.setMinimumWidth(imgPreview)
-			btn.lockTooltip=True
-			btn.setApp(app)
-			btn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
-			btn.iconUri.setEnabled(True)
-			btn.clicked.connect(self._openBlog)
-			btn.updateScreen()
-			btn.setToolTip(blogRss[str(cont)]["summary"].capitalize())
-			cont+=1
-		self.blog.setCursor(self.oldCursor)
-	#def _setBlogData
 
 	def _openBlog(self,*args):
 		blogTag=args[1]
@@ -155,39 +103,10 @@ class main(QWidget):
 		subprocess.run(cmd)
 	#def _openBlog
 
-	def _getBlog(self):
-		rssparser=rss.rssParser()
-		rssparser.blogEnded.connect(self._processRss)
-		rssparser.feed="blog"
-		rssparser.start()
-		self.th.append(rssparser)
-	#def _getBlog(self):
-
-	def _defBlog(self):
-		wdg=QWidget()
-		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-		layout=QHBoxLayout(wdg)
-		layout.setSpacing(0)
-		pxm=QtGui.QPixmap()
-		for i in range(0,self.itemsPerCat):
-			btn=QPushButtonRebostApp("{}",iconSize=IMAGE_PREVIEW*0.8)
-			btn.setMaximumWidth(IMAGE_PREVIEW/3)
-			btn.showBtn=False
-			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
-			btn.setObjectName("btn")
-			btn.autoUpdate=True
-			pxm.load(os.path.join(RSRC,"blog128x128.png"))
-			btn.loadFullScreen(pxm)
-			btn.setMinimumHeight(IMAGE_PREVIEW*0.8)
-			layout.addWidget(btn,Qt.AlignCenter)
-		return(wdg)
-	#def _defBlog
-
 	def _emitInstallApp(self,*args):
 		btn=args[0]
 		icon=btn.iconUri.pixmap()
 		app=args[1]
-		print(icon)
 		self.requestInstallApp.emit(btn,app,icon)
 	#def _emitInstallApp
 
@@ -257,84 +176,6 @@ class main(QWidget):
 		self._getAppsedu()
 	#def reloadAppsedu
 
-	def _defAppsedu(self):
-		wdg=QWidget()
-		layout=QHBoxLayout()
-		wdg.setLayout(layout)
-		layout.setSpacing(MARGIN*4)
-		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		pxm=QtGui.QPixmap()
-		for i in range(0,self.itemsPerCat):
-			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE)/2)
-			btn.clicked.connect(self._loadApp)
-			sh=self.screen().size().height()
-				#btn._showBtn=False
-			btn.setMinimumHeight(min(220,int(sh/5)))
-			btn.lblFlyIcon.hide()
-			#btn.setCompactMode(True)
-			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
-			btn.setMaximumWidth(IMAGE_PREVIEW/3)
-			btn.autoUpdate=True
-			if i<self.itemsPerCat-1:
-				#btn.setObjectName("mp")
-				pxm.load(os.path.join(RSRC,"appsedu128x128.png"))
-				btn.loadFullScreen(pxm)
-			else:
-				btn.setVisible(False)
-			layout.addWidget(btn,Qt.AlignCenter)
-		return(wdg)
-	#def _defAppsedu
-	
-	def _setChoiceData(self,choiceApps):
-		lay=self.choiceApps.layout()
-		if len(self.choiceApps.children())>3:
-			return
-		luckApps=self._rebost.getLuck()
-		choiceApps.extend(luckApps[0:2])
-		if len(choiceApps)<5:
-			choiceApps.extend(luckApps[2:4])
-		shuffle(choiceApps)
-		cont=0
-		if len(choiceApps)>0:
-			for choiceApp in choiceApps:
-				app=[choiceApp]
-				if isinstance(choiceApp,str):
-					app=json.loads(choiceApp)
-				if len(app)>0:
-					btn=QPushButtonRebostApp(app[0],iconSize=ICON_SIZE)
-					btn.hide()
-					btn.lblFlyIcon.hide()
-					btn._showBtn=False
-					btn.clicked.connect(self._loadApp)
-					btn.setMinimumHeight(128)
-					#btn.clicked.connect(self._loadCategory)
-					btn.updateScreen()
-					lay.addWidget(btn,Qt.AlignTop)
-					#force button repaint
-					btn.show()
-					cont+=1
-					if cont==self.itemsPerCat:
-						break
-		lay.addSpacing(MARGIN*8)
-	#def _setChoiceData
-
-	def _getChoiceApps(self):
-		rssparser=rss.rssParser()
-		rssparser.feed="lliurexnet"
-		rssparser.choiceEnded.connect(self._processRss)
-		rssparser.start()
-		self.th.append(rssparser)
-	#def _getEditorsChoice
-
-	def _defChoice(self):
-		wdg=QWidget()
-		lay=QHBoxLayout()
-		wdg.setLayout(lay)
-		lay.setSpacing(MARGIN*8)
-		lay.addSpacing(MARGIN*8)
-		return(wdg)
-	#def _defChoice
-
 	def _loadCategory(self,*args):
 		app=args[1]
 		self.clickedCategory.emit(app["name"])
@@ -397,11 +238,18 @@ class main(QWidget):
 		return(wdg)
 	#def _defAppsByCategory:
 
-	def __initScreen__(self):
-		#Blog
+	def _defBlogBar(self):
+		wdg=blogBar()
+		#wdg.selected.connect(self._emitLoadUrl)
+		return(wdg)
+	#def _defBlogBar
+
+	def _defBlog(self):
+		wdg=QWidget()
+		lay=QGridLayout(wdg)
 		lblBlog=QLabel("{}<hr>".format(i18n["HOME_LBL_BLOG"]))
 		lblBlog.setObjectName("lbl")
-		self.layout().addWidget(lblBlog,0,0)
+		lay.addWidget(lblBlog,0,0)
 		btnBlog=QPushButton()
 		btnBlog.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		btnBlog.setToolTip("Blog LliureX")
@@ -409,34 +257,99 @@ class main(QWidget):
 		btnBlog.setIcon(icn)
 		dataBlog={"homepage":"https://portal.edu.gva.es/blogs/s1/lliurex/"}
 		btnBlog.clicked.connect(lambda x: self._openBlog("",dataBlog))
-		self.layout().addWidget(btnBlog,0,0,Qt.AlignRight)
+		lay.addWidget(btnBlog,0,0,Qt.AlignRight)
 		#self.blog=self._defBlog()
 		self.blog=self._defBlogBar()
 		self.blog.loadBlog()
-		self.layout().addWidget(self.blog,1,0)
-		#Editor's choice
+		lay.addWidget(self.blog,1,0)
+		return(wdg)
+	#def _defBlog
+
+	def _defChoiceApps(self):
+		wdg=choiBar(rebost=self._rebost.rc)
+		#wdg.selected.connect(self._emitLoadUrl)
+		return(wdg)
+	#def _defChoiceApps
+
+	def _defChoice(self):
+		wdg=QWidget()
+		lay=QGridLayout(wdg)
+		lay.setSpacing(0)
 		lblChoi=QLabel("{}<hr>".format(i18n["HOME_LBL_CHOICE"]))
-		self.layout().addWidget(lblChoi,2,0,Qt.AlignTop)
+		lay.addWidget(lblChoi,0,0)
 		lblChoi.setObjectName("lbl")
-		self.choiceApps=self._defChoice()
-		self.layout().addWidget(self.choiceApps,3,0)
-		#Appsedu
+		self.choiceApps=self._defChoiceApps()
+		self.choiceApps.loadChoice()
+		lay.addWidget(self.choiceApps,1,0)
+		return(wdg)
+	#def _defChoice
+
+	def _defAppseduApps(self):
+		wdg=QWidget()
+		layout=QHBoxLayout()
+		wdg.setLayout(layout)
+		layout.setSpacing(MARGIN*4)
+		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		pxm=QtGui.QPixmap()
+		for i in range(0,self.itemsPerCat):
+			btn=QPushButtonRebostApp("{}",iconSize=int(ICON_SIZE)/2)
+			btn.clicked.connect(self._loadApp)
+			sh=self.screen().size().height()
+				#btn._showBtn=False
+			btn.setMinimumHeight(min(220,int(sh/5)))
+			btn.lblFlyIcon.hide()
+			#btn.setCompactMode(True)
+			btn.setCursor(QtGui.QCursor(Qt.WaitCursor))
+			btn.setMaximumWidth(IMAGE_PREVIEW/3)
+			btn.autoUpdate=True
+			if i<self.itemsPerCat-1:
+				#btn.setObjectName("mp")
+				pxm.load(os.path.join(RSRC,"appsedu128x128.png"))
+				btn.loadFullScreen(pxm)
+			else:
+				btn.setVisible(False)
+			layout.addWidget(btn,Qt.AlignCenter)
+		return(wdg)
+	#def _defAppseduApps
+
+	def _defAppsedu(self):
+		wdg=QWidget()
+		lay=QGridLayout(wdg)
 		lblAppsedu=QLabel("{}<hr>".format(i18n["HOME_LBL_APPSEDU"]))
 		lblAppsedu.setObjectName("lbl")
-		self.layout().addWidget(lblAppsedu,4,0)
+		lay.addWidget(lblAppsedu,0,0,Qt.AlignBottom)
 		btnApps=QPushButton()
-		btnApps.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+		#btnApps.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 		btnApps.setToolTip("Appsedu")
+		icn=QtGui.QIcon.fromTheme("list-add")
 		btnApps.setIcon(icn)
 		dataApps={"homepage":"https://portal.edu.gva.es/appsedu/aplicacions-lliurex/"}
 		btnApps.clicked.connect(lambda x: self._openBlog("",dataApps))
-		self.layout().addWidget(btnApps,4,0,Qt.AlignRight)
-		self.appsEdu=self._defAppsedu()
-		self.layout().addWidget(self.appsEdu,5,0)
+		lay.addWidget(btnApps,0,0,Qt.AlignRight)
+		self.appsEdu=self._defAppseduApps()
+		lay.addWidget(self.appsEdu,1,0)
+		return(wdg)
+	#def _defAppsedu
+
+	def __initScreen__(self):
+		#Blog
+		blog=self._defBlog()
+		self.layout().addWidget(blog,0,0)
+		#Editor's choice
+		choi=self._defChoice()
+		self.layout().addWidget(choi,1,0)
+		#Appsedu
+		appsedu=self._defAppsedu()
+		self.layout().addWidget(appsedu,2,0)
+		#Categories
 		lblCats=QLabel("<br>{}<hr>".format(i18n["HOME_LBL_CATEGORIES"]))
 		lblCats.setObjectName("lbl")
 		#self.layout().addWidget(lblCats,6,0)
 		self.appsByCat=self._defAppsByCat()
+		self.layout().setRowStretch(0,4)
+		self.layout().setRowStretch(1,3)
+		self.layout().setRowStretch(2,0)
+		self.layout().setContentsMargins(0,0,0,0)
 		#self.layout().addWidget(self.appsByCat,7,0)
 	#def __initScreen__
 
@@ -445,9 +358,7 @@ class main(QWidget):
 		self.appsEdu.setCursor(QtGui.QCursor(Qt.WaitCursor))
 		self.appsByCat.setCursor(QtGui.QCursor(Qt.WaitCursor))
 		rssparser=rss.rssParser()
-		rssparser.blogEnded.connect(self._processRss)
 		rssparser.appsEnded.connect(self._processRss)
-		rssparser.choiceEnded.connect(self._processRss)
 		rssparser.loadCache()
 	#	self._getAppsByCat()
 	#	self._getBlog()
