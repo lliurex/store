@@ -3,7 +3,7 @@ import os,subprocess,time
 from PySide6.QtWidgets import QLabel, QPushButton,QMenu,QWidget,QWidgetAction,QSizePolicy,QApplication,QGridLayout
 from PySide6.QtCore import Qt,Signal,QSize,QPoint
 from PySide6.QtGui import QIcon,QPixmap
-from wdg.btnRebost import QPushButtonRebostApp
+from QtExtraWidgets import QPushInfoButton
 import lib.libhelper as libhelper
 import extras.css as css
 from extras.constants import *
@@ -85,7 +85,7 @@ class QPushButtonInstaller(QPushButton):
 	def _setActionForMenu(self,*args):
 		self._resizeMenu()
 		for chld in self.dlgInstallers.children():
-			if isinstance(chld,QPushButtonRebostApp) or isinstance(chld,QPushButton):
+			if isinstance(chld,QPushInfoButton) or isinstance(chld,QPushButton):
 				if hasattr(chld,"app"):
 					release,bundle=chld.app["name"].split("<br>")
 					text="<p>Kind: {0}<br>Release: {1}</p>".format(bundle.capitalize(),release)
@@ -133,16 +133,20 @@ class QPushButtonInstaller(QPushButton):
 			#	continue
 			#release=self.app.get("versions",{}).get(bundle,"lliurex").split(":")[-1].split("+")[0]
 			release=release[0:min(10,len(release))]
-			wdg=QPushButtonRebostApp({"name":"{}<br>{}".format(release,bundle.capitalize()),"icon":os.path.join(RSRC,"application-vnd.{}.png".format(bundle))},iconSize=64)
-			wdg.lockTooltip=True
-			wdg.label.setWordWrap(True)
+			wdg=QPushInfoButton(overlay=False,scroll=False)
+			wdg.defaultSize=72
+			wdg.loadImgSync(os.path.join(RSRC,"application-vnd.{}.png".format(bundle)))
+			wdg.lblDesc.setText(bundle.capitalize())
+			wdg.layout().setContentsMargins(6,0,6,3)
+			wdg.layout().addWidget(wdg.lblDesc,1,0,1,2)
+#{"name":"{}<br>{}".format(release,bundle.capitalize()),"icon":})
 			wdg.clicked.connect(self._emitInstall)
 			#wdg.setCompactMode(True)
 			wdg.setMaximumWidth(ICON_SIZE/3)
 			if cont==0:
 				wdg.flyIcon=QPixmap(os.path.join(RSRC,"emblem-favorite32x32.png"))
-				wdg.lblFlyIcon.setPixmap(wdg.flyIcon.scaled(16,16,Qt.KeepAspectRatioByExpanding,Qt.FastTransformation))
-				wdg.lblFlyIcon.show()
+				#wdg.lblFlyIcon.setPixmap(wdg.flyIcon.scaled(16,16,Qt.KeepAspectRatioByExpanding,Qt.FastTransformation))
+				#wdg.lblFlyIcon.show()
 			if bundle=="epi":
 				epi=True
 				self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
@@ -230,7 +234,7 @@ class QPushButtonInstaller(QPushButton):
 	def _loadLaunchers(self,bundlesSorted):
 		self._debug("Loading launchers")
 		for chld in self.dlgInstallers.children():
-			if isinstance(chld,QPushButtonRebostApp) or isinstance(chld,QPushButton):
+			if isinstance(chld,QPushInfoButton) or isinstance(chld,QPushButton):
 				chld.setParent(None)
 		self._setActionForButton()
 		if self.isEnabled()==True:
