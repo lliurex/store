@@ -1,13 +1,12 @@
 #!/usr/bin/python3
-import sys,signal,time
+import sys,time
 from functools import partial
-import os,grp
+import os
 import subprocess
 import json
-import dbus
-from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidgetItem,QSizePolicy
+from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout
 from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal
+from PySide6.QtCore import Qt,Signal
 from QtExtraWidgets import QStackedWindowItem
 from rebost import store 
 from wdg.btnRebost import QPushButtonRebostApp
@@ -17,9 +16,7 @@ from wdg.barCategories import QToolBarCategories
 from wdg.lblApp import QLabelRebostApp
 from wdg.navCategories import QNavCategories
 from wdg.wdgSearch import QSearch
-import lib.libhelper as libhelper
 import lib.helperLib as helper
-import lib.exehelper as exehelper
 from lib.libth import storeHelper,llxup
 import extras.css as css
 from extras.constants import *
@@ -52,6 +49,7 @@ class portrait(QStackedWindowItem):
 		self.apps=[]
 		self.helper=helper.appHelper()
 		self.helper.procEnded.connect(self._procEnded)
+		self.aux=helper.auxiliary()
 		self.rc=store.client()
 		self._referrerPane=None
 		self._rebost=storeHelper(rc=self.rc)
@@ -92,7 +90,7 @@ class portrait(QStackedWindowItem):
 		self._rebost.setAction("config")
 		self._rebost.start()
 		self.noChkNetwork=False
-		self.isConnected=self._chkNetwork()
+		self.isConnected=self.aux.chkNetwork()
 		self.referrerBtn=None
 	#def _initRegisters
 
@@ -121,47 +119,13 @@ class portrait(QStackedWindowItem):
 		self.setStyleSheet(css.portrait())
 	#def _initGUI
 
-	def _chkNetwork(self):
-		state=False
-		if self.noChkNetwork==True:
-			state=True
-		else:
-			bus=dbus.SystemBus()
-			try:
-				objbus=bus.get_object("org.freedesktop.NetworkManager","/org/freedesktop/NetworkManager")
-				proxbus=dbus.Interface(objbus,"org.freedesktop.NetworkManager")
-				status=proxbus.state()
-			except Exception as e:
-				self._debug("Chk network: {}".format(e))
-				state=True
-			else:
-				if status==70:
-					state=True
-		return(state)
-	#def _chkNetwork
-
-	def _chkUserGroup(self):
-		lockedUser=False
-		grpData=grp.getgrnam("sudo")
-		if grpData.gr_gid not in os.getgroups():
-			userlocked=True
-		return(lockedUser)
-	#def _chkUserGroup(self):
-
 	def _chkCategories(self,*args):
 		if self.lstCategories.topLevelItemCount()<=0:
 			self.lstCategories.load()
 	#def _chkCategories
 
 	def _endGetLockStatus(self,*args):
-		jconfig=args[0]
-		self.locked=jconfig.get("onlyVerified",False)
-		lockedUser=self._chkUserGroup()
-		if not isinstance(self.locked,bool):
-			if int(self.locked)==0:
-				self.locked=False
-			else:
-				self.locked=True
+		self.locked,lockedUser=self.aux.getLockStatus(*args)
 		if self.locked==False: #conf is unlocked, check groups 
 			if lockedUser==True:
 				self._unlockRebost()
@@ -189,7 +153,6 @@ class portrait(QStackedWindowItem):
 
 	def _procEnded(self,*args):
 		#self.installingBtn.updateScreen()
-		print("ENDED")
 		self.installingBtn=None
 		return
 		detailApp=self.paneDetails.app["id"]
@@ -211,69 +174,9 @@ class portrait(QStackedWindowItem):
 		if self.installingBtn!=None:
 			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.installingBtn.app["name"].capitalize(),timeout=4)
 			return
-		print(wdg)
-		self.installingBtn=wdg
 		self.helper.runZmd(app,"",pxm=icon)
+		self.installingBtn=wdg
 	#def _launchEpi
-
-	def _installApp(self,*args): #(btn,app,[bundle])
-		if self.installingBtn!=None:
-			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.installingBtn.app["name"].capitalize(),timeout=4)
-			return
-		wdg=args[0]
-		app=args[1]
-		bundle=""
-		if len(args)>2:
-			bundle=args[2]
-		else:
-			if hasattr(wdg,"instBundle"):
-				if len(wdg.instBundle)>0:
-					bundle=wdg.instBundle
-			if len(bundle)==0:
-				priority=self.helper.getBundlesByPriority(app)
-				idx=list(priority.keys())
-				idx.sort()
-				bundle=priority[idx[0]].split(" ")[0]
-		if bundle=="epi":
-			bundle="unknown"
-		act=""
-		if hasattr(wdg,"btn"):
-			act=wdg.btn.text()
-		elif hasattr(wdg,"text"):
-			act=wdg.text()
-		self._debug("Selected BUNDLE for {}: {}".format(act,bundle))
-		pkg=app.get('id')
-		try:
-			if pkg!="":
-				installer=str(self.rc.getExternalInstaller())
-				if installer!="":
-					state=7
-					if isinstance(wdg,QPushButtonRebostApp):
-						self.installingBtn=wdg
-						if wdg.btn.text()==i18n["REMOVE"]:
-							state=8
-					elif hasattr(wdg,"text"):
-						if wdg.text()==i18n["REMOVE"]:
-							state=8
-					if bundle=="webapp":
-						self._referrerPane=self._homeView
-						#details=self.helper.getAppseduDetails(app["homepage"])
-						app["bundle"]["webapp"]=details["url"]
-						self.runapp.setUrl(app)
-						self.runapp.start()
-					elif bundle!="unknown":
-						self._referrerPane=self._homeView
-						self._setInstallingState(app,state)
-						self.runapp.setArgs(app,[installer,pkg,bundle])
-						self.runapp.start()
-					else:
-						self._referrerPane=self._homeView
-						self.zmd.setApp(app)
-						self.zmd.start()
-		except Exception as e:
-			print(e)
-		return
-	#def _installApp
 
 	def _progressShow(self):
 	#	self.updateTimer.start(1)
@@ -471,7 +374,6 @@ class portrait(QStackedWindowItem):
 
 	def _launchLlxUp(self):
 		self.parent.hide()
-		#QApplication.processEvents()
 		subprocess.run(["pkexec","lliurex-up"])
 		self.parent.show()
 	#def _launchLlxUp
@@ -497,19 +399,10 @@ class portrait(QStackedWindowItem):
 	def setBtnSearchIcon(self,icn=""):
 		if icn!="":
 			icn=QtGui.QIcon(os.path.join(RSRC,"{}.png".format(icn)))
-		if len(self.searchBox.text())>0:
-			icn=QtGui.QIcon(os.path.join(RSRC,"cancel.png"))
 		else:
 			icn=QtGui.QIcon(os.path.join(RSRC,"search.png"))
 		self.btnSearch.setIcon(icn)
 	#def setBtnSearchIcon
-
-	def _changeSearchAppsBtnIcon(self):
-		if len(self.searchBox.text())>0:
-			self.setBtnSearchIcon("cancel")
-		else:
-			self.setBtnSearchIcon("search")
-	#def _changeSearchAppsBtnIcon(self):
 
 	def _resetSearch(self):
 		self.searchBox.setText("")
@@ -697,8 +590,6 @@ class portrait(QStackedWindowItem):
 			cat=""
 		elif isinstance(args[0],str):
 			cat=args[0]
-		elif isinstance(args[0],QListWidgetItem):
-			cat=args[0].text()
 		if cat==None:
 			return
 		if time.time()-self.oldTime<MINTIME:
@@ -721,8 +612,6 @@ class portrait(QStackedWindowItem):
 			self.appsRaw.extend(item)
 		self.apps=self.appsRaw.copy()
 		self._globalView.loadApps(self.apps)
-		#REM This show launches also after locking store. Investigate but disable ATM
-		#self.barCategories.show()
 		self.oldTime=time.time()
 	#def _endLoadCategory
 
@@ -880,12 +769,12 @@ class portrait(QStackedWindowItem):
 
 	def updateScreen(self,addEnable=None):
 		#self._rebost.wait()
-		isConnected=self._chkNetwork()
-		if isConnected==False:
-			self._endUpdate()
-			self._showPane(self._errorView)
-			self._stopThreads()
-			return
+		if self.noChkNetwork!=True:
+			if self.aux.chkNetwork()==False:
+				self._endUpdate()
+				self._showPane(self._errorView)
+				self._stopThreads()
+				return
 		self._rebost.setAction("config")
 		self._rebost.start()
 		if self._referrerPane!=None:
