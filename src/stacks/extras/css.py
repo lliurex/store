@@ -109,10 +109,9 @@ def btnRebost():
 
 def detailPanel():
 	css=""
-	detail="""QWidget{
-					background:%s;
-			}
+	detail="""
 			QWidget#detailPanel{
+					background:%s;
 					padding:0px;
 					margin:0px;
 					color:unset;
