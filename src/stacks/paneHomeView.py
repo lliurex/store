@@ -65,16 +65,6 @@ class main(QWidget):
 			th.wait()
 	#def _onDestroy
 
-	def showEvent(self,*args,**kwargs):
-		#Ensure that there's info after all
-		if self.choiceApps.count()==1:
-			self.choiceApps.loadChoice()
-		if self.blog.count()==0:
-			self.blog.loadBlog()
-		if self.appsedu.count()==0: 
-			self.appsedu.loadApps()
-	#def showEvent
-
 	def _openBlog(self,*args):
 		if len(args)==1:
 			txt=args[0].lblDesc.text()
@@ -85,16 +75,11 @@ class main(QWidget):
 		self.runner.start()
 	#def _openBlog
 
-	def _emitInstallApp(self,*args):
-		btn=args[0]
-		icon=btn.iconUri.pixmap()
-		app=args[1]
-		self.requestInstallApp.emit(btn,app,icon)
-	#def _emitInstallApp
-
 	def _loadApp(self,*args):
 		btn=args[0]
 		app=btn.property("metadata")
+		print("Btn: {}".format(btn))
+		print("App: {}".format(app))
 		self.clickedApp.emit(self,btn,app)
 	#def _loadApp
 	
@@ -187,8 +172,13 @@ class main(QWidget):
 	#def __initScreen__
 
 	def updateScreen(self):
-		self.blog.setCursor(QtGui.QCursor(Qt.WaitCursor))
-		self.appsedu.setCursor(QtGui.QCursor(Qt.WaitCursor))
+		#Ensure that there's info after all
+		if self.choiceApps.count()==1:
+			self.choiceApps.loadChoice()
+		if self.blog.count()==0:
+			self.blog.loadBlog()
+		if self.appsedu.count()==0: 
+			self.appsedu.loadApps()
 	#def updateScreen
 
 	def updateBtn(self,btn,app):
