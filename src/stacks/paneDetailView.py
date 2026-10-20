@@ -607,6 +607,9 @@ class main(QWidget):
 		if self.app.get("ERR",False)==False:
 			exclude=self.app.get("suggests",[])
 			exclude.extend([self.app["name"],self.app["id"]])
+			extra=self.app.get("summary")
+			if len(extra)==0:
+				extra=self.app.get("description")
 			self.lblTags.setText(self.aux.tokenizeTags(self.app.get("keywords",[]),exclude=exclude,extra=self.app.get("summary","")))
 		if len(self.lblTags.text())==0:
 			self.lblTags.hide()
