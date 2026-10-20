@@ -511,7 +511,7 @@ class main(QWidget):
 		if defBund!=None:
 			defBund.setEnabled(False)
 			defBund.show()
-	#def _populateBundleIcons
+	#def _populateBoxBundles
 
 	def _defBoxBundles(self):
 		wdg=QWidget()
@@ -537,7 +537,7 @@ class main(QWidget):
 		if lbl!=None:
 			wdg.setMaximumHeight(lbl.height())
 		return(wdg)
-	#def _defBundleIcons
+	#def _defBoxBundles
 
 	def _setUnknownAppInfo(self):
 		if self.app.get("name","")!="":
@@ -647,29 +647,6 @@ class main(QWidget):
 		self.cmbBundles.setApp(self.app)
 		self.setCursor(self.oldCursor)
 	#def _updateScreen
-
-	def _getLauncherForApp(self):
-		#Best effort for get launcher
-		self.appmenu.set_desktop_system()
-		cats=self.appmenu.get_categories()
-		launcher=""
-		for cat in cats:
-			apps=self.appmenu.get_apps_from_category(cat.lower())
-			for app in apps:
-				appsplit=app.split(".")
-				if len(appsplit)>2:
-					searchapp=appsplit[-2]
-				else:
-					searchapp=appsplit[0]
-				namesplit=self.app["pkgname"].split("-")
-				allitems=namesplit+[searchapp]
-				if len(allitems)!=len(set(allitems)):
-					launcher=app
-					break
-			if len(launcher)>0:
-				break
-		return(launcher)
-	#def _getLauncherForApp
 
 	def _generateAppTags(self):
 		tags=""
