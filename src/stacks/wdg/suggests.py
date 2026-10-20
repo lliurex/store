@@ -35,7 +35,7 @@ class suggestsBar(QFlowBar):
 		while len(apps)>0:
 			app=apps.pop()
 			t=app["name"].strip()
-			if app.get("forbidden",False)==True or app.get("unavailable",False)==True:
+			if app.get("hidden",False)==True or app.get("forbidden",False)==True or app.get("unavailable",False)==True:
 				continue
 			if app["name"].startswith("zero-lliurex"):
 				continue
