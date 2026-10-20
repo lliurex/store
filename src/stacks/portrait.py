@@ -151,6 +151,15 @@ class portrait(QStackedWindowItem):
 		return(app)
 	#def _setInstallingState
 
+	def _launchEpi(self,wdg,app,icon=""):
+		#self.actionBtns.append(self.paneDetails.btn)
+		if self.installingBtn!=None:
+			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.installingBtn.app["name"].capitalize(),timeout=4)
+			return
+		self.helper.runZmd(app,"",pxm=icon)
+		self.installingBtn=wdg
+	#def _launchEpi
+
 	def _procEnded(self,*args):
 		#self.installingBtn.updateScreen()
 		self.installingBtn=None
@@ -168,15 +177,6 @@ class portrait(QStackedWindowItem):
 			currentBtns.append(btn)
 		self.actionsBtns=currentBtns
 	#def _procEnded
-
-	def _launchEpi(self,wdg,app,icon=""):
-		#self.actionBtns.append(self.paneDetails.btn)
-		if self.installingBtn!=None:
-			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.installingBtn.app["name"].capitalize(),timeout=4)
-			return
-		self.helper.runZmd(app,"",pxm=icon)
-		self.installingBtn=wdg
-	#def _launchEpi
 
 	def _progressShow(self):
 	#	self.updateTimer.start(1)
@@ -395,14 +395,6 @@ class portrait(QStackedWindowItem):
 		pev.setObjectName("errorMsg")
 		return(pev)
 	#def _defError
-	
-	def setBtnSearchIcon(self,icn=""):
-		if icn!="":
-			icn=QtGui.QIcon(os.path.join(RSRC,"{}.png".format(icn)))
-		else:
-			icn=QtGui.QIcon(os.path.join(RSRC,"search.png"))
-		self.btnSearch.setIcon(icn)
-	#def setBtnSearchIcon
 
 	def _resetSearch(self):
 		self.searchBox.setText("")
@@ -596,7 +588,6 @@ class portrait(QStackedWindowItem):
 			return
 		self.searchBox.setText("")
 		self._beginLoad()
-		self.searchBox.setText("")
 		self.requestGetApps.emit(cat)
 	#def _loadCategory
 
@@ -650,12 +641,14 @@ class portrait(QStackedWindowItem):
 		self._beginLoad(resetScreen=False)
 		icn=""
 		app=""
+		btn=None
 		for arg in args:
 			if isinstance(arg,tuple):
 				for targ in arg:
 					if isinstance(targ,QPushButtonRebostApp):
 						icn=targ.iconUri.pixmap()
 						self.referrerBtn=targ
+						btn=targ
 					elif isinstance(targ,dict) and len(targ)>0:
 						app=targ
 					elif hasattr(targ,"overlay"): #QPushInfoButton
@@ -665,13 +658,14 @@ class portrait(QStackedWindowItem):
 			elif isinstance(arg,QPushButtonRebostApp):
 				icn=arg.iconUri.pixmap()
 				self.referrerBtn=arg
+				btn=arg
 			elif isinstance(arg,dict):
 				app=arg.copy()
 				break
 		self._stopThreads(ignoreProgress=True)
 		if app!="":
 			self.parent.setWindowTitle("{} - {}".format(APPNAME,app.get("name","").capitalize()))
-			self._detailView.setParms({"name":app.get("name",""),"id":app.get("id",""),"icon":icn})
+			self._detailView.setParms({"name":app.get("name",""),"id":app.get("id",""),"icon":icn,"btn":btn})
 	#def _loadDetails(self,*args,**kwargs):
 
 	def _loadGlobalDetails(self,*args,**kwargs):
