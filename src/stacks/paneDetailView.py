@@ -70,9 +70,6 @@ class main(QWidget):
 		self.oldApp={} #Returning point if browsing through related apps
 		self.instBundle=""
 		self._connectThreads()
-		font=self.font()
-		font.setPointSize(font.pointSize()+(12-font.pointSize()))
-		self.setFont(font)
 		self._renderGui()
 	#def __init__
 
@@ -257,8 +254,11 @@ class main(QWidget):
 	#def keyPressEvent
 
 	def _renderGui(self):
-		self.box=QGridLayout()
+		font=self.font()
+		font.setPointSize(font.pointSize()+(12-font.pointSize()))
+		self.setFont(font)
 		self.setObjectName("detailPanel")
+		self.box=QGridLayout()
 		self.btnBack=self._defBtnBack()
 		self.box.addWidget(self.btnBack,0,0,1,1,Qt.AlignTop|Qt.AlignLeft)
 		self.header=self._defHeader()
@@ -267,19 +267,15 @@ class main(QWidget):
 		vlay=QVBoxLayout()
 		wdg.setLayout(vlay)
 		self.lblTags=self._defLblTags()
-		self.lblTags.setObjectName("lblTags")
 		vlay.addWidget(self.lblTags)
 		self.box.addWidget(wdg,1,1,2,1,Qt.AlignTop)
 		self.lblDesc=self._defLblDesc()
 		self.box.addWidget(self.lblDesc,1,2,3,1)
 		self.screenShot=self._defScreenshot()
-		self.screenShot.setObjectName("screenshot")
-		self.screenShot.scroll.setObjectName("screenshot")
 		self.screenShot.widget.setMinimumHeight(self.lblDesc.height())
 		self.screenShot.scroll.setMinimumHeight(self.lblDesc.height())
 		self.box.addWidget(self.screenShot,1,3,3,1,Qt.AlignTop)
 		self.lstLinks=self._defLstLinks()
-		self.lstLinks.setObjectName("lstLinks")
 		vlay.addWidget(self.lstLinks)
 		self.tblSuggests=self._defSuggests()
 		self.box.addWidget(self.tblSuggests,3,1,2,2)
@@ -370,6 +366,8 @@ class main(QWidget):
 	def _defScreenshot(self):
 		wdg=QScreenShotContainer(direction="vertical")
 		wdg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.MinimumExpanding)
+		wdg.setObjectName("screenshot")
+		wdg.scroll.setObjectName("screenshot")
 		return(wdg)
 	#def _defScreenshot
 
@@ -429,6 +427,7 @@ class main(QWidget):
 		wdg.setAttribute(Qt.WA_StyledBackground, True)
 		#wdg.setMinimumWidth(ICON_SIZE*3+(MARGIN))
 		wdg.setMaximumWidth(ICON_SIZE*3+(MARGIN*4))
+		wdg.setObjectName("lblTags")
 		return(wdg)
 	#def _defLblTags
 
@@ -473,6 +472,7 @@ class main(QWidget):
 		wdg.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		wdg.setMouseTracking(True)
 		wdg.itemPressed.connect(_enableLink)
+		wdg.setObjectName("lstLinks")
 		return(wdg)
 	#def _defLstLinks
 
@@ -700,19 +700,6 @@ class main(QWidget):
 					break
 		return("{}".format(tags.strip(" / ")))
 	#def _generateAppTags
-
-	def _generateCategoryTags(self):
-		tags=""
-		for cat in self.app.get("categories",[]):
-			if cat.strip().islower() or len(cat)==0:
-				continue
-			icat=_(cat)
-			if icat not in tags:
-				#Disabled as requisite  (250214-11:52)
-				tags+="<a href=\"#{0}\"><strong>{0}</strong></a> / ".format(icat)
-			#	tags+="{0} / ".format(icat)
-		return("{}".format(tags.strip(" / ")))
-	#def _generateCategoryTags
 
 	def _resetScreen(self,name,icon):
 		self.app={}
