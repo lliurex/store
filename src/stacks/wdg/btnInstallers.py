@@ -75,7 +75,7 @@ class QPushButtonInstaller(QPushButton):
 		what.setFixedSize(QSize(24,24))
 		what.setStyleSheet("""padding:0px;margin:0px;border:0px;color:black""")
 		what.clicked.connect(self._openWiki)
-		what.setToolTip(i18n["HELP"])
+		what.setToolTip(i18n["BTN_HELP"])
 		what.setCursor(Qt.WhatsThisCursor)
 		self.menuLayout.addWidget(what,0,self.menuLayout.columnCount(),1,1,Qt.AlignLeft)
 		self.menuLayout.setColumnStretch(self.menuLayout.columnCount()-1,1)
