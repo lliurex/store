@@ -7,20 +7,7 @@ from wdg.btnRebost import QPushButtonRebostApp
 import lib.libhelper as libhelper
 import extras.css as css
 from extras.constants import *
-import gettext
-gettext.textdomain('lliurex-store')
-_ = gettext.gettext
-
-i18n={
-	"ASSISTED":_("Assisted"),
-	"HELP":_("What's this?"),
-	"INSTALL":_("Install"),
-	"OPEN":_("Z-Install"),
-	"REMOVE":_("Remove"),
-	"UNAUTHORIZED":_("Blocked"),
-	"UNAVAILABLE":_("Unavailable"),
-	"WEBAPP":_("Web app")
-	}
+from extras.i18n import *
 
 class QPushButtonInstaller(QPushButton):
 	installerClicked=Signal(str)
