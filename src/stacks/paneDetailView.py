@@ -9,41 +9,15 @@ from PySide6.QtWidgets import QLabel, QPushButton,QGridLayout,QSizePolicy,QWidge
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,QSize,Signal,QThread,Slot,QUrl
 from QtExtraWidgets import QScreenShotContainer,QScrollLabel,QFlowTouchWidget
-import lib.libhelper as libhelper
+import lib.helperLib as helper
 import extras.css as css
 from extras.constants import *
+from extras.i18n import *
 from wdg.btnInstallers import QPushButtonInstaller
 from wdg.lblApp import QLabelRebostApp
 from wdg.lblLnk import QLabelLink
 from wdg.btnRebost import QPushButtonRebostApp
 from wdg.suggests import suggestsBar
-import gettext
-_ = gettext.gettext
-QString=type("")
-
-i18n={
-	"APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
-	"APPUNKNOWN_SAI":_("For any question the SAI can be contacted at <a href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"),
-	"ERRNOTFOUND":_("Could not open"),
-	"ERRLAUNCH":_("Error opening"),
-	"ERRMORETHANONE":_("There's another action in progress"),
-	"ERRSYSTEMAPP":_("System apps can't be removed"),
-	"ERRUNKNOWN":_("Unknown error"),
-	"FORBIDDEN":_("App unauthorized"),
-	"INFO":_("For more info go to"),
-	"INSTALL":_("Install"),
-	"LBL_RELATED":_("More apps"),
-	"OPEN":_("Z·Install"),
-	"OPENING":_("Opening"),
-	"RELEASE":_("Release"),
-	"REMOVE":_("Remove"),
-	"RUN":_("Open"),
-	"SEEIT":_("See at Appsedu"),
-	"SITE":_("Website"),
-	"UNAUTHORIZED":_("Blocked"),
-	"UNAVAILABLE":_("Unavailable"),
-	}
-
 
 class main(QWidget):
 	clickedBack=Signal("PyObject","PyObject")
@@ -62,7 +36,8 @@ class main(QWidget):
 		self.setStyleSheet(css.detailPanel())
 		self.refresh=False
 		self.rc=store.client()
-		self.helper=libhelper.helper()
+		self.helper=helper.appHelper()
+		self.aux=helper.auxiliary()
 		self.oldCursor=self.cursor()
 		self.launcher=""
 		self.config={}
@@ -118,16 +93,25 @@ class main(QWidget):
 
 	def setParms(self,*args,**kwargs):
 		pxm=""
+		name=""
 		self.referrerBtn=kwargs.get("btn",None)
-		if len(args)>0:
+		if self.referrerBtn!=None:
+			self.app=self.referrerBtn.app
+			if self.app["description"].strip()!="":
+				self.updateScreen()
+				return
+			else:
+				name=self.app["id"]
+				print(name)
+		if name=="":
 			if isinstance(args[0],dict):
 				name=args[0]["id"]
 			else:
 				name=args[-1]
 				name=self._processStreams(name)
-			self._resetScreen(name,"")
-			self._rebost.setAction("refreshApp",name)
-			self._rebost.start()
+		self._resetScreen(name,"")
+		self._rebost.setAction("refreshApp",name)
+		self._rebost.start()
 	#def setParms
 
 	def _endSetParms(self,*args):
@@ -136,40 +120,26 @@ class main(QWidget):
 			if isinstance(app,dict):
 				self.app=app
 			else:
-				try:
-					app=json.loads(app)
-				except Exception as e:
-					pass
-				if isinstance(app,list):
-					if len(app)>0:
-						app=app[0]
-						if isinstance(app,str):
-							try:
-								app=json.loads(app)
-							except Exception as e:
-								pass
-						self.app=app
-					else:
-						self.app["ERR"]=True
-		swErr=False
+				self.app=self.aux.getAppFromString(app)
 		if len(self.app)>0:
+			if "ERR" in self.app.keys():
+				self._onError()
 			homepage=self.app.get('homepage','')
 			if isinstance(homepage,str)==False:
 				homepage=""
 			if homepage.startswith("https://portal.edu.gva.es/appsedu")==True and self.app["description"].count(" ")<3:
 				details=self.helper.getAppseduDetails(homepage)
+				print(details)
 				if len(details.get("description",""))>len(self.app["description"]):
 					self.app["description"]=details["description"]
 				if len(details.get("icon",""))>0:
 					self.app["icon"]=details["icon"]
 				if self.app.get("webapp",False)==True:
 					self.app["bundle"].update({"webapp":details.get("url","")})
-			for bundle,name in (self.app.get('bundle',{}).items()):
-				if bundle=='package':
-					continue
+			#for bundle,name in (self.app.get('bundle',{}).items()):
+			#	if bundle=='package':
+			#		continue
 		self.setCursor(self.oldCursor)
-		if "ERR" in self.app.keys():
-			self._onError()
 		self.updateScreen()
 	#def _endSetParms
 
@@ -200,7 +170,7 @@ class main(QWidget):
 	#def endInstall
 
 	def _setInstallingState(self):
-		if self.cmbBundles.text()==i18n["REMOVE"]:
+		if self.cmbBundles.text()==i18n["BTN_REMOVE"]:
 			self.app["state"]=8
 			self._rebost.setAction("setAppState",self.app["id"],8)
 		else:
@@ -335,7 +305,7 @@ class main(QWidget):
 		hlay=QVBoxLayout()
 		self.boxBundles=self._defBoxBundles()
 		lay.addWidget(self.boxBundles,0,3,1,1,Qt.AlignTop|Qt.AlignRight)
-		self.lblRelease=QLabel(i18n.get("INSTALL"))
+		self.lblRelease=QLabel(i18n.get("BTN_INSTALL"))
 		self.lblRelease.resize(self.lblRelease.sizeHint().width(),int(ICON_SIZE/3))
 		self.lblRelease.hide()
 		lay.addWidget(self.lblRelease,1,3,1,1,Qt.AlignLeft|Qt.AlignTop)
@@ -345,7 +315,7 @@ class main(QWidget):
 
 		self.cmbBundles=QPushButtonInstaller()
 		self.cmbBundles.installerClicked.connect(self._genericEpiInstall,Qt.UniqueConnection)
-		self.cmbBundles.setText(i18n["INSTALL"])
+		self.cmbBundles.setText(i18n["BTN_INSTALL"])
 		self.cmbBundles.setVisible(False)
 		self.cmbBundles.setMinimumSize(ICON_SIZE*4,ICON_SIZE/2)
 		self.cmbBundles.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
@@ -414,7 +384,7 @@ class main(QWidget):
 		lay=QVBoxLayout()
 		wdg.setLayout(lay)
 		lay.setSpacing(MARGIN)
-		lay.addWidget(QLabel(i18n["LBL_RELATED"]))
+		lay.addWidget(QLabel(i18n["DETAIL_LBL_RELATED"]))
 		self.suggests=suggestsBar()
 		lay.addWidget(self.suggests)
 		return(wdg)
@@ -443,9 +413,9 @@ class main(QWidget):
 			homepage=homepage.rstrip("/")
 			desc=homepage
 			if desc.startswith("https://portal.edu.gva.es/appsedu")==True:
-				desc=i18n.get("SEEIT")
+				desc=i18n.get("DETAIL_SEEIT")
 			else:
-				desc=i18n.get("SITE")
+				desc=i18n.get("DETAIL_SITE")
 			text='<a href="{0}"><strong>{1}</strong></a> '.format(homepage,desc)
 			text=desc
 		if len(text)>0:
@@ -557,7 +527,7 @@ class main(QWidget):
 			if pxm:
 				self.lblIcon.setPixmap(pxm.scaled(ICON_SIZE,ICON_SIZE))
 			self.lblSummary.setText(self.app.get("summary",""))
-			self.lblDesc.setText("<hr><p>{}</p><hr>".format(i18n.get("APPUNKNOWN")))
+			self.lblDesc.setText("<hr><p>{}</p><hr>".format(i18n.get("DETAIL_APPUNKNOWN")))
 			self.lblDesc.label.setOpenExternalLinks(True)
 			homepage="https://portal.edu.gva.es/appsedu/"
 			text="<a href='{0}'>Appsedu</a>".format(homepage)
@@ -622,11 +592,11 @@ class main(QWidget):
 					forbReason=""
 
 			if self.app.get("ERR",False)!=False:
-				description=i18n.get("APPUNKNOWN_SAI")
-				description="<h2>{0}</h2>{1}<hr>{3}".format(i18n.get("APPUNKNOWN").split(".")[0],i18n.get("APPUNKNOWN"),i18n["APPUNKNOWN_SAI"],description,forbReason)
+				description=i18n.get("DETAIL_APPUNKNOWN_SAI")
+				description="<h2>{0}</h2>{1}<hr>{3}".format(i18n.get("DETAIL_APPUNKNOWN").split(".")[0],i18n.get("DETAIL_APPUNKNOWN"),i18n["DETAIL_APPUNKNOWN_SAI"],description,forbReason)
 				self.lblTags.setText("")
 			else:
-				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("FORBIDDEN"),i18n.get("INFO"),i18n["APPUNKNOWN_SAI"],description,forbReason)
+				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("DETAIL_FORBIDDEN"),i18n.get("DETAIL_INFO"),i18n["DETAIL_APPUNKNOWN_SAI"],description,forbReason)
 			self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setText(description)
 		#preliminary license support, not supported
@@ -635,7 +605,9 @@ class main(QWidget):
 			text="<strong>{}</strong>".format(applicense)
 		self._loadScreenshots()	
 		if self.app.get("ERR",False)==False:
-			self.lblTags.setText(self._generateAppTags())
+			exclude=self.app.get("suggests",[])
+			exclude.extend([self.app["name"],self.app["id"]])
+			self.lblTags.setText(self.aux.tokenizeTags(self.app.get("keywords",[]),exclude=exclude,extra=self.app.get("summary","")))
 		if len(self.lblTags.text())==0:
 			self.lblTags.hide()
 		else:
@@ -647,36 +619,6 @@ class main(QWidget):
 		self.cmbBundles.setApp(self.app)
 		self.setCursor(self.oldCursor)
 	#def _updateScreen
-
-	def _generateAppTags(self):
-		tags=""
-		style="padding:1px;border-radius:3px;text-decoration:none;"
-		for keyword in self.app.get("keywords",[]):
-			if len(keyword)==0 or keyword=="zomandos" or keyword==self.app["name"]:
-				continue
-			if keyword in self.app.get("suggests",[]):
-				continue
-			elif keyword.lower() in ["open","source","system","the","with","some","any","installer","zero"]:
-				continue
-			elif keyword.lower().endswith(".epi"):
-				continue
-			if keyword not in tags and len(keyword)>1:
-				#Disabled as requisite  (250214-11:52)
-				tags+="<a href=\"#{0}\" style=\"{1}\">#{0}</a> ".format(keyword,style)
-		if tags.count(" ")<4:
-			cont=0
-			for word in self.app.get("summary","").split(" "):
-				if len(word)<3:
-					continue
-				elif word.lower() in ["open","source","system","the","with","some","any","installer","zero"]:
-					continue
-				b="".join([ w for w in word if w.isalpha() ])
-				tags+="<a href=\"#{0}\" style=\"{1}\">#{0}</a> ".format(b,style)
-				cont+=1
-				if cont==4:
-					break
-		return("{}".format(tags.strip(" / ")))
-	#def _generateAppTags
 
 	def _resetScreen(self,name,icon):
 		self.app={}
@@ -703,9 +645,9 @@ class main(QWidget):
 		self.lblBkg.setGraphicsEffect(self.blur)
 		self.lblBkg.setStyleSheet("QLabel{background-color:rgba(%s,%s,%s,0.7);}"%(color.red(),color.green(),color.blue()))
 		#self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
-		self.app["summary"]=i18n.get("APPUNKNOWN").split(".")[0]
+		self.app["summary"]=i18n.get("DETAIL_APPUNKNOWN").split(".")[0]
 		self.app["pkgname"]="rebost"
-		self.app["description"]="{0}".format(i18n.get("APPUNKNOWN_SAI"))
+		self.app["description"]="{0}".format(i18n.get("DETAIL_APPUNKNOWN_SAI"))
 		self.app["bundle"]={}
 		#self.lblHomepage.setVisible(False)
 		self.loaded.emit(self.app)
@@ -731,15 +673,11 @@ class main(QWidget):
 		self.showMsg=self.parent().showMsg
 		if len(self.app)>0:
 			self.cmbBundles.setVisible(True)
-			#self.lblRelease.setVisible(True)
 			self.lblRelease.setEnabled(True)
-			self.lblRelease.setText(i18n.get("INSTALL"))
+			self.lblRelease.setText(i18n.get("BTN_INSTALL"))
 			self.setCursor(self.oldCursor)
 			self.screenShot.clear()
 			self.lstLinks.clear()
-			#self.lblCategories.setText("")
-			#Disabled as requisite (250214-11:52)
-			#self.lblCategories.linkActivated.connect(self._categoryLinkClicked)
 			self.lblTags.setText("")
 			self.lblTags.hide()
 			self.lblTags.linkActivated.connect(self._tagLinkClicked)
