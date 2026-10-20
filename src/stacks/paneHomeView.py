@@ -78,8 +78,6 @@ class main(QWidget):
 	def _loadApp(self,*args):
 		btn=args[0]
 		app=btn.property("metadata")
-		print("Btn: {}".format(btn))
-		print("App: {}".format(app))
 		self.clickedApp.emit(self,btn,app)
 	#def _loadApp
 	
