@@ -27,6 +27,7 @@ class QSearch(QWidget):
 		self.searchBox=QLineEdit()
 		font=self.searchBox.font()
 		font.setPointSize(font.pointSize()+2)
+		self.text=self.searchBox.text
 		self.searchBox.setFont(font)
 		self.searchBox.setObjectName("search")
 		self.searchBox.setToolTip(i18n["SEARCH"])
