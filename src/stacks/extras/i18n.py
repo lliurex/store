@@ -2,6 +2,21 @@
 import gettext
 _ = gettext.gettext
 i18n={
+
+	"DETAIL_APPUNKNOWN":_("The app could not be loaded. Until included in LliureX catalogue it can't be installed"),
+	"DETAIL_APPUNKNOWN_SAI":_("For any question the SAI can be contacted at <a href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"),
+	"DETAIL_ERRSYSTEMAPP":_("System apps can't be removed"),
+	"DETAIL_ERRUNKNOWN":_("Unknown error"),
+	"DETAIL_FORBIDDEN":_("App unauthorized"),
+	"DETAIL_INFO":_("For more info go to"),
+	"DETAIL_LBL_RELATED":_("More apps"),
+	"DETAIL_OPENING":_("Opening"),
+	"DETAIL_RELEASE":_("Release"),
+	"DETAIL_RUN":_("Open"),
+	"DETAIL_SEEIT":_("See at Appsedu"),
+	"DETAIL_SITE":_("Website"),
+
+
 	"ALL":_("All"),
 	"AVAILABLE":_("Available"),
 	"BTN_ASSISTED":_("Assisted"),
