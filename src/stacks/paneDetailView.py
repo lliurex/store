@@ -16,6 +16,7 @@ from wdg.btnInstallers import QPushButtonInstaller
 from wdg.lblApp import QLabelRebostApp
 from wdg.lblLnk import QLabelLink
 from wdg.btnRebost import QPushButtonRebostApp
+from wdg.suggests import suggestsBar
 import gettext
 _ = gettext.gettext
 QString=type("")
@@ -373,6 +374,8 @@ class main(QWidget):
 	#def _defScreenshot
 
 	def _endSuggestsLoad(self,*args):
+		self.suggests.loadSuggests(args[0])
+		return
 		suggests=args[0]
 		iconSize=ICON_SIZE
 		if self.suggests.rect().width()<600:
@@ -414,9 +417,7 @@ class main(QWidget):
 		wdg.setLayout(lay)
 		lay.setSpacing(MARGIN)
 		lay.addWidget(QLabel(i18n["LBL_RELATED"]))
-		self.suggests=QFlowTouchWidget(self)
-		self.suggests.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		self.suggests.setObjectName("lblTags")
+		self.suggests=suggestsBar()
 		lay.addWidget(self.suggests)
 		return(wdg)
 	#def _defSuggests
