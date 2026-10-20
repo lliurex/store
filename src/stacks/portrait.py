@@ -742,6 +742,8 @@ class portrait(QStackedWindowItem):
 		if self._detailView.isVisible()==True:
 			self.barCategories.populateCategories(self._detailView.app.get("categories",[]))
 			self.barCategories.show()
+		else:
+			self.barCategories.hide()
 		self.setCursor(self.oldCursor)
 	#def _showPane
 
