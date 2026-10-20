@@ -30,6 +30,7 @@ class QNavCategories(QTreeWidget):
 		self._rebost.catEnded.connect(self._populateCategories)
 		self.i18nCat={}
 		self.catI18n={}
+		self.oldCat=""
 		self.load()
 	#def __init__
 
@@ -43,6 +44,9 @@ class QNavCategories(QTreeWidget):
 	def _emitSelected(self,*args):
 		self._expandBranch(*args)
 		cat=args[0].text(0)
+		if self.oldCat==cat:
+			return
+		self.oldCat=cat
 		category=self.i18nCat.get(cat,cat)
 		self.itemSelected.emit(category)
 	#def _emitSelected(self,*args):

@@ -137,7 +137,7 @@ class QPushButtonInstaller(QPushButton):
 			wdg.lockTooltip=True
 			wdg.label.setWordWrap(True)
 			wdg.clicked.connect(self._emitInstall)
-			wdg.setCompactMode(True)
+			#wdg.setCompactMode(True)
 			wdg.setMaximumWidth(ICON_SIZE/3)
 			if cont==0:
 				wdg.flyIcon=QPixmap(os.path.join(RSRC,"emblem-favorite32x32.png"))
@@ -178,25 +178,25 @@ class QPushButtonInstaller(QPushButton):
 	#def _getInstalledBundle
 
 	def _setActionForButton(self):
-		self.setText(i18n["INSTALL"])
+		self.setText(i18n["BTN_INSTALL"])
 		self.setMenu(self.menuInstaller)
 		if len(self.app.get("bundle",{}))==0 and self.app.get("forbidden",False)==True:
-			self.setText(i18n["UNAUTHORIZED"])
+			self.setText(i18n["BTN_UNAUTHORIZED"])
 			self.setMenu(None)
 			self.setEnabled(False)
 		else:
 			if self.app.get("assisted",False)==True:
 				self.setEnabled(False)
-				self.setText(i18n["ASSISTED"])
+				self.setText(i18n["BTN_ASSISTED"])
 			elif self.app.get("webapp",False)==True:
 				self.setEnabled(True)
-				self.setText(i18n["WEBAPP"])
+				self.setText(i18n["BTN_WEBAPP"])
 			elif len(self.app.get("bundle",{}))==0 or self.app.get("unavailable",False)==True:
-				self.setText(i18n["UNAVAILABLE"])
+				self.setText(i18n["BTN_UNAVAILABLE"])
 				self.setMenu(None)
 				self.setEnabled(False)
 			elif self.app.get("forbidden",False)==True:
-				self.setText(i18n["UNAUTHORIZED"])
+				self.setText(i18n["BTN_UNAUTHORIZED"])
 				self.setMenu(None)
 				self.setEnabled(False)
 			else: #app seems authorized and available
@@ -210,21 +210,21 @@ class QPushButtonInstaller(QPushButton):
 				#else:
 				self.instBundle=self.helper.getInstalledBundle(self.app)#self._getInstalledBundle()
 				if self.instBundle!="":
-					self.setText(i18n.get("REMOVE"))
+					self.setText(i18n.get("BTN_REMOVE"))
 					action="remove"
 				if action=="install":
 					self.setVisible(True)
 					self.setEnabled(True)
-					self.setText(i18n["INSTALL"])
+					self.setText(i18n["BTN_INSTALL"])
 					self.instBundle=""
 				elif action=="open":
 					self.setVisible(True)
 					self.setEnabled(True)
-					self.setText(i18n["OPEN"])
+					self.setText(i18n["BTN_OPEN"])
 					self.instBundle="unknown"
 				else:
 					self.setMenu(None)
-					self.setText(i18n["REMOVE"])
+					self.setText(i18n["BTN_REMOVE"])
 	#def _setActionForButton
 
 	def _loadLaunchers(self,bundlesSorted):
