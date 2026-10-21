@@ -343,34 +343,6 @@ class main(QWidget):
 
 	def _endSuggestsLoad(self,*args):
 		self.suggests.loadSuggests(args[0])
-		return
-		suggests=args[0]
-		iconSize=ICON_SIZE
-		if self.suggests.rect().width()<600:
-			iconSize=48
-		self.suggests.setMaximumHeight(iconSize*1.4)
-		btn=None
-		for app in suggests:
-			btn=QPushButtonRebostApp("{}",iconSize=iconSize)
-			btn.autoUpdate=True
-			btn.setCompactMode(True)
-			btn.clicked.connect(self._loadSuggested)
-			btn.setApp(app)
-			if self.suggests.count()*btn.minimumWidth()+btn.minimumWidth()+MARGIN*self.suggests.count()>self.suggests.rect().width():
-				break
-			self.suggests.addWidget(btn)
-		if btn!=None:
-			self.suggests.setMinimumWidth(int(max((self.suggests.count()*btn.minimumWidth()+btn.minimumWidth()+MARGIN*self.suggests.count())/2,self.suggests.sizeHint().width())))
-		if self.suggests.count()>0:
-			#self.suggests.setMaximumHeight(btn.minimumHeight()+MARGIN*9)
-			self.suggests.show()
-			#for idx in range(0,self.suggests.count()):
-			#for chld in self.suggests.children():
-			#	chld=self.suggests.itemAt(idx)
-			#	if isinstance(chld,QPushButtonRebostApp):
-			#		chld.update()
-		else:
-			self.suggests.hide()
 	#def _endSuggestLoad(self,args):
 
 	def _populateSuggestsList(self):
@@ -379,6 +351,13 @@ class main(QWidget):
 		self._rebost.start()
 	#def _populateSuggestsList
 
+	def _loadSuggestedApp(self,*args):
+		self.screenShot.clear()
+		app=self.oldApp
+		self.oldApp={}
+		self.setParms(args[0].property("metadata"))
+	#def _loadSuggestedApp
+
 	def _defSuggests(self):
 		wdg=QWidget()
 		lay=QVBoxLayout()
@@ -386,6 +365,7 @@ class main(QWidget):
 		lay.setSpacing(MARGIN)
 		lay.addWidget(QLabel(i18n["DETAIL_LBL_RELATED"]))
 		self.suggests=suggestsBar()
+		self.suggests.selected.connect(self._loadSuggestedApp)
 		lay.addWidget(self.suggests)
 		return(wdg)
 	#def _defSuggests
