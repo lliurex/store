@@ -124,7 +124,6 @@ msgid "Release"
 msgstr "Versió"
 
 #: ../src/stacks/extras/i18n.py:29
->>>>>>> devel
 msgid "Open"
 msgstr "Obri"
 
