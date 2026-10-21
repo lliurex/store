@@ -1,3 +1,17 @@
+lliurex-store (1.8) noble; urgency=medium
+
+  * Replace installer by storeInstaller
+  * General improvements
+  * Add subcategories to category bar
+  * Update portrait look&feel
+  * Update detail look&feel
+  * Remove subcategories from global
+  * Remove old code
+  * Centralize i18
+  * Tune performance
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 21 Oct 2026 13:40:38 +0200
+
 lliurex-store (1.7.6.4) noble; urgency=medium
 
   * Installer.py:
