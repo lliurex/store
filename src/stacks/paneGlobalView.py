@@ -106,7 +106,7 @@ class paneGlobalView(QWidget):
 		if self._rebost.isRunning():
 			self._rebost.requestInterruption()
 			self._rebost.blockSignals(True)
-			self._reobst.quit()
+			self._rebost.quit()
 			#self._rebost.wait()
 		self._rebost.start()
 	#def getApps
@@ -150,7 +150,7 @@ class paneGlobalView(QWidget):
 
 	def loadApps(self,apps):
 		self.requestLoadApps.emit(apps)
-	#def _addAppsToGrid
+	#def loadApps
 
 	def updateScreen(self,addEnable=None):
 		try:
@@ -171,12 +171,6 @@ class paneGlobalView(QWidget):
 			print(e)
 			print("-- END ERROR REPORT --<")
 	#def updateScreen
+F
 
-	def updateBtn(self,btn,app):
-		if btn!=None:
-			self.table.indexOf(btn)
-			idx=self.table.indexOf(btn)
-			if idx>=0:
-				btn.setApp(app,updateIcon=True)
-	#def updateBtn
 
