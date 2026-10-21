@@ -175,13 +175,18 @@ class portrait(QStackedWindowItem):
 		self.installingBtn=wdg
 	#def _launchEpi
 
-	def _procEnded(self,*args):
-		#self.installingBtn.updateScreen()
-		app=args[0]
+	def _refreshApp(self,app):
 		self._rebost.blockSignals(True)
 		self._rebost.setAction("refreshApp",app["id"])
 		rapp=self._rebost._refreshApp(app["id"])
 		rapp=self.aux.getAppFromString(rapp)
+		return(rapp)
+	#def _refreshApp
+
+	def _procEnded(self,*args):
+		#self.installingBtn.updateScreen()
+		app=args[0]
+		rapp=self._refreshApp(app)
 		self._rebost.blockSignals(False)
 		bundle=self.helper.getInstalledBundle(rapp)#self._getInstalledBundle()
 		if len(bundle)>0:
@@ -749,6 +754,8 @@ class portrait(QStackedWindowItem):
 					self._homeView.updateScreen()
 			else:
 				self._showPane(self._referrerPane)
+		if self._globalView.isVisible():
+			self._globalView.refreshBtnForApp(args[1])
 		if args[1].get("state",0)>=7:
 			if self.installingBtn==None:
 				self.installingBtn=self.referrerBtn
