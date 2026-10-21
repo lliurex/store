@@ -80,6 +80,7 @@ class QPushButtonRebostApp(QPushButton):
 	def _emitInstall(self,*args):
 		self.progress.show()
 		self.lblFlyIcon.hide()
+		self.btn.setEnabled(False)
 		self.install.emit(self,self.app)
 	#def _emitInstall
 
