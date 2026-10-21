@@ -1,10 +1,11 @@
-lliurex-store (1.8) noble; urgency=medium
+lliurex-store (1.8.1) noble; urgency=medium
 
   * Replaces installer by storeInstaller
   * Centralize i18n
   * New look and feel for portrait
   * General improvements
   * Deprecate/clean code
+  * New libs
 
  -- Juanma1980 <juanma1980@gmail.com>  Wed, 21 Oct 2026 13:36:23 +0200
 
