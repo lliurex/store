@@ -44,10 +44,28 @@ sys.modules["module.name"] = pluginlib
 spec.loader.exec_module(pluginlib)
 pluginHelp=pluginlib
 
+def _getEpiFromPkg(pkg):
+	installedPkg=sys.argv[1]
+	cmd=["dpkg","-L",installedPkg]
+	epiF=""
+	try:
+		out=subprocess.check_output(cmd,universal_newlines=True,encoding="utf8").split("\n")
+	except:
+		out=[]
+	for l in out:
+		if l.strip().endswith(".epi"):
+			epiF=l
+	return(epiF)
+#def _getEpiFromPkg
+
 
 pluginEpic.mapFixes=rebost.getMaps()
 if len(sys.argv)<1:
 	sys.exit(0)
+epiF=_getEpiFromPkg(sys.argv[1])
+if len(epiF)>0 and os.path.isfile(epiF):
+	print("Match {}".format(epiF))
+sys.exit(0)
 epiFile=sys.argv[1]
 if os.path.exists(epiFile):
 	epiInfo={}
