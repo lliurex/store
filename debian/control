@@ -17,8 +17,8 @@ Depends: ${misc:Depends}, ${python3:Depends},
 		python3-pyside6.qtuitools,
 		python3-qtextrawidgets (>=1.0.0),
 		python3-rebost (>=2.3.0), 
-		rebost (>=3.3.0), 
-		rebost-data (>=26.09.07),
+		rebost (>=3.3.4), 
+		rebost-data (>=26.10.21),
 Provides: appsedu
 Conflicts: appsedu
 Replaces: appsedu
