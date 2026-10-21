@@ -148,10 +148,10 @@ class portrait(QStackedWindowItem):
 		self._rebost.setAction("setAppState",app["id"],state)
 		self._rebost.start()
 		self._rebost.wait()
-		return(app)
 	#def _setInstallingState
 
 	def _launchEpi(self,wdg,app,icon=""):
+		print("Launch for: {}".format(wdg))
 		#self.actionBtns.append(self.paneDetails.btn)
 		if self.installingBtn!=None:
 			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.installingBtn.app["name"].capitalize(),timeout=4)
@@ -162,20 +162,18 @@ class portrait(QStackedWindowItem):
 
 	def _procEnded(self,*args):
 		#self.installingBtn.updateScreen()
+		app=args[0]
+		self._rebost.blockSignals(True)
+		rapp=self.aux.getAppFromString(self._rebost._refreshApp(app))
+		self._rebost.blockSignals(False)
+		bundle=self.helper.getInstalledBundle(rapp)#self._getInstalledBundle()
+		if len(bundle)>0:
+			self._setInstallingState(app,1)
+		else:
+			self._setInstallingState(app,2)
+		if self._globalView.isVisible()==True:
+			self._globalView._refreshBtnForApp(rapp)
 		self.installingBtn=None
-		return
-		detailApp=self.paneDetails.app["id"]
-		rapp=self.rebost.refreshApp(app)
-		if app==detailApp:
-			self.paneDetails.refreshApp(rapp)
-		currentBtns=[]
-		for btn in self.actionBtns:
-			if hasattr(btn,"app"):
-				if btn.app["id"]==app:
-					btn.refreshApp(rapp)
-					continue
-			currentBtns.append(btn)
-		self.actionsBtns=currentBtns
 	#def _procEnded
 
 	def _progressShow(self):
