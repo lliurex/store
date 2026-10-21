@@ -149,9 +149,6 @@ class QPushButtonInstaller(QPushButton):
 				self._debug("--- END ---")
 			if bundle=="unknown":
 				bundle="epi"
-			#if self.app.get("status",{}).get(bundle,1)!=1:
-			#	continue
-			#release=self.app.get("versions",{}).get(bundle,"lliurex").split(":")[-1].split("+")[0]
 			wdg=self._btnInstaller(bundle,release)
 			wdg.layout().addWidget(wdg.lblDesc,0,0,1,2,align)
 			self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
@@ -210,14 +207,8 @@ class QPushButtonInstaller(QPushButton):
 				self.setEnabled(False)
 			else: #app seems authorized and available
 				self.setEnabled(True)
-				#bundles=self.app["bundle"]
-				#status=self.app["status"]
-				#zmd=bundles.get("unknown","")
 				action="install"
-				#if zmd==self.app["name"]==self.app["pkgname"]:
-				#	action="open"
-				#else:
-				self.instBundle=self.helper.getInstalledBundle(self.app)#self._getInstalledBundle()
+				self.instBundle=self.helper.getInstalledBundle(self.app)
 				if self.instBundle!="":
 					self.setText(i18n.get("BTN_REMOVE"))
 					action="remove"
