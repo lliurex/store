@@ -18,12 +18,8 @@ def _replaceEpiTemplate(epi,appname,appid,script,descname,iconpath):
 	epi=epi.replace("{@APPNAME}",appname)
 	epi=epi.replace("{@APPID}",appid)
 	epi=epi.replace("{@DESCNAME}",descname)
-	print(" -- ICON -- ")
 	icon=os.path.basename(iconpath)
 	iconpath=os.path.dirname(iconpath)
-	print(iconpath)
-	print(icon)
-	print(" -- ICON --/ ")
 	epi=epi.replace("{@ICONPATH}",iconpath)
 	epi=epi.replace("{@ICON}",icon)
 	return(epi)
@@ -83,19 +79,19 @@ def _installApp(app):
 		#			if l.lower().strip()=="using=pkexec":
 		#				cmd.insert(0,"pkexec")
 	else:
+		appBundle=bundles.bundle()
 		if bundle=="package":
 			#Generate epi file for bundle
-			appBundle=bundles.bundle()
 			appBundle.setKind(bundles.kind.PACKAGE)
 		elif bundle=="flatpak":
 			#Generate epi file for bundle
-			pass
+			appBundle.setKind(bundles.kind.FLATPAK)
 		elif bundle=="snap":
 			#Generate epi file for bundle
-			pass
+			appBundle.setKind(bundles.kind.SNAP)
 		elif bundle=="appimage":
 			#Generate epi file for bundle
-			pass
+			appBundle.setKind(bundles.kind.APPIMAGE)
 		appBundle.setApp(app)
 		epi,script=appBundle.generateEpi()
 		try:

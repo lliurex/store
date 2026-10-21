@@ -4,7 +4,7 @@
  "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
 <policyconfig>
   <action id="net.lliurex.store.installer">
-	<message gettext-domain="lliurex-store">Authentication is required to manage software</message>
+	<message gettext-domain="lliurex-store">To make changes enter your password</message>
     <icon_name>epi-gtk</icon_name>
     <defaults>
       <allow_any>no</allow_any>
