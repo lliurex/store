@@ -143,32 +143,6 @@ class main(QWidget):
 		self.updateScreen()
 	#def _endSetParms
 
-	def _getRunappResults(self,app,proc):
-		self.setCursor(self.oldCursor)
-		if proc==None:
-			return
-		if proc.returncode!=0:
-			#pkexec ret values
-			#127 -> Not authorized
-			if proc.returncode==127:
-				self.showMsg(title="LliureX Store",summary=self.app["name"],text=i18n.get("ERRUNAUTHORIZED"),icon=self.app["icon"],timeout=5000)
-		self._rebost.setAction("setAppState",self.app["id"],0)
-		self._rebost.start()
-		self._rebost.wait()
-		self._setLauncherStatus()
-		return
-	#def _getRunappResults
-
-	def endInstall(self,app=None):
-		if app!=None:
-			self.app=app
-		self._rebost.setAction("setAppState",self.app["id"],0)
-		self._rebost.start()
-		self._rebost.wait()
-		self.cmbBundles.setApp(self.app)
-		self._setLauncherStatus()
-	#def endInstall
-
 	def _setInstallingState(self):
 		if self.cmbBundles.text()==i18n["BTN_REMOVE"]:
 			self.app["state"]=8
@@ -603,6 +577,12 @@ class main(QWidget):
 		self.setCursor(self.oldCursor)
 	#def _updateScreen
 
+	def refreshCmbForApp(self,app):
+		if app["id"]==self.app["id"]:
+			self.app=app
+			self.cmbBundles.setApp(self.app)
+	#def refreshCmbForApp
+
 	def _resetScreen(self,name,icon):
 		self.app={}
 		self.lblIcon.setPixmap(QtGui.QPixmap())
@@ -613,6 +593,23 @@ class main(QWidget):
 		self.app["pkgname"]=""
 		self.app["description"]=""
 	#def _resetScreen
+
+	def _initScreen(self):
+		#Reload config if app has been epified
+		self.showMsg=self.parent().showMsg
+		if len(self.app)>0:
+			self.cmbBundles.setVisible(True)
+			self.lblRelease.setEnabled(True)
+			self.lblRelease.setText(i18n.get("BTN_INSTALL"))
+			self.setCursor(self.oldCursor)
+			self.screenShot.clear()
+			self.lstLinks.clear()
+			self.lblTags.setText("")
+			self.lblTags.hide()
+			self.lblTags.linkActivated.connect(self._tagLinkClicked)
+		else:
+			self._onError()
+	#def _initScreen
 
 	def _onError(self):
 		self._debug("Error detected")
@@ -636,34 +633,3 @@ class main(QWidget):
 		self.loaded.emit(self.app)
 	#def _onError
 
-	def _setLauncherStatus(self):
-		if int(self.app.get("state","0"))>=7:
-			try:
-				self.cmbBundles.blockSignals(True)
-			except Exception as e: #Don't worry
-				print(e)
-			self.cmbBundles.setCursor(QtGui.QCursor(Qt.WaitCursor))
-		else:
-			try:	
-				self.cmbBundles.blockSignals(False)
-			except: #Be happy
-				pass
-			self.cmbBundles.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
-	#def _setLauncherStatus
-
-	def _initScreen(self):
-		#Reload config if app has been epified
-		self.showMsg=self.parent().showMsg
-		if len(self.app)>0:
-			self.cmbBundles.setVisible(True)
-			self.lblRelease.setEnabled(True)
-			self.lblRelease.setText(i18n.get("BTN_INSTALL"))
-			self.setCursor(self.oldCursor)
-			self.screenShot.clear()
-			self.lstLinks.clear()
-			self.lblTags.setText("")
-			self.lblTags.hide()
-			self.lblTags.linkActivated.connect(self._tagLinkClicked)
-		else:
-			self._onError()
-	#def _initScreen

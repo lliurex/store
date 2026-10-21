@@ -26,10 +26,7 @@ class paneGlobalView(QWidget):
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("mp")
 		self.installEventFilter(self)
-		self.loading=False
-		self.referersShowed={}
-		self.appsToLoad=0
-		self.refresh=True
+		self.appsLoaded={}
 		self.__initScreen__()
 	#def __init__
 
@@ -113,7 +110,7 @@ class paneGlobalView(QWidget):
 
 	def loadAppsStop(self):
 		self.stopAdding=True
-	#def stopLoadApps
+	#def loadAppsStop
 
 	def _emitLoadDetails(self,*args):
 		app=args[1]
@@ -129,7 +126,7 @@ class paneGlobalView(QWidget):
 	#def _emitInstallApp
 
 	def _loadApps(self,apps):
-		pendingApps={}
+		self.appsLoaded={}
 		self.stopAdding=False
 		self.table.setSpacing(MARGIN*5)
 		while apps:
@@ -145,6 +142,7 @@ class paneGlobalView(QWidget):
 			btn.clicked.connect(self._emitLoadDetails)
 			btn.installEventFilter(self)
 			btn.install.connect(self._emitInstallApp)
+			self.appsLoaded[jsonapp["id"]]=btn
 			self.table.addWidget(btn)
 	#def _loadApps
 
@@ -152,25 +150,11 @@ class paneGlobalView(QWidget):
 		self.requestLoadApps.emit(apps)
 	#def loadApps
 
-	def updateScreen(self,addEnable=None):
-		try:
-			if isinstance(addEnable,bool):
-				adding=addEnable
-			else:
-				adding=False
-			if self.loading==True:
-				adding=False
-			if self.refresh==True and adding==True:
-				for i in self.referersShowed.keys():
-					self.referersShowed[i]=None
-				#self._debug("Update from {} to {} of {}".format(self.appsLoaded,self.appsToLoad,len(self.apps)))
-				#self._beginLoadData(self.appsLoaded,self.appsToLoad)
-			#elif self.appsToLoad==-1: #Init 
-		except Exception as e:
-			print("-- ERROR UPDATING SCREEN -->")
-			print(e)
-			print("-- END ERROR REPORT --<")
-	#def updateScreen
-F
+	def refreshBtnForApp(self,rapp):
+		#Search for app in loaded buttons and update it
+		btn=self.appsLoaded.get(rapp["id" ])
+		if btn!=None:
+			btn.setApp(rapp,updateIcon=True)
+	#def updateBtn
 
 

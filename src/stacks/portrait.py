@@ -151,7 +151,6 @@ class portrait(QStackedWindowItem):
 	#def _setInstallingState
 
 	def _launchEpi(self,wdg,app,icon=""):
-		print("Launch for: {}".format(wdg))
 		#self.actionBtns.append(self.paneDetails.btn)
 		if self.installingBtn!=None:
 			self.showMsg(summary=i18n.get("ERRMORETHANONE",""),text=self.installingBtn.app["name"].capitalize(),timeout=4)
@@ -164,7 +163,9 @@ class portrait(QStackedWindowItem):
 		#self.installingBtn.updateScreen()
 		app=args[0]
 		self._rebost.blockSignals(True)
-		rapp=self.aux.getAppFromString(self._rebost._refreshApp(app))
+		self._rebost.setAction("refreshApp",app["id"])
+		rapp=self._rebost._refreshApp(app["id"])
+		rapp=self.aux.getAppFromString(rapp)
 		self._rebost.blockSignals(False)
 		bundle=self.helper.getInstalledBundle(rapp)#self._getInstalledBundle()
 		if len(bundle)>0:
@@ -172,7 +173,9 @@ class portrait(QStackedWindowItem):
 		else:
 			self._setInstallingState(app,2)
 		if self._globalView.isVisible()==True:
-			self._globalView._refreshBtnForApp(rapp)
+			self._globalView.refreshBtnForApp(rapp)
+		if self._detailView.isVisible()==True:
+			self._detailView.refreshCmbForApp(rapp)
 		self.installingBtn=None
 	#def _procEnded
 
@@ -734,10 +737,6 @@ class portrait(QStackedWindowItem):
 		if args[1].get("state",0)>=7:
 			if self.installingBtn==None:
 				self.installingBtn=self.referrerBtn
-		if self._globalView.isVisible()==True:
-			self._globalView.updateBtn(self.referrerBtn,args[1])
-		elif self._homeView.isVisible()==True and self.referrerBtn!=None:
-			self._homeView.updateBtn(self.referrerBtn,args[1])
 		self.referrerBtn=None
 		self._return(args,kwargs)
 	#def _returnFromDetail
