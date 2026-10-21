@@ -139,6 +139,7 @@ class main(QWidget):
 			#for bundle,name in (self.app.get('bundle',{}).items()):
 			#	if bundle=='package':
 			#		continue
+		self.setEnabled(True)
 		self.setCursor(self.oldCursor)
 		self.updateScreen()
 	#def _endSetParms
@@ -326,9 +327,10 @@ class main(QWidget):
 	#def _populateSuggestsList
 
 	def _loadSuggestedApp(self,*args):
-		self.screenShot.clear()
+		self.setCursor(Qt.WaitCursor)
 		app=self.oldApp
 		self.oldApp={}
+		self.setEnabled(False)
 		self.setParms(args[0].property("metadata"))
 	#def _loadSuggestedApp
 
