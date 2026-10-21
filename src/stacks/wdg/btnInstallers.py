@@ -168,6 +168,7 @@ class QPushButtonInstaller(QPushButton):
 	#def _setAppAssisted
 
 	def _setAppWebApp(self):
+		self.instBundle=""
 		self.setEnabled(True)
 		self.setText(i18n["BTN_WEBAPP"])
 	#def _setAppWebApp
