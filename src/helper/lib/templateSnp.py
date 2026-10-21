@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import lib.template
+import lib.template as template
 
 class templateSnp():
 	def __init__(self,parent=None):

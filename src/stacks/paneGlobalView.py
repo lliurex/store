@@ -8,18 +8,12 @@ from QtExtraWidgets import QFlowTouchWidget
 from wdg.btnRebost import QPushButtonRebostApp
 import extras.css as css
 from extras.constants import *
-import gettext
-_ = gettext.gettext
-
-i18n={
-	"ALL":_("All"),
-	"SEARCH":_("Search"),
-	}
+from extras.i18n import *
 
 class paneGlobalView(QWidget):
 	requestLoadApps=Signal("PyObject")
 	requestLoadDetails=Signal("PyObject","PyObject","PyObject")
-	requestInstallApp=Signal("PyObject","PyObject")
+	requestInstallApp=Signal("PyObject",dict,"PyObject")
 	def __init__(self,*args,**kwargs):
 		super().__init__()
 		if len(args)<1:
@@ -32,10 +26,7 @@ class paneGlobalView(QWidget):
 		self.setAttribute(Qt.WA_StyledBackground, True)
 		self.setObjectName("mp")
 		self.installEventFilter(self)
-		self.loading=False
-		self.referersShowed={}
-		self.appsToLoad=0
-		self.refresh=True
+		self.appsLoaded={}
 		self.__initScreen__()
 	#def __init__
 
@@ -112,14 +103,14 @@ class paneGlobalView(QWidget):
 		if self._rebost.isRunning():
 			self._rebost.requestInterruption()
 			self._rebost.blockSignals(True)
-			self._reobst.quit()
+			self._rebost.quit()
 			#self._rebost.wait()
 		self._rebost.start()
 	#def getApps
 
 	def loadAppsStop(self):
 		self.stopAdding=True
-	#def stopLoadApps
+	#def loadAppsStop
 
 	def _emitLoadDetails(self,*args):
 		app=args[1]
@@ -128,11 +119,14 @@ class paneGlobalView(QWidget):
 	#def _emitLoadDetails
 
 	def _emitInstallApp(self,*args):
-		self.requestInstallApp.emit(args[0],args[1])
+		btn=args[0]
+		icon=btn.iconUri.pixmap()
+		app=args[1]
+		self.requestInstallApp.emit(btn,app,icon)
 	#def _emitInstallApp
 
 	def _loadApps(self,apps):
-		pendingApps={}
+		self.appsLoaded={}
 		self.stopAdding=False
 		self.table.setSpacing(MARGIN*5)
 		while apps:
@@ -148,38 +142,19 @@ class paneGlobalView(QWidget):
 			btn.clicked.connect(self._emitLoadDetails)
 			btn.installEventFilter(self)
 			btn.install.connect(self._emitInstallApp)
+			self.appsLoaded[jsonapp["id"]]=btn
 			self.table.addWidget(btn)
 	#def _loadApps
 
 	def loadApps(self,apps):
 		self.requestLoadApps.emit(apps)
-	#def _addAppsToGrid
+	#def loadApps
 
-	def updateScreen(self,addEnable=None):
-		try:
-			if isinstance(addEnable,bool):
-				adding=addEnable
-			else:
-				adding=False
-			if self.loading==True:
-				adding=False
-			if self.refresh==True and adding==True:
-				for i in self.referersShowed.keys():
-					self.referersShowed[i]=None
-				#self._debug("Update from {} to {} of {}".format(self.appsLoaded,self.appsToLoad,len(self.apps)))
-				#self._beginLoadData(self.appsLoaded,self.appsToLoad)
-			#elif self.appsToLoad==-1: #Init 
-		except Exception as e:
-			print("-- ERROR UPDATING SCREEN -->")
-			print(e)
-			print("-- END ERROR REPORT --<")
-	#def updateScreen
-
-	def updateBtn(self,btn,app):
+	def refreshBtnForApp(self,rapp):
+		#Search for app in loaded buttons and update it
+		btn=self.appsLoaded.get(rapp["id" ])
 		if btn!=None:
-			self.table.indexOf(btn)
-			idx=self.table.indexOf(btn)
-			if idx>=0:
-				btn.setApp(app,updateIcon=True)
+			btn.setApp(rapp,updateIcon=True)
 	#def updateBtn
+
 

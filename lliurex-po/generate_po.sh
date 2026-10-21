@@ -1,12 +1,12 @@
 #!/bin/bash
 
-GUI_FILES="../src/*.py ../src/stacks/*.py ../src/helper/*py"
+GUI_FILES="../src/stacks/extras/i18n.py"
 
 mkdir -p lliurex-store
 
 xgettext $GUI_FILES -o lliurex-store/lliurex-store.pot
 
-#Categories
+#Freedesktop Categories
 CATs=$(qdbus --system --literal net.lliurex.rebost /net/lliurex/rebost net.lliurex.rebost.getFreedesktopCategories)
 if [[ $? -eq 0 ]]
 then
@@ -23,7 +23,6 @@ then
 	IFS=$'\"'
 	for i in ${CATs}
 	do
-		echo $i
 		b=${i/ /}
 		[ ${#i} -ne ${#b} ] && continue
 		[ ${#i} -lt 2 ] && continue
@@ -37,6 +36,38 @@ then
 		fi
 	done
 fi
+
+#Categories
+CATs=$(qdbus --system --literal net.lliurex.rebost /net/lliurex/rebost net.lliurex.rebost.getCategories)
+echo "$CATs"
+if [[ $? -eq 0 ]]
+then
+	CATs=${CATs//[/}
+	CATs=${CATs//]/}
+	CATs=${CATs//\{/}
+	CATs=${CATs//\}/}
+	CATs=${CATs//,/}
+	CATs=${CATs//:/}
+	CATs=${CATs//=/}
+	SEEN=""
+	#CAT=($CAT)
+	echo "" >> lliurex-store/lliurex-store.pot
+	IFS=$'\"'
+	for i in ${CATs}
+	do
+		echo $i
+		[ ${#i} -lt 2 ] && continue
+		if [ x${i// /} != "x" ]
+		then
+			[ $(grep msgid.*\"$i\"$ lliurex-store/lliurex-store.pot >/dev/null 2>&1;echo $?) -eq 0 ] && continue
+			echo "">> lliurex-store/lliurex-store.pot
+			echo "#">> lliurex-store/lliurex-store.pot
+			echo "msgid \"${i//_/}\""  >> lliurex-store/lliurex-store.pot
+			echo "msgstr \"\"" >> lliurex-store/lliurex-store.pot
+		fi
+	done
+fi
+echo "" >> lliurex-store/lliurex-store.pot
 
 #Polkit
 
