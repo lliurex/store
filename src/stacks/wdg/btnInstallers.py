@@ -112,9 +112,29 @@ class QPushButtonInstaller(QPushButton):
 			self._emitInstall(None,{"name":"{}<br>{}".format(self.app["id"],bundle)})
 	#def mousePressEvent
 
+	def _btnInstaller(self,bundle,release):
+		wdg=QPushInfoButton(overlay=False,scroll=False)
+		wdg.defaultSize=72
+		wdg.loadImgSync(os.path.join(RSRC,"application-vnd.{}.png".format(bundle)))
+		wdg.lblDesc.setText("<strong>{}</strong>".format(bundle.capitalize()))
+		wdg.lblDesc.setAttribute(Qt.WA_StyledBackground, True)
+		clrBkg="#002c4f00"
+		clrBkg="0,44,79,0.8"
+		wdg.lblDesc.setStyleSheet("""border-radius:5px;padding:1px;background:rgba(%s);color:white;border:1px solid %s;"""%(clrBkg,COLOR_BORDER))
+		wdg.lblDesc.setFixedWidth(ICON_SIZE)
+		wdg.lblDesc.setAlignment(Qt.AlignCenter)
+		release=release[0:min(10,len(release))]
+		wdg.setToolTip(release)
+		wdg.clicked.connect(self._emitInstall)
+		wdg.setMaximumWidth(ICON_SIZE/3)
+		wdg.layout().setContentsMargins(6,0,6,3)
+		return(wdg)
+	#def _btnInstaller(self,bundle):
+
 	def _populateInstallers(self,bundlesSorted):
 		cont=0
 		epi=False
+		align=Qt.AlignCenter|Qt.AlignBottom
 		for idx,bundleData in bundlesSorted.items():
 			try:
 				bundleData=bundleData.strip()
@@ -132,26 +152,11 @@ class QPushButtonInstaller(QPushButton):
 			#if self.app.get("status",{}).get(bundle,1)!=1:
 			#	continue
 			#release=self.app.get("versions",{}).get(bundle,"lliurex").split(":")[-1].split("+")[0]
-			release=release[0:min(10,len(release))]
-			wdg=QPushInfoButton(overlay=False,scroll=False)
-			wdg.defaultSize=72
-			wdg.loadImgSync(os.path.join(RSRC,"application-vnd.{}.png".format(bundle)))
-			wdg.lblDesc.setText(bundle.capitalize())
-			wdg.layout().setContentsMargins(6,0,6,3)
-			wdg.layout().addWidget(wdg.lblDesc,1,0,1,2)
-#{"name":"{}<br>{}".format(release,bundle.capitalize()),"icon":})
-			wdg.clicked.connect(self._emitInstall)
-			#wdg.setCompactMode(True)
-			wdg.setMaximumWidth(ICON_SIZE/3)
-			if cont==0:
-				wdg.flyIcon=QPixmap(os.path.join(RSRC,"emblem-favorite32x32.png"))
-				#wdg.lblFlyIcon.setPixmap(wdg.flyIcon.scaled(16,16,Qt.KeepAspectRatioByExpanding,Qt.FastTransformation))
-				#wdg.lblFlyIcon.show()
-			if bundle=="epi":
-				epi=True
-				self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
-			elif epi==False:
-				self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
+			wdg=self._btnInstaller(bundle,release)
+			wdg.layout().addWidget(wdg.lblDesc,0,0,1,2,align)
+			self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
+			if bundle=="epi": #epi at idx[0] so don't process more
+				break
 			cont+=1
 	#def _populateInstallers
 
