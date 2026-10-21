@@ -10,14 +10,15 @@ Homepage: https://github.com/lliurex/rebost
 Package: lliurex-store
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, 
-		rebost (>=3.2.5), 
-		rebost-data (>=26.09.07),
-		python3-rebost (>=2.1.1-0llx23), 
-		python3-qtextrawidgets(>=1.0.0),
-		python3-pyside2.qtgui, 
-		python3-pyside2.qtcore,
-		python3-pyside2.qtuitools,
-		lliurex-store-dbus
+		lliurex-store-dbus,
+		python3-app2menu,
+		python3-pyside6.qtgui, 
+		python3-pyside6.qtcore,
+		python3-pyside6.qtuitools,
+		python3-qtextrawidgets (>=1.0.1),
+		python3-rebost (>=2.3.0), 
+		rebost (>=3.3.4), 
+		rebost-data (>=26.10.21),
 Provides: appsedu
 Conflicts: appsedu
 Replaces: appsedu
