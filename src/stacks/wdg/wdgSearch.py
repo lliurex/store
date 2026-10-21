@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os
-from PySide6.QtWidgets import QWidget,QPushButton,QHBoxLayout,QSizePolicy,QLineEdit,QPushButton
-from PySide6.QtGui import QIcon,Qt
-from PySide6.QtCore import Signal,QSize
+from PySide2.QtWidgets import QWidget,QPushButton,QHBoxLayout,QSizePolicy,QLineEdit,QPushButton
+from PySide2.QtGui import QIcon,Qt
+from PySide2.QtCore import Signal,QSize
 from QtExtraWidgets import QSearchBox
 from extras.i18n import *
 from extras.constants import *

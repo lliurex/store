@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os
-from PySide6.QtCore import Qt,QSize,Signal
-from PySide6.QtWidgets import QScrollArea,QHBoxLayout,QWidget,QGridLayout,QPushButton,QHeaderView,QSizePolicy
-from PySide6.QtGui import QIcon,QColor,QPainter,QLinearGradient
+from PySide2.QtCore import Qt,QSize,Signal
+from PySide2.QtWidgets import QScrollArea,QHBoxLayout,QWidget,QGridLayout,QPushButton,QHeaderView,QSizePolicy
+from PySide2.QtGui import QIcon,QColor,QPainter,QLinearGradient
 from QtExtraWidgets import QTableTouchWidget,QPushInfoButton
 from extras.constants import *
 

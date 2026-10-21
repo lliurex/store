@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os
-from PySide6.QtWidgets import QLabel, QPushButton,QWidget,QGridLayout
-from PySide6.QtCore import Qt,Signal,QSize
-from PySide6.QtGui import QIcon
+from PySide2.QtWidgets import QLabel, QPushButton,QWidget,QGridLayout
+from PySide2.QtCore import Qt,Signal,QSize
+from PySide2.QtGui import QIcon
 import extras.css as css
 from extras.constants import *
 from extras.i18n import *

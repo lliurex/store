@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-#from PySide6.QtWidgets import QListWidget,QListWidgetItem
-from PySide6.QtWidgets import QTreeWidget,QTreeWidgetItem
-from PySide6.QtCore import Qt,Signal
-from PySide6.QtGui import QCursor
+#from PySide2.QtWidgets import QListWidget,QListWidgetItem
+from PySide2.QtWidgets import QTreeWidget,QTreeWidgetItem
+from PySide2.QtCore import Qt,Signal
+from PySide2.QtGui import QCursor
 from extras.constants import *
 import gettext
 _ = gettext.gettext

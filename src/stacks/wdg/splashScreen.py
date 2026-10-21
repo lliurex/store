@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-from PySide6.QtWidgets import QMainWindow,QLabel
-from PySide6.QtCore import Qt,QTimer
+from PySide2.QtWidgets import QMainWindow,QLabel
+from PySide2.QtCore import Qt,QTimer
 
 class QSplashWidget(QMainWindow):
 	def __init__(self,icn,*args):
