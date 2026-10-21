@@ -55,7 +55,6 @@ class QPushButtonInstaller(QPushButton):
 		if self.instBundle!="":
 			bundle=self.instBundle
 		self.installerClicked.emit(bundle)
-		time.sleep(2)
 		if args[0]!=None:
 			args[0].setCursor(Qt.PointingHandCursor)
 		else:
