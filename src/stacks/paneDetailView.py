@@ -122,7 +122,10 @@ class main(QWidget):
 			else:
 				self.app=self.aux.getAppFromString(app)
 		if len(self.app)>0:
-			if "ERR" in self.app.keys():
+			if isinstance(self.app,dict):
+				if "ERR" in self.app.keys():
+					self._onError()
+			else:
 				self._onError()
 			homepage=self.app.get('homepage','')
 			if isinstance(homepage,str)==False:
