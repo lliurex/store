@@ -621,8 +621,6 @@ class main(QWidget):
 		qpal=QtGui.QPalette()
 		color=qpal.color(QtGui.QPalette.Dark)
 		self.parent().setWindowTitle("LLiureX - {}".format("ERROR"))
-		if "Forbidden" not in self.app.get("categories",[]):
-			self.app["categories"]=["Forbidden"]
 		self.cmbBundles.setEnabled(False)
 		self.lblRelease.setEnabled(False)
 		self.blur=QGraphicsBlurEffect() 
