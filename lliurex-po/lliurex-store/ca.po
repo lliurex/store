@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 09:35+0200\n"
-"PO-Revision-Date: 2026-10-16 09:39+0200\n"
+"POT-Creation-Date: 2026-10-21 13:18+0200\n"
+"PO-Revision-Date: 2026-10-21 13:22+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -18,7 +18,67 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: ../src/stacks/paneDetailView.py:24
+#: ../src/stacks/extras/i18n.py:5
+msgid "All"
+msgstr "Tot"
+
+#: ../src/stacks/extras/i18n.py:6
+msgid "Available"
+msgstr "Disponibles"
+
+#: ../src/stacks/extras/i18n.py:7
+msgid "Assisted"
+msgstr "Atesa"
+
+#: ../src/stacks/extras/i18n.py:8
+msgid "Install"
+msgstr "Instal·la"
+
+#: ../src/stacks/extras/i18n.py:9
+msgid "Z-Install"
+msgstr "Instal·la"
+
+#: ../src/stacks/extras/i18n.py:10 ../src/stacks/extras/i18n.py:56
+msgid "Remove"
+msgstr "Elimina"
+
+#: ../src/stacks/extras/i18n.py:11
+msgid "Blocked"
+msgstr "Bloquejada"
+
+#: ../src/stacks/extras/i18n.py:12
+msgid "Unavailable"
+msgstr "Pendent"
+
+#: ../src/stacks/extras/i18n.py:13
+msgid "Web app"
+msgstr "Web app"
+
+#: ../src/stacks/extras/i18n.py:14
+msgid "What's this?"
+msgstr "Què és açò?"
+
+#: ../src/stacks/extras/i18n.py:15
+msgid "Filter by category"
+msgstr "Filtrar per categoria"
+
+#: ../src/stacks/extras/i18n.py:16
+msgid "Certified by Appsedu"
+msgstr "Certificades per Appsedu"
+
+#: ../src/stacks/extras/i18n.py:17
+msgid "Store was unable to get information from internet"
+msgstr "Sembla que no hi ha connexió a internet"
+
+#: ../src/stacks/extras/i18n.py:18 ../src/stacks/extras/i18n.py:59
+msgid "Portrait"
+msgstr "Portada"
+
+#: ../src/stacks/extras/i18n.py:19
+msgid "Navigate through all applications"
+msgstr "Mostra totes les aplicacions"
+
+#: ../src/stacks/extras/i18n.py:20
 msgid ""
 "The app could not be loaded. Until included in LliureX catalogue it can't be "
 "installed"
@@ -26,7 +86,7 @@ msgstr ""
 "No es pot carregar la app. Fins que no estiga catalogada a  <a "
 "href=\"https://portal.edu.gva.es/appsedu/\">appsedu</a> no estarà disponible"
 
-#: ../src/stacks/paneDetailView.py:25
+#: ../src/stacks/extras/i18n.py:21
 msgid ""
 "For any question the SAI can be contacted at <a href='https://portal.edu.gva."
 "es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
@@ -35,197 +95,150 @@ msgstr ""
 "href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/"
 "sai/es/inicio/</a>"
 
-#: ../src/stacks/paneDetailView.py:26 ../src/stacks/portrait.py:39
-msgid "Could not open"
-msgstr "No s'ha pogut obrir"
-
-#: ../src/stacks/paneDetailView.py:27 ../src/stacks/portrait.py:40
-msgid "Error opening"
-msgstr "Error carregant"
-
-#: ../src/stacks/paneDetailView.py:28 ../src/stacks/portrait.py:41
-msgid "There's another action in progress"
-msgstr "S'està executant una altra acció"
-
-#: ../src/stacks/paneDetailView.py:29 ../src/stacks/portrait.py:43
+#: ../src/stacks/extras/i18n.py:22 ../src/stacks/extras/i18n.py:36
 msgid "System apps can't be removed"
 msgstr "Aplicació de base. No es desinstal·larà"
 
-#: ../src/stacks/paneDetailView.py:30 ../src/stacks/portrait.py:44
+#: ../src/stacks/extras/i18n.py:23 ../src/stacks/extras/i18n.py:37
 msgid "Unknown error"
 msgstr "Error desconegut"
 
-#: ../src/stacks/paneDetailView.py:31
+#: ../src/stacks/extras/i18n.py:24
 msgid "App unauthorized"
 msgstr "App no autoritzada"
 
-#: ../src/stacks/paneDetailView.py:32
+#: ../src/stacks/extras/i18n.py:25
 msgid "For more info go to"
 msgstr "Per a més informació anar a"
 
-#: ../src/stacks/paneDetailView.py:33 ../src/stacks/portrait.py:49
-msgid "Install"
-msgstr "Instal·la"
-
-#: ../src/stacks/paneDetailView.py:34
+#: ../src/stacks/extras/i18n.py:26
 msgid "More apps"
 msgstr "Més apps"
 
-#: ../src/stacks/paneDetailView.py:35 ../src/stacks/portrait.py:54
-msgid "Z·Install"
-msgstr "Instal·la"
-
-#: ../src/stacks/paneDetailView.py:36
+#: ../src/stacks/extras/i18n.py:27
 msgid "Opening"
 msgstr "Obrint"
 
-#: ../src/stacks/paneDetailView.py:37
+#: ../src/stacks/extras/i18n.py:28
 msgid "Release"
 msgstr "Versió"
 
-#: ../src/stacks/paneDetailView.py:38 ../src/stacks/portrait.py:56
-msgid "Remove"
-msgstr "Elimina"
-
-#: ../src/stacks/paneDetailView.py:39
+#: ../src/stacks/extras/i18n.py:29
+>>>>>>> devel
 msgid "Open"
 msgstr "Obri"
 
-#: ../src/stacks/paneDetailView.py:40
+#: ../src/stacks/extras/i18n.py:30
 msgid "See at Appsedu"
 msgstr "Mostrar en Appsedu"
 
-#: ../src/stacks/paneDetailView.py:41
+#: ../src/stacks/extras/i18n.py:31
 msgid "Website"
 msgstr "Lloc web"
 
-#: ../src/stacks/paneDetailView.py:42
-msgid "Blocked"
-msgstr "Bloquejada"
+#: ../src/stacks/extras/i18n.py:32
+msgid "Could not open"
+msgstr "No s'ha pogut obrir"
 
-#: ../src/stacks/paneDetailView.py:43
-msgid "Unavailable"
-msgstr "Pendent"
+#: ../src/stacks/extras/i18n.py:33
+msgid "Error opening"
+msgstr "Error carregant"
 
-#: ../src/stacks/paneErrorView.py:13 ../src/stacks/portrait.py:62
-msgid "Store was unable to get information from internet"
-msgstr "Sembla que no hi ha connexió a internet"
+#: ../src/stacks/extras/i18n.py:34
+msgid "There's another action in progress"
+msgstr "S'està executant una altra acció"
 
-#: ../src/stacks/paneErrorView.py:14 ../src/stacks/portrait.py:63
-msgid "Open network settings"
-msgstr "Configurar accés a la xarxa"
-
-#: ../src/stacks/paneErrorView.py:15
-msgid "Go to store anyway"
-msgstr "Anar a la botiga"
-
-#: ../src/stacks/paneGlobalView.py:15 ../src/stacks/portrait.py:33
-msgid "All"
-msgstr "Tot"
-
-#: ../src/stacks/paneGlobalView.py:16 ../src/stacks/portrait.py:57
-msgid "Search"
-msgstr "Cerca"
-
-#: ../src/stacks/paneHomeView.py:19
-msgid "Blog entries"
-msgstr "Entrades al blog"
-
-#: ../src/stacks/paneHomeView.py:20
-msgid "Latest apps in appsedu"
-msgstr "Últimes aplicacions a AppsEdu"
-
-#: ../src/stacks/paneHomeView.py:21
-msgid "Relevant categories"
-msgstr "Categories  mès rellevants"
-
-#: ../src/stacks/paneHomeView.py:22
-msgid "Editor's choice"
-msgstr "Selecció de LliureX"
-
-#: ../src/stacks/portrait.py:34
-msgid "Available"
-msgstr "Disponibles"
-
-#: ../src/stacks/portrait.py:35
-msgid "Filter by category"
-msgstr "Filtrar per categoria"
-
-#: ../src/stacks/portrait.py:36
-msgid "Certified by Appsedu"
-msgstr "Certificades per Appsedu"
-
-#: ../src/stacks/portrait.py:37 ../src/stacks/portrait.py:59
-msgid "Portrait"
-msgstr "Portada"
-
-#: ../src/stacks/portrait.py:38
-msgid "Navigate through all applications"
-msgstr "Mostra totes les aplicacions"
-
-#: ../src/stacks/portrait.py:42
+#: ../src/stacks/extras/i18n.py:35
 msgid "Authorization is required"
 msgstr "Cal autenticar-se per a gestionar l'aplicació"
 
-#: ../src/stacks/portrait.py:45
+#: ../src/stacks/extras/i18n.py:38
 msgid "Filters"
 msgstr "Filtres"
 
-#: ../src/stacks/portrait.py:46
+#: ../src/stacks/extras/i18n.py:39
 msgid "Filter by formats and states"
 msgstr "Filtrar per formats i estats"
 
-#: ../src/stacks/portrait.py:47
+#: ../src/stacks/extras/i18n.py:40
 msgid "Home"
 msgstr "Inici"
 
-#: ../src/stacks/portrait.py:48
+#: ../src/stacks/extras/i18n.py:41
 msgid "Main page"
 msgstr "Pàgina principal"
 
-#: ../src/stacks/portrait.py:50
+#: ../src/stacks/extras/i18n.py:42
+msgid "Blog entries"
+msgstr "Entrades al blog"
+
+#: ../src/stacks/extras/i18n.py:43
+msgid "Latest apps in appsedu"
+msgstr "Últimes aplicacions a AppsEdu"
+
+#: ../src/stacks/extras/i18n.py:44
+msgid "Relevant categories"
+msgstr "Categories  mès rellevants"
+
+#: ../src/stacks/extras/i18n.py:45
+msgid "Editor's choice"
+msgstr "Selecció de LliureX"
+
+#: ../src/stacks/extras/i18n.py:46
 msgid "Installed"
 msgstr "Instal·lats"
 
-#: ../src/stacks/portrait.py:51
+#: ../src/stacks/extras/i18n.py:47
 msgid "Launch LliurexUp"
 msgstr "LliurexUp"
 
-#: ../src/stacks/portrait.py:52
+#: ../src/stacks/extras/i18n.py:48
 msgid "Show applications"
 msgstr "Mostra les aplicacions"
 
-#: ../src/stacks/portrait.py:53
+#: ../src/stacks/extras/i18n.py:49
 msgid "Updating info"
 msgstr "Actualitzant dades"
 
-#: ../src/stacks/portrait.py:55
+#: ../src/stacks/extras/i18n.py:50
+msgid "Z·Install"
+msgstr "Instal·la"
+
+#: ../src/stacks/extras/i18n.py:51
+msgid "Open network settings"
+msgstr "Configurar accés a la xarxa"
+
+#: ../src/stacks/extras/i18n.py:52
+msgid "Origin"
+msgstr "Origen"
+
+#: ../src/stacks/extras/i18n.py:53
+msgid "Click: Show only from"
+msgstr "Click: Restringir a"
+
+#: ../src/stacks/extras/i18n.py:54
+msgid "Click: Show all applications"
+msgstr "Click: Mostrar tot"
+
+#: ../src/stacks/extras/i18n.py:55
 msgid "Reload Apps"
 msgstr "Actualitzar"
 
-#: ../src/stacks/portrait.py:58
+#: ../src/stacks/extras/i18n.py:57
+msgid "Search"
+msgstr "Cerca"
+
+#: ../src/stacks/extras/i18n.py:58
 msgid "Sort alphabetically"
 msgstr "Ordre alfabètic"
 
-#: ../src/stacks/portrait.py:60
+#: ../src/stacks/extras/i18n.py:60
 msgid "Upgradables"
 msgstr "Actualitzables"
 
-#: ../src/stacks/portrait.py:61
+#: ../src/stacks/extras/i18n.py:61
 msgid "Updates available"
 msgstr "Actualitzacions disponibles"
-
-#: ../src/helper/addEpi.py:13
-msgid "includes more than one package.<br>What to do?"
-msgstr "inclou mès d'una aplicació.<br>¿Que fer?"
-
-#: ../src/helper/addEpi.py:14
-msgid "Install later"
-msgstr "Instaŀlar mès tard"
-
-#: ../src/helper/addEpi.py:15
-msgid "Install one"
-msgstr "Obrir"
 
 msgid "AudioVideo"
 msgstr "Vídeo i so"
@@ -597,446 +610,132 @@ msgstr "Rellotge"
 msgid "TextEditor"
 msgstr "Editors de text"
 
-msgid "To make changes enter your password"
-msgstr "Inserir contrasenya d'usuari per continuar"
+msgid "LliureX-Infantil"
+msgstr "Lliurex-Infantil"
 
-#~ msgid "Authentication is required to manage software"
-#~ msgstr "Cal autenticar-se per a gestionar l'aplicació"
+msgid "3D Graphics"
+msgstr "Gràfics 3D"
 
-#~ msgid "Go to portrait"
-#~ msgstr "Portada"
+msgid "Video Apps"
+msgstr "Video"
 
-#~ msgid "Show installed apps"
-#~ msgstr "Programari instaŀlat"
+msgid "Utilities"
+msgstr "Utilitat"
 
-#~ msgid "Origin"
-#~ msgstr "Origen"
-
-#~ msgid "Click: Show only from"
-#~ msgstr "Click: Restringir a"
-
-#~ msgid "Click: Show all applications"
-#~ msgstr "Click: Mostrar tot"
-
-#~ msgid "Reload applications"
-#~ msgstr "Refrescar botiga"
-
-#~ msgid "Assisted"
-#~ msgstr "Atesa"
-
-#~ msgid "What's this?"
-#~ msgstr "Què és açò?"
-
-#~ msgid "Z-Install"
-#~ msgstr "Instal·la"
-
-#~ msgid "Web app"
-#~ msgstr "Web app"
-
-#~ msgid "Downloading information, wait a moment..."
-#~ msgstr "Descarregant informació, espere un moment..."
-
-#~ msgid "Upgrading application database"
-#~ msgstr "Actualitzant la base de dades de les aplicacions"
-
-#~ msgid "Loading available applications"
-#~ msgstr "Carregant els catàlegs d'aplicacions"
-
-#~ msgid "There're upgrades available"
-#~ msgstr "Hi han actualitzacions pendents"
-
-#~ msgid "ALL"
-#~ msgstr "Tot"
-
-#~ msgid "Choose"
-#~ msgstr "Triar"
-
-#~ msgid "Details"
-#~ msgstr "Detalls"
-
-#~ msgid "Format"
-#~ msgstr "Format"
-
-#~ msgid "Info"
-#~ msgstr "Informació"
-
-#~ msgid "Show application detail"
-#~ msgstr "Mostra els detalls"
-
-#~ msgid "Upgrade"
-#~ msgstr "Actualitza"
-
-#~ msgid "Zommand not found. Open Zero-Center?"
-#~ msgstr "No trobat. Obrir el Zero-Center?"
+msgid "Video Editors"
+msgstr "Edició de video i so"
 
 #
-#~ msgid ": "
-#~ msgstr ": "
+msgid "Music Production"
+msgstr "Mùsica"
 
-#~ msgid "Documentation"
-#~ msgstr "Documentació"
+#
+msgid "Webcam & Monitoring"
+msgstr "Video"
 
-#~ msgid "Electronics"
-#~ msgstr "Electrónica"
+msgid "Education Apps"
+msgstr "Educació"
 
-#~ msgid "Engineering"
-#~ msgstr "Enginyeria"
+msgid "Text Editors"
+msgstr "Editors de text"
 
-#~ msgid "Forbidden"
-#~ msgstr "Bloquejades"
+#
+msgid "Various Games"
+msgstr "Jocs"
 
-#~ msgid "LliureX"
-#~ msgstr "LliureX"
+msgid "Developers Apps"
+msgstr "Eines de desenvolupament"
 
-#~ msgid "LliureX-Infantil"
-#~ msgstr "Lliurex-Infantil"
+msgid "Informática"
+msgstr "Informàtica"
 
-#~ msgid "Zomando"
-#~ msgstr "Zomandament"
+msgid "QT"
+msgstr "Qt"
 
-#~ msgid "admin-tools"
-#~ msgstr "eines d'administració"
+msgid "GNOME"
+msgstr "Gnome"
 
-#~ msgid "FP"
-#~ msgstr "FP"
+msgid "GTK"
+msgstr "Gtk"
 
-#~ msgid "Multimedia"
-#~ msgstr "Multimèdia"
+msgid "ODE"
+msgstr "ODE"
 
-#~ msgid "Programaci\\u00f3"
-#~ msgstr "Desenvolupament"
+msgid "Browser"
+msgstr "Fullejadors web"
 
-#~ msgid "Resources"
-#~ msgstr "Recursos"
+msgid "Screenshot Tools"
+msgstr "Gràfics"
 
-#~ msgid "Software"
-#~ msgstr "Programari"
+#
+msgid "E-Learning"
+msgstr "E-Learning"
 
-#~ msgid "Utilitats"
-#~ msgstr "Utilitats"
+msgid "Creation"
+msgstr "Creació"
 
-#~ msgid "accessories"
-#~ msgstr "accesoris"
+msgid "Electronics"
+msgstr "Electrónica"
 
-#~ msgid "collections"
-#~ msgstr "col·leccions"
+msgid "X-Utilities"
+msgstr "Utilitat"
 
-#~ msgid "desktop-gnome"
-#~ msgstr "escriptori gnome"
+msgid "KDE"
+msgstr "Kde"
 
-#~ msgid "desktop-kde"
-#~ msgstr "escriptori kde"
+msgid "Graphic Apps"
+msgstr "Gràfics"
 
-#~ msgid "education"
-#~ msgstr "educació"
+#
+msgid "System Tools (NOT OS or ROMS)"
+msgstr "Sistema"
 
-#~ msgid "electronics"
-#~ msgstr "electrónica"
+msgid "Llengua"
+msgstr "Idiomes"
 
-#~ msgid "games"
-#~ msgstr "jocs"
+msgid "Qt"
+msgstr "Qt"
 
-#~ msgid "graphics"
-#~ msgstr "gràfics"
+msgid "Chat & Messenging"
+msgstr "Missatgeria instantània"
 
-#~ msgid "internet"
-#~ msgstr "internet"
+msgid "Documentation"
+msgstr "Documentació"
 
-#~ msgid "multimedia"
-#~ msgstr "multimèdia"
+#
+msgid "Idiomes"
+msgstr "Idiomes"
 
-#~ msgid "network"
-#~ msgstr "xarxa"
+msgid "Video Converters"
+msgstr "Videoconferència"
 
-#~ msgid "other"
-#~ msgstr "altres"
+msgid "Inteligencia Artificial"
+msgstr "Intel·ligència Artificial"
 
-#~ msgid "programming"
-#~ msgstr "programació"
+msgid "Ebook Software"
+msgstr "E-Reader"
 
-#~ msgid "publishing"
-#~ msgstr "publicació"
+msgid "Java"
+msgstr "Java"
 
-#~ msgid "resources"
-#~ msgstr "eines"
+msgid "File Management"
+msgstr "Gestió de fitxers"
 
-#~ msgid "science"
-#~ msgstr "ciència"
+msgid "zomando"
+msgstr "Zomandament"
 
-#~ msgid "software"
-#~ msgstr "programari"
+msgid "Audio Apps"
+msgstr "So"
 
-#~ msgid "system"
-#~ msgstr "sistema"
+msgid "COSMIC"
+msgstr "Cosmic"
 
-#~ msgid "unknown"
-#~ msgstr "desconegut"
+msgid "Engineering"
+msgstr "Enginyeria"
 
-#~ msgid "CAD"
-#~ msgstr "CAD"
+msgid "X-Lliurex"
+msgstr "LliureX"
 
-#~ msgid "Ci\\u00e8ncies"
-#~ msgstr "Ciencias"
+msgid "Authentication is required to manage software"
+msgstr "Cal autenticar-se per a gestionar programari"
 
-#~ msgid "Disseny"
-#~ msgstr "Diseño"
-
-#~ msgid "Electr\\u00f2nica"
-#~ msgstr "Electrónica"
-
-#~ msgid "Fotografia"
-#~ msgstr "Fotografia"
-
-#~ msgid "Gamificaci\\u00f3"
-#~ msgstr "Gamificació"
-
-#~ msgid "Geografia"
-#~ msgstr "Geografía"
-
-#~ msgid "Inform\\u00e0tica"
-#~ msgstr "Informàtica"
-
-#~ msgid "Intel\\u00b7lig\\u00e8ncia Artificial"
-#~ msgstr "Intel·ligència Artificial"
-
-#~ msgid "Internet"
-#~ msgstr "Internet"
-
-#~ msgid "Matem\\u00e0tiques"
-#~ msgstr "Matemàtiques"
-
-#~ msgid "Multim\\u00e8dia"
-#~ msgstr "Multimèdia\t"
-
-#~ msgid "Musica"
-#~ msgstr "Música"
-
-#~ msgid "M\\u00fasica"
-#~ msgstr "Música"
-
-#~ msgid "Ofim\\u00e0tica"
-#~ msgstr "Ofimàtica"
-
-#~ msgid "Qu\\u00edmica"
-#~ msgstr "Química"
-
-#~ msgid "Rob\\u00f3tica"
-#~ msgstr "Robòtica"
-
-#~ msgid "Tecnologia"
-#~ msgstr "Tecnologia"
-
-#~ msgid "V\\u00eddeo"
-#~ msgstr "Vídeo"
-
-#~ msgid "\\u00c0udio"
-#~ msgstr "Só"
-
-#~ msgid "Clear cache"
-#~ msgstr "Neteja cau"
-
-#~ msgid ""
-#~ "Remove all files from cache, as per exemple icons or another related stuff"
-#~ msgstr "Elimina tots els fitxers de la memoria cau, com icones i semblants"
-
-#~ msgid "Sources"
-#~ msgstr "Origens"
-
-#~ msgid "Show software sources"
-#~ msgstr "Mostra els origens del programari"
-
-#~ msgid "Configure software sources"
-#~ msgstr "Configura els origens"
-
-#~ msgid "Configuring software sources"
-#~ msgstr "Configura els origens"
-
-#~ msgid "Reload info from sources"
-#~ msgstr "Recarrega la informació del catàleg"
-
-#~ msgid "Restart database"
-#~ msgstr "Reinicialitzar catàleg"
-
-#~ msgid ""
-#~ "Forces a refresh of all the info from sources resetting all previous "
-#~ "stored information"
-#~ msgstr ""
-#~ "Refresca la informació desde els proveïdors esborrant la informació "
-#~ "emmagatzemada"
-
-#~ msgid "Service could not be reloaded. Check credentials"
-#~ msgstr "El servei no pot recarregar-se. Comprove les credencials"
-
-#~ msgid "Include appimages"
-#~ msgstr "Incloure appimages"
-
-#~ msgid "Include flatpaks"
-#~ msgstr "Incloure flatpaks"
-
-#~ msgid "Include native packages"
-#~ msgstr "Incloure paqueteria nadiua"
-
-#~ msgid "Include snaps"
-#~ msgstr "Incloure snaps"
-
-#~ msgid "Configuration"
-#~ msgstr "Configuració"
-
-#~ msgid "Administration"
-#~ msgstr "Administració"
-
-#~ msgid "Application"
-#~ msgstr "Aplicació"
-
-#~ msgid "ConsoleOnly"
-#~ msgstr "Consola"
-
-#~ msgid "Core"
-#~ msgstr "Sistema"
-
-#~ msgid "LliureX-Administration"
-#~ msgstr "Administració"
-
-#~ msgid "Lliurex"
-#~ msgstr "LliureX"
-
-#~ msgid "PackageManager"
-#~ msgstr "Gestors de paquets"
-
-#~ msgid "Services"
-#~ msgstr "Serveis"
-
-#~ msgid "X-Lliurex"
-#~ msgstr "LliureX"
-
-#~ msgid "X-Utilities"
-#~ msgstr "Utilitats"
-
-#~ msgid "communication"
-#~ msgstr "comunicacions"
-
-#~ msgid "fonts"
-#~ msgstr "eines de lletres"
-
-#~ msgid "legacy"
-#~ msgstr "antics"
-
-#~ msgid "FORBIDDEN"
-#~ msgstr "Bloquejada"
-
-#~ msgid "desktop-other"
-#~ msgstr "escriptori altres"
-
-#~ msgid "Animation"
-#~ msgstr "Animació"
-
-#~ msgid "HexEditor"
-#~ msgstr "Editor hexadecimal"
-
-#~ msgid "Jukebox"
-#~ msgstr "Reproductors de música"
-
-#~ msgid "LearnToCode"
-#~ msgstr "Lliçons de programació"
-
-#~ msgid "Productivity"
-#~ msgstr "Productivitat"
-
-#~ msgid "Webdevelopment"
-#~ msgstr "Desenvolupament web"
-
-#~ msgid "X-CSuite"
-#~ msgstr "X-CSuite"
-
-#~ msgid "Adventure"
-#~ msgstr "Aventura"
-
-#~ msgid "Amusement"
-#~ msgstr "Entreteniment"
-
-#~ msgid "Communication"
-#~ msgstr "Comunicació"
-
-#~ msgid "Communication & News"
-#~ msgstr "Comunicació i noticies"
-
-#~ msgid "DesktopSettings"
-#~ msgstr "Configuració de l'escriptori"
-
-#~ msgid "Developer Tools"
-#~ msgstr "Eines de desenvolupament"
-
-#~ msgid "Emulation"
-#~ msgstr "Emulació"
-
-#~ msgid "Fantasy"
-#~ msgstr "Fantasia"
-
-#~ msgid "Feeds"
-#~ msgstr "Orígens"
-
-#~ msgid "GNOME"
-#~ msgstr "Gnome"
-
-#~ msgid "GTK"
-#~ msgstr "Gtk"
-
-#~ msgid "Games"
-#~ msgstr "Jocs"
-
-#~ msgid "HardwareSettings"
-#~ msgstr "Maquinari"
-
-#~ msgid "Java"
-#~ msgstr "Java"
-
-#~ msgid "KDE"
-#~ msgstr "Kde"
-
-#~ msgid "MMORPG"
-#~ msgstr "MMORPG"
-
-#~ msgid "Matrix"
-#~ msgstr "Matrix"
-
-#~ msgid "Motif"
-#~ msgstr "Motif"
-
-#~ msgid "Players"
-#~ msgstr "Jugadors"
-
-#~ msgid "Printing"
-#~ msgstr "Impressió"
-
-#~ msgid "QT"
-#~ msgstr "Qt"
-
-#~ msgid "Qt"
-#~ msgstr "Qt"
-
-#~ msgid "Role Playing"
-#~ msgstr "Jocs de rol"
-
-#~ msgid "Strategy"
-#~ msgstr "Estrategia"
-
-#~ msgid "Support"
-#~ msgstr "Ajuda"
-
-#~ msgid "X-Tool"
-#~ msgstr "X-Tool"
-
-#~ msgid "XFCE"
-#~ msgstr "Xfce"
-
-#~ msgid "configuration"
-#~ msgstr "configuració"
-
-#~ msgid "desktop-xfce"
-#~ msgstr "escriptori xfce"
-
-#~ msgid "documentation"
-#~ msgstr "documentació"
-
-#~ msgid "servers"
-#~ msgstr "servidors"

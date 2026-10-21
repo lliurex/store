@@ -1,25 +1,11 @@
 #!/usr/bin/python3
-import os,subprocess,time
-from PySide6.QtWidgets import QLabel, QPushButton,QWidget,QGridLayout,QHBoxLayout
-from PySide6.QtCore import Qt,Signal,QSize,QPoint
-from PySide6.QtGui import QIcon,QPixmap,QPalette
-from wdg.btnRebost import QPushButtonRebostApp
-import lib.libhelper as libhelper
+import os
+from PySide6.QtWidgets import QLabel, QPushButton,QWidget,QGridLayout
+from PySide6.QtCore import Qt,Signal,QSize
+from PySide6.QtGui import QIcon
 import extras.css as css
 from extras.constants import *
-import gettext
-gettext.textdomain('lliurex-store')
-_ = gettext.gettext
-
-i18n={
-	"ALL":_("All"),
-	"HOME":_("Go to portrait"),
-	"INSTALLED":_("Show installed apps"),
-	"ORIGIN":_("Origin"),
-	"ORIGINDEL":_("Click: Show only from"),
-	"ORIGINSET":_("Click: Show all applications"),
-	"REFRESH":_("Reload applications")
-	}
+from extras.i18n import *
 
 class QPushButtonBar(QWidget):
 	toggleClicked=Signal()

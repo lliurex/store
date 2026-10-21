@@ -79,19 +79,19 @@ def _installApp(app):
 		#			if l.lower().strip()=="using=pkexec":
 		#				cmd.insert(0,"pkexec")
 	else:
+		appBundle=bundles.bundle()
 		if bundle=="package":
 			#Generate epi file for bundle
-			appBundle=bundles.bundle()
 			appBundle.setKind(bundles.kind.PACKAGE)
 		elif bundle=="flatpak":
 			#Generate epi file for bundle
-			pass
+			appBundle.setKind(bundles.kind.FLATPAK)
 		elif bundle=="snap":
 			#Generate epi file for bundle
-			pass
+			appBundle.setKind(bundles.kind.SNAP)
 		elif bundle=="appimage":
 			#Generate epi file for bundle
-			pass
+			appBundle.setKind(bundles.kind.APPIMAGE)
 		appBundle.setApp(app)
 		epi,script=appBundle.generateEpi()
 		try:

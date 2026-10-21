@@ -1,4 +1,0 @@
-src/* /usr/share/store
-polkit/actions/* /usr/share/polkit-1/actions
-polkit/rules.d/* /usr/share/polkit-1/rules.d
-polkit/10.vendor.d/* /var/lib/polkit-1/localauthority/10.vendor.d
