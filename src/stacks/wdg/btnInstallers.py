@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QLabel, QPushButton,QMenu,QWidget,QWidgetAction,QS
 from PySide6.QtCore import Qt,Signal,QSize,QPoint
 from PySide6.QtGui import QIcon,QPixmap
 from QtExtraWidgets import QPushInfoButton
-import lib.libhelper as libhelper
+from lib.helperLib import appHelper
 import extras.css as css
 from extras.constants import *
 from extras.i18n import *
@@ -17,7 +17,7 @@ class QPushButtonInstaller(QPushButton):
 		self.setCursor(Qt.PointingHandCursor)
 		self.setStyleSheet(css.btnRebost())
 		self.setObjectName("btnInstaller")
-		self.helper=libhelper.helper()
+		self.helper=appHelper()
 		self.app=kwargs.get("app",{})
 		self.dlgInstallers=QWidget()
 		self.menuLayout=QGridLayout()
@@ -63,7 +63,7 @@ class QPushButtonInstaller(QPushButton):
 	#def _emitInstall(self,*args):
 
 	def _openWiki(self):
-		proc=["kde-open5","https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Gesti%C3%B3n+de+software+en+LliureX&highlight=snap#Diferents_formats_una_breu_explicaci_"]
+		proc=["xdg-open","https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Gesti%C3%B3n+de+software+en+LliureX&highlight=snap#Diferents_formats_una_breu_explicaci_"]
 		subprocess.run(proc)
 	#def _openWiki
 
@@ -102,7 +102,7 @@ class QPushButtonInstaller(QPushButton):
 		self.setProperty("clicked",True)
 		self.style().polish(self)
 		QApplication.processEvents()
-		if args[0].x()>(self.rect().width()-48):
+		if args[0].x()>(self.rect().width()-48) and self.instBundle=="":
 			self._loadLaunchers(bundlesSorted)
 			self.showMenu()
 		else:
@@ -157,83 +157,65 @@ class QPushButtonInstaller(QPushButton):
 			cont+=1
 	#def _populateInstallers
 
-	def _getInstalledBundle(self):
-		installBundle=""
-		bundles=self.app.get("bundle",{})
-		states=self.app.get("status",{})
-		zmd=False
-		if bundles.get("unknown")!=None and bundles.get("package")==None and len(bundles)==1:
-			#It's an app coming from a specific installer (zmd with only one app)
-			#Fake states
-			states.update({"unknown":states.get("package","1")})
-		if len(states)>0:
-			for bundle,state in states.items():
-				if int(state)==0 and bundle in bundles: #zmd are of kind unknown, but installs as packagekind
-					installBundle=bundle
-					break
-				elif "unknown" in bundles and int(state)==0:
-					if bundles["unknown"]!=self.app["id"]: #if == then seems a zmd, fake it
-						installBundle=bundle
-						if installBundle not in bundles:
-							bundles[installBundle]=self.app["id"]
-						break
-		if installBundle!="":
-			if bundles[installBundle]==bundles.get("unknown","") and len(bundles)>1:
-				installBundle=""
-		return installBundle
-	#def _getInstalledBundle
+	def _setAppForbidden(self):
+		self.setText(i18n["BTN_UNAUTHORIZED"])
+		self.setMenu(None)
+		self.setEnabled(False)
+	#def _setAppForbidden
 
-	def _setActionForButton(self):
+	def _setAppAssisted(self):
+		self.setEnabled(False)
+		self.setText(i18n["BTN_ASSISTED"])
+	#def _setAppAssisted
+
+	def _setAppWebApp(self):
+		self.setEnabled(True)
+		self.setText(i18n["BTN_WEBAPP"])
+	#def _setAppWebApp
+
+	def _setAppPending(self):
+		self.setText(i18n["BTN_UNAVAILABLE"])
+		self.setMenu(None)
+		self.setEnabled(False)
+	#def _setAppPending
+
+	def _setAppAvailable(self):
+		self.setVisible(True)
+		self.setEnabled(True)
 		self.setText(i18n["BTN_INSTALL"])
-		self.setMenu(self.menuInstaller)
-		if len(self.app.get("bundle",{}))==0 and self.app.get("forbidden",False)==True:
-			self.setText(i18n["BTN_UNAUTHORIZED"])
-			self.setMenu(None)
-			self.setEnabled(False)
+		self.instBundle=""
+	#def _setAppAvailable
+
+	def _setAppInstalled(self):
+		self.setText(i18n.get("BTN_REMOVE"))
+		action="remove"
+	#def _setAppInstalled
+
+	def _getAppStatus(self):
+		status=""
+		if self.app.get("forbidden",False)==True:
+			self._setAppForbidden()
+		elif self.app.get("assisted",False)==True:
+			self._setAppAssisted()
+		elif self.app.get("webapp",False)==True:
+			self._setAppWebApp()
+		elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
+			self._setAppPending()
 		else:
-			if self.app.get("assisted",False)==True:
-				self.setEnabled(False)
-				self.setText(i18n["BTN_ASSISTED"])
-			elif self.app.get("webapp",False)==True:
-				self.setEnabled(True)
-				self.setText(i18n["BTN_WEBAPP"])
-			elif len(self.app.get("bundle",{}))==0 or self.app.get("unavailable",False)==True:
-				self.setText(i18n["BTN_UNAVAILABLE"])
-				self.setMenu(None)
-				self.setEnabled(False)
-			elif self.app.get("forbidden",False)==True:
-				self.setText(i18n["BTN_UNAUTHORIZED"])
-				self.setMenu(None)
-				self.setEnabled(False)
-			else: #app seems authorized and available
-				self.setEnabled(True)
-				action="install"
-				self.instBundle=self.helper.getInstalledBundle(self.app)
-				if self.instBundle!="":
-					self.setText(i18n.get("BTN_REMOVE"))
-					action="remove"
-				if action=="install":
-					self.setVisible(True)
-					self.setEnabled(True)
-					self.setText(i18n["BTN_INSTALL"])
-					self.instBundle=""
-				elif action=="open":
-					self.setVisible(True)
-					self.setEnabled(True)
-					self.setText(i18n["BTN_OPEN"])
-					self.instBundle="unknown"
-				else:
-					self.setMenu(None)
-					self.setText(i18n["BTN_REMOVE"])
-	#def _setActionForButton
+			self.instBundle=self.helper.getInstalledBundle(self.app)#self._getInstalledBundle()
+			if self.instBundle!="":
+				self._setAppInstalled()
+			else:
+				self._setAppAvailable()
+		return(status)
+	#def _getAppStatus
 
 	def _loadLaunchers(self,bundlesSorted):
 		self._debug("Loading launchers")
 		for chld in self.dlgInstallers.children():
 			if isinstance(chld,QPushInfoButton) or isinstance(chld,QPushButton):
 				chld.setParent(None)
-		self._setActionForButton()
+		self._getAppStatus()
 		if self.isEnabled()==True:
 			self._populateInstallers(bundlesSorted)
 	#def _loadLaunchers
-
