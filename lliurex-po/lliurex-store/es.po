@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 13:44+0200\n"
-"PO-Revision-Date: 2026-09-03 13:51+0200\n"
+"POT-Creation-Date: 2026-10-21 13:18+0200\n"
+"PO-Revision-Date: 2026-10-21 13:21+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -14,199 +14,226 @@ msgstr ""
 "X-Generator: Poedit 3.4.2\n"
 "X-Poedit-Basepath: .\n"
 
-#: ../src/bstacks/extras/i18n.py:6
+#: ../src/stacks/extras/i18n.py:5
 msgid "All"
 msgstr "Todo"
 
-#: ../src/bstacks/extras/i18n.py:7
+#: ../src/stacks/extras/i18n.py:6
 msgid "Available"
 msgstr "Disponible"
 
-#: ../src/bstacks/extras/i18n.py:8
-msgid "Categories"
-msgstr "Categorias"
+#: ../src/stacks/extras/i18n.py:7
+msgid "Assisted"
+msgstr "Asistida"
 
-#: ../src/bstacks/extras/i18n.py:9
-msgid "Filter by category"
-msgstr "Filtrar por categoría"
-
-#: ../src/bstacks/extras/i18n.py:10
-msgid "Certified by Appsedu"
-msgstr "Certificadas por Appsedu"
-
-#: ../src/bstacks/extras/i18n.py:11
-msgid "LliureX choices"
-msgstr "Selección de Lliurex"
-
-#: ../src/bstacks/extras/i18n.py:12 ../src/bstacks/extras/i18n.py:43
-msgid "Portrait"
-msgstr "Portada"
-
-#: ../src/bstacks/extras/i18n.py:13
-msgid "Navigate through all applications"
-msgstr "Mostrar todas las aplicaciones"
-
-#: ../src/bstacks/extras/i18n.py:14
-msgid "D-Bus error. Store will not load"
-msgstr "Error de comunicaciones: La tienda no se cargará"
-
-#: ../src/bstacks/extras/i18n.py:15
-msgid "Nothing to show"
-msgstr "Nada que mostrar"
-
-#: ../src/bstacks/extras/i18n.py:16
-#, python-brace-format
-msgid "not found. Check at <a href=\"{0}\">{0}</a>"
-msgstr "no encontrado. Comprueba en <a href=\"{0}\">{0}</a>"
-
-#: ../src/bstacks/extras/i18n.py:17
-msgid "Error opening"
-msgstr "Error al cargar"
-
-#: ../src/bstacks/extras/i18n.py:18
-msgid "There's another action in progress"
-msgstr "Ya se está realizando otra instalación"
-
-#: ../src/bstacks/extras/i18n.py:19
-msgid "Authorization is required"
-msgstr "Es necesario autenticarse para gestionar la aplicación"
-
-#: ../src/bstacks/extras/i18n.py:20
-msgid "System apps can't be removed"
-msgstr "Aplicación de sistema. No se desinstalará"
-
-#: ../src/bstacks/extras/i18n.py:21
-msgid "Unknown error"
-msgstr "Error desconocido"
-
-#: ../src/bstacks/extras/i18n.py:22
-msgid "Filters"
-msgstr "Filtros"
-
-#: ../src/bstacks/extras/i18n.py:23
-msgid "Filter by formats and states"
-msgstr "Filtar por formatos y estados"
-
-#: ../src/bstacks/extras/i18n.py:24
-msgid "Home"
-msgstr "Inicio"
-
-#: ../src/bstacks/extras/i18n.py:25
-msgid "Main page"
-msgstr "Página principal"
-
-#: ../src/bstacks/extras/i18n.py:26
+#: ../src/stacks/extras/i18n.py:8
 msgid "Install"
 msgstr "Instala"
 
-#: ../src/bstacks/extras/i18n.py:27
-msgid "Installed"
-msgstr "Instalado"
-
-#
-#: ../src/bstacks/extras/i18n.py:28
-msgid "Launch"
-msgstr "Abrir"
-
-#: ../src/bstacks/extras/i18n.py:29
-msgid "Launch LliurexUp"
-msgstr "LliurexUp"
-
-#: ../src/bstacks/extras/i18n.py:30
-msgid "Show applications"
-msgstr "Mostrar aplicaciones"
-
-#: ../src/bstacks/extras/i18n.py:31
-msgid "Updating info"
-msgstr "Actualizando datos"
-
-#: ../src/bstacks/extras/i18n.py:32
-msgid "News"
-msgstr "Noticias"
-
-#: ../src/bstacks/extras/i18n.py:33
-msgid "Z·Install"
+#: ../src/stacks/extras/i18n.py:9
+msgid "Z-Install"
 msgstr "Instala"
 
-#: ../src/bstacks/extras/i18n.py:34
-msgid "Receipts"
-msgstr "Recetas"
-
-#: ../src/bstacks/extras/i18n.py:35
-msgid "Miscelaneous"
-msgstr "Miscelánea"
-
-#: ../src/bstacks/extras/i18n.py:36
-msgid "For Lliurex21"
-msgstr "LliureX 21"
-
-#: ../src/bstacks/extras/i18n.py:37
-msgid "For Lliurex23"
-msgstr "LliureX 23"
-
-#: ../src/bstacks/extras/i18n.py:38
-msgid "For Lliurex25"
-msgstr "LliureX 25"
-
-#: ../src/bstacks/extras/i18n.py:39
-msgid "Reload Apps"
-msgstr "Actualizar"
-
-#: ../src/bstacks/extras/i18n.py:40
+#: ../src/stacks/extras/i18n.py:10 ../src/stacks/extras/i18n.py:56
 msgid "Remove"
 msgstr "Elimina"
 
-#: ../src/bstacks/extras/i18n.py:41
-msgid "Search"
-msgstr "Busca"
+#: ../src/stacks/extras/i18n.py:11
+msgid "Blocked"
+msgstr "Bloqueada"
 
-#: ../src/bstacks/extras/i18n.py:42
-msgid "Sort alphabetically"
-msgstr "Orden alfabético"
+#: ../src/stacks/extras/i18n.py:12
+msgid "Unavailable"
+msgstr "Pendiente"
 
-#: ../src/bstacks/extras/i18n.py:44
-msgid "Upgradables"
-msgstr "Actualizables"
+#: ../src/stacks/extras/i18n.py:13
+msgid "Web app"
+msgstr "Web app"
 
-#: ../src/bstacks/extras/i18n.py:45
-msgid "Updates available"
-msgstr "Actualizaciones disponibles"
+#: ../src/stacks/extras/i18n.py:14
+msgid "What's this?"
+msgstr "Que es açò?"
 
-#: ../src/bstacks/extras/i18n.py:46
+#: ../src/stacks/extras/i18n.py:15
+msgid "Filter by category"
+msgstr "Filtrar por categoría"
+
+#: ../src/stacks/extras/i18n.py:16
+msgid "Certified by Appsedu"
+msgstr "Certificadas por Appsedu"
+
+#: ../src/stacks/extras/i18n.py:17
 msgid "Store was unable to get information from internet"
 msgstr "No parece haber conexión a internet"
 
-#: ../src/bstacks/extras/i18n.py:47
+#: ../src/stacks/extras/i18n.py:18 ../src/stacks/extras/i18n.py:59
+msgid "Portrait"
+msgstr "Portada"
+
+#: ../src/stacks/extras/i18n.py:19
+msgid "Navigate through all applications"
+msgstr "Mostrar todas las aplicaciones"
+
+#: ../src/stacks/extras/i18n.py:20
+msgid ""
+"The app could not be loaded. Until included in LliureX catalogue it can't be "
+"installed"
+msgstr ""
+"No se puede cargar la aplicación. Hasta que no esté incluida en en el "
+"catálogo de <a href=\"https://portal.edu.gva.es/appsedu/\">appsedu</a> no "
+"estará disponible"
+
+#: ../src/stacks/extras/i18n.py:21
+msgid ""
+"For any question the SAI can be contacted at <a href='https://portal.edu.gva."
+"es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
+msgstr ""
+"En caso de duda puede contactarse con el SAI en <a href='https://portal.edu."
+"gva.es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
+
+#: ../src/stacks/extras/i18n.py:22 ../src/stacks/extras/i18n.py:36
+msgid "System apps can't be removed"
+msgstr "Aplicación de sistema. No se desinstalará"
+
+#: ../src/stacks/extras/i18n.py:23 ../src/stacks/extras/i18n.py:37
+msgid "Unknown error"
+msgstr "Error desconocido"
+
+#: ../src/stacks/extras/i18n.py:24
+msgid "App unauthorized"
+msgstr "App no autorizada"
+
+#: ../src/stacks/extras/i18n.py:25
+msgid "For more info go to"
+msgstr "Para más información ir a"
+
+#: ../src/stacks/extras/i18n.py:26
+msgid "More apps"
+msgstr "Mès apps"
+
+#: ../src/stacks/extras/i18n.py:27
+msgid "Opening"
+msgstr "Abriendo"
+
+#: ../src/stacks/extras/i18n.py:28
+msgid "Release"
+msgstr "Versión"
+
+#: ../src/stacks/extras/i18n.py:29
+msgid "Open"
+msgstr "Abre"
+
+#: ../src/stacks/extras/i18n.py:30
+msgid "See at Appsedu"
+msgstr "Mostrar en Appsedu"
+
+#: ../src/stacks/extras/i18n.py:31
+msgid "Website"
+msgstr "Sitio web"
+
+#: ../src/stacks/extras/i18n.py:32
+msgid "Could not open"
+msgstr "No se pudo abrir"
+
+#: ../src/stacks/extras/i18n.py:33
+msgid "Error opening"
+msgstr "Error al cargar"
+
+#: ../src/stacks/extras/i18n.py:34
+msgid "There's another action in progress"
+msgstr "Ya se está realizando otra instalación"
+
+#: ../src/stacks/extras/i18n.py:35
+msgid "Authorization is required"
+msgstr "Es necesario autenticarse para gestionar la aplicación"
+
+#: ../src/stacks/extras/i18n.py:38
+msgid "Filters"
+msgstr "Filtros"
+
+#: ../src/stacks/extras/i18n.py:39
+msgid "Filter by formats and states"
+msgstr "Filtar por formatos y estados"
+
+#: ../src/stacks/extras/i18n.py:40
+msgid "Home"
+msgstr "Inicio"
+
+#: ../src/stacks/extras/i18n.py:41
+msgid "Main page"
+msgstr "Página principal"
+
+#: ../src/stacks/extras/i18n.py:42
+msgid "Blog entries"
+msgstr "Artículos del blog"
+
+#: ../src/stacks/extras/i18n.py:43
+msgid "Latest apps in appsedu"
+msgstr "Últimas aplicaciones en AppsEdu"
+
+#: ../src/stacks/extras/i18n.py:44
+msgid "Relevant categories"
+msgstr "Categorías relevantes"
+
+#: ../src/stacks/extras/i18n.py:45
+msgid "Editor's choice"
+msgstr "Selección de LliureX"
+
+#: ../src/stacks/extras/i18n.py:46
+msgid "Installed"
+msgstr "Instalado"
+
+#: ../src/stacks/extras/i18n.py:47
+msgid "Launch LliurexUp"
+msgstr "LliurexUp"
+
+#: ../src/stacks/extras/i18n.py:48
+msgid "Show applications"
+msgstr "Mostrar aplicaciones"
+
+#: ../src/stacks/extras/i18n.py:49
+msgid "Updating info"
+msgstr "Actualizando datos"
+
+#: ../src/stacks/extras/i18n.py:50
+msgid "Z·Install"
+msgstr "Instala"
+
+#: ../src/stacks/extras/i18n.py:51
 msgid "Open network settings"
 msgstr "Configurar acceso a internet"
 
-#: ../src/bstacks/extras/i18n.py:48
-msgid "Zomandos"
-msgstr "Zomandos"
+#: ../src/stacks/extras/i18n.py:52
+msgid "Origin"
+msgstr "Origen"
 
-#: ../src/bstacks/wdg/prgBar.py:15
-msgid "Downloading information, wait a moment..."
-msgstr "Descargando información, espere un momento..."
+#: ../src/stacks/extras/i18n.py:53
+msgid "Click: Show only from"
+msgstr "Click: Restringir a"
 
-#: ../src/bstacks/wdg/prgBar.py:16
-msgid "Upgrading application database"
-msgstr "Actualizando la base de datos de las aplicaciones"
+#: ../src/stacks/extras/i18n.py:54
+msgid "Click: Show all applications"
+msgstr "Click: Mostrar todo"
 
-#: ../src/bstacks/wdg/prgBar.py:20
-msgid "Loading available applications"
-msgstr "Cargando el catálogo de aplicaciones"
+#: ../src/stacks/extras/i18n.py:55
+msgid "Reload Apps"
+msgstr "Actualizar"
 
-#: ../src/helper/addEpi.py:13
-msgid "includes more than one package.<br>What to do?"
-msgstr "incluye más de una aplicación.<br>¿Que hacer?"
+#: ../src/stacks/extras/i18n.py:57
+msgid "Search"
+msgstr "Busca"
 
-#: ../src/helper/addEpi.py:14
-msgid "Install later"
-msgstr "Instalar más tarde"
+#: ../src/stacks/extras/i18n.py:58
+msgid "Sort alphabetically"
+msgstr "Orden alfabético"
 
-#: ../src/helper/addEpi.py:15
-msgid "Install one"
-msgstr "Abrir"
+#: ../src/stacks/extras/i18n.py:60
+msgid "Upgradables"
+msgstr "Actualizables"
+
+#: ../src/stacks/extras/i18n.py:61
+msgid "Updates available"
+msgstr "Actualizaciones disponibles"
 
 msgid "AudioVideo"
 msgstr "Sonido y Video"
@@ -472,6 +499,9 @@ msgstr "Transferencia de ficheros"
 msgid "HamRadio"
 msgstr "Radio"
 
+msgid "News"
+msgstr "Noticias"
+
 msgid "P2P"
 msgstr "P2P"
 
@@ -575,185 +605,195 @@ msgstr "Reloj"
 msgid "TextEditor"
 msgstr "Editores de texto"
 
-msgid "Browser"
-msgstr "Navegadores"
+msgid "LliureX-Infantil"
+msgstr "LliureX-Infantil"
 
-#
-msgid "Webcam & Monitoring"
-msgstr "Video"
-
-msgid "Screenshot Tools"
-msgstr "Utilidad"
-
-msgid "Utilities"
-msgstr "Utilidad"
+msgid "3D Graphics"
+msgstr "Gráficos 3D"
 
 msgid "Video Apps"
 msgstr "Video"
 
-msgid "Engineering"
-msgstr "Ingeniería"
-
-msgid "QT"
-msgstr "Qt"
+msgid "Utilities"
+msgstr "Utilidad"
 
 msgid "Video Editors"
 msgstr "Edición de video y sonido"
-
-msgid "Audio Apps"
-msgstr "Sonido"
-
-msgid "ODE"
-msgstr "ODE"
-
-msgid "Education Apps"
-msgstr "Educación"
-
-msgid "Documentation"
-msgstr "Documentación"
-
-msgid "Informática"
-msgstr "Informática"
-
-msgid "Creation"
-msgstr "Creación"
-
-msgid "Qt"
-msgstr "Qt"
-
-msgid "KDE"
-msgstr "Kde"
-
-msgid "Inteligencia Artificial"
-msgstr "Inteligencia Artifical"
-
-#
-msgid "Idiomes"
-msgstr "Idiomas"
-
-#
-msgid "System Tools (NOT OS or ROMS)"
-msgstr "Sistema"
-
-msgid "Electronics"
-msgstr "Electrónica"
-
-msgid "zomando"
-msgstr "Zomando"
-
-msgid "Graphic Apps"
-msgstr "Imagen"
-
-msgid "Java"
-msgstr "Java"
-
-msgid "X-Lliurex"
-msgstr "LliureX"
-
-#
-msgid "Various Games"
-msgstr "Juegos"
-
-msgid "File Management"
-msgstr "Gestión de ficheros"
-
-msgid "GNOME"
-msgstr "Gnome"
 
 #
 msgid "Music Production"
 msgstr "Música"
 
-msgid "X-Utilities"
-msgstr "Utilidad"
+#
+msgid "Webcam & Monitoring"
+msgstr "Video"
 
-msgid "3D Graphics"
-msgstr "Gráficos 3D"
-
-msgid "Chat & Messenging"
-msgstr "Mensajería instantánea"
-
-msgid "Llengua"
-msgstr "Idiomas"
-
-msgid "Developers Apps"
-msgstr "Herramientas de desarrollo"
-
-msgid "Video Converters"
-msgstr "Conversor de video"
+msgid "Education Apps"
+msgstr "Educación"
 
 msgid "Text Editors"
 msgstr "Editores de texto"
 
 #
-msgid "E-Learning"
-msgstr "E-Learning"
+msgid "Various Games"
+msgstr "Juegos"
 
-msgid "Ebook Software"
-msgstr "E-Reader"
+msgid "Developers Apps"
+msgstr "Herramientas de desarrollo"
+
+msgid "Informática"
+msgstr "Informática"
+
+msgid "QT"
+msgstr "Qt"
+
+msgid "GNOME"
+msgstr "Gnome"
 
 msgid "GTK"
 msgstr "Gtk"
 
-msgid "LliureX-Infantil"
-msgstr "LliureX-Infantil"
+msgid "ODE"
+msgstr "ODE"
+
+msgid "Browser"
+msgstr "Navegadores"
+
+msgid "Screenshot Tools"
+msgstr "Utilidad"
+
+#
+msgid "E-Learning"
+msgstr "E-Learning"
+
+msgid "Creation"
+msgstr "Creación"
+
+msgid "Electronics"
+msgstr "Electrónica"
+
+msgid "X-Utilities"
+msgstr "Utilidad"
+
+msgid "KDE"
+msgstr "Kde"
+
+msgid "Graphic Apps"
+msgstr "Imagen"
+
+#
+msgid "System Tools (NOT OS or ROMS)"
+msgstr "Sistema"
+
+msgid "Llengua"
+msgstr "Idiomas"
+
+msgid "Qt"
+msgstr "Qt"
+
+msgid "Chat & Messenging"
+msgstr "Mensajería instantánea"
+
+msgid "Documentation"
+msgstr "Documentación"
+
+#
+msgid "Idiomes"
+msgstr "Idiomas"
+
+msgid "Video Converters"
+msgstr "Conversor de video"
+
+msgid "Inteligencia Artificial"
+msgstr "Inteligencia Artifical"
+
+msgid "Ebook Software"
+msgstr "E-Reader"
+
+msgid "Java"
+msgstr "Java"
+
+msgid "File Management"
+msgstr "Gestión de ficheros"
+
+msgid "zomando"
+msgstr "Zomando"
+
+msgid "Audio Apps"
+msgstr "Sonido"
+
+#
+#
+msgid "COSMIC"
+msgstr "Cosmic"
+
+msgid "Engineering"
+msgstr "Ingeniería"
+
+msgid "X-Lliurex"
+msgstr "LliureX"
 
 msgid "Authentication is required to manage software"
-msgstr "Es necesario autenticarse para gestionar la aplicación"
+msgstr "Es necesario autenticarse"
 
-#~ msgid "The app could not be loaded. Until included in LliureX catalogue it can't be installed"
-#~ msgstr "No se puede cargar la aplicación. Hasta que no esté incluida en en el catálogo de <a href=\"https://portal.edu.gva.es/appsedu/\">appsedu</a> no estará disponible"
+#~ msgid "Categories"
+#~ msgstr "Categorias"
 
-#~ msgid "For any question the SAI can be contacted at <a href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
-#~ msgstr "En caso de duda puede contactarse con el SAI en <a href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
+#~ msgid "LliureX choices"
+#~ msgstr "Selección de Lliurex"
 
-#~ msgid "Could not open"
-#~ msgstr "No se pudo abrir"
+#~ msgid "D-Bus error. Store will not load"
+#~ msgstr "Error de comunicaciones: La tienda no se cargará"
 
-#~ msgid "App unauthorized"
-#~ msgstr "App no autorizada"
+#~ msgid "Nothing to show"
+#~ msgstr "Nada que mostrar"
 
-#~ msgid "For more info go to"
-#~ msgstr "Para más información ir a"
+#, python-brace-format
+#~ msgid "not found. Check at <a href=\"{0}\">{0}</a>"
+#~ msgstr "no encontrado. Comprueba en <a href=\"{0}\">{0}</a>"
 
-#~ msgid "More apps"
-#~ msgstr "Mès apps"
+#
+#~ msgid "Launch"
+#~ msgstr "Abrir"
 
-#~ msgid "Opening"
-#~ msgstr "Abriendo"
+#~ msgid "Receipts"
+#~ msgstr "Recetas"
 
-#~ msgid "Release"
-#~ msgstr "Versión"
+#~ msgid "Miscelaneous"
+#~ msgstr "Miscelánea"
 
-#~ msgid "Open"
-#~ msgstr "Abre"
+#~ msgid "For Lliurex21"
+#~ msgstr "LliureX 21"
 
-#~ msgid "See at Appsedu"
-#~ msgstr "Mostrar en Appsedu"
+#~ msgid "For Lliurex23"
+#~ msgstr "LliureX 23"
 
-#~ msgid "Website"
-#~ msgstr "Sitio web"
+#~ msgid "For Lliurex25"
+#~ msgstr "LliureX 25"
 
-#~ msgid "Blocked"
-#~ msgstr "Bloqueada"
+#~ msgid "Zomandos"
+#~ msgstr "Zomandos"
 
-#~ msgid "Unavailable"
-#~ msgstr "Pendiente"
+#~ msgid "Downloading information, wait a moment..."
+#~ msgstr "Descargando información, espere un momento..."
+
+#~ msgid "Upgrading application database"
+#~ msgstr "Actualizando la base de datos de las aplicaciones"
+
+#~ msgid "Loading available applications"
+#~ msgstr "Cargando el catálogo de aplicaciones"
+
+#~ msgid "includes more than one package.<br>What to do?"
+#~ msgstr "incluye más de una aplicación.<br>¿Que hacer?"
+
+#~ msgid "Install later"
+#~ msgstr "Instalar más tarde"
+
+#~ msgid "Install one"
+#~ msgstr "Abrir"
 
 #~ msgid "Go to store anyway"
 #~ msgstr "Ir a la tienda"
-
-#~ msgid "Blog entries"
-#~ msgstr "Artículos del blog"
-
-#~ msgid "Latest apps in appsedu"
-#~ msgstr "Últimas aplicaciones en AppsEdu"
-
-#~ msgid "Relevant categories"
-#~ msgstr "Categorías relevantes"
-
-#~ msgid "Editor's choice"
-#~ msgstr "Selección de LliureX"
 
 #~ msgid "Go to portrait"
 #~ msgstr "Portada"
@@ -761,29 +801,8 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 #~ msgid "Show installed apps"
 #~ msgstr "Aplicaciones instaladas"
 
-#~ msgid "Origin"
-#~ msgstr "Origen"
-
-#~ msgid "Click: Show only from"
-#~ msgstr "Click: Restringir a"
-
-#~ msgid "Click: Show all applications"
-#~ msgstr "Click: Mostrar todo"
-
 #~ msgid "Reload applications"
 #~ msgstr "Refrescar tienda"
-
-#~ msgid "Assisted"
-#~ msgstr "Asistida"
-
-#~ msgid "What's this?"
-#~ msgstr "Que es açò?"
-
-#~ msgid "Z-Install"
-#~ msgstr "Instala"
-
-#~ msgid "Web app"
-#~ msgstr "Web app"
 
 #~ msgid "There're upgrades available"
 #~ msgstr "Hay actualizaciones pendientes"
@@ -941,7 +960,8 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 #~ msgid "Clear cache"
 #~ msgstr "Limpiar caché"
 
-#~ msgid "Remove all files from cache, as per exemple icons or another related stuff"
+#~ msgid ""
+#~ "Remove all files from cache, as per exemple icons or another related stuff"
 #~ msgstr "Elimina los ficheros de la caché, como puedan ser iconos o imágenes"
 
 #~ msgid "Sources"
@@ -962,8 +982,12 @@ msgstr "Es necesario autenticarse para gestionar la aplicación"
 #~ msgid "Restart database"
 #~ msgstr "Reinicializa el catálogo"
 
-#~ msgid "Forces a refresh of all the info from sources resetting all previous stored information"
-#~ msgstr "Recarga toda la información desde los proveedores de aplicaciones, eliminando toda la información almacenada"
+#~ msgid ""
+#~ "Forces a refresh of all the info from sources resetting all previous "
+#~ "stored information"
+#~ msgstr ""
+#~ "Recarga toda la información desde los proveedores de aplicaciones, "
+#~ "eliminando toda la información almacenada"
 
 #~ msgid "Service could not be reloaded. Check credentials"
 #~ msgstr "No se puede recargar. Verifica credenciales"
