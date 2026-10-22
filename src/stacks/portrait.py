@@ -667,6 +667,7 @@ class portrait(QStackedWindowItem):
 						icn=targ.iconUri.pixmap()
 						self.referrerBtn=targ
 						btn=targ
+						print(btn)
 					elif isinstance(targ,dict) and len(targ)>0:
 						app=targ
 					elif hasattr(targ,"overlay"): #QPushInfoButton
@@ -683,7 +684,7 @@ class portrait(QStackedWindowItem):
 		self._stopThreads(ignoreProgress=True)
 		if app!="":
 			self.parent.setWindowTitle("{} - {}".format(APPNAME,app.get("name","").capitalize()))
-			self._detailView.setParms({"name":app.get("name",""),"id":app.get("id",""),"icon":icn,"btn":btn})
+			self._detailView.setParms({"name":app.get("name",""),"id":app.get("id",""),"icon":icn},btn=btn)
 	#def _loadDetails(self,*args,**kwargs):
 
 	def _loadGlobalDetails(self,*args,**kwargs):
