@@ -4,15 +4,10 @@ from functools import partial
 import os
 import subprocess
 import json
+from rebost import store 
 from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout
 from PySide6 import QtGui
 from PySide6.QtCore import Qt,Signal
-from QtExtraWidgets import QStackedWindowItem
-from rebost import store 
-from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
-							QListWidgetItem,QSizePolicy
-from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal
 from QtExtraWidgets import QStackedWindowItem
 from wdg.btnRebost import QPushButtonRebostApp
 from wdg.prgBar import QProgressImage 
@@ -302,6 +297,8 @@ class portrait(QStackedWindowItem):
 		vbox.setStretch(0,0)
 		vbox.setStretch(1,2)
 		vbox.setStretch(3,1)
+		#dirty hack: Force size adjustment invoking sizeHint
+		wdg.sizeHint()
 		return(wdg)
 	#def _defNavigationBar
 
