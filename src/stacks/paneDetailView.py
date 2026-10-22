@@ -70,8 +70,6 @@ class main(QWidget):
 	#def hide
 
 	def setParms(self,*args,**kwargs):
-		pxm=""
-		name=""
 		self.referrerBtn=kwargs.get("btn",None)
 		if self.referrerBtn!=None:
 			self.app=self.referrerBtn.app
@@ -80,13 +78,17 @@ class main(QWidget):
 				return
 			else:
 				name=self.app["id"]
-		if name=="":
-			if isinstance(args[0],dict):
-				name=args[0]["id"]
-			else:
-				self.app={}
-				name=args[-1]
-				name=self.aux.getAppFromStream(name)
+				if "appsedu" in self.app.get("homepage",""):
+					details=self.helper.getAppseduDetails(self.app["homepage"])
+					self.app["description"]=details["description"]
+					self.updateScreen()
+					return
+		if isinstance(args[0],dict):
+			name=args[0]["id"]
+		else:
+			self.app={}
+			name=args[-1]
+			name=self.aux.getAppFromStream(name)
 		self._resetScreen(name,"")
 		self._rebost.setAction("refreshApp",name)
 		self._rebost.start()
@@ -119,6 +121,8 @@ class main(QWidget):
 			#for bundle,name in (self.app.get('bundle',{}).items()):
 			#	if bundle=='package':
 			#		continue
+		if self.referrerBtn!=None:
+			self.referrerBtn.setApp(self.app)
 		self.setEnabled(True)
 		self.setCursor(self.oldCursor)
 		self.updateScreen()
