@@ -7,7 +7,7 @@ import json
 from rebost import store 
 from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout
 from PySide6 import QtGui
-from PySide6.QtCore import Qt,Signal
+from PySide6.QtCore import Qt,Signal,QThread
 from QtExtraWidgets import QStackedWindowItem
 from wdg.btnRebost import QPushButtonRebostApp
 from wdg.prgBar import QProgressImage 
@@ -26,12 +26,31 @@ import paneGlobalView
 import paneHomeView
 import paneErrorView
 
+class splash(QWidget):
+	def __init__(self,*args):
+		super().__init__()
+		self.resize(296,296)
+		lay=QGridLayout(self)
+		self.progress=QProgressImage()
+		lay.addWidget(self.progress)
+		self.progress.inc=-1
+		self.progress.setImageFromFile(os.path.join(RSRC,"progressBar267x267.png"))
+		self.progress.animation="pulsate"
+	def start(self):
+		self.show()
+		self.progress.start()
+	def stop(self):
+		self.progress.stop()
+		self.close()
+
 class portrait(QStackedWindowItem):
 	requestGetApps=Signal(str)
 	loadStart=Signal()
 	loadStop=Signal()
 	rebostToggled=Signal()
 	def __init_stack__(self):
+		self.splash=splash()
+		self.splash.start()
 		self.init=False
 		self.oldTime=0
 		self.dbg=True
@@ -65,6 +84,9 @@ class portrait(QStackedWindowItem):
 	@staticmethod
 	def _onDestroy(*args):
 		selfDict=args[0]
+		selfDict["splash"].stop()
+		selfDict["_llxup"].quit()
+		selfDict["_llxup"].wait()
 		selfDict["_rebost"].blockSignals(True)
 		selfDict["_rebost"].requestInterruption()
 		selfDict["_rebost"].quit()
@@ -125,6 +147,10 @@ class portrait(QStackedWindowItem):
 				self._unlockRebost()
 		self.btnBar.setLocked(self.locked,lockedUser)
 		self._debug("<-------- Rebost status acquired (lock {})".format(self.locked))
+		if self.init==False:
+			self.init=True
+		else:
+			self.splash.stop()
 	#def _endGetLockStatus
 
 	def _refreshBeforeInstall(self,app):
@@ -477,17 +503,6 @@ class portrait(QStackedWindowItem):
 		#self._llxup.wait()
 	#def _getUpgradables
 
-	def _beginUpdate(self):
-		cursor=QtGui.QCursor(Qt.WaitCursor)
-		self.setCursor(cursor)
-		self.btnSettings.hide()
-		if self.init==False:
-			self.loadStart.emit()
-		else:
-			self._progressShow()
-		self._homeView.hide()
-	#def _beginUpdate
-
 	def _endUpdate(self):
 		self._return()
 	#def _endUpdate
@@ -770,7 +785,7 @@ class portrait(QStackedWindowItem):
 
 	def softresetScreen(self):
 		self._stopThreads(ignoreProgress=True)
-	#def resetScreen
+	#def softresetScreen
 
 	def resetScreen(self):
 		self._stopThreads(ignoreProgress=True)
