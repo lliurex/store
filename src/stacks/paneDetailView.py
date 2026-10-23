@@ -89,6 +89,7 @@ class main(QWidget):
 			self.app={}
 			name=args[-1]
 			name=self.aux.getAppFromStream(name)
+		self.name=name #Only in case of error
 		self._resetScreen(name,"")
 		self._rebost.setAction("refreshApp",name)
 		self._rebost.start()
@@ -528,6 +529,8 @@ class main(QWidget):
 	#def _setInfo
 
 	def _setTags(self):
+		if self.app.get("ERR")!=None:
+			return
 		exclude=self.app.get("suggests",[])
 		exclude.extend([self.app["name"],self.app["id"]])
 		extra=self.app.get("summary")
@@ -606,6 +609,8 @@ class main(QWidget):
 		self.lblBkg.setGraphicsEffect(self.blur)
 		self.lblBkg.setStyleSheet("QLabel{background-color:rgba(%s,%s,%s,0.7);}"%(color.red(),color.green(),color.blue()))
 		#self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
+		self.app["name"]=self.name
+		self.app["id"]=self.name
 		self.app["summary"]=i18n.get("DETAIL_APPUNKNOWN").split(".")[0]
 		self.app["pkgname"]="rebost"
 		self.app["description"]="{0}".format(i18n.get("DETAIL_APPUNKNOWN_SAI"))

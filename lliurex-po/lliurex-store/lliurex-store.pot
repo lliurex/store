@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 13:18+0200\n"
+"POT-Creation-Date: 2026-10-23 13:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,7 +37,7 @@ msgstr ""
 msgid "Z-Install"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:10 ../src/stacks/extras/i18n.py:56
+#: ../src/stacks/extras/i18n.py:10 ../src/stacks/extras/i18n.py:59
 msgid "Remove"
 msgstr ""
 
@@ -69,7 +69,7 @@ msgstr ""
 msgid "Store was unable to get information from internet"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:18 ../src/stacks/extras/i18n.py:59
+#: ../src/stacks/extras/i18n.py:18 ../src/stacks/extras/i18n.py:62
 msgid "Portrait"
 msgstr ""
 
@@ -214,22 +214,34 @@ msgid "Click: Show all applications"
 msgstr ""
 
 #: ../src/stacks/extras/i18n.py:55
-msgid "Reload Apps"
+msgid "Downloading information, wait a moment..."
+msgstr ""
+
+#: ../src/stacks/extras/i18n.py:56
+msgid "Upgrading application database"
 msgstr ""
 
 #: ../src/stacks/extras/i18n.py:57
-msgid "Search"
+msgid "Loading available applications"
 msgstr ""
 
 #: ../src/stacks/extras/i18n.py:58
-msgid "Sort alphabetically"
+msgid "Reload Apps"
 msgstr ""
 
 #: ../src/stacks/extras/i18n.py:60
-msgid "Upgradables"
+msgid "Search"
 msgstr ""
 
 #: ../src/stacks/extras/i18n.py:61
+msgid "Sort alphabetically"
+msgstr ""
+
+#: ../src/stacks/extras/i18n.py:63
+msgid "Upgradables"
+msgstr ""
+
+#: ../src/stacks/extras/i18n.py:64
 msgid "Updates available"
 msgstr ""
 
@@ -722,6 +734,63 @@ msgstr ""
 msgid "TextEditor"
 msgstr ""
 
+
+#
+msgid "Ebook Software"
+msgstr ""
+
+#
+msgid "Music Production"
+msgstr ""
+
+#
+msgid "Informática"
+msgstr ""
+
+#
+msgid "Text Editors"
+msgstr ""
+
+#
+msgid "GTK"
+msgstr ""
+
+#
+msgid "Llengua"
+msgstr ""
+
+#
+msgid "Java"
+msgstr ""
+
+#
+msgid "Idiomes"
+msgstr ""
+
+#
+msgid "KDE"
+msgstr ""
+
+#
+msgid "zomando"
+msgstr ""
+
+#
+msgid "Video Apps"
+msgstr ""
+
+#
+msgid "X-Utilities"
+msgstr ""
+
+#
+msgid "Qt"
+msgstr ""
+
+#
+msgid "System Tools (NOT OS or ROMS)"
+msgstr ""
+
 #
 msgid "LliureX-Infantil"
 msgstr ""
@@ -731,119 +800,7 @@ msgid "3D Graphics"
 msgstr ""
 
 #
-msgid "Video Apps"
-msgstr ""
-
-#
-msgid "Utilities"
-msgstr ""
-
-#
-msgid "Video Editors"
-msgstr ""
-
-#
-msgid "Music Production"
-msgstr ""
-
-#
-msgid "Webcam & Monitoring"
-msgstr ""
-
-#
-msgid "Education Apps"
-msgstr ""
-
-#
-msgid "Text Editors"
-msgstr ""
-
-#
-msgid "Various Games"
-msgstr ""
-
-#
-msgid "Developers Apps"
-msgstr ""
-
-#
-msgid "Informática"
-msgstr ""
-
-#
-msgid "QT"
-msgstr ""
-
-#
-msgid "GNOME"
-msgstr ""
-
-#
-msgid "GTK"
-msgstr ""
-
-#
-msgid "ODE"
-msgstr ""
-
-#
-msgid "Browser"
-msgstr ""
-
-#
-msgid "Screenshot Tools"
-msgstr ""
-
-#
-msgid "E-Learning"
-msgstr ""
-
-#
-msgid "Creation"
-msgstr ""
-
-#
-msgid "Electronics"
-msgstr ""
-
-#
-msgid "X-Utilities"
-msgstr ""
-
-#
-msgid "KDE"
-msgstr ""
-
-#
-msgid "Graphic Apps"
-msgstr ""
-
-#
-msgid "System Tools (NOT OS or ROMS)"
-msgstr ""
-
-#
-msgid "Llengua"
-msgstr ""
-
-#
-msgid "Qt"
-msgstr ""
-
-#
-msgid "Chat & Messenging"
-msgstr ""
-
-#
 msgid "Documentation"
-msgstr ""
-
-#
-msgid "Idiomes"
-msgstr ""
-
-#
-msgid "Video Converters"
 msgstr ""
 
 #
@@ -851,27 +808,7 @@ msgid "Inteligencia Artificial"
 msgstr ""
 
 #
-msgid "Ebook Software"
-msgstr ""
-
-#
-msgid "Java"
-msgstr ""
-
-#
-msgid "File Management"
-msgstr ""
-
-#
-msgid "zomando"
-msgstr ""
-
-#
-msgid "Audio Apps"
-msgstr ""
-
-#
-msgid "COSMIC"
+msgid "X-Lliurex"
 msgstr ""
 
 #
@@ -879,9 +816,85 @@ msgid "Engineering"
 msgstr ""
 
 #
-msgid "X-Lliurex"
+msgid "Graphic Apps"
 msgstr ""
 
-msgid "Authentication is required to manage software"
+#
+msgid "QT"
+msgstr ""
+
+#
+msgid "ODE"
+msgstr ""
+
+#
+msgid "Creation"
+msgstr ""
+
+#
+msgid "Video Converters"
+msgstr ""
+
+#
+msgid "Various Games"
+msgstr ""
+
+#
+msgid "COSMIC"
+msgstr ""
+
+#
+msgid "GNOME"
+msgstr ""
+
+#
+msgid "Browser"
+msgstr ""
+
+#
+msgid "File Management"
+msgstr ""
+
+#
+msgid "E-Learning"
+msgstr ""
+
+#
+msgid "Screenshot Tools"
+msgstr ""
+
+#
+msgid "Education Apps"
+msgstr ""
+
+#
+msgid "Video Editors"
+msgstr ""
+
+#
+msgid "Chat & Messenging"
+msgstr ""
+
+#
+msgid "Electronics"
+msgstr ""
+
+#
+msgid "Utilities"
+msgstr ""
+
+#
+msgid "Audio Apps"
+msgstr ""
+
+#
+msgid "Developers Apps"
+msgstr ""
+
+#
+msgid "Webcam & Monitoring"
+msgstr ""
+
+msgid "To make changes enter your password"
 msgstr ""
 #
