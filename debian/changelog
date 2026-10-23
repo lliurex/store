@@ -1,3 +1,10 @@
+lliurex-store (1.8.2.1) jammy; urgency=medium
+
+  * Add splash screen
+  * Improve cache for appsedu details
+
+ -- Juanma1980 <juanma1980@gmail.com>  Fri, 23 Oct 2026 14:38:41 +0200
+
 lliurex-store (1.8.2) jammy; urgency=medium
 
   * Add splash screen
