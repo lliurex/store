@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-10-23 13:54+0200\n"
-"PO-Revision-Date: 2026-10-23 13:56+0200\n"
+"PO-Revision-Date: 2026-10-23 14:01+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -137,7 +137,7 @@ msgstr "Lloc web"
 
 #: ../src/stacks/extras/i18n.py:32
 msgid "Nothing to show"
-msgstr "No hi ha programari"
+msgstr "Res a mostrar"
 
 #: ../src/stacks/extras/i18n.py:33
 msgid "Could not open"
