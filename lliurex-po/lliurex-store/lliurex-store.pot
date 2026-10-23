@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 13:18+0200\n"
+"POT-Creation-Date: 2026-10-23 13:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,7 +37,7 @@ msgstr ""
 msgid "Z-Install"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:10 ../src/stacks/extras/i18n.py:56
+#: ../src/stacks/extras/i18n.py:10 ../src/stacks/extras/i18n.py:60
 msgid "Remove"
 msgstr ""
 
@@ -69,7 +69,7 @@ msgstr ""
 msgid "Store was unable to get information from internet"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:18 ../src/stacks/extras/i18n.py:59
+#: ../src/stacks/extras/i18n.py:18 ../src/stacks/extras/i18n.py:63
 msgid "Portrait"
 msgstr ""
 
@@ -89,11 +89,11 @@ msgid ""
 "es/sai/es/inicio/'>https://portal.edu.gva.es/sai/es/inicio/</a>"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:22 ../src/stacks/extras/i18n.py:36
+#: ../src/stacks/extras/i18n.py:22 ../src/stacks/extras/i18n.py:37
 msgid "System apps can't be removed"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:23 ../src/stacks/extras/i18n.py:37
+#: ../src/stacks/extras/i18n.py:23 ../src/stacks/extras/i18n.py:38
 msgid "Unknown error"
 msgstr ""
 
@@ -130,106 +130,122 @@ msgid "Website"
 msgstr ""
 
 #: ../src/stacks/extras/i18n.py:32
-msgid "Could not open"
+msgid "Nothing to show"
 msgstr ""
 
 #: ../src/stacks/extras/i18n.py:33
-msgid "Error opening"
+msgid "Could not open"
 msgstr ""
 
 #: ../src/stacks/extras/i18n.py:34
-msgid "There's another action in progress"
+msgid "Error opening"
 msgstr ""
 
 #: ../src/stacks/extras/i18n.py:35
+msgid "There's another action in progress"
+msgstr ""
+
+#: ../src/stacks/extras/i18n.py:36
 msgid "Authorization is required"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:38
+#: ../src/stacks/extras/i18n.py:39
 msgid "Filters"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:39
+#: ../src/stacks/extras/i18n.py:40
 msgid "Filter by formats and states"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:40
+#: ../src/stacks/extras/i18n.py:41
 msgid "Home"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:41
+#: ../src/stacks/extras/i18n.py:42
 msgid "Main page"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:42
+#: ../src/stacks/extras/i18n.py:43
 msgid "Blog entries"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:43
+#: ../src/stacks/extras/i18n.py:44
 msgid "Latest apps in appsedu"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:44
+#: ../src/stacks/extras/i18n.py:45
 msgid "Relevant categories"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:45
+#: ../src/stacks/extras/i18n.py:46
 msgid "Editor's choice"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:46
+#: ../src/stacks/extras/i18n.py:47
 msgid "Installed"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:47
+#: ../src/stacks/extras/i18n.py:48
 msgid "Launch LliurexUp"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:48
+#: ../src/stacks/extras/i18n.py:49
 msgid "Show applications"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:49
+#: ../src/stacks/extras/i18n.py:50
 msgid "Updating info"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:50
+#: ../src/stacks/extras/i18n.py:51
 msgid "Z·Install"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:51
+#: ../src/stacks/extras/i18n.py:52
 msgid "Open network settings"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:52
+#: ../src/stacks/extras/i18n.py:53
 msgid "Origin"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:53
+#: ../src/stacks/extras/i18n.py:54
 msgid "Click: Show only from"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:54
+#: ../src/stacks/extras/i18n.py:55
 msgid "Click: Show all applications"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:55
-msgid "Reload Apps"
+#: ../src/stacks/extras/i18n.py:56
+msgid "Downloading information, wait a moment..."
 msgstr ""
 
 #: ../src/stacks/extras/i18n.py:57
-msgid "Search"
+msgid "Upgrading application database"
 msgstr ""
 
 #: ../src/stacks/extras/i18n.py:58
-msgid "Sort alphabetically"
+msgid "Loading available applications"
 msgstr ""
 
-#: ../src/stacks/extras/i18n.py:60
-msgid "Upgradables"
+#: ../src/stacks/extras/i18n.py:59
+msgid "Reload Apps"
 msgstr ""
 
 #: ../src/stacks/extras/i18n.py:61
+msgid "Search"
+msgstr ""
+
+#: ../src/stacks/extras/i18n.py:62
+msgid "Sort alphabetically"
+msgstr ""
+
+#: ../src/stacks/extras/i18n.py:64
+msgid "Upgradables"
+msgstr ""
+
+#: ../src/stacks/extras/i18n.py:65
 msgid "Updates available"
 msgstr ""
 
@@ -722,6 +738,63 @@ msgstr ""
 msgid "TextEditor"
 msgstr ""
 
+
+#
+msgid "Ebook Software"
+msgstr ""
+
+#
+msgid "Music Production"
+msgstr ""
+
+#
+msgid "Informática"
+msgstr ""
+
+#
+msgid "Text Editors"
+msgstr ""
+
+#
+msgid "GTK"
+msgstr ""
+
+#
+msgid "Llengua"
+msgstr ""
+
+#
+msgid "Java"
+msgstr ""
+
+#
+msgid "Idiomes"
+msgstr ""
+
+#
+msgid "KDE"
+msgstr ""
+
+#
+msgid "zomando"
+msgstr ""
+
+#
+msgid "Video Apps"
+msgstr ""
+
+#
+msgid "X-Utilities"
+msgstr ""
+
+#
+msgid "Qt"
+msgstr ""
+
+#
+msgid "System Tools (NOT OS or ROMS)"
+msgstr ""
+
 #
 msgid "LliureX-Infantil"
 msgstr ""
@@ -731,119 +804,7 @@ msgid "3D Graphics"
 msgstr ""
 
 #
-msgid "Video Apps"
-msgstr ""
-
-#
-msgid "Utilities"
-msgstr ""
-
-#
-msgid "Video Editors"
-msgstr ""
-
-#
-msgid "Music Production"
-msgstr ""
-
-#
-msgid "Webcam & Monitoring"
-msgstr ""
-
-#
-msgid "Education Apps"
-msgstr ""
-
-#
-msgid "Text Editors"
-msgstr ""
-
-#
-msgid "Various Games"
-msgstr ""
-
-#
-msgid "Developers Apps"
-msgstr ""
-
-#
-msgid "Informática"
-msgstr ""
-
-#
-msgid "QT"
-msgstr ""
-
-#
-msgid "GNOME"
-msgstr ""
-
-#
-msgid "GTK"
-msgstr ""
-
-#
-msgid "ODE"
-msgstr ""
-
-#
-msgid "Browser"
-msgstr ""
-
-#
-msgid "Screenshot Tools"
-msgstr ""
-
-#
-msgid "E-Learning"
-msgstr ""
-
-#
-msgid "Creation"
-msgstr ""
-
-#
-msgid "Electronics"
-msgstr ""
-
-#
-msgid "X-Utilities"
-msgstr ""
-
-#
-msgid "KDE"
-msgstr ""
-
-#
-msgid "Graphic Apps"
-msgstr ""
-
-#
-msgid "System Tools (NOT OS or ROMS)"
-msgstr ""
-
-#
-msgid "Llengua"
-msgstr ""
-
-#
-msgid "Qt"
-msgstr ""
-
-#
-msgid "Chat & Messenging"
-msgstr ""
-
-#
 msgid "Documentation"
-msgstr ""
-
-#
-msgid "Idiomes"
-msgstr ""
-
-#
-msgid "Video Converters"
 msgstr ""
 
 #
@@ -851,27 +812,7 @@ msgid "Inteligencia Artificial"
 msgstr ""
 
 #
-msgid "Ebook Software"
-msgstr ""
-
-#
-msgid "Java"
-msgstr ""
-
-#
-msgid "File Management"
-msgstr ""
-
-#
-msgid "zomando"
-msgstr ""
-
-#
-msgid "Audio Apps"
-msgstr ""
-
-#
-msgid "COSMIC"
+msgid "X-Lliurex"
 msgstr ""
 
 #
@@ -879,9 +820,85 @@ msgid "Engineering"
 msgstr ""
 
 #
-msgid "X-Lliurex"
+msgid "Graphic Apps"
 msgstr ""
 
-msgid "Authentication is required to manage software"
+#
+msgid "QT"
+msgstr ""
+
+#
+msgid "ODE"
+msgstr ""
+
+#
+msgid "Creation"
+msgstr ""
+
+#
+msgid "Video Converters"
+msgstr ""
+
+#
+msgid "Various Games"
+msgstr ""
+
+#
+msgid "COSMIC"
+msgstr ""
+
+#
+msgid "GNOME"
+msgstr ""
+
+#
+msgid "Browser"
+msgstr ""
+
+#
+msgid "File Management"
+msgstr ""
+
+#
+msgid "E-Learning"
+msgstr ""
+
+#
+msgid "Screenshot Tools"
+msgstr ""
+
+#
+msgid "Education Apps"
+msgstr ""
+
+#
+msgid "Video Editors"
+msgstr ""
+
+#
+msgid "Chat & Messenging"
+msgstr ""
+
+#
+msgid "Electronics"
+msgstr ""
+
+#
+msgid "Utilities"
+msgstr ""
+
+#
+msgid "Audio Apps"
+msgstr ""
+
+#
+msgid "Developers Apps"
+msgstr ""
+
+#
+msgid "Webcam & Monitoring"
+msgstr ""
+
+msgid "To make changes enter your password"
 msgstr ""
 #

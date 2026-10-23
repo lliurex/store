@@ -211,7 +211,8 @@ def detailPanel():
 					margin:0px;
 					padding:0px;
 					border:0px;
-				}"""
+					background-color:%s;
+				}"""%(COLOR_FONT_LIGHT)
 	css=css+screenshot
 
 	lblTags="""#lblTags{
@@ -222,12 +223,13 @@ def detailPanel():
 
 	css=css+lblTags
 
-	lstSuggests="""#lstSuggests{
+	lstSuggests="""QWidget#lstSuggests{
 					border:0px;
 					margin:0px;
 					margin-bottom:%spx;
 					margin-top:%spx;
-				}"""%(MARGIN,MARGIN)
+					background-color:%s;
+				}"""%(MARGIN,MARGIN,COLOR_FONT_LIGHT)
 
 	css=css+lstSuggests
 
@@ -249,6 +251,7 @@ def detailPanel():
 				#lstLinks{
 					border:0px;
 					margin-left:%spx;
+					background-color:%s;
 				}
 				#lstLinks::item {
 					text-decoration:none;
@@ -270,7 +273,7 @@ def detailPanel():
 					margin-bottom:%spx;
 					padding:%spx;
 					border-bottom:0px;
-				}*/"""%(COLOR_BACKGROUND_DARK.replace("#","#A9"),COLOR_BACKGROUND_DARKEST.replace("#","#51"),COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARK,MARGIN,COLOR_BACKGROUND_DARKEST.replace("#","#AA"),MARGIN,MARGIN,MARGIN,MARGIN)
+				}*/"""%(COLOR_BACKGROUND_DARK.replace("#","#A9"),COLOR_BACKGROUND_DARKEST.replace("#","#51"),COLOR_BACKGROUND_LIGHT,COLOR_BACKGROUND_DARK,MARGIN,COLOR_FONT_LIGHT,COLOR_BACKGROUND_DARKEST.replace("#","#AA"),MARGIN,MARGIN,MARGIN,MARGIN)
 
 	css=css+lstLinks
 

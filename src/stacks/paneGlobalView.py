@@ -73,6 +73,9 @@ class paneGlobalView(QWidget):
 		lay=QGridLayout()
 		self.table=self._defTable()
 		lay.addWidget(self.table,0,0,1,1)
+		self.empty=self._defEmptyContainer()
+		lay.addWidget(self.empty,0,0,1,1)
+		self.empty.hide()
 		self.setLayout(lay)
 	#def __initScreen
 
@@ -85,6 +88,25 @@ class paneGlobalView(QWidget):
 		table.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 		return(table)
 	#def _defTable
+
+	def _defEmptyContainer(self):
+		wdg=QWidget()
+		glay=QGridLayout(wdg)
+		lblIcn=QLabel()
+		icn=QtGui.QIcon.fromTheme("align-none")
+		pxm=icn.pixmap(self.width(),self.height(),QtGui.QIcon.Mode.Disabled)
+		lblIcn.setPixmap(pxm)
+		glay.addWidget(lblIcn,0,0,1,1,Qt.AlignCenter|Qt.AlignCenter)
+		lblTxt=QLabel("<p><strong>{}</strong></p>".format(i18n["ERREMPTY"]))
+		lblTxt.setStyleSheet("""padding:5px;""")
+		fLbl=lblTxt.font()
+		lblTxt.setAutoFillBackground(True)
+		fLbl.setPointSize(fLbl.pointSize()+4)
+		lblTxt.setFont(fLbl)
+		glay.addWidget(lblTxt,0,0,1,1,Qt.AlignCenter|Qt.AlignCenter)
+		return(wdg)
+	#def _defEmptyContainer
+
 
 	def tableLeaveEvent(self,*args):
 		return(False)
@@ -129,6 +151,11 @@ class paneGlobalView(QWidget):
 		self.appsLoaded={}
 		self.stopAdding=False
 		self.table.setSpacing(MARGIN*5)
+		self.empty.hide()
+		self.table.show()
+		if len(apps)==0:
+			self.empty.show()
+			self.table.hide()
 		while apps:
 			if hasattr(self,"stopAdding")==False:
 				return
@@ -154,7 +181,10 @@ class paneGlobalView(QWidget):
 		#Search for app in loaded buttons and update it
 		btn=self.appsLoaded.get(rapp["id" ])
 		if btn!=None:
-			btn.setApp(rapp,updateIcon=True)
+			if rapp.get("icon","").strip()!="":
+				btn.setApp(rapp,updateIcon=True)
+			else:
+				btn.setApp(rapp,updateIcon=False)
 	#def updateBtn
 
 

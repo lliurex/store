@@ -47,7 +47,7 @@ class QPushButtonInstaller(QPushButton):
 	#def setApp
 
 	def _emitInstall(self,*args):
-		if len(args[0])==0:
+		if len(args)==0:
 			return
 		if args[0]!=None:
 			args[0].setCursor(Qt.WaitCursor)

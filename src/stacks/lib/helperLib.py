@@ -480,4 +480,26 @@ class auxiliary():
 				if cont==4:
 					break
 		return("{}".format(tokenized.strip(" / ")))
-	#def _generateAppTags
+	#def tokenizeTags
+
+	def getAppFromStream(self,stream):
+		name=""
+		if isinstance(stream,str):
+			cmd=stream.split("://")[-1]
+			if cmd.startswith("install?"):
+				ocs=cmd.split("&")[-1]
+				idx=1
+				for i in ocs.split("=")[-1]:
+					if i.isalnum():
+						idx+=1
+					else:
+						break
+				name=ocs.split("=")[-1][:idx-1]
+			else:
+				name=cmd.replace(".desktop","").replace(".flatpakref","")
+				if name.count(".")>1:
+					if len(name.split(".")[0])==3:
+						name=name.split(".")[-1]
+		return(name)
+	#def getAppFromStream
+>>>>>>> master

@@ -45,7 +45,7 @@ class QFlowBar(QScrollArea):
 
 	def _initGui(self):
 		wdg=QWidget()
-		self.setStyleSheet("""#container{border:0px}""")
+		self.setStyleSheet("""#container{border:0px;background:white}""")
 		lay=QGridLayout(wdg)
 		lay.setContentsMargins(0,0,0,0)
 		lay.setSpacing(0)
@@ -114,6 +114,7 @@ class QFlowBar(QScrollArea):
 			self._emit()
 			event.ignore()
 		btn=QPushInfoButton(overlay=self.overlay)
+		btn.setStyleSheet("""background:white""")
 		btn.setCacheDir(self.cache)
 		btn.mousePressEvent=mousePressEvent
 		btn.label.setAlignment(Qt.AlignLeft)

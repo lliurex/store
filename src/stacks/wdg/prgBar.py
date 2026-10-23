@@ -7,18 +7,8 @@ from PySide2.QtCore import Qt,QTimer,QSize
 from PySide2.QtGui import QPixmap,QColor
 import extras.css as css
 from extras.constants import *
+from extras.i18n import *
 import random
-import gettext
-_ = gettext.gettext
-
-i18nLoad={
-	"GETTINGINFO":_("Downloading information, wait a moment..."),
-	"UPDATINGINFO":_("Upgrading application database")
-	}
-
-i18nUnlock={
-	"UNLOCKINGDB":_("Loading available applications"),
-	}
 
 class QProgressImage(QWidget):
 	def __init__(self,*args,**kwargs):
@@ -40,7 +30,8 @@ class QProgressImage(QWidget):
 		self.pxm=QPixmap(self.img)#.scaled(267,267,Qt.KeepAspectRatio,Qt.SmoothTransformation)
 		self.pxmOverlay=QPixmap(self.pxm.size())
 		self.lblPxm=QLabel()
-		self.lblInfo=QLabel(i18nLoad["GETTINGINFO"])
+		self.i18nMsgs=[i18n["PRG_GETTINGINFO"],i18n["PRG_UPDATINGINFO"]]
+		self.lblInfo=QLabel(i18n["PRG_GETTINGINFO"])
 		lay.setSpacing(0)
 		lay.addWidget(self.lblPxm,Qt.AlignBottom)
 		lay.addWidget(self.lblInfo,Qt.AlignTop)
@@ -165,14 +156,9 @@ class QProgressImage(QWidget):
 	def _doProgress(self,*args):
 		self.running=True
 		if self.lblInfo.text()!="":
-			if self.unlocking==False:
-				i18n=i18nUnlock
-			else:
-				i18n=i18nLoad
 			if (self.oldTime!=0) and (int(time.time())-self.oldTime>3):
-				rnd=random.randint(0,len(i18n))-1
-				key=list(i18n.keys())[rnd]
-				self.lblInfo.setText(i18n[key])
+				rnd=random.randint(0,len(self.i18nMsgs)-1)
+				self.lblInfo.setText(self.i18nMsgs[rnd])
 				self.oldTime=time.time()
 			elif self.oldTime==0:
 				self.oldTime=time.time()
