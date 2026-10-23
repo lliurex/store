@@ -4,6 +4,7 @@ from PySide2.QtWidgets import QTreeWidget,QTreeWidgetItem
 from PySide2.QtCore import Qt,Signal
 from PySide2.QtGui import QCursor
 from extras.constants import *
+from extras.i18n import *
 import gettext
 _ = gettext.gettext
 

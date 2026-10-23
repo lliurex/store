@@ -8,10 +8,6 @@ from PySide2.QtCore import Qt,Signal,QSize,QThread
 from PySide2 import QtGui
 import gettext
 from extras.constants import *
-gettext.textdomain('lliurex-store')
-_ = gettext.gettext
-
-i18n={"INSTALL":_("Install")}
 
 class _imageLoader(QThread):
 	fetched=Signal("PyObject")
