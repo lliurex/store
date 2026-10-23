@@ -1,3 +1,13 @@
+lliurex-store (1.8.1) jammy; urgency=medium
+
+  * Replaces installer by storeInstaller
+  * Centralize i18n
+  * New look and feel for portrait
+  * General improvements
+  * Deprecate/clean code
+
+ -- Juanma1980 <juanma1980@gmail.com>  Wed, 21 Oct 2026 16:02:56 +0200
+
 lliurex-store (1.7.6.4-1) jammy; urgency=medium
 
   * installer.py:

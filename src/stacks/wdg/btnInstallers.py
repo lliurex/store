@@ -3,24 +3,11 @@ import os,subprocess,time
 from PySide2.QtWidgets import QLabel, QPushButton,QMenu,QWidget,QWidgetAction,QSizePolicy,QApplication,QGridLayout
 from PySide2.QtCore import Qt,Signal,QSize,QPoint
 from PySide2.QtGui import QIcon,QPixmap
-from wdg.btnRebost import QPushButtonRebostApp
-import lib.libhelper as libhelper
+from QtExtraWidgets import QPushInfoButton
+from lib.helperLib import appHelper
 import extras.css as css
 from extras.constants import *
-import gettext
-gettext.textdomain('lliurex-store')
-_ = gettext.gettext
-
-i18n={
-	"ASSISTED":_("Assisted"),
-	"HELP":_("What's this?"),
-	"INSTALL":_("Install"),
-	"OPEN":_("Z-Install"),
-	"REMOVE":_("Remove"),
-	"UNAUTHORIZED":_("Blocked"),
-	"UNAVAILABLE":_("Unavailable"),
-	"WEBAPP":_("Web app")
-	}
+from extras.i18n import *
 
 class QPushButtonInstaller(QPushButton):
 	installerClicked=Signal(str)
@@ -30,7 +17,7 @@ class QPushButtonInstaller(QPushButton):
 		self.setCursor(Qt.PointingHandCursor)
 		self.setStyleSheet(css.btnRebost())
 		self.setObjectName("btnInstaller")
-		self.helper=libhelper.helper()
+		self.helper=appHelper()
 		self.app=kwargs.get("app",{})
 		self.dlgInstallers=QWidget()
 		self.menuLayout=QGridLayout()
@@ -68,7 +55,6 @@ class QPushButtonInstaller(QPushButton):
 		if self.instBundle!="":
 			bundle=self.instBundle
 		self.installerClicked.emit(bundle)
-		time.sleep(2)
 		if args[0]!=None:
 			args[0].setCursor(Qt.PointingHandCursor)
 		else:
@@ -76,7 +62,7 @@ class QPushButtonInstaller(QPushButton):
 	#def _emitInstall(self,*args):
 
 	def _openWiki(self):
-		proc=["kde-open5","https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Gesti%C3%B3n+de+software+en+LliureX&highlight=snap#Diferents_formats_una_breu_explicaci_"]
+		proc=["xdg-open","https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Gesti%C3%B3n+de+software+en+LliureX&highlight=snap#Diferents_formats_una_breu_explicaci_"]
 		subprocess.run(proc)
 	#def _openWiki
 
@@ -88,7 +74,7 @@ class QPushButtonInstaller(QPushButton):
 		what.setFixedSize(QSize(24,24))
 		what.setStyleSheet("""padding:0px;margin:0px;border:0px;color:black""")
 		what.clicked.connect(self._openWiki)
-		what.setToolTip(i18n["HELP"])
+		what.setToolTip(i18n["BTN_HELP"])
 		what.setCursor(Qt.WhatsThisCursor)
 		self.menuLayout.addWidget(what,0,self.menuLayout.columnCount(),1,1,Qt.AlignLeft)
 		self.menuLayout.setColumnStretch(self.menuLayout.columnCount()-1,1)
@@ -98,7 +84,7 @@ class QPushButtonInstaller(QPushButton):
 	def _setActionForMenu(self,*args):
 		self._resizeMenu()
 		for chld in self.dlgInstallers.children():
-			if isinstance(chld,QPushButtonRebostApp) or isinstance(chld,QPushButton):
+			if isinstance(chld,QPushInfoButton) or isinstance(chld,QPushButton):
 				if hasattr(chld,"app"):
 					release,bundle=chld.app["name"].split("<br>")
 					text="<p>Kind: {0}<br>Release: {1}</p>".format(bundle.capitalize(),release)
@@ -115,7 +101,7 @@ class QPushButtonInstaller(QPushButton):
 		self.setProperty("clicked",True)
 		self.style().polish(self)
 		QApplication.processEvents()
-		if args[0].x()>(self.rect().width()-48):
+		if args[0].x()>(self.rect().width()-48) and self.instBundle=="":
 			self._loadLaunchers(bundlesSorted)
 			self.showMenu()
 		else:
@@ -125,9 +111,29 @@ class QPushButtonInstaller(QPushButton):
 			self._emitInstall(None,{"name":"{}<br>{}".format(self.app["id"],bundle)})
 	#def mousePressEvent
 
+	def _btnInstaller(self,bundle,release):
+		wdg=QPushInfoButton(overlay=False,scroll=False)
+		wdg.defaultSize=72
+		wdg.loadImgSync(os.path.join(RSRC,"application-vnd.{}.png".format(bundle)))
+		wdg.lblDesc.setText("<strong>{}</strong>".format(bundle.capitalize()))
+		wdg.lblDesc.setAttribute(Qt.WA_StyledBackground, True)
+		clrBkg="#002c4f00"
+		clrBkg="0,44,79,0.8"
+		wdg.lblDesc.setStyleSheet("""border-radius:5px;padding:1px;background:rgba(%s);color:white;border:1px solid %s;"""%(clrBkg,COLOR_BORDER))
+		wdg.lblDesc.setFixedWidth(ICON_SIZE)
+		wdg.lblDesc.setAlignment(Qt.AlignCenter)
+		release=release[0:min(10,len(release))]
+		wdg.setToolTip(release)
+		wdg.clicked.connect(self._emitInstall)
+		wdg.setMaximumWidth(ICON_SIZE/3)
+		wdg.layout().setContentsMargins(6,0,6,3)
+		return(wdg)
+	#def _btnInstaller(self,bundle):
+
 	def _populateInstallers(self,bundlesSorted):
 		cont=0
 		epi=False
+		align=Qt.AlignCenter|Qt.AlignBottom
 		for idx,bundleData in bundlesSorted.items():
 			try:
 				bundleData=bundleData.strip()
@@ -142,111 +148,74 @@ class QPushButtonInstaller(QPushButton):
 				self._debug("--- END ---")
 			if bundle=="unknown":
 				bundle="epi"
-			#if self.app.get("status",{}).get(bundle,1)!=1:
-			#	continue
-			#release=self.app.get("versions",{}).get(bundle,"lliurex").split(":")[-1].split("+")[0]
-			release=release[0:min(10,len(release))]
-			wdg=QPushButtonRebostApp({"name":"{}<br>{}".format(release,bundle.capitalize()),"icon":os.path.join(RSRC,"application-vnd.{}.png".format(bundle))},iconSize=64)
-			wdg.lockTooltip=True
-			wdg.label.setWordWrap(True)
-			wdg.clicked.connect(self._emitInstall)
-			wdg.setCompactMode(True)
-			wdg.setMaximumWidth(ICON_SIZE/3)
-			if cont==0:
-				wdg.flyIcon=QPixmap(os.path.join(RSRC,"emblem-favorite32x32.png"))
-				wdg.lblFlyIcon.setPixmap(wdg.flyIcon.scaled(16,16,Qt.KeepAspectRatioByExpanding,Qt.FastTransformation))
-				wdg.lblFlyIcon.show()
-			if bundle=="epi":
-				epi=True
-				self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
-			elif epi==False:
-				self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
+			wdg=self._btnInstaller(bundle,release)
+			wdg.layout().addWidget(wdg.lblDesc,0,0,1,2,align)
+			self.menuLayout.addWidget(wdg,0,self.menuLayout.columnCount(),2,1)
+			if bundle=="epi": #epi at idx[0] so don't process more
+				break
 			cont+=1
 	#def _populateInstallers
 
-	def _getInstalledBundle(self):
-		installBundle=""
-		bundles=self.app.get("bundle",{})
-		states=self.app.get("status",{})
-		zmd=False
-		if bundles.get("unknown")!=None and bundles.get("package")==None and len(bundles)==1:
-			#It's an app coming from a specific installer (zmd with only one app)
-			#Fake states
-			states.update({"unknown":states.get("package","1")})
-		if len(states)>0:
-			for bundle,state in states.items():
-				if int(state)==0 and bundle in bundles: #zmd are of kind unknown, but installs as packagekind
-					installBundle=bundle
-					break
-				elif "unknown" in bundles and int(state)==0:
-					if bundles["unknown"]!=self.app["id"]: #if == then seems a zmd, fake it
-						installBundle=bundle
-						if installBundle not in bundles:
-							bundles[installBundle]=self.app["id"]
-						break
-		if installBundle!="":
-			if bundles[installBundle]==bundles.get("unknown","") and len(bundles)>1:
-				installBundle=""
-		return installBundle
-	#def _getInstalledBundle
+	def _setAppForbidden(self):
+		self.setText(i18n["BTN_UNAUTHORIZED"])
+		self.setMenu(None)
+		self.setEnabled(False)
+	#def _setAppForbidden
 
-	def _setActionForButton(self):
-		self.setText(i18n["INSTALL"])
-		self.setMenu(self.menuInstaller)
-		if len(self.app.get("bundle",{}))==0 and self.app.get("forbidden",False)==True:
-			self.setText(i18n["UNAUTHORIZED"])
-			self.setMenu(None)
-			self.setEnabled(False)
+	def _setAppAssisted(self):
+		self.setEnabled(False)
+		self.setText(i18n["BTN_ASSISTED"])
+	#def _setAppAssisted
+
+	def _setAppWebApp(self):
+		self.instBundle=""
+		self.setEnabled(True)
+		self.setText(i18n["BTN_WEBAPP"])
+	#def _setAppWebApp
+
+	def _setAppPending(self):
+		self.setText(i18n["BTN_UNAVAILABLE"])
+		self.setMenu(None)
+		self.setEnabled(False)
+	#def _setAppPending
+
+	def _setAppAvailable(self):
+		self.setVisible(True)
+		self.setEnabled(True)
+		self.setText(i18n["BTN_INSTALL"])
+		self.instBundle=""
+	#def _setAppAvailable
+
+	def _setAppInstalled(self):
+		self.setText(i18n.get("BTN_REMOVE"))
+		action="remove"
+	#def _setAppInstalled
+
+	def _getAppStatus(self):
+		status=""
+		if self.app.get("forbidden",False)==True:
+			self._setAppForbidden()
+		elif self.app.get("assisted",False)==True:
+			self._setAppAssisted()
+		elif self.app.get("webapp",False)==True:
+			self._setAppWebApp()
+		elif len(self.app.get("bundle",[]))==0 or self.app.get("unavailable",False)==True:
+			self._setAppPending()
 		else:
-			if self.app.get("assisted",False)==True:
-				self.setEnabled(False)
-				self.setText(i18n["ASSISTED"])
-			elif self.app.get("webapp",False)==True:
-				self.setEnabled(True)
-				self.setText(i18n["WEBAPP"])
-			elif len(self.app.get("bundle",{}))==0 or self.app.get("unavailable",False)==True:
-				self.setText(i18n["UNAVAILABLE"])
-				self.setMenu(None)
-				self.setEnabled(False)
-			elif self.app.get("forbidden",False)==True:
-				self.setText(i18n["UNAUTHORIZED"])
-				self.setMenu(None)
-				self.setEnabled(False)
-			else: #app seems authorized and available
-				self.setEnabled(True)
-				#bundles=self.app["bundle"]
-				#status=self.app["status"]
-				#zmd=bundles.get("unknown","")
-				action="install"
-				#if zmd==self.app["name"]==self.app["pkgname"]:
-				#	action="open"
-				#else:
-				self.instBundle=self.helper.getInstalledBundle(self.app)#self._getInstalledBundle()
-				if self.instBundle!="":
-					self.setText(i18n.get("REMOVE"))
-					action="remove"
-				if action=="install":
-					self.setVisible(True)
-					self.setEnabled(True)
-					self.setText(i18n["INSTALL"])
-					self.instBundle=""
-				elif action=="open":
-					self.setVisible(True)
-					self.setEnabled(True)
-					self.setText(i18n["OPEN"])
-					self.instBundle="unknown"
-				else:
-					self.setMenu(None)
-					self.setText(i18n["REMOVE"])
-	#def _setActionForButton
+			self.instBundle=self.helper.getInstalledBundle(self.app)#self._getInstalledBundle()
+			if self.instBundle!="":
+				self._setAppInstalled()
+			else:
+				self._setAppAvailable()
+		return(status)
+	#def _getAppStatus
 
 	def _loadLaunchers(self,bundlesSorted):
 		self._debug("Loading launchers")
 		for chld in self.dlgInstallers.children():
-			if isinstance(chld,QPushButtonRebostApp) or isinstance(chld,QPushButton):
+			if isinstance(chld,QPushInfoButton) or isinstance(chld,QPushButton):
 				chld.setParent(None)
-		self._setActionForButton()
+		self._getAppStatus()
 		if self.isEnabled()==True:
 			self._populateInstallers(bundlesSorted)
 	#def _loadLaunchers
-
