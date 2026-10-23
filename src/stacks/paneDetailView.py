@@ -580,6 +580,7 @@ class main(QWidget):
 		#Reload config if app has been epified
 		self.showMsg=self.parent().showMsg
 		if len(self.app)>0:
+			self.lblIcon.clear()
 			self.cmbBundles.setVisible(True)
 			self.lblRelease.setEnabled(True)
 			self.lblRelease.setText(i18n.get("BTN_INSTALL"))
