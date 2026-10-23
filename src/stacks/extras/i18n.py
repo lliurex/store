@@ -29,6 +29,7 @@ i18n={
 	"DETAIL_RUN":_("Open"),
 	"DETAIL_SEEIT":_("See at Appsedu"),
 	"DETAIL_SITE":_("Website"),
+	"ERREMPTY":_("Nothing to show"),
 	"ERRNOTFOUND":_("Could not open"),
 	"ERRLAUNCH":_("Error opening"),
 	"ERRMORETHANONE":_("There's another action in progress"),
