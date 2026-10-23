@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-23 13:38+0200\n"
-"PO-Revision-Date: 2026-10-23 13:43+0200\n"
+"POT-Creation-Date: 2026-10-23 13:54+0200\n"
+"PO-Revision-Date: 2026-10-23 13:56+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -38,7 +38,7 @@ msgstr "Instal·la"
 msgid "Z-Install"
 msgstr "Instal·la"
 
-#: ../src/stacks/extras/i18n.py:10 ../src/stacks/extras/i18n.py:59
+#: ../src/stacks/extras/i18n.py:10 ../src/stacks/extras/i18n.py:60
 msgid "Remove"
 msgstr "Elimina"
 
@@ -70,7 +70,7 @@ msgstr "Certificades per Appsedu"
 msgid "Store was unable to get information from internet"
 msgstr "Sembla que no hi ha connexió a internet"
 
-#: ../src/stacks/extras/i18n.py:18 ../src/stacks/extras/i18n.py:62
+#: ../src/stacks/extras/i18n.py:18 ../src/stacks/extras/i18n.py:63
 msgid "Portrait"
 msgstr "Portada"
 
@@ -95,11 +95,11 @@ msgstr ""
 "href='https://portal.edu.gva.es/sai/es/inicio/'>https://portal.edu.gva.es/"
 "sai/es/inicio/</a>"
 
-#: ../src/stacks/extras/i18n.py:22 ../src/stacks/extras/i18n.py:36
+#: ../src/stacks/extras/i18n.py:22 ../src/stacks/extras/i18n.py:37
 msgid "System apps can't be removed"
 msgstr "Aplicació de base. No es desinstal·larà"
 
-#: ../src/stacks/extras/i18n.py:23 ../src/stacks/extras/i18n.py:37
+#: ../src/stacks/extras/i18n.py:23 ../src/stacks/extras/i18n.py:38
 msgid "Unknown error"
 msgstr "Error desconegut"
 
@@ -136,118 +136,122 @@ msgid "Website"
 msgstr "Lloc web"
 
 #: ../src/stacks/extras/i18n.py:32
+msgid "Nothing to show"
+msgstr "No hi ha programari"
+
+#: ../src/stacks/extras/i18n.py:33
 msgid "Could not open"
 msgstr "No s'ha pogut obrir"
 
-#: ../src/stacks/extras/i18n.py:33
+#: ../src/stacks/extras/i18n.py:34
 msgid "Error opening"
 msgstr "Error carregant"
 
-#: ../src/stacks/extras/i18n.py:34
+#: ../src/stacks/extras/i18n.py:35
 msgid "There's another action in progress"
 msgstr "S'està executant una altra acció"
 
-#: ../src/stacks/extras/i18n.py:35
+#: ../src/stacks/extras/i18n.py:36
 msgid "Authorization is required"
 msgstr "Cal autenticar-se per a gestionar l'aplicació"
 
-#: ../src/stacks/extras/i18n.py:38
+#: ../src/stacks/extras/i18n.py:39
 msgid "Filters"
 msgstr "Filtres"
 
-#: ../src/stacks/extras/i18n.py:39
+#: ../src/stacks/extras/i18n.py:40
 msgid "Filter by formats and states"
 msgstr "Filtrar per formats i estats"
 
-#: ../src/stacks/extras/i18n.py:40
+#: ../src/stacks/extras/i18n.py:41
 msgid "Home"
 msgstr "Inici"
 
-#: ../src/stacks/extras/i18n.py:41
+#: ../src/stacks/extras/i18n.py:42
 msgid "Main page"
 msgstr "Pàgina principal"
 
-#: ../src/stacks/extras/i18n.py:42
+#: ../src/stacks/extras/i18n.py:43
 msgid "Blog entries"
 msgstr "Entrades al blog"
 
-#: ../src/stacks/extras/i18n.py:43
+#: ../src/stacks/extras/i18n.py:44
 msgid "Latest apps in appsedu"
 msgstr "Últimes aplicacions a AppsEdu"
 
-#: ../src/stacks/extras/i18n.py:44
+#: ../src/stacks/extras/i18n.py:45
 msgid "Relevant categories"
 msgstr "Categories  mès rellevants"
 
-#: ../src/stacks/extras/i18n.py:45
+#: ../src/stacks/extras/i18n.py:46
 msgid "Editor's choice"
 msgstr "Selecció de LliureX"
 
-#: ../src/stacks/extras/i18n.py:46
+#: ../src/stacks/extras/i18n.py:47
 msgid "Installed"
 msgstr "Instal·lats"
 
-#: ../src/stacks/extras/i18n.py:47
+#: ../src/stacks/extras/i18n.py:48
 msgid "Launch LliurexUp"
 msgstr "LliurexUp"
 
-#: ../src/stacks/extras/i18n.py:48
+#: ../src/stacks/extras/i18n.py:49
 msgid "Show applications"
 msgstr "Mostra les aplicacions"
 
-#: ../src/stacks/extras/i18n.py:49
+#: ../src/stacks/extras/i18n.py:50
 msgid "Updating info"
 msgstr "Actualitzant dades"
 
-#: ../src/stacks/extras/i18n.py:50
+#: ../src/stacks/extras/i18n.py:51
 msgid "Z·Install"
 msgstr "Instal·la"
 
-#: ../src/stacks/extras/i18n.py:51
+#: ../src/stacks/extras/i18n.py:52
 msgid "Open network settings"
 msgstr "Configurar accés a la xarxa"
 
-#: ../src/stacks/extras/i18n.py:52
+#: ../src/stacks/extras/i18n.py:53
 msgid "Origin"
 msgstr "Origen"
 
-#: ../src/stacks/extras/i18n.py:53
+#: ../src/stacks/extras/i18n.py:54
 msgid "Click: Show only from"
 msgstr "Click: Restringir a"
 
-#: ../src/stacks/extras/i18n.py:54
+#: ../src/stacks/extras/i18n.py:55
 msgid "Click: Show all applications"
 msgstr "Click: Mostrar tot"
 
-#: ../src/stacks/extras/i18n.py:55
-msgid "Downloading information, wait a moment..."
-msgstr "Obtenint informació"
-
 #: ../src/stacks/extras/i18n.py:56
+msgid "Downloading information, wait a moment..."
+msgstr "Obtenint informació..."
+
+#: ../src/stacks/extras/i18n.py:57
 msgid "Upgrading application database"
 msgstr "Actualitzant la informació disponible"
 
-#: ../src/stacks/extras/i18n.py:57
+#: ../src/stacks/extras/i18n.py:58
 msgid "Loading available applications"
 msgstr "Carregant el programari"
 
-#: ../src/stacks/extras/i18n.py:58
+#: ../src/stacks/extras/i18n.py:59
 msgid "Reload Apps"
 msgstr "Actualitzar"
 
-#: ../src/stacks/extras/i18n.py:60
+#: ../src/stacks/extras/i18n.py:61
 msgid "Search"
 msgstr "Cerca"
 
-#: ../src/stacks/extras/i18n.py:61
+#: ../src/stacks/extras/i18n.py:62
 msgid "Sort alphabetically"
 msgstr "Ordre alfabètic"
 
-#: ../src/stacks/extras/i18n.py:63
+#: ../src/stacks/extras/i18n.py:64
 msgid "Upgradables"
 msgstr "Actualitzables"
 
-#: ../src/stacks/extras/i18n.py:64
+#: ../src/stacks/extras/i18n.py:65
 msgid "Updates available"
 msgstr "Actualitzacions disponibles"
 
@@ -651,7 +655,7 @@ msgid "KDE"
 msgstr "Kde"
 
 msgid "zomando"
-msgstr "Zomandament"
+msgstr "zomandament"
 
 msgid "Video Apps"
 msgstr "Video"
