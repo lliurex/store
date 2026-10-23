@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 13:18+0200\n"
-"PO-Revision-Date: 2026-10-21 13:21+0200\n"
+"POT-Creation-Date: 2026-10-23 13:38+0200\n"
+"PO-Revision-Date: 2026-10-23 13:41+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -34,7 +34,7 @@ msgstr "Instala"
 msgid "Z-Install"
 msgstr "Instala"
 
-#: ../src/stacks/extras/i18n.py:10 ../src/stacks/extras/i18n.py:56
+#: ../src/stacks/extras/i18n.py:10 ../src/stacks/extras/i18n.py:59
 msgid "Remove"
 msgstr "Elimina"
 
@@ -66,7 +66,7 @@ msgstr "Certificadas por Appsedu"
 msgid "Store was unable to get information from internet"
 msgstr "No parece haber conexión a internet"
 
-#: ../src/stacks/extras/i18n.py:18 ../src/stacks/extras/i18n.py:59
+#: ../src/stacks/extras/i18n.py:18 ../src/stacks/extras/i18n.py:62
 msgid "Portrait"
 msgstr "Portada"
 
@@ -216,22 +216,34 @@ msgid "Click: Show all applications"
 msgstr "Click: Mostrar todo"
 
 #: ../src/stacks/extras/i18n.py:55
+msgid "Downloading information, wait a moment..."
+msgstr "Obteniendo información, puede tardar un momento..."
+
+#: ../src/stacks/extras/i18n.py:56
+msgid "Upgrading application database"
+msgstr "Actualizando información"
+
+#: ../src/stacks/extras/i18n.py:57
+msgid "Loading available applications"
+msgstr "Cargando aplicaciones"
+
+#: ../src/stacks/extras/i18n.py:58
 msgid "Reload Apps"
 msgstr "Actualizar"
 
-#: ../src/stacks/extras/i18n.py:57
+#: ../src/stacks/extras/i18n.py:60
 msgid "Search"
 msgstr "Busca"
 
-#: ../src/stacks/extras/i18n.py:58
+#: ../src/stacks/extras/i18n.py:61
 msgid "Sort alphabetically"
 msgstr "Orden alfabético"
 
-#: ../src/stacks/extras/i18n.py:60
+#: ../src/stacks/extras/i18n.py:63
 msgid "Upgradables"
 msgstr "Actualizables"
 
-#: ../src/stacks/extras/i18n.py:61
+#: ../src/stacks/extras/i18n.py:64
 msgid "Updates available"
 msgstr "Actualizaciones disponibles"
 
@@ -605,134 +617,136 @@ msgstr "Reloj"
 msgid "TextEditor"
 msgstr "Editores de texto"
 
+msgid "Ebook Software"
+msgstr "E-Reader"
+
+#
+msgid "Music Production"
+msgstr "Música"
+
+msgid "Informática"
+msgstr "Informática"
+
+msgid "Text Editors"
+msgstr "Editores de texto"
+
+msgid "GTK"
+msgstr "Gtk"
+
+msgid "Llengua"
+msgstr "Idiomas"
+
+msgid "Java"
+msgstr "Java"
+
+#
+msgid "Idiomes"
+msgstr "Idiomas"
+
+msgid "KDE"
+msgstr "Kde"
+
+msgid "zomando"
+msgstr "zomando"
+
+msgid "Video Apps"
+msgstr "Video"
+
+msgid "X-Utilities"
+msgstr "Utilidad"
+
+msgid "Qt"
+msgstr "Qt"
+
+#
+msgid "System Tools (NOT OS or ROMS)"
+msgstr "Sistema"
+
 msgid "LliureX-Infantil"
 msgstr "LliureX-Infantil"
 
 msgid "3D Graphics"
 msgstr "Gráficos 3D"
 
-msgid "Video Apps"
-msgstr "Video"
-
-msgid "Utilities"
-msgstr "Utilidad"
-
-msgid "Video Editors"
-msgstr "Edición de video y sonido"
-
-#
-msgid "Music Production"
-msgstr "Música"
-
-#
-msgid "Webcam & Monitoring"
-msgstr "Video"
-
-msgid "Education Apps"
-msgstr "Educación"
-
-msgid "Text Editors"
-msgstr "Editores de texto"
-
-#
-msgid "Various Games"
-msgstr "Juegos"
-
-msgid "Developers Apps"
-msgstr "Herramientas de desarrollo"
-
-msgid "Informática"
-msgstr "Informática"
-
-msgid "QT"
-msgstr "Qt"
-
-msgid "GNOME"
-msgstr "Gnome"
-
-msgid "GTK"
-msgstr "Gtk"
-
-msgid "ODE"
-msgstr "ODE"
-
-msgid "Browser"
-msgstr "Navegadores"
-
-msgid "Screenshot Tools"
-msgstr "Utilidad"
-
-#
-msgid "E-Learning"
-msgstr "E-Learning"
-
-msgid "Creation"
-msgstr "Creación"
-
-msgid "Electronics"
-msgstr "Electrónica"
-
-msgid "X-Utilities"
-msgstr "Utilidad"
-
-msgid "KDE"
-msgstr "Kde"
-
-msgid "Graphic Apps"
-msgstr "Imagen"
-
-#
-msgid "System Tools (NOT OS or ROMS)"
-msgstr "Sistema"
-
-msgid "Llengua"
-msgstr "Idiomas"
-
-msgid "Qt"
-msgstr "Qt"
-
-msgid "Chat & Messenging"
-msgstr "Mensajería instantánea"
-
 msgid "Documentation"
 msgstr "Documentación"
-
-#
-msgid "Idiomes"
-msgstr "Idiomas"
-
-msgid "Video Converters"
-msgstr "Conversor de video"
 
 msgid "Inteligencia Artificial"
 msgstr "Inteligencia Artifical"
 
-msgid "Ebook Software"
-msgstr "E-Reader"
+msgid "X-Lliurex"
+msgstr "LliureX"
 
-msgid "Java"
-msgstr "Java"
+msgid "Engineering"
+msgstr "Ingeniería"
 
-msgid "File Management"
-msgstr "Gestión de ficheros"
+msgid "Graphic Apps"
+msgstr "Imagen"
 
-msgid "zomando"
-msgstr "Zomando"
+msgid "QT"
+msgstr "Qt"
 
-msgid "Audio Apps"
-msgstr "Sonido"
+msgid "ODE"
+msgstr "ODE"
+
+msgid "Creation"
+msgstr "Creación"
+
+msgid "Video Converters"
+msgstr "Conversor de video"
+
+#
+msgid "Various Games"
+msgstr "Juegos"
 
 #
 #
 msgid "COSMIC"
 msgstr "Cosmic"
 
-msgid "Engineering"
-msgstr "Ingeniería"
+msgid "GNOME"
+msgstr "Gnome"
 
-msgid "X-Lliurex"
-msgstr "LliureX"
+msgid "Browser"
+msgstr "Navegadores"
 
-msgid "Authentication is required to manage software"
-msgstr "Es necesario autenticarse"
+msgid "File Management"
+msgstr "Gestión de ficheros"
 
+#
+msgid "E-Learning"
+msgstr "E-Learning"
+
+msgid "Screenshot Tools"
+msgstr "Utilidad"
+
+msgid "Education Apps"
+msgstr "Educación"
+
+msgid "Video Editors"
+msgstr "Edición de video y sonido"
+
+msgid "Chat & Messenging"
+msgstr "Mensajería instantánea"
+
+msgid "Electronics"
+msgstr "Electrónica"
+
+msgid "Utilities"
+msgstr "Utilidad"
+
+msgid "Audio Apps"
+msgstr "Sonido"
+
+msgid "Developers Apps"
+msgstr "Herramientas de desarrollo"
+
+#
+msgid "Webcam & Monitoring"
+msgstr "Video"
+
+msgid "To make changes enter your password"
+msgstr "Se requiere autenticación"
+
+#~ msgid "Authentication is required to manage software"
+#~ msgstr "Es necesario autenticarse"

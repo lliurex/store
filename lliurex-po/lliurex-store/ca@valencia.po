@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 13:18+0200\n"
-"PO-Revision-Date: 2026-10-21 13:22+0200\n"
+"POT-Creation-Date: 2026-10-23 13:38+0200\n"
+"PO-Revision-Date: 2026-10-23 13:43+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -38,7 +38,7 @@ msgstr "Instal·la"
 msgid "Z-Install"
 msgstr "Instal·la"
 
-#: ../src/stacks/extras/i18n.py:10 ../src/stacks/extras/i18n.py:56
+#: ../src/stacks/extras/i18n.py:10 ../src/stacks/extras/i18n.py:59
 msgid "Remove"
 msgstr "Elimina"
 
@@ -70,7 +70,7 @@ msgstr "Certificades per Appsedu"
 msgid "Store was unable to get information from internet"
 msgstr "Sembla que no hi ha connexió a internet"
 
-#: ../src/stacks/extras/i18n.py:18 ../src/stacks/extras/i18n.py:59
+#: ../src/stacks/extras/i18n.py:18 ../src/stacks/extras/i18n.py:62
 msgid "Portrait"
 msgstr "Portada"
 
@@ -220,22 +220,34 @@ msgid "Click: Show all applications"
 msgstr "Click: Mostrar tot"
 
 #: ../src/stacks/extras/i18n.py:55
+msgid "Downloading information, wait a moment..."
+msgstr "Obtenint informació"
+
+#: ../src/stacks/extras/i18n.py:56
+msgid "Upgrading application database"
+msgstr "Actualitzant la informació disponible"
+
+#: ../src/stacks/extras/i18n.py:57
+msgid "Loading available applications"
+msgstr "Carregant el programari"
+
+#: ../src/stacks/extras/i18n.py:58
 msgid "Reload Apps"
 msgstr "Actualitzar"
 
-#: ../src/stacks/extras/i18n.py:57
+#: ../src/stacks/extras/i18n.py:60
 msgid "Search"
 msgstr "Cerca"
 
-#: ../src/stacks/extras/i18n.py:58
+#: ../src/stacks/extras/i18n.py:61
 msgid "Sort alphabetically"
 msgstr "Ordre alfabètic"
 
-#: ../src/stacks/extras/i18n.py:60
+#: ../src/stacks/extras/i18n.py:63
 msgid "Upgradables"
 msgstr "Actualitzables"
 
-#: ../src/stacks/extras/i18n.py:61
+#: ../src/stacks/extras/i18n.py:64
 msgid "Updates available"
 msgstr "Actualitzacions disponibles"
 
@@ -609,132 +621,134 @@ msgstr "Rellotge"
 msgid "TextEditor"
 msgstr "Editors de text"
 
+msgid "Ebook Software"
+msgstr "E-Reader"
+
+#
+msgid "Music Production"
+msgstr "Mùsica"
+
+msgid "Informática"
+msgstr "Informàtica"
+
+msgid "Text Editors"
+msgstr "Editors de text"
+
+msgid "GTK"
+msgstr "Gtk"
+
+msgid "Llengua"
+msgstr "Idiomes"
+
+msgid "Java"
+msgstr "Java"
+
+#
+msgid "Idiomes"
+msgstr "Idiomes"
+
+msgid "KDE"
+msgstr "Kde"
+
+msgid "zomando"
+msgstr "Zomandament"
+
+msgid "Video Apps"
+msgstr "Video"
+
+msgid "X-Utilities"
+msgstr "Utilitat"
+
+msgid "Qt"
+msgstr "Qt"
+
+#
+msgid "System Tools (NOT OS or ROMS)"
+msgstr "Sistema"
+
 msgid "LliureX-Infantil"
 msgstr "Lliurex-Infantil"
 
 msgid "3D Graphics"
 msgstr "Gràfics 3D"
 
-msgid "Video Apps"
-msgstr "Video"
+msgid "Documentation"
+msgstr "Documentació"
 
-msgid "Utilities"
-msgstr "Utilitat"
+msgid "Inteligencia Artificial"
+msgstr "Intel·ligència Artificial"
 
-msgid "Video Editors"
-msgstr "Edició de video i so"
+msgid "X-Lliurex"
+msgstr "LliureX"
 
-#
-msgid "Music Production"
-msgstr "Mùsica"
+msgid "Engineering"
+msgstr "Enginyeria"
 
-#
-msgid "Webcam & Monitoring"
-msgstr "Video"
+msgid "Graphic Apps"
+msgstr "Gràfics"
 
-msgid "Education Apps"
-msgstr "Educació"
+msgid "QT"
+msgstr "Qt"
 
-msgid "Text Editors"
-msgstr "Editors de text"
+msgid "ODE"
+msgstr "ODE"
+
+msgid "Creation"
+msgstr "Creació"
+
+msgid "Video Converters"
+msgstr "Videoconferència"
 
 #
 msgid "Various Games"
 msgstr "Jocs"
 
-msgid "Developers Apps"
-msgstr "Eines de desenvolupament"
-
-msgid "Informática"
-msgstr "Informàtica"
-
-msgid "QT"
-msgstr "Qt"
+msgid "COSMIC"
+msgstr "Cosmic"
 
 msgid "GNOME"
 msgstr "Gnome"
 
-msgid "GTK"
-msgstr "Gtk"
-
-msgid "ODE"
-msgstr "ODE"
-
 msgid "Browser"
 msgstr "Fullejadors web"
 
-msgid "Screenshot Tools"
-msgstr "Gràfics"
+msgid "File Management"
+msgstr "Gestió de fitxers"
 
 #
 msgid "E-Learning"
 msgstr "E-Learning"
 
-msgid "Creation"
-msgstr "Creació"
-
-msgid "Electronics"
-msgstr "Electrónica"
-
-msgid "X-Utilities"
-msgstr "Utilitat"
-
-msgid "KDE"
-msgstr "Kde"
-
-msgid "Graphic Apps"
+msgid "Screenshot Tools"
 msgstr "Gràfics"
 
-#
-msgid "System Tools (NOT OS or ROMS)"
-msgstr "Sistema"
+msgid "Education Apps"
+msgstr "Educació"
 
-msgid "Llengua"
-msgstr "Idiomes"
-
-msgid "Qt"
-msgstr "Qt"
+msgid "Video Editors"
+msgstr "Edició de video i so"
 
 msgid "Chat & Messenging"
 msgstr "Missatgeria instantània"
 
-msgid "Documentation"
-msgstr "Documentació"
+msgid "Electronics"
+msgstr "Electrónica"
 
-#
-msgid "Idiomes"
-msgstr "Idiomes"
-
-msgid "Video Converters"
-msgstr "Videoconferència"
-
-msgid "Inteligencia Artificial"
-msgstr "Intel·ligència Artificial"
-
-msgid "Ebook Software"
-msgstr "E-Reader"
-
-msgid "Java"
-msgstr "Java"
-
-msgid "File Management"
-msgstr "Gestió de fitxers"
-
-msgid "zomando"
-msgstr "Zomandament"
+msgid "Utilities"
+msgstr "Utilitat"
 
 msgid "Audio Apps"
 msgstr "So"
 
-msgid "COSMIC"
-msgstr "Cosmic"
+msgid "Developers Apps"
+msgstr "Eines de desenvolupament"
 
-msgid "Engineering"
-msgstr "Enginyeria"
+#
+msgid "Webcam & Monitoring"
+msgstr "Video"
 
-msgid "X-Lliurex"
-msgstr "LliureX"
+msgid "To make changes enter your password"
+msgstr "Cal autenticar-se"
 
-msgid "Authentication is required to manage software"
-msgstr "Cal autenticar-se per a gestionar programari"
-
+#~ msgid "Authentication is required to manage software"
+#~ msgstr "Cal autenticar-se per a gestionar programari"
