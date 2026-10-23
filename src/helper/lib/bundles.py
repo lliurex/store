@@ -3,7 +3,7 @@ import os,sys
 import tempfile
 import json
 from enum import Enum
-import lib.template
+import lib.template as template
 from lib.templatePkg import templatePkg
 from lib.templateFlt import templateFlt
 from lib.templateSnp import templateSnp
