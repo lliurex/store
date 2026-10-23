@@ -69,31 +69,7 @@ class main(QWidget):
 		return True
 	#def hide
 
-	def _processStreams(self,args):
-		self.app={}
-		if isinstance(args,str):
-			name=""
-			cmd=args.split("://")[-1]
-			if cmd.startswith("install?"):
-				ocs=cmd.split("&")[-1]
-				idx=1
-				for i in ocs.split("=")[-1]:
-					if i.isalnum():
-						idx+=1
-					else:
-						break
-				name=ocs.split("=")[-1][:idx-1]
-			else:
-				name=cmd.replace(".desktop","").replace(".flatpakref","")
-				if name.count(".")>1:
-					if len(name.split(".")[0])==3:
-						name=name.split(".")[-1]
-		return(name)
-	#def _processStreams
-
 	def setParms(self,*args,**kwargs):
-		pxm=""
-		name=""
 		self.referrerBtn=kwargs.get("btn",None)
 		if self.referrerBtn!=None:
 			self.app=self.referrerBtn.app
@@ -102,13 +78,17 @@ class main(QWidget):
 				return
 			else:
 				name=self.app["id"]
-				print(name)
-		if name=="":
-			if isinstance(args[0],dict):
-				name=args[0]["id"]
-			else:
-				name=args[-1]
-				name=self._processStreams(name)
+				if "appsedu" in self.app.get("homepage",""):
+					details=self.helper.getAppseduDetails(self.app["homepage"])
+					self.app["description"]=details["description"]
+					self.updateScreen()
+					return
+		if isinstance(args[0],dict):
+			name=args[0]["id"]
+		else:
+			self.app={}
+			name=args[-1]
+			name=self.aux.getAppFromStream(name)
 		self._resetScreen(name,"")
 		self._rebost.setAction("refreshApp",name)
 		self._rebost.start()
@@ -132,7 +112,6 @@ class main(QWidget):
 				homepage=""
 			if homepage.startswith("https://portal.edu.gva.es/appsedu")==True and self.app["description"].count(" ")<3:
 				details=self.helper.getAppseduDetails(homepage)
-				print(details)
 				if len(details.get("description",""))>len(self.app["description"]):
 					self.app["description"]=details["description"]
 				if len(details.get("icon",""))>0:
@@ -142,6 +121,8 @@ class main(QWidget):
 			#for bundle,name in (self.app.get('bundle',{}).items()):
 			#	if bundle=='package':
 			#		continue
+		if self.referrerBtn!=None:
+			self.referrerBtn.setApp(self.app)
 		self.setEnabled(True)
 		self.setCursor(self.oldCursor)
 		self.updateScreen()
@@ -345,6 +326,7 @@ class main(QWidget):
 		lay.addWidget(QLabel(i18n["DETAIL_LBL_RELATED"]))
 		self.suggests=suggestsBar()
 		self.suggests.selected.connect(self._loadSuggestedApp)
+		self.suggests.setObjectName("lstSuggests")
 		lay.addWidget(self.suggests)
 		return(wdg)
 	#def _defSuggests
@@ -522,11 +504,7 @@ class main(QWidget):
 		self.setParms(app)
 	#def _loadSuggested
 
-	def updateScreen(self):
-		self._initScreen()
-		if self.app.get("bundle",None)==None:
-			self._setUnknownAppInfo()
-			return
+	def _loadIcon(self):
 		pxm=self.lblIcon.pixmap()
 		if pxm==None:
 			self.lblIcon.loadImg(self.app)
@@ -534,52 +512,51 @@ class main(QWidget):
 			self.lblIcon.loadImg(self.app)
 		else:
 			self.app["icon"]=self.lblIcon.pixmapPath
-		#Disabled as requisite (250214-11:52)
-		#self.lblSummary.setText("<h2>{}</h2>".format(self.app.get('summary','')))
+	#def _loadIcon
+
+	def _setInfo(self):
 		summary="{}<br>{}".format(self.app["name"].upper(),self.app.get("summary",""))
 		if len(summary)>150:
 			summary="{}...".format(summary[0:150])
 		self.lblSummary.setText("{}".format(summary))
-		bundles=list(self.app.get('bundle',{}).keys())
-		self.cmbBundles.setEnabled(True)
 		description=html.unescape(self.app.get('description','').replace("***","\n"))
-		if "Forbidden" in self.app.get("categories",[]):
-			forbReason=""
-			if self.app.get("summary","").endswith(")"):
-				forbReason=": {}".format(self.app["summary"].split("(")[-1].replace(")",""))
-				if forbReason.lower().startswith(": no ")==True:
-					forbReason=""
-
-			if self.app.get("ERR",False)!=False:
-				description=i18n.get("DETAIL_APPUNKNOWN_SAI")
-				description="<h2>{0}</h2>{1}<hr>{3}".format(i18n.get("DETAIL_APPUNKNOWN").split(".")[0],i18n.get("DETAIL_APPUNKNOWN"),i18n["DETAIL_APPUNKNOWN_SAI"],description,forbReason)
-				self.lblTags.setText("")
-			else:
-				description="<h2>{0}{4}</h2>{1} <a href='{2}'>{2}</a><hr>\n{3}".format(i18n.get("DETAIL_FORBIDDEN"),i18n.get("DETAIL_INFO"),i18n["DETAIL_APPUNKNOWN_SAI"],description,forbReason)
-			self.lblDesc.label.setOpenExternalLinks(True)
 		self.lblDesc.setText(description)
 		#preliminary license support, not supported
 		applicense=self.app.get('license','')
 		if applicense:
 			text="<strong>{}</strong>".format(applicense)
-		self._loadScreenshots()	
-		if self.app.get("ERR",False)==False:
-			exclude=self.app.get("suggests",[])
-			exclude.extend([self.app["name"],self.app["id"]])
-			extra=self.app.get("summary")
-			if len(extra)==0:
-				extra=self.app.get("description")
-			self.lblTags.setText(self.aux.tokenizeTags(self.app.get("keywords",[]),exclude=exclude,extra=self.app.get("summary","")))
+	#def _setInfo
+
+	def _setTags(self):
+		exclude=self.app.get("suggests",[])
+		exclude.extend([self.app["name"],self.app["id"]])
+		extra=self.app.get("summary")
+		if len(extra)==0:
+			extra=self.app.get("description")
+		self.lblTags.setText(self.aux.tokenizeTags(self.app.get("keywords",[]),exclude=exclude,extra=extra))
 		if len(self.lblTags.text())==0:
 			self.lblTags.hide()
 		else:
 			self.lblTags.show()
-		self.loaded.emit(self.app)
+	#def _setTags
+
+	def updateScreen(self):
+		self._initScreen()
+		if self.app.get("bundle",None)==None:
+			self._setUnknownAppInfo()
+			return
+		self._loadIcon()
+		self._setInfo()
+		bundles=list(self.app.get('bundle',{}).keys())
+		self.cmbBundles.setEnabled(True)
+		self._loadScreenshots()	
+		self._setTags()
 		self._populateSuggestsList()
 		self._populateLinks()
 		self._populateBoxBundles()
 		self.cmbBundles.setApp(self.app)
 		self.setCursor(self.oldCursor)
+		self.loaded.emit(self.app)
 	#def _updateScreen
 
 	def refreshCmbForApp(self,app):
@@ -621,8 +598,6 @@ class main(QWidget):
 		qpal=QtGui.QPalette()
 		color=qpal.color(QtGui.QPalette.Dark)
 		self.parent().setWindowTitle("LLiureX - {}".format("ERROR"))
-		if "Forbidden" not in self.app.get("categories",[]):
-			self.app["categories"]=["Forbidden"]
 		self.cmbBundles.setEnabled(False)
 		self.lblRelease.setEnabled(False)
 		self.blur=QGraphicsBlurEffect() 

@@ -154,7 +154,10 @@ class paneGlobalView(QWidget):
 		#Search for app in loaded buttons and update it
 		btn=self.appsLoaded.get(rapp["id" ])
 		if btn!=None:
-			btn.setApp(rapp,updateIcon=True)
+			if rapp.get("icon","").strip()!="":
+				btn.setApp(rapp,updateIcon=True)
+			else:
+				btn.setApp(rapp,updateIcon=False)
 	#def updateBtn
 
 

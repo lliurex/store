@@ -4,15 +4,10 @@ from functools import partial
 import os
 import subprocess
 import json
+from rebost import store 
 from PySide6.QtWidgets import QApplication, QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout
 from PySide6 import QtGui
-from PySide6.QtCore import Qt,Signal
-from QtExtraWidgets import QStackedWindowItem
-from rebost import store 
-from PySide6.QtWidgets import QApplication, QLineEdit,QLabel,QPushButton,QGridLayout,QHBoxLayout, QWidget,QVBoxLayout,QListWidget, \
-							QListWidgetItem,QSizePolicy
-from PySide6 import QtGui
-from PySide6.QtCore import Qt,QSize,Signal
+from PySide6.QtCore import Qt,Signal,QThread
 from QtExtraWidgets import QStackedWindowItem
 from wdg.btnRebost import QPushButtonRebostApp
 from wdg.prgBar import QProgressImage 
@@ -70,6 +65,8 @@ class portrait(QStackedWindowItem):
 	@staticmethod
 	def _onDestroy(*args):
 		selfDict=args[0]
+		selfDict["_llxup"].quit()
+		selfDict["_llxup"].wait()
 		selfDict["_rebost"].blockSignals(True)
 		selfDict["_rebost"].requestInterruption()
 		selfDict["_rebost"].quit()
@@ -124,10 +121,12 @@ class portrait(QStackedWindowItem):
 	#def _chkCategories
 
 	def _endGetLockStatus(self,*args):
+		oldLock=self.locked
 		self.locked,lockedUser=self.aux.getLockStatus(*args)
-		if self.locked==False: #conf is unlocked, check groups 
-			if lockedUser==True:
-				self._unlockRebost()
+		if self.locked!=oldLock:
+			if self.locked==False: #conf is unlocked, check groups 
+				if lockedUser==True:
+					self._unlockRebost()
 		self.btnBar.setLocked(self.locked,lockedUser)
 		self._debug("<-------- Rebost status acquired (lock {})".format(self.locked))
 	#def _endGetLockStatus
@@ -302,6 +301,8 @@ class portrait(QStackedWindowItem):
 		vbox.setStretch(0,0)
 		vbox.setStretch(1,2)
 		vbox.setStretch(3,1)
+		#dirty hack: Force size adjustment invoking sizeHint
+		wdg.sizeHint()
 		return(wdg)
 	#def _defNavigationBar
 
@@ -479,17 +480,6 @@ class portrait(QStackedWindowItem):
 		self._llxup.start()
 		#self._llxup.wait()
 	#def _getUpgradables
-
-	def _beginUpdate(self):
-		cursor=QtGui.QCursor(Qt.WaitCursor)
-		self.setCursor(cursor)
-		self.btnSettings.hide()
-		if self.init==False:
-			self.loadStart.emit()
-		else:
-			self._progressShow()
-		self._homeView.hide()
-	#def _beginUpdate
 
 	def _endUpdate(self):
 		self._return()
@@ -670,6 +660,7 @@ class portrait(QStackedWindowItem):
 						icn=targ.iconUri.pixmap()
 						self.referrerBtn=targ
 						btn=targ
+						print(btn)
 					elif isinstance(targ,dict) and len(targ)>0:
 						app=targ
 					elif hasattr(targ,"overlay"): #QPushInfoButton
@@ -686,7 +677,7 @@ class portrait(QStackedWindowItem):
 		self._stopThreads(ignoreProgress=True)
 		if app!="":
 			self.parent.setWindowTitle("{} - {}".format(APPNAME,app.get("name","").capitalize()))
-			self._detailView.setParms({"name":app.get("name",""),"id":app.get("id",""),"icon":icn,"btn":btn})
+			self._detailView.setParms({"name":app.get("name",""),"id":app.get("id",""),"icon":icn},btn=btn)
 	#def _loadDetails(self,*args,**kwargs):
 
 	def _loadGlobalDetails(self,*args,**kwargs):
@@ -772,7 +763,7 @@ class portrait(QStackedWindowItem):
 
 	def softresetScreen(self):
 		self._stopThreads(ignoreProgress=True)
-	#def resetScreen
+	#def softresetScreen
 
 	def resetScreen(self):
 		self._stopThreads(ignoreProgress=True)

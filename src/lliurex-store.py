@@ -6,9 +6,7 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Qt
 from PySide6 import QtGui
 from QtExtraWidgets import QStackedWindow
-import gettext
-gettext.textdomain('lliurex-store')
-_ = gettext.gettext
+from initSplash import QSplashWidget
 
 def closeEvent(*args):
 	portrait=mw.widget(0)
@@ -21,19 +19,31 @@ else:
 	abspath=os.path.dirname(__file__)
 
 app=QApplication(["LliureX Store"])
+icn=QtGui.QIcon.fromTheme("llxstore")
+banner=os.path.join(abspath,"rsrc","bbanner.svg")
+pxm=QtGui.QPixmap(banner)
+spl=QSplashWidget(icn,pxm)
+scr=QtGui.QGuiApplication.primaryScreen()
+geo=scr.availableGeometry()
+spl.move((geo.width()-spl.width())//2,(geo.height()-spl.height())//2)
+spl.show()
+app.processEvents()
 mw=QStackedWindow()
+app.processEvents()
 mw.addStacksFromFolder(os.path.join(abspath,"stacks"))
+app.processEvents()
+
 if len(sys.argv)>1:
 	if ("://") in sys.argv[1]:
 		sys.argv[1]=sys.argv[1].removesuffix("-lliurex")
 		wdg=mw.getCurrentStack()
 		wdg.setParms(sys.argv[1])
 mw.closeEvent=closeEvent
-icn=QtGui.QIcon.fromTheme("llxstore")
 mw.disableNavBar(True)
 mw.setIcon(icn)
 #Remove banner
 banner=mw.layout().itemAtPosition(0,0)
+app.processEvents()
 mw.layout().removeItem(banner)
 mw.setObjectName("MAIN")
 mw.layout().setContentsMargins(0,0,0,0)
@@ -43,4 +53,5 @@ mw.setStyleSheet("""QWidget#MAIN{background:#002c4f; color:#FFFFFF;margin:0px;pa
 mw.setMinimumWidth(int(w*0.9))
 mw.setMinimumHeight(int(h*0.9))
 mw.show()
+spl.close()
 app.exec()
