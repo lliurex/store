@@ -69,15 +69,6 @@ def _installApp(app):
 		cmd=[zmdName,pkgName]
 		if zmdName.endswith(".epi"):
 			cmd.insert(0,"epi-gtk")
-		#else:
-		#	appName=zmdName.replace("zmds","applications").replace(".zmd",".app")
-		#	if os.path.exists(appName):
-		#		content=[]
-		#		with open(appName,"r") as f:
-		#			content=f.readlines()
-		#		for l in content:
-		#			if l.lower().strip()=="using=pkexec":
-		#				cmd.insert(0,"pkexec")
 	else:
 		appBundle=bundles.bundle()
 		if bundle=="package":

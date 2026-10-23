@@ -12,6 +12,7 @@ class templatePkg():
 		installCmd+="export DEBIAN_PRIORITY=critical\n"
 		installCmd+="apt-get -qy -o \"Dpkg::Options::=--force-confdef\" -o \"Dpkg::Options::=--force-confold\" "
 		installCmd+="install {@APPNAME} 2>&1;ERR=$?"
+		installCmd+="/usr/share/store/helper/addEpi.py {@APPNAME}"
 		return(installCmd)
 	#def _getAppInstall
 
