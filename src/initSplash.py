@@ -1,6 +1,7 @@
 import sys,time,random
 from PySide6.QtWidgets import QApplication, QProgressBar, QWidget, QLabel,QVBoxLayout
 from PySide6.QtCore import Qt, QTimer, Signal,QThread
+from PySide6.QtGui import QPalette
 
 class animation(QThread):
 	tick=Signal()
@@ -36,14 +37,18 @@ class QSplashWidget(QWidget):
 		super().__init__()
 		icn=args[0]
 		pxm=args[1]
+		self.val=0
 		lay=QVBoxLayout(self)
 		self.setWindowFlags(Qt.FramelessWindowHint)
+		self.setAttribute(Qt.WA_TranslucentBackground)
 		self.setWindowIcon(icn)
 		lbl=QLabel()
 		lbl.setPixmap(pxm)
 		lay.addWidget(lbl)
 		self.prg=QProgressBar()
-		self.val=0
+		pal=self.prg.palette()
+		pal.setColor(QPalette.Text,Qt.white)
+		self.prg.setPalette(pal)
 		self.prg.setRange(0,100)
 		lay.addWidget(self.prg)
 		self.animation=animation()
