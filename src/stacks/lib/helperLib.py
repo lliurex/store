@@ -502,4 +502,3 @@ class auxiliary():
 						name=name.split(".")[-1]
 		return(name)
 	#def getAppFromStream
->>>>>>> master

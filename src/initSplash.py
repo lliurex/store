@@ -1,7 +1,7 @@
 import sys,time,random
-from PySide6.QtWidgets import QApplication, QProgressBar, QWidget, QLabel,QVBoxLayout
-from PySide6.QtCore import Qt, QTimer, Signal,QThread
-from PySide6.QtGui import QPalette
+from PySide2.QtWidgets import QApplication, QProgressBar, QWidget, QLabel,QVBoxLayout
+from PySide2.QtCore import Qt, QTimer, Signal,QThread
+from PySide2.QtGui import QPalette
 
 class animation(QThread):
 	tick=Signal()
