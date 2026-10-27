@@ -1,4 +1,4 @@
-lliurex-store (1.8.2) noble; urgency=medium
+lliurex-store (1.8.2.1) noble; urgency=medium
 
   * Add splash screen
   * Improve cache for appsedu details

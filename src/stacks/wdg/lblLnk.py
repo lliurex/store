@@ -5,9 +5,6 @@ from PySide6.QtWidgets import QLabel,QWidget,QHBoxLayout
 from PySide6.QtCore import Qt,Signal
 from PySide6 import QtGui
 from extras.constants import *
-import gettext
-gettext.textdomain('lliurex-store')
-_ = gettext.gettext
 
 class QLabelLink(QWidget):
 	def __init__(self,*args,**kwargs):

@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import gettext
+gettext.textdomain('lliurex-store')
 _ = gettext.gettext
 i18n={
 	"ALL":_("All"),
