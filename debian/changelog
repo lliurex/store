@@ -1,4 +1,10 @@
-lliurex-store (1.8.2.1-0lliurex) noble; urgency=medium
+lliurex-store (1.8.2.2) noble; urgency=medium
+
+  * If app is unknown check if it seems a zmd
+
+ -- Juanma1980 <juanma1980@gmail.com>  Tue, 10 Nov 2026 14:03:24 +0100
+
+lliurex-store (1.8.2.1) noble; urgency=medium
 
   * Add splash screen
   * Improve cache for appsedu details
