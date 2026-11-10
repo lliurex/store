@@ -609,6 +609,8 @@ class main(QWidget):
 		self.lblBkg.setGraphicsEffect(self.blur)
 		self.lblBkg.setStyleSheet("QLabel{background-color:rgba(%s,%s,%s,0.7);}"%(color.red(),color.green(),color.blue()))
 		#self.app["name"]=i18n.get("APPUNKNOWN").split(".")[0]
+		if isinstance(self.app,dict)==False:
+			self.app={}
 		self.app["name"]=self.name
 		self.app["id"]=self.name
 		self.app["summary"]=i18n.get("DETAIL_APPUNKNOWN").split(".")[0]
