@@ -12,6 +12,7 @@ Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, 
 		lliurex-store-dbus,
 		python3-app2menu,
+		python3-feedparser,
 		python3-pyside6.qtgui, 
 		python3-pyside6.qtcore,
 		python3-pyside6.qtuitools,
