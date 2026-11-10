@@ -251,6 +251,13 @@ class storeHelper(QThread):
 		app={}
 		if self.args[0]!="":
 			app=self.rc.refreshApp(self.args[0])
+		minlen=0
+		if isinstance(app,str):
+			minlen=2
+		if len(app)<=minlen:
+			if self.args[0].startswith("zero-lliurex-"):
+				pkg=self.args[0].removeprefix("zero-lliurex-")
+				app=self.rc.refreshApp(pkg)
 		self.rfrEnded.emit(app)
 		return(app)
 	#def _refreshApp
